@@ -1,0 +1,154 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+
+		<script type="text/javascript" src="Renderer.js"></script>
+		<script type="text/javascript" src="Unit.js"></script>
+		<script type="text/javascript" src="World.js"></script>
+		<script type="text/javascript" src="PathFinder.js"></script>
+		<script type="text/javascript" src="MapGenerator.js"></script>
+
+		<script type="text/javascript" src="View.js"></script>
+
+		<script type="text/javascript" src="utilities/Noise.js"></script>
+		<script type="text/javascript" src="utilities/Tools.js"></script>
+		<script type="text/javascript" src="utilities/Queue.js"></script>
+		<script type="text/javascript" src="utilities/Hex.js"></script>
+		<script type="text/javascript" src="utilities/CanvasInterface.js"></script>
+
+		<!--<script src="https://code.jquery.com/jquery-1.10.2.js"></script>-->
+		<style>
+			body,p {
+				background: black;
+				color: white;
+			}
+			#mycanvas{
+				background: grey;
+				clear: both;
+				margin-top: 30px;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="float:left;">
+			<canvas id="mycanvas" width="600" height="400"></canvas>
+		</div>
+		
+		<div style="float:left; margin-left:20px;";>
+			<br>
+			<button type="button" id="clear" onclick="canv_draw.clear();">clear canvas</button>
+			<br>
+			<button type="button"  onclick="shiftView('left');">left</button>
+			<button type="button"  onclick="shiftView('right');">right</button>
+			<button type="button"  onclick="shiftView('up');">up</button>
+			<button type="button"  onclick="shiftView('down');">down</button>
+
+			<button type="button"  onclick="scaleView(2);">zoom out</button>
+			<button type="button"  onclick="scaleView(0.5);">zoom in</button>
+
+			<br>
+			World Size
+			<input type="text" value = 100> </input>
+
+
+
+
+
+			<div> World settings </div>
+
+			<br>
+			<button type="button" onclick="newWorld();"> new world</button>
+			------------<button type="button"  onclick="world_interface.next_tick();refreshCanvas();">next tick</button>
+			<br>
+
+
+		</div>
+
+
+		<p id="console"></p>
+
+		<div id='actions'></div>
+
+
+		<!-- Javascript after this line -->
+
+		<script>
+
+			//////////////////////////////////////// CREATING THE WORLD ///////////////////////////////////////////////
+
+			//define variables//
+			var canvas = document.getElementById('mycanvas');
+
+			//an interface for drawing on the canvas
+			var canv_draw = new CanvasDraw(canvas);
+			var canv_input = new CanvasInput(canvas);
+
+			//create a world
+			var map_radius = 100;
+			var world_layout = new HexLayout(orientation_pointy,new Point(35,35),new Point(600,400));
+			var world = new World(map_radius,world_layout);
+
+			//create a controller and renderer for the world
+			var world_interface = new WorldInterface(world);
+			var world_renderer = new WorldRenderer(canv_draw,world_interface.getView(),world);
+			
+			//create a unit in the world
+			world.create_unit(new Hex(0,0));
+
+
+
+
+			////////////////////////////////////////// DRAWING TO THE CANVAS ///////////////////////////////////
+
+			function drawScreen() {
+
+				//draw the world
+				world_renderer.draw_world();
+
+				//draw range of selected unit
+				if (world_interface.unit_selected instanceof Unit) {
+					world_renderer.draw_range(world_interface.unit_selected.range);
+					world_renderer.draw_path(world_interface.unit_selected.range,world_interface.hex_hovered);
+				}
+
+				//draw selection hex
+				world_renderer.draw_hex(world_interface.hex_selected, 2)
+			}
+
+			//refresh the screen
+			function refreshCanvas() {
+				canv_draw.clear();
+				drawScreen();
+			}
+
+
+			///////////////////////////////////////// CHANGING THE WORLD //////////////////////////////////////////
+			function newWorld() {
+				world.generate_world_map(map_radius);
+				refreshCanvas();
+			}
+
+			////////////////////////////////////// CHANGING THE VIEW SCREEN ////////////////////////////////////////////////
+
+			function shiftView(direction) {
+				world_interface.moveView(direction);
+				refreshCanvas();
+			}
+
+			function scaleView(n) {
+				world_interface.zoomView(n)
+				refreshCanvas();
+			}
+
+
+
+			////////////////////////////////////////////////////// MOUSE LISTENERS ////////////////////////////////////////
+
+			//add click and moouse functionality to canvas//
+			canvas.addEventListener('click', function() {canv_input.clickCanvas(event,world_interface);}, false);
+			canvas.addEventListener('mousemove', function() {canv_input.moveMouse(event);}, false);
+
+
+		</script>
+	</body>
+</html>
