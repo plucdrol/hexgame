@@ -1,7 +1,7 @@
 
 // RANGE FINDING
 
-//pathfinding values:
+//pathfinding arguments:
 	//map of (hex,movement_cost) pairs
 
 //pathfinding algorithms:
