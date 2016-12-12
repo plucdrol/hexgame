@@ -243,6 +243,9 @@ function WorldRenderer (canvas_interface,view,world) {
 
         //draw ground
         this.draw_hex(hex,0,color);
+        
+        //this.draw_text(this.world.map.getValue(hex) ,this.world.layout.hex_to_point(hex),'black',20);
+
 
         
         //draw unit
