@@ -34,6 +34,7 @@ World.prototype.create_unit = function(hex) {
 	this.units.set(hex,new VirusUnit(hex));
 }
 
+//returns the Unit at position Hex. For now only a single unit can be on each hex
 World.prototype.unit_at_position = function(hex) {
 	if (this.units.containsHex(hex)) {
 		return this.units.getValue(hex);
