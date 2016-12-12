@@ -218,9 +218,15 @@ HexMap_Generator.prototype.add_water_rim = function(map, size, rim_size) {
 			
 			//define new value and insert
 			
-			//var value = Math.max(  0, 1.5 * value * (distance_to_edge/2 - rim_size ) / (distance_to_edge/2+1)  )  ;
+			//value = Math.max(  0, 1.5 * value * (distance_to_edge/2 - rim_size ) / (distance_to_edge/2+1)  )  ;
 			value = map.getValue(thishex);
-			value *= 1+(rim_length/(distance_to_center-size))
+
+			value *= 1-(rim_length/distance_to_edge);
+
+			//prevent negative values
+			if (value < 0) {
+				value = 0;
+			}
 
 			map.set(thishex, value);
 
