@@ -161,8 +161,8 @@ HexMap_Generator.prototype.generate_tile_perlin_continents = function(x,y,simple
 
 
 	//shallow water for anything between these numbers
-	//if (total < 1 && total > -6) 
-		//{total = 1;}
+	if (total < 1 && total > -2) 
+		{total = 2;}
 
 	//cutoff underwater to ocean
 	if (total < 0) 
@@ -221,7 +221,7 @@ HexMap_Generator.prototype.add_water_rim = function(map, size, rim_size) {
 			//value = Math.max(  0, 1.5 * value * (distance_to_edge/2 - rim_size ) / (distance_to_edge/2+1)  )  ;
 			value = map.getValue(thishex);
 
-			value *= 1-(rim_length/distance_to_edge);
+			value *= 1-Math.pow((rim_length/distance_to_edge),2);
 
 			//prevent negative values
 			if (value < 0) {
