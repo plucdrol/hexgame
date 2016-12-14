@@ -213,7 +213,7 @@ function CanvasInput(canvas) {
         //here a message should be sent to the rest of the engine
 
         refreshCanvas();
-        console.log(clickPos);
+        //console.log(clickPos);
 
     }
 

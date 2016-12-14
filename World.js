@@ -34,6 +34,32 @@ World.prototype.create_unit = function(hex) {
 	this.units.set(hex,new VirusUnit(hex));
 }
 
+//delete the new Unit at position Hex
+World.prototype.remove_unit = function(hex) {
+	this.units.remove(hex);
+}
+
+
+//Move the unit from one hex to another hex
+//If a unit is already there, abort the move
+World.prototype.move_unit = function(current_hex,new_hex) {
+	//if there is no unit in that hex, abort the move
+	//if (typeof this.unit_at_position(current_hex) != 'undefined') {
+
+		//if a unit is already there, abort the move
+		//if (typeof this.unit_at_position(new_hex) === 'undefined') {
+
+			//create the unit in the new location
+			this.create_unit(new_hex);
+			//delete the unit in the current location
+			this.remove_unit(current_hex);
+
+			//return the unit at the new position
+			return this.units.getValue(new_hex);
+	//	}
+	//}
+}
+
 //returns the Unit at position Hex. For now only a single unit can be on each hex
 World.prototype.unit_at_position = function(hex) {
 	if (this.units.containsHex(hex)) {
@@ -162,8 +188,14 @@ WorldInterface.prototype.click = function(screen_position) {
 
 			//inside the unit's rangeoutlilne
 			if (this.unit_selected.range.containsHex(hex)) {
-				console.log('moving the unit');
-				this.unit_selected.moveTo(hex);
+				console.log('moving the unit from');
+				console.log(this.unit_selected.position);
+				console.log(hex);
+
+				//The Unit's position is tracked in two separate variables, change this!
+				this.unit_selected = this.world.move_unit(this.unit_selected.position,hex);
+				//this.unit_selected.move_to(hex);
+				
 				this.unit_selected.find_range(this.world.map);
 				//unit_selected = 'undefined';
 			//outside the unit's range

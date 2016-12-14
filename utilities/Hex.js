@@ -434,8 +434,7 @@ function HexMap() {
 	}
 	HexMap.prototype.remove = function(hex) {
 		if (this.containsHex(hex)) {
-			var index = this.hexHash(hex);
-			this.values.splice(index,1);
+			this.set(hex,'undefined');
 		}
 	}
 	HexMap.prototype.getValue = function(hex) {

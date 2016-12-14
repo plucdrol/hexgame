@@ -13,14 +13,21 @@ function Unit(grid_position) {
 	this.colors = 'black';
 	this.heighto = 0;
 };
-	Unit.prototype.moveTo = function(grid_position) {
+
+	//function doesnt work. Unit cannot move itself
+	Unit.prototype.move_to = function(grid_position) {
+		
+		//change the horizontal position of the unit
 		this.position = grid_position;
-		//adjust the height of the unit
-		if (this.range.containsHex(hex)) {
-			this.heighto = this.range.getValue(hex)[2];
-			console.log(this.heighto);
-		}
+		
+		//change the height of the unit
+		//if (this.range.containsHex(grid_position)) {
+	//		this.heighto = this.range.getValue(grid_position)[2];
+		//	console.log(this.heighto);
+		//}
 	};
+
+	
 	Unit.prototype.moveDirection = function(direction) {
 		var newPosition = hex_neighbor(this.position,direction);
 		this.position = newPosition;
@@ -33,7 +40,7 @@ function Unit(grid_position) {
 	Unit.prototype.action = function(action) {
 		switch (action.type) {
 			case 'move' :
-				this.moveTo(action.position)
+				this.move_to(action.position)
 				break;
 			case 'shoot' :
 				this.attack(action.position);
