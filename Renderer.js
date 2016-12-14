@@ -352,7 +352,7 @@ function WorldRenderer (canvas_interface,view,world) {
         //this.draw_path(view,pathfinder,destination);
 
         //draw the outline of the range
-        this.draw_outline( outline ,4,"rgba(150, 150, 255, 0)","rgba(0,0,255,1)");
+        this.draw_outline( outline ,10,"rgba(0,0,0, 1)","rgba(0,0,255,1)");
         
         //draw the range
         for (let thishex of range.getArray()) {

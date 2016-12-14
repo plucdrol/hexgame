@@ -17,8 +17,8 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 //The CanvasDraw object ONLY draws directly on the canvas.  It doesn't know about what game you're using
-//All View objects should use this to draw on the screen
-//This draws directly on the Canvas using the coordinates given
+//All Renderer objects should use this class to draw on the screen
+//This draws directly on the Canvas using the canvas coordinates given
 //this should have no notions of hexagons or even tile-based game
 
 function CanvasDraw (canvas) {
@@ -26,24 +26,37 @@ function CanvasDraw (canvas) {
 
 }
 
+    //Returns the Width of the HTML canvas object
     CanvasDraw.prototype.getWidth = function() {
         return this.canvas.width;
     }
+
+    //Returns the Height of the HTML Canvas object
     CanvasDraw.prototype.getHeight = function() {
         return this.canvas.height;
     }
 
+    //Draw a dot on the canvas at position 'point' with optional size and color
     CanvasDraw.prototype.draw_dot = function (point,size,color) {
 
+
         //draws the dot using screen coordinates
-        if (color == 'undefined') {
+
+        //defines the default size
+        if (size === 'undefined') {
+            size = 1;
+        }
+        
+        //defines the default color
+        if (color === 'undefined') {
             color = 'black';
         }
 
+        //create canvas line object
         var line = this.canvas.getContext('2d');
 
+        //draw the line
         line.beginPath();
-
         line.moveTo(point.x-1,point.y);
         line.lineTo(point.x+1,point.y);
         line.lineWidth = size;
@@ -51,18 +64,25 @@ function CanvasDraw (canvas) {
         line.stroke();
     };
 
+    //Draw a line on the canvas from p1 to p2 with optional width and color
     CanvasDraw.prototype.draw_line = function(p1,p2,width,color) {
 
-        //draw the line exactly as the coordinates say so
-        var line = this.canvas.getContext('2d');
-        line.lineCap="round";
+        //defines the default size
+        if (typeof size === 'undefined') {
+            size = 1;
+        }
+        
+        //defines the default color
         if (typeof color === 'undefined') {
-            line.strokeStyle = 'black';
-        } else {
-            line.strokeStyle = color;
+            color = 'black';
         }
 
+        //create canvas line object
+        var line = this.canvas.getContext('2d');
         line.lineCap="round";
+        line.strokeStyle = color;
+
+        //draw the line
         line.beginPath();
         line.moveTo(p1.x,p1.y);
         line.lineTo(p2.x,p2.y);
@@ -70,44 +90,47 @@ function CanvasDraw (canvas) {
         line.stroke();
     };
 
-   CanvasDraw.prototype.draw_polygon = function(points,width,fillColor,lineColor) {
+    //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
+    CanvasDraw.prototype.draw_polygon = function(points,width,fillColor,lineColor) {
         
-        //
+        console.log('drawing polygon');
+
         var line = this.canvas.getContext('2d');
         
+        //default line color
+        if (typeof lineColor === 'undefined') {
+            lineColor = 'black';
+        }
+
+        //default line width
+        if (typeof width === 'undefined') {
+            //width = 0;
+        }
+
+
         //line style
-        line.fillStyle = 'black';
         line.lineWidth = width;
         line.lineCap="round";
-    
-        if (typeof lineColor === 'undefined') {
-            line.strokeStyle = 'black';
-        } else {
-            line.strokeStyle = lineColor;
-        }
-        
+        line.strokeStyle = lineColor;       
 
         //polygon outline
         line.beginPath();
         line.moveTo(points[0].x,points[0].y);
         for (i=1; i<points.length; i++) {
             line.lineTo(points[i].x,points[i].y);
-            //this.draw_text(i,points[i],'black',24);
+            //this.draw_text(i,points[i],'black',24); //add the index of each corner
         }
         line.lineTo(points[0].x,points[0].y);
         line.closePath();
         
+        //draw the line of thick enough
+        if (width > 0) {
+            line.stroke();
+            console.log('width > 0');
+        }
 
-        //optional filler
-        if (typeof fillColor === "undefined") {
-            if (width > 0) {
-
-                line.stroke();
-            }
-        } else  {
-            if (width > 0) {
-                line.stroke();
-            }
+        //optional fill color
+        if (typeof fillColor != "undefined") {
 
             line.fillStyle = fillColor;
             line.fill();
@@ -115,30 +138,37 @@ function CanvasDraw (canvas) {
         
     };
 
-    CanvasDraw.prototype.draw_text = function(text,position,shade,fontsize) {
+    //draw text on the canvas at the specified position, with optional color and fontsize
+    CanvasDraw.prototype.draw_text = function(text,position,color,fontsize) {
 
+        //default fontsize value
         if (typeof fontsize === "undefined") {
             fontsize = 14;
         }
-        if (typeof shade === "undefined") {
-            shade = black;
+        //default color value
+        if (typeof color === "undefined") {
+            color = black;
         }
 
-        //select the context
+        //get the canvas
         var context = this.canvas.getContext('2d');
+        
         //select the font
         context.font = fontsize +"px Arial";
+        
         //select the color
-        context.fillStyle = shade;
+        context.fillStyle = color;
 
         //write the text
         context.fillText(text,position.x,position.y);
     };
 
+    //draw a sprite on the canvas, at specified position
     CanvasDraw.prototype.draw_sprite = function() {
 
     }
 
+    //clear the canvas of everything
     CanvasDraw.prototype.clear = function() {
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
     }
@@ -213,7 +243,7 @@ function CanvasInput(canvas) {
         //here a message should be sent to the rest of the engine
 
         refreshCanvas();
-        //console.log(clickPos);
+        console.log(clickPos);
 
     }
 
