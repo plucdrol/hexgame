@@ -107,12 +107,17 @@
 
 				//draw range of selected unit
 				if (world_interface.unit_selected instanceof Unit) {
+					world_interface.unit_selected.find_range(world_interface.world.map);
+					//console.log(world_interface.unit_selected);
 					world_renderer.draw_range(world_interface.unit_selected.range);
-					world_renderer.draw_path(world_interface.unit_selected.range,world_interface.hex_hovered);
+					//world_renderer.draw_path(world_interface.unit_selected.range,world_interface.hex_hovered);
 				}
 
 				//draw selection hex
-				world_renderer.draw_hex(world_interface.hex_selected, 2)
+				if (world_interface.hex_selected instanceof Hex) {
+					world_renderer.draw_hex(world_interface.hex_selected, 2);
+					//console.log(world_interface.hex_selected);
+				}
 			}
 
 			//refresh the screen

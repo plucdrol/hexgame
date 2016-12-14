@@ -184,7 +184,8 @@ function Vertex(hex,direction_number) {
 	//returns the vertex coordinate in fractional hexes 
 	Vertex.prototype.getPoint = function() {
 
-		return hex_add(this.hex, hex_corners[this.direction_number] );
+		//from the hex's center, move in fractional hex to the corner given by direction_number
+		return hex_add(this.hex, hex_corner[this.direction_number] );
 	};
 
 
@@ -242,14 +243,14 @@ function Edge(hex,direction_number) {
 
 	//As seen from the InnerHex's perspective, Point2 is counterclockwise from Point1
 	Edge.prototype.getPoint1 = function() {
-		return getVertex1().getPoint();
+		return this.getVertex1().getPoint();
 	};
 	Edge.prototype.getVertex1 = function() {
 		return new Vertex(this.hex, this.direction_number);
-	}
+	};
 	Edge.prototype.getPoint2 = function() {
 		//return the coordinates of the second one
-		return getVertex2().getPoint();
+		return this.getVertex2().getPoint();
 	};
 	Edge.prototype.getVertex2 = function() {
 		return new Vertex(this.hex, (this.direction_number+1)%6)
@@ -430,6 +431,12 @@ function HexMap() {
 
 	HexMap.prototype.set = function(hex,value) {
 			this.values[this.hexHash(hex)] = value;
+	}
+	HexMap.prototype.remove = function(hex) {
+		if (this.containsHex(hex)) {
+			var index = this.hexHash(hex);
+			this.values.splice(index,1);
+		}
 	}
 	HexMap.prototype.getValue = function(hex) {
 		var key = this.hexHash(hex);

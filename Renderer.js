@@ -161,7 +161,7 @@ function WorldRenderer (canvas_interface,view,world) {
             var corners = [];
             var edges = edge_arrays[outline];    
             for (var i=0;i<edges.length;i++){
-                corners.push( edges[i].getPoint1(this.world.layout) );
+                corners.push( edges[i].getPoint1() );
 
             }
             this.draw_polygon(corners,linewidth,fillColor,lineColor);
