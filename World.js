@@ -115,7 +115,6 @@ World.prototype.next_tick = function() {
 function WorldInterface(world) {
 	
 	this.world = world;
-	this.unit_selected = 'undefined';
 	this.hex_selected = 'undefined';
 	this.hex_hovered = new Hex(0,0);
 	this.hex_hovered_previous = new Hex(0,0);
@@ -170,59 +169,50 @@ WorldInterface.prototype.hover = function(screen_position) {
 WorldInterface.prototype.click = function(screen_position) {
 
 	//convert to hex coordinates
-	var hex = this.getHex(screen_position);
+	var hex_clicked = this.getHex(screen_position);
 
-	// UNIT SELECTION CODE
-	//console.log(unit_selected);
+	// HEX SELECTION CODE
 	var unit_clicked = 'undefined';
-	var unit_found = false;
 
-	//if there is already a unit selected
-	if (this.unit_selected instanceof Unit) {
+	//if there is already a unit on the hex selected
+	if (this.world.units.containsHex(hex_clicked) instanceof Unit) {
 
 		//and you are re-clicking the unit
-		//console.log(this.unit_selected);
-		if ( hex_equals(this.unit_selected.position, hex)) {
-				this.unit_selected = 'undefined';
+		if ( hex_equals(this.hex_selected, hex_clicked)) {
+				this.hex_selected = 'undefined';
 				console.log('reclicking the unit');
 
 		} else {
 		//and you are clicking..
 
-			//inside the unit's rangeoutlilne
-			if (this.unit_selected.range.containsHex(hex)) {
+			//inside the unit's range outline
+			if (this.world.units.getValue(hex_selected).range.containsHex(hex_clicked)) {
 				console.log('moving the unit from');
-				console.log(this.unit_selected.position);
-				console.log(hex);
+				console.log(this.hex_selected);
+				console.log(hex_clicked);
 
-				//The Unit's position is tracked in two separate variables, change this!
-				this.unit_selected = this.world.move_unit(this.unit_selected.position,hex);
-				//this.unit_selected.move_to(hex);
-				
-				this.unit_selected.find_range(this.world.map);
-				//unit_selected = 'undefined';
+				//Move the unit then generate its new range
+				this.world.move_unit(this.hex_selected,hex_clicked);
+				this.world.units.getValue(hex_clicked).find_range(this.world.map);
+
 			//outside the unit's range
 			} else {
-				this.unit_selected = 'undefined';
+				this.hex_selected = 'undefined';
 				console.log('unselecting the unit');
 			}
 		}
 	} else {
 		//if there is no unit selected
-		unit_clicked = this.world.unit_at_position(hex);
+		this.hex_selected = hex_clicked;
 
-		if (unit_clicked instanceof Unit) { 
+		if (this.world.units.getValue(hex_clicked) instanceof Unit) { 
 			//and you clicked a unit
-			console.log('selecting the unit');
-			this.unit_selected = unit_clicked;
-			this.unit_selected.find_range(this.world.map);
-			unit_found = true;
-			this.makeButton(unit_clicked,new Action('move',new Hex(3,3)),'blablabla');
+			console.log('selecting a unit');
+			this.world.units.getValue(this.hex_selected).find_range(this.world.map,hex_clicked);
+			//this.makeButton(unit_clicked,new Action('move',new Hex(3,3)),'blablabla');
 		} else {
 			//changing the terrain
-			console.log('changing terrain');
-			this.unit_selected = 'undefined';
-			this.hex_selected = hex;
+			//console.log('changing terrain');
 			//this.world.map.set(currentHex,1);
 
 		}
