@@ -31,7 +31,10 @@ function World(size,layout) {
 
 //create a new Unit at position Hex
 World.prototype.create_unit = function(hex) {
-	this.units.set(hex,new VirusUnit(hex));
+	var newUnit = new VirusUnit();
+	
+	this.units.set(hex,newUnit);
+	return newUnit;
 }
 
 //delete the new Unit at position Hex

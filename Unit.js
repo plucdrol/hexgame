@@ -2,8 +2,7 @@
 
 //           GENERIC UNIT --------------------//
 
-function Unit(grid_position) {
-	//this.position = grid_position;
+function Unit() {
 	this.range;
 	
 	this.movement = 6;
@@ -14,28 +13,10 @@ function Unit(grid_position) {
 	this.heighto = 0;
 };
 
-	//function doesnt work. Unit cannot move itself
-	/*Unit.prototype.move_to = function(grid_position) {
-		
-		//change the horizontal position of the unit
-		this.position = grid_position;
-		
-		//change the height of the unit
-		if (this.range.containsHex(grid_position)) {
-			this.heighto = this.range.getValue(grid_position)[2];
-			console.log(this.heighto);
-		}
-	};*/
 
-	
-	/*Unit.prototype.moveDirection = function(direction) {
-		var newPosition = hex_neighbor(this.position,direction);
-		this.position = newPosition;
-	};*/
-
-	Unit.prototype.find_range = function(map) {
+	Unit.prototype.find_range = function(map,position) {
 		var pathfinder = new PathFinder(map);
-		this.range = pathfinder.path_with_terrain(this.position,this.movement);
+		this.range = pathfinder.path_with_terrain(position,this.movement);
 	};
 
 	Unit.prototype.action = function(action) {
