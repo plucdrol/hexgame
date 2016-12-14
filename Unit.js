@@ -3,7 +3,7 @@
 //           GENERIC UNIT --------------------//
 
 function Unit(grid_position) {
-	this.position = grid_position;
+	//this.position = grid_position;
 	this.range;
 	
 	this.movement = 6;
@@ -15,23 +15,24 @@ function Unit(grid_position) {
 };
 
 	//function doesnt work. Unit cannot move itself
-	Unit.prototype.move_to = function(grid_position) {
+	/*Unit.prototype.move_to = function(grid_position) {
 		
 		//change the horizontal position of the unit
 		this.position = grid_position;
 		
 		//change the height of the unit
-		//if (this.range.containsHex(grid_position)) {
-	//		this.heighto = this.range.getValue(grid_position)[2];
-		//	console.log(this.heighto);
-		//}
-	};
+		if (this.range.containsHex(grid_position)) {
+			this.heighto = this.range.getValue(grid_position)[2];
+			console.log(this.heighto);
+		}
+	};*/
 
 	
-	Unit.prototype.moveDirection = function(direction) {
+	/*Unit.prototype.moveDirection = function(direction) {
 		var newPosition = hex_neighbor(this.position,direction);
 		this.position = newPosition;
-	};
+	};*/
+
 	Unit.prototype.find_range = function(map) {
 		var pathfinder = new PathFinder(map);
 		this.range = pathfinder.path_with_terrain(this.position,this.movement);
@@ -39,9 +40,9 @@ function Unit(grid_position) {
 
 	Unit.prototype.action = function(action) {
 		switch (action.type) {
-			case 'move' :
-				this.move_to(action.position)
-				break;
+			//case 'move' :
+			//	this.move_to(action.position)
+				//break;
 			case 'shoot' :
 				this.attack(action.position);
 				break;
