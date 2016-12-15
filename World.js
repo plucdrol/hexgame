@@ -177,26 +177,26 @@ WorldInterface.prototype.click = function(screen_position) {
 		//and you are re-clicking the unit
 		if ( hex_equals(this.hex_selected, hex_clicked)) {
 				this.hex_selected = 'undefined';
-				console.log('reclicking the unit');
 
 		} else {
 		//and you are clicking..
 
 			//inside the unit's range outline
 			if (this.world.unit_at_position(this.hex_selected).range.containsHex(hex_clicked)) {
-				console.log('moving the unit from');
-				console.log(this.hex_selected);
-				console.log(hex_clicked);
 
-				//Move the unit then generate its new range
-				this.world.move_unit(this.hex_selected,hex_clicked);
-				this.world.unit_at_position(hex_clicked).find_range(this.world.map,hex_clicked);
-				this.hex_selected = hex_clicked;
+				//if there is already a unit there
+				if (this.world.unit_at_position(hex_clicked)) {
+					this.hex_selected = 'undefined';
+				} else { //if there is no unit there
+					//Move the unit then generate its new range
+					this.world.move_unit(this.hex_selected,hex_clicked);
+					this.world.unit_at_position(hex_clicked).find_range(this.world.map,hex_clicked);
+					this.hex_selected = hex_clicked;
+				}
 
 			//outside the unit's range
 			} else {
 				this.hex_selected = 'undefined';
-				console.log('unselecting the unit');
 			}
 		}
 	} else {
@@ -204,14 +204,12 @@ WorldInterface.prototype.click = function(screen_position) {
 		this.hex_selected = hex_clicked;
 
 		if (this.world.unit_at_position(hex_clicked) instanceof Unit) { 
+			
 			//and you clicked a unit
 			console.log('selecting a unit');
 			this.world.unit_at_position(this.hex_selected).find_range(this.world.map,hex_clicked);
-			//this.makeButton(unit_clicked,new Action('move',new Hex(3,3)),'blablabla');
 		} else {
-			//changing the terrain
-			//console.log('changing terrain');
-			//this.world.map.set(currentHex,1);
+
 
 		}
 	
