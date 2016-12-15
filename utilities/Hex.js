@@ -282,6 +282,7 @@ function Edge(hex,direction_number) {
 
 //returns the outside edges only of a group of hexes 
 function hex_outline(hexes) {
+
 	//HEXES: array of hexes
 	//var UNSORTED_EDGES: array of edges (order the coordinates counter-clockwise so it is possible to follow them around the shape)
 	var unsorted_edges = []; //array of edges for all hexes
@@ -322,6 +323,7 @@ function hex_outline(hexes) {
 		}
 	}
 	//sort the edges
+
 	var sorted_edges = sort_edges(unsorted_edges);
 	
 	return sorted_edges;

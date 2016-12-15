@@ -33,6 +33,13 @@ function Renderer(canvas_interface,view) {
         this.canvas_interface.draw_dot(coord,size,color);
     };
 
+    //Draw multiple dots
+    Renderer.prototype.draw_dots = function(points,size,color) {
+        for (let point of points) {
+            this.draw_dot(point,size,color);
+        }
+    }
+
     Renderer.prototype.draw_line = function(point1,point2,lineWidth,color) {
 
         //this function draws directly, so modifies the coordinates
@@ -52,8 +59,9 @@ function Renderer(canvas_interface,view) {
         if (this.view.getScale() < 0.2 && this.drawn_at_least_one_polygon == true) {
             this.canvas_interface.draw_dot(this.view.world_to_screen(points[0]),6,fillColor);
         } else {
-        //otherwise actually draw a polygon
+            //otherwise actually draw a polygon
             coords = this.view.world_to_screen_multi(points);
+
             this.canvas_interface.draw_polygon(coords,lineWidth,fillColor,lineColor);
             this.drawn_at_least_one_polygon = true;
         }
@@ -161,11 +169,10 @@ function WorldRenderer (canvas_interface,view,world) {
             var corners = [];
             var edges = edge_arrays[outline];    
             for (var i=0;i<edges.length;i++){
-                corners.push( edges[i].getPoint1() );
-
+                corners.push( this.world.layout.hex_to_point(edges[i].getPoint1() ));
             }
             this.draw_polygon(corners,linewidth,fillColor,lineColor);
-            //view.drawDots(canvas,corners,10);
+            //this.draw_dots(corners,10,fillColor);
         }
     };
 
@@ -352,13 +359,13 @@ function WorldRenderer (canvas_interface,view,world) {
         //this.draw_path(view,pathfinder,destination);
 
         //draw the outline of the range
-        this.draw_outline( outline ,10,"rgba(0,0,0, 1)","rgba(0,0,255,1)");
+        this.draw_outline( outline ,3,"rgba(150,150,255, 0.2)","rgba(0,0,255,1)");
         
-        //draw the range
+        //draw the range background color
         for (let thishex of range.getArray()) {
             if (range.containsHex( thishex )) {
                 var value = range.getValue(thishex)[0]*200/10;
-                this.draw_hex(thishex,0,"rgba(0,"+value+","+value+", 0.2)");
+                //this.draw_hex(thishex,0,"rgba(0,"+value+","+value+", 0.2)");
                 //view.draw_hex_elevated(thishex, 3*this.range.getValue(thishex)[2], 0, "rgba("+value+","+value+","+value+", 0)", "rgba("+value+","+value+","+value+", 0.5)" );
 
                 

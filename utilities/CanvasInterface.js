@@ -64,6 +64,8 @@ function CanvasDraw (canvas) {
         line.stroke();
     };
 
+
+
     //Draw a line on the canvas from p1 to p2 with optional width and color
     CanvasDraw.prototype.draw_line = function(p1,p2,width,color) {
 
@@ -93,8 +95,6 @@ function CanvasDraw (canvas) {
     //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
     CanvasDraw.prototype.draw_polygon = function(points,width,fillColor,lineColor) {
         
-        console.log('drawing polygon');
-
         var line = this.canvas.getContext('2d');
         
         //default line color
@@ -106,8 +106,7 @@ function CanvasDraw (canvas) {
         if (typeof width === 'undefined') {
             //width = 0;
         }
-
-
+        
         //line style
         line.lineWidth = width;
         line.lineCap="round";
@@ -123,14 +122,13 @@ function CanvasDraw (canvas) {
         line.lineTo(points[0].x,points[0].y);
         line.closePath();
         
-        //draw the line of thick enough
+        //draw the line if thick enough
         if (width > 0) {
-            line.stroke();
-            console.log('width > 0');
+            line.stroke(); 
         }
 
         //optional fill color
-        if (typeof fillColor != "undefined") {
+        if (typeof fillColor != 'undefined') {
 
             line.fillStyle = fillColor;
             line.fill();
