@@ -179,9 +179,8 @@ WorldInterface.prototype.click = function(screen_position) {
 				this.hex_selected = 'undefined';
 
 		} else {
-		//and you are clicking..
-
-			//inside the unit's range outline
+			
+			//and you are clicking inside the unit's range outline
 			if (this.world.unit_at_position(this.hex_selected).range.containsHex(hex_clicked)) {
 
 				//if there is already a unit there
@@ -194,7 +193,7 @@ WorldInterface.prototype.click = function(screen_position) {
 					this.hex_selected = hex_clicked;
 				}
 
-			//outside the unit's range
+			//if you are clicking outside the unit's range
 			} else {
 				this.hex_selected = 'undefined';
 			}
@@ -206,7 +205,6 @@ WorldInterface.prototype.click = function(screen_position) {
 		if (this.world.unit_at_position(hex_clicked) instanceof Unit) { 
 			
 			//and you clicked a unit
-			console.log('selecting a unit');
 			this.world.unit_at_position(this.hex_selected).find_range(this.world.map,hex_clicked);
 		} else {
 
