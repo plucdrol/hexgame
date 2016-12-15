@@ -165,9 +165,13 @@ WorldInterface.prototype.hover = function(screen_position) {
 
 	//get the hex being hovered
 	this.hex_hovered = this.getHex(screen_position);
+
+	//if the mouse moved to a new hex, refresh the screen
 	if ( !hex_equals(this.hex_hovered, this.hex_hovered_previous) ) {
-		console.log('draw!');
+		refreshCanvas();
 	}
+
+	//remember the currently hovered hex
 	this.hex_hovered_previous = this.hex_hovered;
 }
 

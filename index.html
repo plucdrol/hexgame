@@ -104,7 +104,10 @@
 			function drawScreen() {
 
 				//draw the world
-				world_renderer.draw_world();
+				world_renderer.draw_world();		
+
+				//draw border regions for click-moving
+				drawEdgeClicks();
 
 				//draw range of selected unit
 				if (world_interface.hex_selected instanceof Hex) {
@@ -120,6 +123,36 @@
 					//draw selection hex
 					world_renderer.draw_hex(world_interface.hex_selected, 2);
 					//console.log(world_interface.hex_selected);
+				}
+			}
+
+			//draw border regions for click-moving
+			function drawEdgeClicks() {
+				//define corners
+				var topright = new Point(canvas.width,0);
+				var topleft = new Point(0,0);
+				var bottomright = new Point(canvas.width,canvas.height);
+				var bottomleft = new Point(0,canvas.height);
+				var hovercolor = "rgba(150,150,255, 0.2)"
+				var hoverwidth = 60;
+
+
+				//check mouse position
+				switch(world_interface.edge_hovered) {
+					case "right":
+						canv_draw.draw_line(topright,bottomright, hoverwidth, hovercolor);
+					break;
+					case "left":
+						canv_draw.draw_line(topleft,bottomleft, hoverwidth, hovercolor);
+					break;
+					case "up":
+						canv_draw.draw_line(topleft,topright, hoverwidth, hovercolor);
+					break;
+					case "down":
+						canv_draw.draw_line(bottomleft,bottomright, hoverwidth, hovercolor);
+					break;
+					case "none":
+					break;
 				}
 			}
 
