@@ -118,6 +118,7 @@ function WorldInterface(world) {
 	this.hex_selected = 'undefined';
 	this.hex_hovered = new Hex(0,0);
 	this.hex_hovered_previous = new Hex(0,0);
+	this.edge_hovered = 'undefined';
 
 	//create a default view, which can be edited
 	var view_in = new Rect(new Point(-canvas.width*8,-canvas.height*8),new Point(canvas.width*16,canvas.height*16));
@@ -159,11 +160,32 @@ WorldInterface.prototype.makeButton = function(unit,action,text) {
 
 WorldInterface.prototype.hover = function(screen_position) {
 	
+	//get the edge being hovered
+	this.edge_hovered = this.near_which_edge(screen_position,0.1);
+
+	//get the hex being hovered
 	this.hex_hovered = this.getHex(screen_position);
 	if ( !hex_equals(this.hex_hovered, this.hex_hovered_previous) ) {
 		console.log('draw!');
 	}
 	this.hex_hovered_previous = this.hex_hovered;
+}
+
+WorldInterface.prototype.near_which_edge = function(screen_position,edge_width) {
+	if (screen_position.x > canvas.width*(1-edge_width)) {
+		return "right";
+	}
+	if (screen_position.x < canvas.width*(edge_width)) {
+		return "left";
+	}
+	if (screen_position.y < canvas.height*(edge_width)) {
+		return "up";
+	}
+	if (screen_position.y > canvas.height*(1-edge_width)) {
+		return "down";
+	}
+	return "none";
+
 }
 
 WorldInterface.prototype.click = function(screen_position) {

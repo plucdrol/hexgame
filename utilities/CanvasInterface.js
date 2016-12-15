@@ -220,14 +220,14 @@ function CanvasInput(canvas) {
         this.mousePos = this.getMousePosition(event);
 
         //detect mouse hovering for animations
-        //world_interface.hover(mousepos);
+        world_interface.hover(this.mousePos); //this should be replaced by an event
 
         //check the mouse button
         if (this.mouseButtonDown(event,'left')) {
             
         }
 
-        refreshCanvas();
+        
     }
 
 
