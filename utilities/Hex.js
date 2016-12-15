@@ -436,7 +436,7 @@ function HexMap() {
 	}
 	HexMap.prototype.remove = function(hex) {
 		if (this.containsHex(hex)) {
-			this.set(hex,'undefined');
+			this.set(hex,undefined);
 		}
 	}
 	HexMap.prototype.getValue = function(hex) {

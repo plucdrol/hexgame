@@ -205,6 +205,7 @@ WorldInterface.prototype.click = function(screen_position) {
 		if (this.world.unit_at_position(hex_clicked) instanceof Unit) { 
 			
 			//and you clicked a unit
+			console.log('selecting a unit');
 			this.world.unit_at_position(this.hex_selected).find_range(this.world.map,hex_clicked);
 		} else {
 
