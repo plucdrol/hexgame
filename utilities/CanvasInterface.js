@@ -218,7 +218,6 @@ function CanvasInput(canvas) {
     CanvasInput.prototype.moveMouse = function(event) {
 
         //find the hovered hexagon
-        this.mousePosPrevious = this.mousePos;
         this.mousePos = this.getMousePosition(event);
 
         //detect mouse hovering for animations
@@ -230,6 +229,9 @@ function CanvasInput(canvas) {
             this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
             world_interface.drag(this.mousePos,this.mousePosPrevious);
         }
+
+        //remember the previous mouse position
+        this.mousePosPrevious = this.mousePos;
 
         
     }
@@ -244,9 +246,10 @@ function CanvasInput(canvas) {
             world_interface.click(clickPos);                //this is the part that should be replaced by an event
 
             refreshCanvas();
-            console.log(clickPos);
+            //console.log(clickPos);
         }
         this.is_dragging = false;
+        this.mousePosPrevious = 'undefined';
 
     }
 
