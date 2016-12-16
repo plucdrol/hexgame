@@ -197,7 +197,7 @@ WorldInterface.prototype.click = function(screen_position) {
 	//if clicking near the borders, move the view
 	if (this.edge_hovered != 'none') {
 		//move the view position
-		shiftView(this.edge_hovered);
+		this.moveView(this.edge_hovered);
 	} else {
 
 
@@ -247,7 +247,14 @@ WorldInterface.prototype.click = function(screen_position) {
 		
 		}
 	}
+	refreshCanvas();
 	//console.log(this.unit_selected);
+}
+
+WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
+	var drag_movement = new Point(previous_mouse.x-current_mouse.x,previous_mouse.y-current_mouse.y);
+	this.view.shift_position(drag_movement);
+	refreshCanvas();
 }
 
 WorldInterface.prototype.next_tick = function() {

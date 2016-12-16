@@ -216,7 +216,7 @@ function CanvasInput(canvas) {
     CanvasInput.prototype.moveMouse = function(event) {
 
         //find the hovered hexagon
-        this.mousepos_previous = this.mousePos;
+        this.mousePosPrevious = this.mousePos;
         this.mousePos = this.getMousePosition(event);
 
         //detect mouse hovering for animations
@@ -224,7 +224,8 @@ function CanvasInput(canvas) {
 
         //check the mouse button
         if (this.mouseButtonDown(event,'left')) {
-            
+            console.log('drag');
+            world_interface.drag(this.mousePos,this.mousePosPrevious);
         }
 
         
