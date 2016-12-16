@@ -296,7 +296,13 @@ function CanvasInput(canvas) {
     }
 
 
+    CanvasInput.prototype.touchMove = function(ev) {
 
+    }
+
+    CanvasInput.prototype.touchEnd = function(ev) {
+
+    }
 
 
 
