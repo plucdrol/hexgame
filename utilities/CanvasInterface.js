@@ -214,29 +214,6 @@ function CanvasInput(canvas) {
 }
 
 
-    //so far this does nothing, but it should send an event
-    CanvasInput.prototype.moveMouse = function(event) {
-
-        //find the hovered hexagon
-        this.mousePos = this.getMousePosition(event);
-
-        //detect mouse hovering for animations
-        world_interface.hover(this.mousePos); //this should be replaced by an event
-
-        //check if the mouse button is down, triggering a drag
-        if (this.mouseButtonDown(event,'left')) {
-
-            this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
-            world_interface.drag(this.mousePos,this.mousePosPrevious);
-        }
-
-        //remember the previous mouse position
-        this.mousePosPrevious = this.mousePos;
-
-        
-    }
-
-
     //react to clicking canvas by drawing a dot
     CanvasInput.prototype.clickCanvas = function(event,world_interface) {
         
@@ -254,11 +231,10 @@ function CanvasInput(canvas) {
     }
 
     CanvasInput.prototype.getTouchPosition = function(event) {
-
+        //get touch position
         var event = window.event || event;
-        var x = event.touches[0].pageX;
-        var y = event.touches[0].pageY;
-        return new Point(x,y);
+        var coords = this.canvas.relMouseCoords(event.touches[0]);
+        return new Point(coords.x,coords.y);
     }
 
     CanvasInput.prototype.getMousePosition = function(event) {
@@ -307,10 +283,33 @@ function CanvasInput(canvas) {
     }
 
 
+    //react to the mouse moving, hovering and dragging
+    CanvasInput.prototype.moveMouse = function(event) {
+
+        //find the hovered hexagon
+        this.mousePos = this.getMousePosition(event);
+
+        //detect mouse hovering for animations
+        world_interface.hover(this.mousePos); //this should be replaced by an event
+
+        //check if the mouse button is down, triggering a drag
+        if (this.mouseButtonDown(event,'left')) {
+
+            this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
+            world_interface.drag(this.mousePos,this.mousePosPrevious);
+        }
+
+        //remember the previous mouse position
+        this.mousePosPrevious = this.mousePos;
+
+        
+    }
+
+    //react to touch events across the screen
     CanvasInput.prototype.touchMove = function(ev) {
         ev.preventDefault();
 
-        //find the hovered hexagon
+        //find the touch position on the canvas
         this.mousePos = this.getTouchPosition(ev);
 
         //detect mouse hovering for animations
