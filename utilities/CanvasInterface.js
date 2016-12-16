@@ -206,8 +206,8 @@ function CanvasInput(canvas) {
 
     this.canvas = canvas;
     //create the mouse pointer (should be part of the mouse/screen controller)
-    this.mousePos = new Point(0,0);
-    this.mousePosPrevious = new Point(0,0);
+    this.mousePos = new Object();
+    this.mousePosPrevious = new Object();
     this.currentHex = new Hex(0,0);
 
     this.is_dragging = false;
@@ -226,14 +226,14 @@ function CanvasInput(canvas) {
             //console.log(clickPos);
         }
         this.is_dragging = false;
-        this.mousePosPrevious = 'undefined';
+        this.mousePosPrevious[0] = 'undefined';
 
     }
 
-    CanvasInput.prototype.getTouchPosition = function(event) {
+    CanvasInput.prototype.getTouchPosition = function(event_touch) {
         //get touch position
-        var event = window.event || event;
-        var coords = this.canvas.relMouseCoords(event.touches[0]);
+        var event =  event_touch;
+        var coords = this.canvas.relMouseCoords(event_touch);
         return new Point(coords.x,coords.y);
     }
 
@@ -287,20 +287,20 @@ function CanvasInput(canvas) {
     CanvasInput.prototype.moveMouse = function(event) {
 
         //find the hovered hexagon
-        this.mousePos = this.getMousePosition(event);
+        this.mousePos[0] = this.getMousePosition(event);
 
         //detect mouse hovering for animations
-        world_interface.hover(this.mousePos); //this should be replaced by an event
+        world_interface.hover(this.mousePos[0]); //this should be replaced by an event
 
         //check if the mouse button is down, triggering a drag
         if (this.mouseButtonDown(event,'left')) {
 
             this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
-            world_interface.drag(this.mousePos,this.mousePosPrevious);
+            world_interface.drag(this.mousePos[0],this.mousePosPrevious[0]);
         }
 
         //remember the previous mouse position
-        this.mousePosPrevious = this.mousePos;
+        this.mousePosPrevious[0] = this.mousePos[0];
 
         
     }
@@ -309,28 +309,48 @@ function CanvasInput(canvas) {
     CanvasInput.prototype.touchMove = function(ev) {
         ev.preventDefault();
 
-        //find the touch position on the canvas
-        this.mousePos = this.getTouchPosition(ev);
 
-        //detect mouse hovering for animations
-        world_interface.hover(this.mousePos); //this should be replaced by an event
+        //iterate over all touches
+        for (var i=0;i < ev.touches.length; i++) {
 
-        if (this.mousePosPrevious != 'undefined') {
-            this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
-            world_interface.drag(this.mousePos,this.mousePosPrevious);
+            //get the ID of that touch
+            var id = ev.touches[i].identifier;
+
+            //find the touch position on the canvas
+            this.mousePos[id] = this.getTouchPosition(ev.touches[i]);
+
+            //these only happen for one touch (should be for the first touch)
+            if (ev.touches.length == 1) {
+                
+                //detect hovering for animations
+                //world_interface.hover(this.mousePos[id]); //this should be replaced by an event
+
+                if (this.mousePosPrevious[id] != undefined) {
+                    this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
+                    world_interface.drag(this.mousePos[id],this.mousePosPrevious[id]);
+                }
+            }
+
+            //these happen for all touches
+
+            //remember the previous 
+            this.mousePosPrevious[id] = this.mousePos[id];
         }
-
-        //remember the previous 
-        this.mousePosPrevious = this.mousePos;
     }
 
     CanvasInput.prototype.touchStart = function(ev) {
         //ev.preventDefault();
-        this.mousePosPrevious = 'undefined';
+        for(var i=0;i<ev.changedTouches.length;i++) {
+            var id = ev.changedTouches[i].identifier;
+            delete this.mousePosPrevious[id];
+        }
     }
     CanvasInput.prototype.touchEnd = function(ev) {
         //ev.preventDefault();
-        this.mousePosPrevious = 'undefined';
+        for(var i=0;i<ev.changedTouches.length;i++) {
+            var id = ev.changedTouches[i].identifier;
+            delete this.mousePosPrevious[id];
+        }
     }
 
 
