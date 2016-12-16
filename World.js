@@ -140,6 +140,7 @@ WorldInterface.prototype.moveView = function(direction) {
 WorldInterface.prototype.zoomView = function(zoom) {
 	
 	this.view.zoom(zoom);
+	refreshCanvas();
 }
 
 WorldInterface.prototype.getHex = function(screen_position) {

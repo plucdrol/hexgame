@@ -309,32 +309,45 @@ function CanvasInput(canvas) {
     CanvasInput.prototype.touchMove = function(ev) {
         ev.preventDefault();
 
+        var id = new Object();
+
 
         //iterate over all touches
         for (var i=0;i < ev.touches.length; i++) {
 
             //get the ID of that touch
-            var id = ev.touches[i].identifier;
+            id[i] = ev.touches[i].identifier;
 
             //find the touch position on the canvas
-            this.mousePos[id] = this.getTouchPosition(ev.touches[i]);
+            this.mousePos[id[i]] = this.getTouchPosition(ev.touches[i]);
 
-            //these only happen for one touch (should be for the first touch)
-            if (ev.touches.length == 1) {
-                
-                //detect hovering for animations
-                //world_interface.hover(this.mousePos[id]); //this should be replaced by an event
+        }
 
-                if (this.mousePosPrevious[id] != undefined) {
-                    this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
-                    world_interface.drag(this.mousePos[id],this.mousePosPrevious[id]);
-                }
+        //these only happen for one touch (should be for the first touch)
+        if (ev.touches.length == 1) {
+
+            if (this.mousePosPrevious[id[0]] != undefined) {
+                this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
+                world_interface.drag(this.mousePos[id[0]],this.mousePosPrevious[id[0]]);
             }
+        }
 
-            //these happen for all touches
+        //this is what happens for double touches
+        if (ev.touches.length == 2) {
+                
+            if (this.mousePosPrevious[id[0]] != undefined && this.mousePosPrevious[id[1]] != undefined) {
+                var previous_distance = this.distance(this.mousePosPrevious[id[0]], this.mousePosPrevious[id[1]] );
+                var current_distance = this.distance(this.mousePos[id[0]], this.mousePos[id[1]] );
+                var difference = current_distance-previous_distance;
 
+                world_interface.zoomView(1-difference/100);
+            }
+        }
+
+        //remember the previous touches
+        for (var i=0;i < ev.touches.length; i++) {
             //remember the previous 
-            this.mousePosPrevious[id] = this.mousePos[id];
+            this.mousePosPrevious[id[i]] = this.mousePos[id[i]];
         }
     }
 
@@ -351,6 +364,11 @@ function CanvasInput(canvas) {
             var id = ev.changedTouches[i].identifier;
             delete this.mousePosPrevious[id];
         }
+    }
+
+    CanvasInput.prototype.distance = function(point1,point2) {
+
+        return Math.hypot(point2.x-point1.x, point2.y-point1.y);
     }
 
 
