@@ -250,6 +250,14 @@ function CanvasInput(canvas) {
 
     }
 
+    CanvasInput.prototype.getTouchPosition = function(event) {
+
+        var event = window.event || event;
+        var x = event.touches[0].pageX;
+        var y = event.touches[0].pageY;
+        return new Point(x,y);
+    }
+
     CanvasInput.prototype.getMousePosition = function(event) {
         //get mouse position
         var e = window.event || event;
@@ -298,10 +306,25 @@ function CanvasInput(canvas) {
 
     CanvasInput.prototype.touchMove = function(ev) {
         ev.preventDefault();
+
+        //find the hovered hexagon
+        this.mousePos = this.getTouchPosition(ev);
+
+        //detect mouse hovering for animations
+        world_interface.hover(this.mousePos); //this should be replaced by an event
+
+        if (this.mousePosPrevious != 'undefined') {
+            this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
+            world_interface.drag(this.mousePos,this.mousePosPrevious);
+        }
+
+        //remember the previous 
+        this.mousePosPrevious = this.mousePos;
     }
 
     CanvasInput.prototype.touchEnd = function(ev) {
         ev.preventDefault();
+        this.mousePosPrevious = 'undefined';
     }
 
 
