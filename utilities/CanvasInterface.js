@@ -206,9 +206,11 @@ function CanvasInput(canvas) {
 
     this.canvas = canvas;
     //create the mouse pointer (should be part of the mouse/screen controller)
-    var mousePos = new Point(0,0);
-    var mousePosPrevious = new Point(0,0);
-    var currentHex = new Hex(0,0);
+    this.mousePos = new Point(0,0);
+    this.mousePosPrevious = new Point(0,0);
+    this.currentHex = new Hex(0,0);
+
+    this.is_dragging = false;
 }
 
 
@@ -225,6 +227,7 @@ function CanvasInput(canvas) {
         //check the mouse button
         if (this.mouseButtonDown(event,'left')) {
             console.log('drag');
+            this.is_dragging = true;
             world_interface.drag(this.mousePos,this.mousePosPrevious);
         }
 
@@ -235,14 +238,15 @@ function CanvasInput(canvas) {
     //react to clicking canvas by drawing a dot
     CanvasInput.prototype.clickCanvas = function(event,world_interface) {
         
-        var clickPos = this.getMousePosition(event);
-        world_interface.click(clickPos);                //this is the part that should be replaced by an event
+        if (this.is_dragging == false) {
+        
+            var clickPos = this.getMousePosition(event);
+            world_interface.click(clickPos);                //this is the part that should be replaced by an event
 
-
-        //here a message should be sent to the rest of the engine
-
-        refreshCanvas();
-        console.log(clickPos);
+            refreshCanvas();
+            console.log(clickPos);
+        }
+        this.is_dragging = false;
 
     }
 
