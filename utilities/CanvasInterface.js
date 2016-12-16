@@ -297,11 +297,11 @@ function CanvasInput(canvas) {
 
 
     CanvasInput.prototype.touchMove = function(ev) {
-
+        ev.preventDefault();
     }
 
     CanvasInput.prototype.touchEnd = function(ev) {
-
+        ev.preventDefault();
     }
 
 
