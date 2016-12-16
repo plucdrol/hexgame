@@ -50,6 +50,9 @@ function View (input_rect,output_rect) {
 
         return newPoint;
     };
+    View.prototype.screen_to_world_1D = function(scalar) {
+        return scalar*this.input.size.x/this.output.size.x;
+    };
 
     View.prototype.set_scale = function(point) { this.input.size = point; };
     View.prototype.getScale = function() { return this.output.size.x/this.input.size.x; };

@@ -224,10 +224,10 @@ function CanvasInput(canvas) {
         //detect mouse hovering for animations
         world_interface.hover(this.mousePos); //this should be replaced by an event
 
-        //check the mouse button
+        //check if the mouse button is down, triggering a drag
         if (this.mouseButtonDown(event,'left')) {
-            console.log('drag');
-            this.is_dragging = true;
+
+            this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
             world_interface.drag(this.mousePos,this.mousePosPrevious);
         }
 

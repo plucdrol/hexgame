@@ -252,9 +252,19 @@ WorldInterface.prototype.click = function(screen_position) {
 }
 
 WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
-	var drag_movement = new Point(previous_mouse.x-current_mouse.x,previous_mouse.y-current_mouse.y);
+	
+	//get the movement the mouse has moved since last tick
+	var drag_movement = new Point(this.view.screen_to_world_1D(previous_mouse.x-current_mouse.x),
+																this.view.screen_to_world_1D(previous_mouse.y-current_mouse.y));
+	
+	//shift the view by that movement
 	this.view.shift_position(drag_movement);
+	
+	//redraw the screen after moving
 	refreshCanvas();
+	
+	//draw a line tracing the mouse motion tracked
+	world_renderer.draw_line(this.view.screen_to_world(previous_mouse),this.view.screen_to_world(current_mouse),5,'lightblue');
 }
 
 WorldInterface.prototype.next_tick = function() {
