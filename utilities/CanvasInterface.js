@@ -325,8 +325,12 @@ function CanvasInput(canvas) {
         this.mousePosPrevious = this.mousePos;
     }
 
+    CanvasInput.prototype.touchStart = function(ev) {
+        //ev.preventDefault();
+        this.mousePosPrevious = 'undefined';
+    }
     CanvasInput.prototype.touchEnd = function(ev) {
-        ev.preventDefault();
+        //ev.preventDefault();
         this.mousePosPrevious = 'undefined';
     }
 
