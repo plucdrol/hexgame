@@ -245,6 +245,9 @@ function CanvasInput(canvas) {
     }
 
     CanvasInput.prototype.mouseWheel = function(event) {
+
+        event.preventDefault();
+
         // cross-browser wheel delta
         var e = window.event || event; // old IE support
         var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
