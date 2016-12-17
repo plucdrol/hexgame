@@ -140,6 +140,12 @@
 			canvas.addEventListener('touchmove', function() {canv_input.touchMove(event);}, false);
 			canvas.addEventListener('touchend', function() {canv_input.touchEnd(event);}, false);
 			canvas.addEventListener('touchstart', function() {canv_input.touchStart(event);}, false);
+			if (myimage.addEventListener) {
+				// IE9, Chrome, Safari, Opera
+				myimage.addEventListener("mousewheel", function(){canv_input.mouseWheel(event);}, false);
+				// Firefox
+				myimage.addEventListener("DOMMouseScroll", function(){canv_input.mouseWheel(event);}, false);
+			}
 
 		</script>
 	</body>
