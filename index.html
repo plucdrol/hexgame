@@ -61,7 +61,7 @@
 
 			//create a world
 			var map_radius = 100;
-			var world_layout = new HexLayout(orientation_pointy,new Point(35,35),new Point(600,400));
+			var world_layout = new HexLayout(orientation_pointy,new Point(35,35),new Point(canvas.width,canvas.height));
 			var world = new World(map_radius,world_layout);
 
 			//create a controller and renderer for the world
