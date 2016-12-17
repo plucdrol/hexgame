@@ -58,7 +58,6 @@ function Renderer(canvas_interface,view) {
         //if zoomed out enough, just draw a dot
         if (this.view.getScale() < 0.2 && this.drawn_at_least_one_polygon == true) {
             this.canvas_interface.draw_dot(this.view.world_to_screen(points[0]),60*this.view.getScale(),fillColor);
-            //this.canvas_interface.draw_dot(this.view.world_to_screen(points[0]),12,fillColor);
         } else {
             //otherwise actually draw a polygon
             coords = this.view.world_to_screen_multi(points);

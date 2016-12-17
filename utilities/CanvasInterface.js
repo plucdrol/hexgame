@@ -57,8 +57,8 @@ function CanvasDraw (canvas) {
 
         //draw the line
         line.beginPath();
-        line.moveTo(point.x-1,point.y);
-        line.lineTo(point.x+1,point.y);
+        line.moveTo(point.x-size/2,point.y);
+        line.lineTo(point.x+size/2,point.y);
         line.lineWidth = size;
         line.strokeStyle = color;
         line.stroke();
@@ -81,7 +81,7 @@ function CanvasDraw (canvas) {
 
         //create canvas line object
         var line = this.canvas.getContext('2d');
-        line.lineCap="round";
+        line.lineCap="butt";
         line.strokeStyle = color;
 
         //draw the line
