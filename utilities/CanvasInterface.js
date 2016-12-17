@@ -254,6 +254,7 @@ function CanvasInput(canvas) {
 
         //HERE a message should be sent to the rest of the engine
         console.log(delta);
+        world_interface.zoomView(1-delta*0.2);
 
         return false;   
     }
