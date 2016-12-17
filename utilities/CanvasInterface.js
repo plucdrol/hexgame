@@ -222,7 +222,6 @@ function CanvasInput(canvas) {
             var clickPos = this.getMousePosition(event);
             world_interface.click(clickPos);                //this is the part that should be replaced by an event
 
-            refreshCanvas();
             //console.log(clickPos);
         }
         this.is_dragging = false;
@@ -253,7 +252,6 @@ function CanvasInput(canvas) {
         var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
         //HERE a message should be sent to the rest of the engine
-        console.log(delta);
         world_interface.zoomView(1-delta*0.2);
 
         return false;   
