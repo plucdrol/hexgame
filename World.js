@@ -195,13 +195,6 @@ WorldInterface.prototype.near_which_edge = function(screen_position,edge_width) 
 
 WorldInterface.prototype.click = function(screen_position) {
 
-	//if clicking near the borders, move the view
-	if (this.edge_hovered != 'none') {
-		//move the view position
-		this.moveView(this.edge_hovered);
-	} else {
-
-
 		//convert to hex coordinates
 		var hex_clicked = this.getHex(screen_position);
 
@@ -247,7 +240,7 @@ WorldInterface.prototype.click = function(screen_position) {
 			}
 		
 		}
-	}
+
 	refreshCanvas();
 	//console.log(this.unit_selected);
 }
