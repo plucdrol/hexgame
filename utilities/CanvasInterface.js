@@ -286,6 +286,7 @@ function CanvasInput(canvas) {
     //react to the mouse moving, hovering and dragging
     CanvasInput.prototype.moveMouse = function(event) {
 
+        var drag_treshold = 2;
         //find the hovered hexagon
         this.mousePos[0] = this.getMousePosition(event);
 
@@ -295,8 +296,13 @@ function CanvasInput(canvas) {
         //check if the mouse button is down, triggering a drag
         if (this.mouseButtonDown(event,'left')) {
 
-            this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
+            //check if the distance_dragged is over a treshold, to avoid mini-drags
+            if (this.distance(this.mousePos[0],this.mousePosPrevious[0]) > drag_treshold) {
+                this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
+            }
+            //call the drag function (should be replaced by an event)
             world_interface.drag(this.mousePos[0],this.mousePosPrevious[0]);
+            
         }
 
         //remember the previous mouse position
