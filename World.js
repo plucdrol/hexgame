@@ -121,8 +121,12 @@ function WorldInterface(world) {
 	this.edge_hovered = 'undefined';
 
 	//create a default view, which can be edited
-	var view_in = new Rect(new Point(-canvas.width*2,-canvas.height*2),new Point(canvas.width*4,canvas.height*4));
-	var view_out = new Rect(new Point(0,0),new Point(canvas.width,canvas.height));
+	var view_ratio = canvas.width/canvas.height;
+	var initial_zoom = 4;
+	var view_out = new Rect(	new Point(0,0),
+														new Point(canvas.width,canvas.height));
+	var view_in = new Rect(	new Point(-canvas.width*initial_zoom,	-initial_zoom*canvas.height),
+													new Point(canvas.width*initial_zoom*view_ratio,		 					initial_zoom*canvas.height*view_ratio));
 	this.view = new View(view_in,view_out);
 }
 
