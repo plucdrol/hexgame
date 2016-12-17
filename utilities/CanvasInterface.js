@@ -250,6 +250,7 @@ function CanvasInput(canvas) {
         var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
         //HERE a message should be sent to the rest of the engine
+        console.log(delta);
 
         return false;   
     }
