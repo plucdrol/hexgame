@@ -25,7 +25,7 @@
 			#mycanvas{
 				background: grey;
 				clear: both;
-				margin-top: 30px;
+				/*margin-top: 30px;*/
 			}
 		</style>
 	</head>
@@ -35,32 +35,11 @@
 		</div>
 		
 		<div style="float:left; margin-left:20px;";>
-			<br>
-			<button type="button" id="clear" onclick="canv_draw.clear();">clear canvas</button>
-			<br>
-			<button type="button"  onclick="shiftView('left');">left</button>
-			<button type="button"  onclick="shiftView('right');">right</button>
-			<button type="button"  onclick="shiftView('up');">up</button>
-			<button type="button"  onclick="shiftView('down');">down</button>
 
 			<button type="button"  onclick="scaleView(2);">zoom out</button>
 			<button type="button"  onclick="scaleView(0.5);">zoom in</button>
 
-			<br>
-			World Size
-			<input type="text" value = 100> </input>
-
-
-
-
-
-			<div> World settings </div>
-
-			<br>
 			<button type="button" onclick="newWorld();"> new world</button>
-			------------<button type="button"  onclick="world_interface.next_tick();refreshCanvas();">next tick</button>
-			<br>
-
 
 		</div>
 
