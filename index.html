@@ -144,6 +144,9 @@
 				canvas.addEventListener("DOMMouseScroll", function(){canv_input.mouseWheel(event);}, false);
 			}
 
+			//add window resize event
+			window.addEventListener('resize',function() {canv_input.resize();}, false);
+
 		</script>
 	</body>
 </html>

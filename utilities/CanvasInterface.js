@@ -380,6 +380,14 @@ function CanvasInput(canvas) {
         return Math.hypot(point2.x-point1.x, point2.y-point1.y);
     }
 
+    CanvasInput.prototype.resize = function()  {
+        var width = document.documentElement.clientWidth;
+        var height = document.documentElement.clientHeight;
+
+        console.log(width);
+        console.log(height);
+    }
+
 
 
 
