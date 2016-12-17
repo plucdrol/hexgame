@@ -161,9 +161,6 @@ WorldInterface.prototype.makeButton = function(unit,action,text) {
 
 WorldInterface.prototype.hover = function(screen_position) {
 	
-	//get the edge being hovered
-	this.edge_hovered = this.near_which_edge(screen_position,0.1);
-
 	//get the hex being hovered
 	this.hex_hovered = this.getHex(screen_position);
 
@@ -174,23 +171,6 @@ WorldInterface.prototype.hover = function(screen_position) {
 
 	//remember the currently hovered hex
 	this.hex_hovered_previous = this.hex_hovered;
-}
-
-WorldInterface.prototype.near_which_edge = function(screen_position,edge_width) {
-	if (screen_position.x > canvas.width*(1-edge_width)) {
-		return "right";
-	}
-	if (screen_position.x < canvas.width*(edge_width)) {
-		return "left";
-	}
-	if (screen_position.y < canvas.height*(edge_width)) {
-		return "up";
-	}
-	if (screen_position.y > canvas.height*(1-edge_width)) {
-		return "down";
-	}
-	return "none";
-
 }
 
 WorldInterface.prototype.click = function(screen_position) {
