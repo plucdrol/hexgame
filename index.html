@@ -100,6 +100,9 @@
 					world_renderer.draw_hex(world_interface.hex_selected, 2);
 					//console.log(world_interface.hex_selected);
 				}
+
+				//draw hovered hex
+				world_renderer.draw_hex(world_interface.hex_hovered, 0, "rgba(200,200,200,0.4)",'rgba(0,0,0,0)' );
 			}
 
 			//refresh the screen
