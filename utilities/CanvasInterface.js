@@ -55,12 +55,17 @@ function CanvasDraw (canvas) {
         //create canvas line object
         var line = this.canvas.getContext('2d');
 
-        //draw the line
+        //define line path
         line.beginPath();
         line.moveTo(point.x-size/2,point.y);
         line.lineTo(point.x+size/2,point.y);
+
+        //define line style
+        line.lineCap="butt";
         line.lineWidth = size;
         line.strokeStyle = color;
+
+        //draw
         line.stroke();
     };
 
@@ -81,14 +86,19 @@ function CanvasDraw (canvas) {
 
         //create canvas line object
         var line = this.canvas.getContext('2d');
-        line.lineCap="butt";
-        line.strokeStyle = color;
+        
 
-        //draw the line
+        //define line path
         line.beginPath();
         line.moveTo(p1.x,p1.y);
         line.lineTo(p2.x,p2.y);
+
+        //define line style
         line.lineWidth = width;
+        line.lineCap = "butt";
+        line.strokeStyle = color;
+
+        //draw
         line.stroke();
     };
 
@@ -361,18 +371,19 @@ function CanvasInput(canvas) {
     }
 
     CanvasInput.prototype.touchStart = function(ev) {
-        //ev.preventDefault();
+        ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
             delete this.mousePosPrevious[id];
         }
     }
     CanvasInput.prototype.touchEnd = function(ev) {
-        //ev.preventDefault();
+        ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
             delete this.mousePosPrevious[id];
         }
+        this.is_dragging = false;
     }
 
     CanvasInput.prototype.distance = function(point1,point2) {
