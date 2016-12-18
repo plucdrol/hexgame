@@ -112,22 +112,14 @@ World.prototype.next_tick = function() {
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 
-function WorldInterface(world) {
+function WorldInterface(world,view) {
 	
 	this.world = world;
 	this.hex_selected = 'undefined';
 	this.hex_hovered = new Hex(0,0);
 	this.hex_hovered_previous = new Hex(0,0);
 	this.edge_hovered = 'undefined';
-
-	//create a default view, which can be edited
-	var view_ratio = canvas.width/canvas.height;
-	var initial_zoom = 2;
-	var view_out = new Rect(	new Point(0,0),
-														new Point(canvas.width,canvas.height));
-	var view_in = new Rect(	new Point(-canvas.width*initial_zoom,	-initial_zoom*canvas.height),
-													new Point(canvas.width*initial_zoom*view_ratio,		 					initial_zoom*canvas.height*view_ratio));
-	this.view = new View(view_in,view_out);
+	this.view = view;
 }
 
 WorldInterface.prototype.setView = function(view) {
