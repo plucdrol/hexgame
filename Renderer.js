@@ -14,8 +14,8 @@
 
 //this is a basic Renderer, it doesn't know about hexes! only points
 
-function Renderer(canvas_interface,view) {
-    this.canvas_interface = canvas_interface;
+function Renderer(canvas_draw,view) {
+    this.canvas_draw = canvas_draw;
     this.view = view;
     this.drawn_at_least_one_polygon = false; //for some reason, until the renderer has drawn one real polygon, it sucks drawing dots
 }
@@ -30,7 +30,7 @@ function Renderer(canvas_interface,view) {
         var coord = this.view.world_to_screen(point);
         size = this.view.world_to_screen_1D(size);
 
-        this.canvas_interface.draw_dot(coord,size,color);
+        this.canvas_draw.draw_dot(coord,size,color);
     };
 
     //Draw multiple dots
@@ -47,7 +47,7 @@ function Renderer(canvas_interface,view) {
         var p2 = this.view.world_to_screen(point2);
         var newwidth = this.view.world_to_screen_1D(lineWidth);
 
-        this.canvas_interface.draw_line(p1,p2,newwidth,color)
+        this.canvas_draw.draw_line(p1,p2,newwidth,color)
     };
 
     Renderer.prototype.draw_polygon = function(points,lineWidth,fillColor,lineColor) {
@@ -75,7 +75,7 @@ function Renderer(canvas_interface,view) {
         //var newfontsize = this.view.world_to_screen_1D(fontsize);
         var newfontsize = fontsize;
 
-        this.canvas_interface.draw_text(text,coord,shade,newfontsize);
+        this.canvas_draw.draw_text(text,coord,shade,newfontsize);
     };
 
     //INDIRECT functions, use the previously defined functions to draw more complicated things
@@ -121,11 +121,12 @@ function Renderer(canvas_interface,view) {
 var greenscale_colors = function(i) {
     var greenscale = ['#005','#00D','#AA3','#080','#062','#052','#042','#032','#020','#010','#110500','#210','#410','#420','#777','#777','#777','#888','#888','#888','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF'];
     return greenscale[i];
+    this.drawn_at_least_one_polygon = false; //for some reason, until the renderer has drawn one real polygon, it sucks drawing dots
 }
 
 
-function WorldRenderer (canvas_interface,view,world) {
-    Renderer.call(this,canvas_interface,view); 
+function WorldRenderer (canvas_draw,view,world) {
+    Renderer.call(this,canvas_draw,view); 
     this.world = world;
     
 }
