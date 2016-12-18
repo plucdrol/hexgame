@@ -228,28 +228,22 @@ function CanvasInput(canvas) {
     //react to clicking canvas by drawing a dot
     CanvasInput.prototype.clickCanvas = function(event,world_interface) {
         
+        //avoid click at the end of a drag
         if (this.is_dragging == false) {
         
-            var clickPos = this.getMousePosition(event);
+            //trigger the click event
+            var clickPos = this.getCursorPosition(event);
             world_interface.click(clickPos);                //this is the part that should be replaced by an event
-
-            //console.log(clickPos);
         }
+        //remember that the mouse is done dragging
         this.is_dragging = false;
-        this.mousePosPrevious[0] = 'undefined';
+        this.mousePosPrevious[0] = undefined;
 
     }
 
-    CanvasInput.prototype.getTouchPosition = function(event_touch) {
-        //get touch position
-        var event =  event_touch;
-        var coords = this.canvas.relMouseCoords(event_touch);
-        return new Point(coords.x,coords.y);
-    }
-
-    CanvasInput.prototype.getMousePosition = function(event) {
+    CanvasInput.prototype.getCursorPosition = function(event) {
         //get mouse position
-        var e = window.event || event;
+        var e = event;
         var coords = this.canvas.relMouseCoords(e); //function defined
         return new Point(coords.x,coords.y);
     }
@@ -302,7 +296,7 @@ function CanvasInput(canvas) {
 
         var drag_treshold = 2;
         //find the hovered hexagon
-        this.mousePos[0] = this.getMousePosition(event);
+        this.mousePos[0] = this.getCursorPosition(event);
 
         //detect mouse hovering for animations
         world_interface.hover(this.mousePos[0]); //this should be replaced by an event
@@ -339,7 +333,7 @@ function CanvasInput(canvas) {
             id[i] = ev.touches[i].identifier;
 
             //find the touch position on the canvas
-            this.mousePos[id[i]] = this.getTouchPosition(ev.touches[i]);
+            this.mousePos[id[i]] = this.getCursorPosition(ev.touches[i]);
 
         }
 
