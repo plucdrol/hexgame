@@ -39,37 +39,12 @@ function CanvasDraw (canvas) {
     //Draw a dot on the canvas at position 'point' with optional size and color
     CanvasDraw.prototype.drawDot = function (point,size,color) {
 
+        //draw the dot as a very short line
+        var point1 = new Point(point.x-size/2,point.y);
+        var point2 = new Point(point.x+size/2,point.y);
+        this.drawLine(point1,point2,size,color)
 
-        //draws the dot using screen coordinates
-
-        //defines the default size
-        if (size === 'undefined') {
-            size = 1;
-        }
-        
-        //defines the default color
-        if (color === 'undefined') {
-            color = 'black';
-        }
-
-        //create canvas line object
-        var line = this.canvas.getContext('2d');
-
-        //define line path
-        line.beginPath();
-        line.moveTo(point.x-size/2,point.y);
-        line.lineTo(point.x+size/2,point.y);
-
-        //define line style
-        line.lineCap = "butt";
-        line.lineWidth = size;
-        line.strokeStyle = color;
-
-        //draw
-        line.stroke();
     };
-
-
 
     //Draw a line on the canvas from p1 to p2 with optional width and color
     CanvasDraw.prototype.drawLine = function(p1,p2,width,color) {
