@@ -364,8 +364,8 @@ function CanvasInput(canvas) {
         world_interface.resize_zoom(width,height);
 
         //size canvas to fit resized window
-        this.canvas.width = width;//*0.95;
-        this.canvas.height = height;//*0.95;        
+        this.canvas.width = width;
+        this.canvas.height = height;
 
     }
 
@@ -375,6 +375,8 @@ function CanvasInput(canvas) {
 
 
     //HELPER FUNCTIONS
+
+    //returns the (x,y) position of the cursor in the canvas
     CanvasInput.prototype.get_cursor_position = function(event) {
         //get mouse position
         var e = event;
