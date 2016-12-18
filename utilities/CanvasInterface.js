@@ -215,6 +215,7 @@ function CanvasDraw (canvas) {
 function CanvasInput(canvas) {
 
     this.canvas = canvas;
+    
     //create the mouse pointer (should be part of the mouse/screen controller)
     this.mousePos = new Object();
     this.mousePosPrevious = new Object();
