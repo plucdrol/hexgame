@@ -17,7 +17,6 @@
 function Renderer(canvas_draw,view) {
     this.canvas_draw = canvas_draw;
     this.view = view;
-    this.drawn_at_least_one_polygon = false; //for some reason, until the renderer has drawn one real polygon, it sucks drawing dots
 }
 
 
@@ -55,16 +54,10 @@ function Renderer(canvas_draw,view) {
         //this function draws directly, so modifies the coordinates
         var coords = [];
         
-        //if zoomed out enough, just draw a dot
-        if (this.view.getScale() < 0.2 && this.drawn_at_least_one_polygon == true) {
-            this.canvas_interface.draw_dot(this.view.world_to_screen(points[0]),60*this.view.getScale(),fillColor);
-        } else {
-            //otherwise actually draw a polygon
-            coords = this.view.world_to_screen_multi(points);
-
-            this.canvas_interface.draw_polygon(coords,lineWidth,fillColor,lineColor);
-            this.drawn_at_least_one_polygon = true;
-        }
+        //otherwise actually draw a polygon
+        coords = this.view.world_to_screen_multi(points);
+        this.canvas_draw.draw_polygon(coords,lineWidth,fillColor,lineColor);
+        this.drawn_at_least_one_polygon = true;
 
     };
 
@@ -139,8 +132,15 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.draw_hex = function(hex,linewidth,fillColor,lineColor) {
 
-        var corners = this.world.layout.hexes_to_points(hex_corners(hex));
-        this.draw_polygon(corners,linewidth,fillColor);
+        //if zoomed out enough, just draw a dot
+        if (this.view.getScale() < 0.2 && this.drawn_at_least_one_polygon == true) {
+            var point = this.world.layout.hex_to_point(hex);
+            this.canvas_draw.draw_dot(this.view.world_to_screen(point),60*this.view.getScale(),fillColor);
+        } else {
+            //otherwise, draw the actual hex
+            var corners = this.world.layout.hexes_to_points(hex_corners(hex));
+            this.draw_polygon(corners,linewidth,fillColor);
+        }
     };
 
     WorldRenderer.prototype.draw_hex_elevated = function(hex,height,linewidth,color_sides,color_top) {
