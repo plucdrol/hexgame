@@ -333,7 +333,7 @@ function CanvasInput(canvas) {
 
     //React to finger starting to touch screen
     CanvasInput.prototype.touch_start = function(ev) {
-        ev.preventDefault();
+        //ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
             delete this.mousePosPrevious[id];
@@ -342,10 +342,13 @@ function CanvasInput(canvas) {
 
     //React to finger removed from screen
     CanvasInput.prototype.touch_end = function(ev) {
-        ev.preventDefault();
+        //ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
             delete this.mousePosPrevious[id];
+        }
+        if (this.is_dragging == false) {
+          //  this.click_canvas(ev);
         }
         this.is_dragging = false;
     }
@@ -353,38 +356,16 @@ function CanvasInput(canvas) {
     //React to screen being resized
     CanvasInput.prototype.window_resize = function()  {
 
-        //remember the current view
-        var current_view = view;
-
         //mesure the new window size
         var width = window.innerWidth;
         var height = window.innerHeight;
 
+        //Send the resize event here
+        world_interface.resize_zoom(width,height);
+
         //size canvas to fit resized window
-        canvas.width = width;//*0.95;
-        canvas.height = height;//*0.95;
-
-        //create the new view
-        var view_ratio = width/height;
-        var initial_zoom = 2;
-        var view_out = new Rect(    new Point(0,0), new Point(width,height));
-        var view_in = current_view.input;
-
-        //match the aspect ratio to the new size
-        var resizing_ratio = new Point( current_view.output.size.x/width,
-                                        current_view.output.size.y/height);
-        view_in.size.x = view_in.size.x/resizing_ratio.x;
-        view_in.size.y = view_in.size.y/resizing_ratio.y;
-
-        view = new View(view_in,view_out);
-
-        
-        //apply new view to the engine
-        world_interface.view = view;
-        world_renderer.view = view;
-
-        //redraw the screen after resizing
-        drawScreen();
+        this.canvas.width = width;//*0.95;
+        this.canvas.height = height;//*0.95;        
 
     }
 

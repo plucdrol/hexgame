@@ -237,6 +237,35 @@ WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
 	world_renderer.draw_line(this.view.screen_to_world(previous_mouse),this.view.screen_to_world(current_mouse),5,'lightblue');
 }
 
+WorldInterface.prototype.resize_zoom = function(width,height) {
+
+	//remember the current view
+  var current_view = view;
+
+
+	//create the new view
+  var view_ratio = width/height;
+  var initial_zoom = 2;
+  var view_out = new Rect(    new Point(0,0), new Point(width,height));
+  var view_in = current_view.input;
+
+  //match the aspect ratio to the new size
+  var resizing_ratio = new Point( current_view.output.size.x/width,
+                                  current_view.output.size.y/height);
+  view_in.size.x = view_in.size.x/resizing_ratio.x;
+  view_in.size.y = view_in.size.y/resizing_ratio.y;
+
+  view = new View(view_in,view_out);
+
+	//apply new view to the engine
+  world_interface.view = view;
+  world_renderer.view = view;
+
+  //redraw the screen after resizing
+  drawScreen();
+
+}
+
 WorldInterface.prototype.next_tick = function() {
 	this.world.next_tick();
 }
