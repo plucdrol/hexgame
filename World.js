@@ -136,7 +136,7 @@ WorldInterface.prototype.moveView = function(direction) {
 WorldInterface.prototype.zoomView = function(zoom) {
 	
 	this.view.zoom(zoom);
-	refreshCanvas();
+	drawScreen();
 }
 
 WorldInterface.prototype.getHex = function(screen_position) {
@@ -160,9 +160,9 @@ WorldInterface.prototype.hover = function(screen_position) {
 	//get the hex being hovered
 	this.hex_hovered = this.getHex(screen_position);
 
-	//if the mouse moved to a new hex, refresh the screen
+	//if the mouse moved to a new hex, redraw the screen
 	if ( !hex_equals(this.hex_hovered, this.hex_hovered_previous) ) {
-		refreshCanvas();
+		drawScreen();
 	}
 
 	//remember the currently hovered hex
@@ -217,7 +217,7 @@ WorldInterface.prototype.click = function(screen_position) {
 	
 	}
 
-	refreshCanvas();
+	drawScreen();
 	//console.log(this.unit_selected);
 }
 
@@ -231,7 +231,7 @@ WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
 	this.view.shift_position(drag_movement);
 	
 	//redraw the screen after moving
-	refreshCanvas();
+	drawScreen();
 	
 	//draw a line tracing the mouse motion tracked
 	world_renderer.draw_line(this.view.screen_to_world(previous_mouse),this.view.screen_to_world(current_mouse),5,'lightblue');

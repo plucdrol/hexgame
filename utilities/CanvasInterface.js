@@ -224,9 +224,11 @@ function CanvasInput(canvas) {
     this.is_dragging = false;
 }
 
+    //JAVASCRIPT EVENT FUNCTIONS
+
 
     //react to clicking canvas by drawing a dot
-    CanvasInput.prototype.clickCanvas = function(event,world_interface) {
+    CanvasInput.prototype.clickCanvas = function(event) {
         
         //avoid click at the end of a drag
         if (this.is_dragging == false) {
@@ -239,13 +241,6 @@ function CanvasInput(canvas) {
         this.is_dragging = false;
         this.mousePosPrevious[0] = undefined;
 
-    }
-
-    CanvasInput.prototype.getCursorPosition = function(event) {
-        //get mouse position
-        var e = event;
-        var coords = this.canvas.relMouseCoords(e); //function defined
-        return new Point(coords.x,coords.y);
     }
 
     CanvasInput.prototype.mouseWheel = function(event) {
@@ -261,35 +256,6 @@ function CanvasInput(canvas) {
 
         return false;   
     }
-
-    CanvasInput.prototype.mouseButtonDown = function(ev,button) {
-        if (typeof ev.which != undefined) {
-            if(ev.which==1 && button=='left') {
-                return true;
-            }
-            if (ev.which==2 && button=='middle'){
-                return true;
-            } 
-            if(ev.which==3 && button=='right')  {
-                return true;
-            } 
-        }
-        if (typeof ev.which != undefined) {
-            if(ev.button==1 && button=='left') {
-                return true;
-            }
-            if (ev.button==2 && button=='middle'){
-                return true;
-            } 
-            if(ev.button==3 && button=='right')  {
-                return true;
-            } 
-        }
-
-        return false;
-        
-    }
-
 
     //react to the mouse moving, hovering and dragging
     CanvasInput.prototype.moveMouse = function(event) {
@@ -381,6 +347,51 @@ function CanvasInput(canvas) {
         this.is_dragging = false;
     }
 
+    //HELPER FUNCTIONS
+
+
+    CanvasInput.prototype.getCursorPosition = function(event) {
+        //get mouse position
+        var e = event;
+        var coords = this.canvas.relMouseCoords(e); //function defined
+        return new Point(coords.x,coords.y);
+    }
+
+    
+
+    CanvasInput.prototype.mouseButtonDown = function(ev,button) {
+        if (typeof ev.which != undefined) {
+            if(ev.which==1 && button=='left') {
+                return true;
+            }
+            if (ev.which==2 && button=='middle'){
+                return true;
+            } 
+            if(ev.which==3 && button=='right')  {
+                return true;
+            } 
+        }
+        if (typeof ev.which != undefined) {
+            if(ev.button==1 && button=='left') {
+                return true;
+            }
+            if (ev.button==2 && button=='middle'){
+                return true;
+            } 
+            if(ev.button==3 && button=='right')  {
+                return true;
+            } 
+        }
+
+        return false;
+        
+    }
+
+
+    
+
+    
+
     CanvasInput.prototype.distance = function(point1,point2) {
 
         return Math.hypot(point2.x-point1.x, point2.y-point1.y);
@@ -422,7 +433,7 @@ function CanvasInput(canvas) {
         world_renderer.view = view;
 
         //redraw the screen after resizing
-        refreshCanvas();
+        drawScreen();
 
     }
 
