@@ -228,13 +228,13 @@ function CanvasInput(canvas) {
 
 
     //react to clicking canvas by drawing a dot
-    CanvasInput.prototype.clickCanvas = function(event) {
+    CanvasInput.prototype.click_canvas = function(event) {
         
         //avoid click at the end of a drag
         if (this.is_dragging == false) {
         
             //trigger the click event
-            var clickPos = this.getCursorPosition(event);
+            var clickPos = this.get_cursor_position(event);
             world_interface.click(clickPos);                //this is the part that should be replaced by an event
         }
         //remember that the mouse is done dragging
@@ -243,7 +243,7 @@ function CanvasInput(canvas) {
 
     }
 
-    CanvasInput.prototype.mouseWheel = function(event) {
+    CanvasInput.prototype.mouse_wheel = function(event) {
 
         event.preventDefault();
 
@@ -258,17 +258,17 @@ function CanvasInput(canvas) {
     }
 
     //react to the mouse moving, hovering and dragging
-    CanvasInput.prototype.moveMouse = function(event) {
+    CanvasInput.prototype.mouse_move = function(event) {
 
         var drag_treshold = 2;
         //find the hovered hexagon
-        this.mousePos[0] = this.getCursorPosition(event);
+        this.mousePos[0] = this.get_cursor_position(event);
 
         //detect mouse hovering for animations
         world_interface.hover(this.mousePos[0]); //this should be replaced by an event
 
         //check if the mouse button is down, triggering a drag
-        if (this.mouseButtonDown(event,'left')) {
+        if (this.mouse_button_down(event,'left')) {
 
             //check if the distance_dragged is over a treshold, to avoid mini-drags
             if (this.distance(this.mousePos[0],this.mousePosPrevious[0]) > drag_treshold) {
@@ -286,7 +286,7 @@ function CanvasInput(canvas) {
     }
 
     //react to touch events across the screen
-    CanvasInput.prototype.touchMove = function(ev) {
+    CanvasInput.prototype.touch_move = function(ev) {
         ev.preventDefault();
 
         var id = new Object();
@@ -299,7 +299,7 @@ function CanvasInput(canvas) {
             id[i] = ev.touches[i].identifier;
 
             //find the touch position on the canvas
-            this.mousePos[id[i]] = this.getCursorPosition(ev.touches[i]);
+            this.mousePos[id[i]] = this.get_cursor_position(ev.touches[i]);
 
         }
 
@@ -331,14 +331,17 @@ function CanvasInput(canvas) {
         }
     }
 
-    CanvasInput.prototype.touchStart = function(ev) {
+    //React to finger starting to touch screen
+    CanvasInput.prototype.touch_start = function(ev) {
         ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
             delete this.mousePosPrevious[id];
         }
     }
-    CanvasInput.prototype.touchEnd = function(ev) {
+
+    //React to finger removed from screen
+    CanvasInput.prototype.touch_end = function(ev) {
         ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
@@ -347,19 +350,60 @@ function CanvasInput(canvas) {
         this.is_dragging = false;
     }
 
+    //React to screen being resized
+    CanvasInput.prototype.window_resize = function()  {
+
+        //remember the current view
+        var current_view = view;
+
+        //mesure the new window size
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
+        //size canvas to fit resized window
+        canvas.width = width;//*0.95;
+        canvas.height = height;//*0.95;
+
+        //create the new view
+        var view_ratio = width/height;
+        var initial_zoom = 2;
+        var view_out = new Rect(    new Point(0,0), new Point(width,height));
+        var view_in = current_view.input;
+
+        //match the aspect ratio to the new size
+        var resizing_ratio = new Point( current_view.output.size.x/width,
+                                        current_view.output.size.y/height);
+        view_in.size.x = view_in.size.x/resizing_ratio.x;
+        view_in.size.y = view_in.size.y/resizing_ratio.y;
+
+        view = new View(view_in,view_out);
+
+        
+        //apply new view to the engine
+        world_interface.view = view;
+        world_renderer.view = view;
+
+        //redraw the screen after resizing
+        drawScreen();
+
+    }
+
+
+
+
+
+
     //HELPER FUNCTIONS
-
-
-    CanvasInput.prototype.getCursorPosition = function(event) {
+    CanvasInput.prototype.get_cursor_position = function(event) {
         //get mouse position
         var e = event;
-        var coords = this.canvas.relMouseCoords(e); //function defined
+        var coords = this.canvas.rel_mouse_coords(e); //function defined
         return new Point(coords.x,coords.y);
     }
 
     
 
-    CanvasInput.prototype.mouseButtonDown = function(ev,button) {
+    CanvasInput.prototype.mouse_button_down = function(ev,button) {
         if (typeof ev.which != undefined) {
             if(ev.which==1 && button=='left') {
                 return true;
@@ -397,45 +441,7 @@ function CanvasInput(canvas) {
         return Math.hypot(point2.x-point1.x, point2.y-point1.y);
     }
 
-    CanvasInput.prototype.resize = function()  {
-
-        //remember the current view
-        var current_view = view;
-
-        //mesure the new window size
-        var width = document.documentElement.clientWidth;
-        var height = document.documentElement.clientHeight;
-
-        var width = window.innerWidth;
-        var height = window.innerHeight;
-
-        //size canvas to fit resized window
-        canvas.width = width;//*0.95;
-        canvas.height = height;//*0.95;
-
-        //create the new view
-        var view_ratio = width/height;
-        var initial_zoom = 2;
-        var view_out = new Rect(    new Point(0,0), new Point(width,height));
-        var view_in = current_view.input;
-
-        //match the aspect ratio to the new size
-        var resizing_ratio = new Point( current_view.output.size.x/width,
-                                        current_view.output.size.y/height);
-        view_in.size.x = view_in.size.x/resizing_ratio.x;
-        view_in.size.y = view_in.size.y/resizing_ratio.y;
-
-        view = new View(view_in,view_out);
-
-        
-        //apply new view to the engine
-        world_interface.view = view;
-        world_renderer.view = view;
-
-        //redraw the screen after resizing
-        drawScreen();
-
-    }
+    
 
 
 
@@ -449,7 +455,7 @@ function CanvasInput(canvas) {
 /* 
  * Get Mouse Coordinates on the Canvas element 
  */
-function relMouseCoords(event){
+function rel_mouse_coords(event){
     var totalOffsetX = 0;
     var totalOffsetY = 0;
     var canvasX = 0;
@@ -467,7 +473,7 @@ function relMouseCoords(event){
 
     return {x:canvasX, y:canvasY}
 };
-HTMLCanvasElement.prototype.relMouseCoords = relMouseCoords;
+HTMLCanvasElement.prototype.rel_mouse_coords = rel_mouse_coords;
 
 
 
