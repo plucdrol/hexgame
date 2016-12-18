@@ -389,9 +389,12 @@ function CanvasInput(canvas) {
         var width = document.documentElement.clientWidth;
         var height = document.documentElement.clientHeight;
 
+        var width = window.innerWidth;
+        var height = window.innerHeight;
+
         //size canvas to fit resized window
-        canvas.width = width*0.95;
-        canvas.height = height*0.95;
+        canvas.width = width;//*0.95;
+        canvas.height = height;//*0.95;
 
         //create the new view
         var view_ratio = width/height;
