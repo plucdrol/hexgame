@@ -49,6 +49,11 @@ function CanvasDraw (canvas) {
     //Draw a line on the canvas from p1 to p2 with optional width and color
     CanvasDraw.prototype.drawLine = function(p1,p2,width,color) {
 
+        //express this function as a polygon
+        var points = [p1,p2];
+        this.drawPolygon(points,width,'transparent',color);
+
+/*
         //defines the default size
         if (typeof size === 'undefined') {
             size = 1;
@@ -74,7 +79,7 @@ function CanvasDraw (canvas) {
         line.strokeStyle = color;
 
         //draw
-        line.stroke();
+        line.stroke();*/
     };
 
     //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
@@ -94,7 +99,7 @@ function CanvasDraw (canvas) {
         
         //line style
         line.lineWidth = width;
-        line.lineCap="round";
+        line.lineCap="butt";
         line.strokeStyle = line_color;       
 
         //polygon outline
@@ -104,8 +109,11 @@ function CanvasDraw (canvas) {
             line.lineTo(points[i].x,points[i].y);
             //this.drawText(i,points[i],'black',24); //add the index of each corner
         }
-        line.lineTo(points[0].x,points[0].y);
-        line.closePath();
+        if (points.length > 2) {
+            line.lineTo(points[0].x,points[0].y);
+            line.closePath();
+        }
+        
         
         //draw the line if thick enough
         if (width > 0) {
@@ -113,7 +121,7 @@ function CanvasDraw (canvas) {
         }
 
         //optional fill color
-        if (typeof fill_color != 'undefined') {
+        if (typeof fill_color != 'undefined' && fill_color != 'transparent') {
 
             line.fillStyle = fill_color;
             line.fill();
