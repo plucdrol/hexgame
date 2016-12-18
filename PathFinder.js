@@ -5,7 +5,7 @@
 	//map of (hex,movement_cost) pairs
 
 //pathfinding algorithms:
-	//find_range(hex_origin,range) returns an array of hexes reachable from hex_origin in n steps
+	//findRange(hex_origin,range) returns an array of hexes reachable from hex_origin in n steps
 	//find_path(hex_origin,hex_destination) returns shortest path
 	//path_distance(hex_origin,hex_destination) returns distance between two hexes
 
@@ -47,7 +47,7 @@ function PathFinder(map) {
 
 			//otherwise, add its neighbors to the hexes to examine
 			for (var i=0;i<6;i++) {
-				var neighbor = hex_neighbor(current,i);
+				var neighbor = Hex.neighbor(current,i);
 				if (!visited.containsHex(neighbor)) {
 					frontier.put(neighbor);
 					visited.set(neighbor,distance);
@@ -60,8 +60,8 @@ function PathFinder(map) {
 	}
 
 	//Computes the total movement cost to all hexes within the given 'range' of the 'origin' hex
-	//Movement cost it calculated with the move_cost_relative() function
-	this.path_with_terrain = function(origin,range) {
+	//Movement cost it calculated with the moveCostRelative() function
+	this.pathWithTerrain = function(origin,range) {
 		
 		var frontier = new Queue();	
 		frontier.put(origin);
@@ -85,7 +85,7 @@ function PathFinder(map) {
 			for (var i=0;i<6;i++) {
 
 				//get the neighboring cell
-				var neighbor = hex_neighbor(current,i);
+				var neighbor = Hex.neighbor(current,i);
 
 				//make sure it exists
 				if (!this.map.containsHex(neighbor)) {
@@ -93,13 +93,13 @@ function PathFinder(map) {
 				}
 				
 				//calculate the distance from origin to this neighbor
-				var cost_to_neighbor = this.move_cost_relative( current, neighbor );
+				var cost_to_neighbor = this.moveCostRelative( current, neighbor );
 				var path_cost = cost_so_far + cost_to_neighbor;
 
 				
 				if ( !visited.containsHex(neighbor) ) {
 					//add the cell if it hasnt been visited
-					if (this.move_cost_absolute(neighbor) > 1 && this.move_cost_absolute(neighbor) < 14) { //not mountain
+					if (this.moveCostAbsolute(neighbor) > 1 && this.moveCostAbsolute(neighbor) < 14) { //not mountain
 						frontier.put(neighbor);
 						visited.set(neighbor,[path_cost,current,this.map.getValue(neighbor)]);
 					} 
@@ -110,7 +110,7 @@ function PathFinder(map) {
 					var previous_best_cost = visited.getValue(neighbor)[0];
 					if (path_cost < previous_best_cost) {
 
-						if (this.move_cost_absolute(neighbor) > 1 && this.move_cost_absolute(neighbor) < 14) { //not mountain
+						if (this.moveCostAbsolute(neighbor) > 1 && this.moveCostAbsolute(neighbor) < 14) { //not mountain
 							frontier.put(neighbor);
 							visited.set(neighbor,[path_cost,current,this.map.getValue(neighbor)]);
 						} 
@@ -139,14 +139,14 @@ function PathFinder(map) {
 
 
 	//Returns the absolute movement cost value of the tile given
-	this.move_cost_absolute = function(other_tile) {
+	this.moveCostAbsolute = function(other_tile) {
 		return this.map.getValue(other_tile);
 	}
 
 
 	//Returns the movement cost to move from the first tile to the second tile.
 	//For example, moving downhill is a smaller value than uphill.
-	this.move_cost_relative = function(this_tile, other_tile) {
+	this.moveCostRelative = function(this_tile, other_tile) {
 		
 		//returns a positive number for uphill movement, negative number for downhill movement
 		var difference = this.map.getValue(other_tile) - this.map.getValue(this_tile);

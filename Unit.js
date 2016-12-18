@@ -14,9 +14,9 @@ function Unit() {
 };
 
 
-	Unit.prototype.find_range = function(map,position) {
+	Unit.prototype.findRange = function(map,position) {
 		var pathfinder = new PathFinder(map);
-		this.range = pathfinder.path_with_terrain(position,this.movement);
+		this.range = pathfinder.pathWithTerrain(position,this.movement);
 	};
 
 	Unit.prototype.action = function(action) {
@@ -31,7 +31,7 @@ function Unit() {
 		}
 	}
 
-	Unit.prototype.next_tick = function() {
+	Unit.prototype.nextTick = function() {
 
 	}
 
@@ -94,7 +94,7 @@ function VirusUnit(hex) {
 //this line defines inheritance of all methods except the constructor
 VirusUnit.prototype = Object.create(EnemyUnit.prototype);
 
-VirusUnit.prototype.next_tick = function() {
+VirusUnit.prototype.nextTick = function() {
 	var neighbors = this.get_neighbors();
 	for (neighbor of neighbors) {
 		

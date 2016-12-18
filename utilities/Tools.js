@@ -19,7 +19,7 @@ function complain(message) {
 function listContainsHex(hex, list) {
     var i;
     for (i = 0; i < list.length; i++) {
-        if (hex_equals(list[i],hex)) {
+        if (Hex.equals(list[i],hex)) {
             return true;
         }
     }

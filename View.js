@@ -15,7 +15,7 @@ function View (input_rect,output_rect) {
 
 }
 
-    View.prototype.world_to_screen = function(point) {
+    View.prototype.worldToScreen = function(point) {
 
         var newPoint = new Point(0,0);
 
@@ -24,24 +24,24 @@ function View (input_rect,output_rect) {
 
         return newPoint;
     };
-    View.prototype.world_to_screen_multi = function(points) {
+    View.prototype.worldToScreenMulti = function(points) {
 
         var newPoints = [];
 
         for (var i = 0; i < points.length; i++) {
             
-            newPoints.push(this.world_to_screen(points[i]));
+            newPoints.push(this.worldToScreen(points[i]));
         }
         
 
         return newPoints;
     };
 
-    View.prototype.world_to_screen_1D = function(scalar) {
+    View.prototype.worldToScreen1D = function(scalar) {
         return scalar*this.output.size.x/this.input.size.x;
     };
 
-    View.prototype.screen_to_world = function(point) {
+    View.prototype.screenToWorld = function(point) {
 
         var newPoint = new Point(0,0);
 
@@ -50,13 +50,13 @@ function View (input_rect,output_rect) {
 
         return newPoint;
     };
-    View.prototype.screen_to_world_1D = function(scalar) {
+    View.prototype.screenToWorld1D = function(scalar) {
         return scalar*this.input.size.x/this.output.size.x;
     };
 
-    View.prototype.set_scale = function(point) { this.input.size = point; };
+    View.prototype.setScale = function(point) { this.input.size = point; };
     View.prototype.getScale = function() { return this.output.size.x/this.input.size.x; };
-    View.prototype.shift_position = function(point) {
+    View.prototype.shiftPosition = function(point) {
         this.input.position.x += point.x;
         this.input.position.y += point.y;
     };
@@ -76,10 +76,10 @@ function View (input_rect,output_rect) {
                 var shift = new Point(0,this.input.size.y*speed);
             break;
         }
-        this.shift_position(shift);
+        this.shiftPosition(shift);
     }
     
-    View.prototype.set_position = function(point) { this.input.position = point; };
+    View.prototype.setPosition = function(point) { this.input.position = point; };
 
     View.prototype.focus = function(point) {
         this.input.position.x = point.x-this.input.size.x/2;

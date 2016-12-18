@@ -20,8 +20,8 @@
 			//create a default view, which can be edited
 			var view_ratio = canvas.width/canvas.height;
 			var initial_zoom = 2;
-			var view_out = new Rect(	new Point(0,0),
-																new Point(canvas.width,canvas.height));
+			var view_out = new Rect(new Point(0,0),
+																        new Point(canvas.width,canvas.height));
 			var view_in = new Rect(	new Point(-canvas.width*initial_zoom,	-initial_zoom*canvas.height),
 															new Point(canvas.width*initial_zoom*view_ratio,	initial_zoom*canvas.height*view_ratio));
 			var view = new View(view_in,view_out);
@@ -32,11 +32,11 @@
 			var world_interface = new WorldInterface(world,view);
 			var world_renderer = new WorldRenderer(canv_draw,view,world);
 
-			canv_input.window_resize();
+			canv_input.windowResize();
 			
 			//create a unit in the world
-			world.create_unit(new Hex(0,0));
-			world.create_unit(new Hex(1,0));
+			world.createUnit(new Hex(0,0));
+			world.createUnit(new Hex(1,0));
 
 
 
@@ -49,49 +49,49 @@
 				canv_draw.clear();
 
 				//draw the world
-				world_renderer.draw_world();		
+				world_renderer.drawWorld();		
 
 				//draw range of selected unit
 				if (world_interface.hex_selected instanceof Hex) {
 					var potentialUnit = world_interface.world.units.getValue(world_interface.hex_selected);
 					if (potentialUnit instanceof Unit) {
-						potentialUnit.find_range(world_interface.world.map,world_interface.hex_selected);
+						potentialUnit.findRange(world_interface.world.map,world_interface.hex_selected);
 						//console.log(world_interface.unit_selected);
-						world_renderer.draw_range(potentialUnit.range);
-						//world_renderer.draw_path(world_interface.unit_selected.range,world_interface.hex_hovered);
+						world_renderer.drawRange(potentialUnit.range);
+						//world_renderer.drawPath(world_interface.unit_selected.range,world_interface.hex_hovered);
 					}
 
 
 					//draw selection hex
-					world_renderer.draw_hex(world_interface.hex_selected, 2);
+					world_renderer.drawHex(world_interface.hex_selected, 2);
 					//console.log(world_interface.hex_selected);
 				}
 
 				//draw hovered hex
-				world_renderer.draw_hex(world_interface.hex_hovered, 0, "rgba(200,200,200,0.4)",'rgba(0,0,0,0)' );
+				world_renderer.drawHex(world_interface.hex_hovered, 0, "rgba(200,200,200,0.4)",'rgba(0,0,0,0)' );
 			}
 
 			
 			///////////////////////////////////////// CHANGING THE WORLD //////////////////////////////////////////
 			function newWorld() {
-				world.generate_world_map(map_radius);
+				world.generateWorldMap(map_radius);
 				drawScreen();
 			}
 
 			////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
 
 			//add click, mouse, and touch functionality to canvas//
-			canvas.addEventListener('click', function() {canv_input.click_canvas(event);}, false);
-			canvas.addEventListener('mousemove', function() {canv_input.mouse_move(event);}, false);
-			canvas.addEventListener('touchmove', function() {canv_input.touch_move(event);}, false);
-			canvas.addEventListener('touchend', function() {canv_input.touch_end(event);}, false);
-			canvas.addEventListener('touchstart', function() {canv_input.touch_start(event);}, false);
+			canvas.addEventListener('click', function() {canv_input.clickCanvas(event);}, false);
+			canvas.addEventListener('mousemove', function() {canv_input.mouseMove(event);}, false);
+			canvas.addEventListener('touchmove', function() {canv_input.touchMove(event);}, false);
+			canvas.addEventListener('touchend', function() {canv_input.touchEnd(event);}, false);
+			canvas.addEventListener('touchstart', function() {canv_input.touchStart(event);}, false);
 			if (canvas.addEventListener) {
 				// IE9, Chrome, Safari, Opera
-				canvas.addEventListener("mousewheel", function(){canv_input.mouse_wheel(event);}, false);
+				canvas.addEventListener("mousewheel", function(){canv_input.mouseWheel(event);}, false);
 				// Firefox
-				canvas.addEventListener("DOMMouseScroll", function(){canv_input.mouse_wheel(event);}, false);
+				canvas.addEventListener("DOMMouseScroll", function(){canv_input.mouseWheel(event);}, false);
 			}
 
 			//add window resize event
-			window.addEventListener('resize',function() {canv_input.window_resize();}, false);
+			window.addEventListener('resize',function() {canv_input.windowResize();}, false);

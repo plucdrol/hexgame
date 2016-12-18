@@ -37,7 +37,7 @@ function CanvasDraw (canvas) {
     }
 
     //Draw a dot on the canvas at position 'point' with optional size and color
-    CanvasDraw.prototype.draw_dot = function (point,size,color) {
+    CanvasDraw.prototype.drawDot = function (point,size,color) {
 
 
         //draws the dot using screen coordinates
@@ -61,7 +61,7 @@ function CanvasDraw (canvas) {
         line.lineTo(point.x+size/2,point.y);
 
         //define line style
-        line.lineCap="butt";
+        line.lineCap = "butt";
         line.lineWidth = size;
         line.strokeStyle = color;
 
@@ -72,7 +72,7 @@ function CanvasDraw (canvas) {
 
 
     //Draw a line on the canvas from p1 to p2 with optional width and color
-    CanvasDraw.prototype.draw_line = function(p1,p2,width,color) {
+    CanvasDraw.prototype.drawLine = function(p1,p2,width,color) {
 
         //defines the default size
         if (typeof size === 'undefined') {
@@ -103,13 +103,13 @@ function CanvasDraw (canvas) {
     };
 
     //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
-    CanvasDraw.prototype.draw_polygon = function(points,width,fillColor,lineColor) {
+    CanvasDraw.prototype.drawPolygon = function(points,width,fill_color,line_color) {
         
         var line = this.canvas.getContext('2d');
         
         //default line color
-        if (typeof lineColor === 'undefined') {
-            lineColor = 'black';
+        if (typeof line_color === 'undefined') {
+            line_color = 'black';
         }
 
         //default line width
@@ -120,14 +120,14 @@ function CanvasDraw (canvas) {
         //line style
         line.lineWidth = width;
         line.lineCap="round";
-        line.strokeStyle = lineColor;       
+        line.strokeStyle = line_color;       
 
         //polygon outline
         line.beginPath();
         line.moveTo(points[0].x,points[0].y);
         for (i=1; i<points.length; i++) {
             line.lineTo(points[i].x,points[i].y);
-            //this.draw_text(i,points[i],'black',24); //add the index of each corner
+            //this.drawText(i,points[i],'black',24); //add the index of each corner
         }
         line.lineTo(points[0].x,points[0].y);
         line.closePath();
@@ -138,16 +138,16 @@ function CanvasDraw (canvas) {
         }
 
         //optional fill color
-        if (typeof fillColor != 'undefined') {
+        if (typeof fill_color != 'undefined') {
 
-            line.fillStyle = fillColor;
+            line.fillStyle = fill_color;
             line.fill();
         }
         
     };
 
     //draw text on the canvas at the specified position, with optional color and fontsize
-    CanvasDraw.prototype.draw_text = function(text,position,color,fontsize) {
+    CanvasDraw.prototype.drawText = function(text,position,color,fontsize) {
 
         //default fontsize value
         if (typeof fontsize === "undefined") {
@@ -217,8 +217,8 @@ function CanvasInput(canvas) {
     this.canvas = canvas;
     
     //create the mouse pointer (should be part of the mouse/screen controller)
-    this.mousePos = new Object();
-    this.mousePosPrevious = new Object();
+    this.mouse_pos = new Object();
+    this.mouse_pos_previous = new Object();
     this.currentHex = new Hex(0,0);
 
     this.is_dragging = false;
@@ -228,22 +228,22 @@ function CanvasInput(canvas) {
 
 
     //react to clicking canvas by drawing a dot
-    CanvasInput.prototype.click_canvas = function(event) {
+    CanvasInput.prototype.clickCanvas = function(event) {
         
         //avoid click at the end of a drag
         if (this.is_dragging == false) {
         
             //trigger the click event
-            var clickPos = this.get_cursor_position(event);
-            world_interface.click(clickPos);                //this is the part that should be replaced by an event
+            var click_pos = this.getCursorPosition(event);
+            world_interface.click(click_pos);                //this is the part that should be replaced by an event
         }
         //remember that the mouse is done dragging
         this.is_dragging = false;
-        this.mousePosPrevious[0] = undefined;
+        this.mouse_pos_previous[0] = undefined;
 
     }
 
-    CanvasInput.prototype.mouse_wheel = function(event) {
+    CanvasInput.prototype.mouseWheel = function(event) {
 
         event.preventDefault();
 
@@ -258,35 +258,35 @@ function CanvasInput(canvas) {
     }
 
     //react to the mouse moving, hovering and dragging
-    CanvasInput.prototype.mouse_move = function(event) {
+    CanvasInput.prototype.mouseMove = function(event) {
 
         var drag_treshold = 2;
         //find the hovered hexagon
-        this.mousePos[0] = this.get_cursor_position(event);
+        this.mouse_pos[0] = this.getCursorPosition(event);
 
         //detect mouse hovering for animations
-        world_interface.hover(this.mousePos[0]); //this should be replaced by an event
+        world_interface.hover(this.mouse_pos[0]); //this should be replaced by an event
 
         //check if the mouse button is down, triggering a drag
-        if (this.mouse_button_down(event,'left')) {
+        if (this.mouseButtonDown(event,'left')) {
 
             //check if the distance_dragged is over a treshold, to avoid mini-drags
-            if (this.distance(this.mousePos[0],this.mousePosPrevious[0]) > drag_treshold) {
+            if (this.distance(this.mouse_pos[0],this.mouse_pos_previous[0]) > drag_treshold) {
                 this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
             }
             //call the drag function (should be replaced by an event)
-            world_interface.drag(this.mousePos[0],this.mousePosPrevious[0]);
+            world_interface.drag(this.mouse_pos[0],this.mouse_pos_previous[0]);
             
         }
 
         //remember the previous mouse position
-        this.mousePosPrevious[0] = this.mousePos[0];
+        this.mouse_pos_previous[0] = this.mouse_pos[0];
 
         
     }
 
     //react to touch events across the screen
-    CanvasInput.prototype.touch_move = function(ev) {
+    CanvasInput.prototype.touchMove = function(ev) {
         ev.preventDefault();
 
         var id = new Object();
@@ -299,25 +299,25 @@ function CanvasInput(canvas) {
             id[i] = ev.touches[i].identifier;
 
             //find the touch position on the canvas
-            this.mousePos[id[i]] = this.get_cursor_position(ev.touches[i]);
+            this.mouse_pos[id[i]] = this.getCursorPosition(ev.touches[i]);
 
         }
 
         //these only happen for one touch (should be for the first touch)
         if (ev.touches.length == 1) {
 
-            if (this.mousePosPrevious[id[0]] != undefined) {
+            if (this.mouse_pos_previous[id[0]] != undefined) {
                 this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
-                world_interface.drag(this.mousePos[id[0]],this.mousePosPrevious[id[0]]);
+                world_interface.drag(this.mouse_pos[id[0]],this.mouse_pos_previous[id[0]]);
             }
         }
 
         //this is what happens for double touches
         if (ev.touches.length == 2) {
                 
-            if (this.mousePosPrevious[id[0]] != undefined && this.mousePosPrevious[id[1]] != undefined) {
-                var previous_distance = this.distance(this.mousePosPrevious[id[0]], this.mousePosPrevious[id[1]] );
-                var current_distance = this.distance(this.mousePos[id[0]], this.mousePos[id[1]] );
+            if (this.mouse_pos_previous[id[0]] != undefined && this.mouse_pos_previous[id[1]] != undefined) {
+                var previous_distance = this.distance(this.mouse_pos_previous[id[0]], this.mouse_pos_previous[id[1]] );
+                var current_distance = this.distance(this.mouse_pos[id[0]], this.mouse_pos[id[1]] );
                 var difference = current_distance-previous_distance;
 
                 world_interface.zoomView(1-difference/100);
@@ -327,41 +327,41 @@ function CanvasInput(canvas) {
         //remember the previous touches
         for (var i=0;i < ev.touches.length; i++) {
             //remember the previous 
-            this.mousePosPrevious[id[i]] = this.mousePos[id[i]];
+            this.mouse_pos_previous[id[i]] = this.mouse_pos[id[i]];
         }
     }
 
     //React to finger starting to touch screen
-    CanvasInput.prototype.touch_start = function(ev) {
+    CanvasInput.prototype.touchStart = function(ev) {
         //ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
-            delete this.mousePosPrevious[id];
+            delete this.mouse_pos_previous[id];
         }
     }
 
     //React to finger removed from screen
-    CanvasInput.prototype.touch_end = function(ev) {
+    CanvasInput.prototype.touchEnd = function(ev) {
         //ev.preventDefault();
         for(var i=0;i<ev.changedTouches.length;i++) {
             var id = ev.changedTouches[i].identifier;
-            delete this.mousePosPrevious[id];
+            delete this.mouse_pos_previous[id];
         }
         if (this.is_dragging == false) {
-          //  this.click_canvas(ev);
+          //  this.clickCanvas(ev);
         }
         this.is_dragging = false;
     }
 
     //React to screen being resized
-    CanvasInput.prototype.window_resize = function()  {
+    CanvasInput.prototype.windowResize = function()  {
 
         //mesure the new window size
         var width = window.innerWidth;
         var height = window.innerHeight;
 
         //Send the resize event here
-        world_interface.resize_zoom(width,height);
+        world_interface.resizeZoom(width,height);
 
         //size canvas to fit resized window
         this.canvas.width = width;
@@ -377,7 +377,7 @@ function CanvasInput(canvas) {
     //HELPER FUNCTIONS
 
     //returns the (x,y) position of the cursor in the canvas
-    CanvasInput.prototype.get_cursor_position = function(event) {
+    CanvasInput.prototype.getCursorPosition = function(event) {
         //get mouse position
         var e = event;
         var coords = this.canvas.rel_mouse_coords(e); //function defined
@@ -386,7 +386,7 @@ function CanvasInput(canvas) {
 
     
 
-    CanvasInput.prototype.mouse_button_down = function(ev,button) {
+    CanvasInput.prototype.mouseButtonDown = function(ev,button) {
         if (typeof ev.which != undefined) {
             if(ev.which==1 && button=='left') {
                 return true;

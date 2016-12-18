@@ -38,23 +38,23 @@ Hex.prototype.getS = function() {
 
 // BASIC HEX FUNCTIONS
 
-function hex_equals(hex_a,hex_b) {
+Hex.equals = function(hex_a,hex_b) {
 	return hex_a.getQ()==hex_b.getQ() && hex_a.getR()==hex_b.getR();
 }
-function hex_add(hex_a, hex_b)  {
+Hex.add = function(hex_a, hex_b)  {
 	return new Hex( hex_a.getQ()+hex_b.getQ(), hex_a.getR()+hex_b.getR() );
 }
-function hex_substract(hex_a, hex_b)  {
+Hex.substract = function(hex_a, hex_b)  {
 	return new Hex( hex_a.getQ()-hex_b.getQ(), hex_a.getR()-hex_b.getR() );
 }
-function hex_multiply(hex, k)  {
+Hex.multiply = function(hex, k)  {
 	return new Hex( hex.getQ()*k, hex.getR()*k );
 }
-function hex_length(hex) { //returns distance from origin
+Hex.distanceToCenter = function(hex) { //returns distance from origin
 	return (Math.abs(hex.getQ()) + Math.abs(hex.getR()) + Math.abs(hex.getS())) / 2;
 }
-function hex_distance(hex_a,hex_b) {
-	return hex_length(hex_substract(hex_a,hex_b));
+Hex.distance = function(hex_a,hex_b) {
+	return Hex.distanceToCenter(Hex.substract(hex_a,hex_b));
 }
 
 //gives the 6 hex neighbor direction in layout-independent hex coordinates
@@ -66,22 +66,22 @@ var hex_corner = [new Hex(1.0/3.0, 1.0/3.0),new Hex(2.0/3.0, -1.0/3.0),new Hex(1
     new Hex(-1.0/3.0,-1.0/3.0),new Hex(-2.0/3.0,1.0/3.0),new Hex(-1.0/3.0,2.0/3.0)] ;
 
 
-function hex_corners(hex) {
+Hex.corners = function (hex) {
 	var corners = [];
 	//individually add each corner to the hex position
 	for (var i=0;i<6;i++) {
-		corners[i] = hex_add(hex,hex_corner[i]);
+		corners[i] = Hex.add(hex,hex_corner[i]);
 	}
 	return corners;
 }				      
 
-function hex_neighbor(hex,direction_number) {
+Hex.neighbor = function(hex,direction_number) {
 	//takes a hex and a direction (from 0 to 6), and returns a neighboring hex
-	return hex_add(hex, hex_direction[direction_number%6] );
+	return Hex.add(hex, hex_direction[direction_number%6] );
 }
 
 //takes a hex and returns all 6 neighbors
-function hex_neighbors(hex) {
+Hex.neighbors = function(hex) {
 	var neighbors = [];
 
 
@@ -90,7 +90,7 @@ function hex_neighbors(hex) {
 
 // FRACTIONAL FUNCTIONS
 
-function hex_round(fractional_hex) {
+Hex.round = function(fractional_hex) {
 	q = Math.round(fractional_hex.getQ());
 	r = Math.round(fractional_hex.getR());
 	s = Math.round(fractional_hex.getS());
@@ -111,7 +111,7 @@ function hex_round(fractional_hex) {
 
 }
 
-function hex_linear_interpolate(hex_a,hex_b,t) {
+Hex.linearInterpolate = function(hex_a,hex_b,t) {
 	return new Hex( hex_a.getQ() + (hex_b.getQ() - hex_a.getQ()) * t,
 					hex_a.getR() + (hex_b.getR() - hex_a.getR()) * t,
 					hex_a.getS() + (hex_b.getS() - hex_a.getS()) * t);
@@ -120,12 +120,12 @@ function hex_linear_interpolate(hex_a,hex_b,t) {
 
 // HEX SELECT FUNCTIONS
 
-function hex_line(hex_a,hex_b) {
-	var distance = hex_distance(hex_a,hex_b);
+Hex.line = function(hex_a,hex_b) {
+	var distance = Hex.distance(hex_a,hex_b);
 	var results = [];
 	var step = 1.0 / Math.max(distance,1);
 	for (var i=0;i<=distance;i++) {
-		results.push(hex_round(hex_linear_interpolate(hex_a,hex_b,step*i)));
+		results.push(Hex.round(Hex.linearInterpolate(hex_a,hex_b,step*i)));
 
 	}
 	return results;
@@ -174,18 +174,18 @@ function Vertex(hex,direction_number) {
 		return this.hex;
 	}
 	Vertex.prototype.getOuterHex = function() {
-		return hex_neighbor(this.hex, this.direction_number);
+		return Hex.neighbor(this.hex, this.direction_number);
 	};
 	Vertex.prototype.getClockwiseHex = function() {
 		//returns the hex which is clockwise from the outer hex
-		return hex_neighbor(this.hex, (this.direction_number+5)%6 );
+		return Hex.neighbor(this.hex, (this.direction_number+5)%6 );
 	};
 
 	//returns the vertex coordinate in fractional hexes 
 	Vertex.prototype.getPoint = function() {
 
 		//from the hex's center, move in fractional hex to the corner given by direction_number
-		return hex_add(this.hex, hex_corner[this.direction_number] );
+		return Hex.add(this.hex, hex_corner[this.direction_number] );
 	};
 
 
@@ -220,11 +220,11 @@ function Edge(hex,direction_number) {
 }
 	Edge.prototype.equals = function(other_edge) {
 		//same hex, same direction
-		if (hex_equals(this.getInnerHex(),other_edge.getInnerHex()) && this.direction_number == other_edge.direction_number) {
+		if (Hex.equals(this.getInnerHex(),other_edge.getInnerHex()) && this.direction_number == other_edge.direction_number) {
 			return true;
 		}
 		//opposite hex, opposite direction
-		if (hex_equals(this.getInnerHex(),other_edge.getOuterHex()) && this.direction_number == (other_edge.direction_number+3)%6) {
+		if (Hex.equals(this.getInnerHex(),other_edge.getOuterHex()) && this.direction_number == (other_edge.direction_number+3)%6) {
 			return true;
 		}
 
@@ -238,7 +238,7 @@ function Edge(hex,direction_number) {
 
 	//Returns the Hex on the other side of the edge
 	Edge.prototype.getOuterHex = function() {
-		return hex_neighbor(this.hex, this.direction_number);
+		return Hex.neighbor(this.hex, this.direction_number);
 	};
 
 	//As seen from the InnerHex's perspective, Point2 is counterclockwise from Point1
@@ -281,7 +281,7 @@ function Edge(hex,direction_number) {
 
 
 //returns the outside edges only of a group of hexes 
-function hex_outline(hexes) {
+Hex.outline = function(hexes) {
 
 	//HEXES: array of hexes
 	//var UNSORTED_EDGES: array of edges (order the coordinates counter-clockwise so it is possible to follow them around the shape)
@@ -299,9 +299,9 @@ function hex_outline(hexes) {
 			var edge = new Edge( hexes[i], d);
 
 			//get the neighbor across that edge
-			var neighbor = hex_neighbor( hexes[i], d );
+			var neighbor = Hex.neighbor( hexes[i], d );
 
-			if ( !( hex_equals(edge.getOuterHex(), neighbor) )) {
+			if ( !( Hex.equals(edge.getOuterHex(), neighbor) )) {
 				console.log ('hex_equal doesnt work');
 			}
 
@@ -324,13 +324,13 @@ function hex_outline(hexes) {
 	}
 	//sort the edges
 
-	var sorted_edges = sort_edges(unsorted_edges);
+	var sorted_edges = Edge.sort(unsorted_edges);
 	
 	return sorted_edges;
 }
 
 //sorts an array of edges into many arrays of connected edges
-function sort_edges(unsorted_edges) {
+Edge.sort = function(unsorted_edges) {
 	
 	//create a new ARRAY OF EDGE ARRAYS
 	var edge_arrays = [];
@@ -455,8 +455,8 @@ function HexMap() {
 		var Q = ((z-f2)<f)?(z-f2):(f);
 		var R = ((z-f2)<f)?(f):(z-f2-f);
 
-		var q = is_even(Q)?(Q/2):((Q+1)/-2);
-		var r = is_even(R)?(R/2):((R+1)/-2);
+		var q = isEven(Q)?(Q/2):((Q+1)/-2);
+		var r = isEven(R)?(R/2):((R+1)/-2);
 
 		return new Hex(q,r);
 	};
@@ -622,24 +622,24 @@ function HexLayout (orientation, size, origin) {
 
 
 	//   HEX AND PIXEL RELATIONS
-	HexLayout.prototype.hex_to_point = function(hex) {
+	HexLayout.prototype.hexToPoint = function(hex) {
 		var ori = this.orientation;
 		var x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
 		var y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
 		return new Point(x + this.origin.x, y + this.origin.y );
 	}
 
-	HexLayout.prototype.hexes_to_points = function(hexes) {
+	HexLayout.prototype.hexesToPoints = function(hexes) {
 		var points = [];
 		var i=0;
 		for (let hex of hexes) {							
-			points[i] = this.hex_to_point(hex);
+			points[i] = this.hexToPoint(hex);
 			i++;
 		}
 		return points;
 	}
 
-	HexLayout.prototype.point_to_hex = function(point) {
+	HexLayout.prototype.pointToHex = function(point) {
 		var ori = this.orientation;
 		var pt = new Point((point.x - this.origin.x)/this.size.x,
 						(point.y - this.origin.y)/this.size.y);
@@ -648,11 +648,11 @@ function HexLayout (orientation, size, origin) {
 		return new Hex(q,r);
 	}
 
-	HexLayout.prototype.points_to_hexes = function(points) {
+	HexLayout.prototype.pointsToHexes = function(points) {
 		var hexes = [];
 		var i=0;
 		for ( let point of points) {
-			hexes[i] = this.point_to_hex(point);
+			hexes[i] = this.pointToHex(point);
 			i++;
 		}
 		return hexes;

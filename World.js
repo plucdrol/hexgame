@@ -14,7 +14,7 @@ function World(size,layout) {
 
 
 	//A world is composed of a world map...
-	this.generate_world_map(size);
+	this.generateWorldMap(size);
 	this.layout = layout;
 	this.size = size;
 
@@ -30,7 +30,7 @@ function World(size,layout) {
 }
 
 //create a new Unit at position Hex
-World.prototype.create_unit = function(hex) {
+World.prototype.createUnit = function(hex) {
 	var newUnit = new VirusUnit();
 	
 	this.units.set(hex,newUnit);
@@ -38,24 +38,24 @@ World.prototype.create_unit = function(hex) {
 }
 
 //delete the new Unit at position Hex
-World.prototype.remove_unit = function(hex) {
+World.prototype.removeUnit = function(hex) {
 	this.units.remove(hex);
 }
 
 
 //Move the unit from one hex to another hex
 //If a unit is already there, abort the move
-World.prototype.move_unit = function(current_hex,new_hex) {
+World.prototype.moveUnit = function(current_hex,new_hex) {
 	//if there is no unit in that hex, abort the move
-	//if (typeof this.unit_at_position(current_hex) != 'undefined') {
+	//if (typeof this.unitAtPosition(current_hex) != 'undefined') {
 
 		//if a unit is already there, abort the move
-		//if (typeof this.unit_at_position(new_hex) === 'undefined') {
+		//if (typeof this.unitAtPosition(new_hex) === 'undefined') {
 
 			//create the unit in the new location
-			this.create_unit(new_hex);
+			this.createUnit(new_hex);
 			//delete the unit in the current location
-			this.remove_unit(current_hex);
+			this.removeUnit(current_hex);
 
 			//return the unit at the new position
 			return this.units.getValue(new_hex);
@@ -64,7 +64,7 @@ World.prototype.move_unit = function(current_hex,new_hex) {
 }
 
 //returns the Unit at position Hex. For now only a single unit can be on each hex
-World.prototype.unit_at_position = function(hex) {
+World.prototype.unitAtPosition = function(hex) {
 	if (this.units.containsHex(hex)) {
 		return this.units.getValue(hex);
 	} else {
@@ -72,22 +72,22 @@ World.prototype.unit_at_position = function(hex) {
 	}
 }
 
-World.prototype.generate_world_map = function(size) {
+World.prototype.generateWorldMap = function(size) {
 	
 
 	//make a new map from scratch
-	var map_generator = new HexMap_Generator();
-	//this.map = map_generator.generate_map('perlin_custom',size,base,scales,scales, multis);
-	this.map = map_generator.generate_map('perlin_continents',size);
+	var map_generator = new HexMapGenerator();
+	//this.map = map_generator.generateMap('perlin_custom',size,base,scales,scales, multis);
+	this.map = map_generator.generateMap('perlin_continents',size);
 
 
 }
 
-World.prototype.next_tick = function() {
+World.prototype.nextTick = function() {
 
 	//update all tickable elements
 	for (let unit of this.units.getValues()) {
-		unit.next_tick();
+		unit.nextTick();
 	}
 }
 
@@ -140,8 +140,8 @@ WorldInterface.prototype.zoomView = function(zoom) {
 }
 
 WorldInterface.prototype.getHex = function(screen_position) {
-	var world_position = this.view.screen_to_world(screen_position);
-	var hex = hex_round(this.world.layout.point_to_hex(world_position));
+	var world_position = this.view.screenToWorld(screen_position);
+	var hex = Hex.round(this.world.layout.pointToHex(world_position));
 	return hex;
 }
 WorldInterface.prototype.setHex = function(screen_position,value) {
@@ -161,7 +161,7 @@ WorldInterface.prototype.hover = function(screen_position) {
 	this.hex_hovered = this.getHex(screen_position);
 
 	//if the mouse moved to a new hex, redraw the screen
-	if ( !hex_equals(this.hex_hovered, this.hex_hovered_previous) ) {
+	if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
 		drawScreen();
 	}
 
@@ -175,24 +175,24 @@ WorldInterface.prototype.click = function(screen_position) {
 	var hex_clicked = this.getHex(screen_position);
 
 	//if there is already a unit on the hex selected
-	if (this.hex_selected instanceof Hex && this.world.unit_at_position(this.hex_selected) instanceof Unit) {
+	if (this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit) {
 
 		//and you are re-clicking the unit
-		if ( hex_equals(this.hex_selected, hex_clicked)) {
+		if ( Hex.equals(this.hex_selected, hex_clicked)) {
 				this.hex_selected = 'undefined';
 
 		} else {
 			
 			//and you are clicking inside the unit's range outline
-			if (this.world.unit_at_position(this.hex_selected).range.containsHex(hex_clicked)) {
+			if (this.world.unitAtPosition(this.hex_selected).range.containsHex(hex_clicked)) {
 
 				//if there is already a unit there
-				if (this.world.unit_at_position(hex_clicked)) {
+				if (this.world.unitAtPosition(hex_clicked)) {
 					this.hex_selected = 'undefined';
 				} else { //if there is no unit there
 					//Move the unit then generate its new range
-					this.world.move_unit(this.hex_selected,hex_clicked);
-					this.world.unit_at_position(hex_clicked).find_range(this.world.map,hex_clicked);
+					this.world.moveUnit(this.hex_selected,hex_clicked);
+					this.world.unitAtPosition(hex_clicked).findRange(this.world.map,hex_clicked);
 					this.hex_selected = hex_clicked;
 				}
 
@@ -205,11 +205,11 @@ WorldInterface.prototype.click = function(screen_position) {
 		//if there is no unit selected
 		this.hex_selected = hex_clicked;
 
-		if (this.world.unit_at_position(hex_clicked) instanceof Unit) { 
+		if (this.world.unitAtPosition(hex_clicked) instanceof Unit) { 
 			
 			//and you clicked a unit
 			console.log('selecting a unit');
-			this.world.unit_at_position(this.hex_selected).find_range(this.world.map,hex_clicked);
+			this.world.unitAtPosition(this.hex_selected).findRange(this.world.map,hex_clicked);
 		} else {
 
 
@@ -224,20 +224,20 @@ WorldInterface.prototype.click = function(screen_position) {
 WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
 	
 	//get the movement the mouse has moved since last tick
-	var drag_movement = new Point(this.view.screen_to_world_1D(previous_mouse.x-current_mouse.x),
-																this.view.screen_to_world_1D(previous_mouse.y-current_mouse.y));
+	var drag_movement = new Point(this.view.screenToWorld1D(previous_mouse.x-current_mouse.x),
+																this.view.screenToWorld1D(previous_mouse.y-current_mouse.y));
 	
 	//shift the view by that movement
-	this.view.shift_position(drag_movement);
+	this.view.shiftPosition(drag_movement);
 	
 	//redraw the screen after moving
 	drawScreen();
 	
 	//draw a line tracing the mouse motion tracked
-	world_renderer.draw_line(this.view.screen_to_world(previous_mouse),this.view.screen_to_world(current_mouse),5,'lightblue');
+	world_renderer.drawLine(this.view.screenToWorld(previous_mouse),this.view.screenToWorld(current_mouse),5,'lightblue');
 }
 
-WorldInterface.prototype.resize_zoom = function(width,height) {
+WorldInterface.prototype.resizeZoom = function(width,height) {
 
 	//remember the current view
   var current_view = view;
@@ -266,8 +266,8 @@ WorldInterface.prototype.resize_zoom = function(width,height) {
 
 }
 
-WorldInterface.prototype.next_tick = function() {
-	this.world.next_tick();
+WorldInterface.prototype.nextTick = function() {
+	this.world.nextTick();
 }
 
 

@@ -14,12 +14,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////*/
 
-HexMap_Generator = function() {
+HexMapGenerator = function() {
 
 
 }
 
-HexMap_Generator.prototype.generate_map = function(method,size) {
+HexMapGenerator.prototype.generateMap = function(method,size) {
 	
 	var map = new HexMap();
 
@@ -36,20 +36,20 @@ HexMap_Generator.prototype.generate_map = function(method,size) {
 
 	        switch (method) {
 	        	case 'random':
-	        		value = this.generate_tile_random(10);
+	        		value = this.generateTileRandom(10);
 	        		break;
 	        	case 'perlin':
-	        		value = this.generate_tile_perlin(q,r,simplex);
+	        		value = this.generateTilePerlin(q,r,simplex);
 	        		break;
 	        	case 'perlin_custom':
 	        		//create a world using the new world code
 					var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
 					var multis = [16,8,4,2,1,0];
 					var base = 4;
-	        		value = this.generate_tile_perlin_custom(q,r,simplex,base,scales,scales,multis);
+	        		value = this.generateTilePerlinCustom(q,r,simplex,base,scales,scales,multis);
 	        		break;
 	        	case 'perlin_continents':
-	        		value = this.generate_tile_perlin_continents(q,r,simplex,size);
+	        		value = this.generateTilePerlinContinents(q,r,simplex,size);
 	        		break;
 	        }
 	        		
@@ -58,18 +58,18 @@ HexMap_Generator.prototype.generate_map = function(method,size) {
 	    }
 	}
 
-	this.add_water_rim(map,size, 0.1);
-	this.round_down(map);
-	this.add_shallow_water(map);
-	this.flaten_range(map,size,2,3);
-	this.flaten_range(map,size,3,6);
+	this.addWaterRim(map,size, 0.1);
+	this.roundDown(map);
+	this.addShallowWater(map);
+	this.flatenRange(map,size,2,3);
+	this.flatenRange(map,size,3,6);
 	return map;
 
 }
 
 
 
-HexMap_Generator.prototype.generate_tile_random = function(range) {
+HexMapGenerator.prototype.generateTileRandom = function(range) {
 	var value = 1+1*Math.floor((range+2)*Math.random());
 	if (value >= range) 
 		{value = range;}
@@ -78,7 +78,7 @@ HexMap_Generator.prototype.generate_tile_random = function(range) {
 
 
 
-HexMap_Generator.prototype.generate_tile_perlin = function(x,y,simplex) {
+HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex) {
 
 	var value0 = Math.floor(simplex.noise(0.02*x,0.02*y)*10);
 	var value1 = Math.floor(simplex.noise(0.1*x,0.1*y)*7);
@@ -97,7 +97,7 @@ HexMap_Generator.prototype.generate_tile_perlin = function(x,y,simplex) {
 
 }
 
-HexMap_Generator.prototype.generate_tile_perlin_custom = function(x,y,simplex,base,scales_x,scales_y,multiplicands) {
+HexMapGenerator.prototype.generateTilePerlinCustom = function(x,y,simplex,base,scales_x,scales_y,multiplicands) {
 
 	var length = Math.min( scales_x.length, scales_y.length, multiplicands.length );
 	var total = base;
@@ -133,7 +133,7 @@ HexMap_Generator.prototype.generate_tile_perlin_custom = function(x,y,simplex,ba
 
 }
 
-HexMap_Generator.prototype.generate_tile_perlin_continents = function(x,y,simplex,size) {
+HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y,simplex,size) {
 
 
 	//initial settings
@@ -179,7 +179,7 @@ HexMap_Generator.prototype.generate_tile_perlin_continents = function(x,y,simple
 }
 
 //Adds water in the ratio from the edge of the map defined by rim_size/1
-HexMap_Generator.prototype.round_down = function(map) {
+HexMapGenerator.prototype.roundDown = function(map) {
 	
 	var value;
 
@@ -199,7 +199,7 @@ HexMap_Generator.prototype.round_down = function(map) {
 }
 
 //Adds water in the ratio from the edge of the map defined by rim_size/1
-HexMap_Generator.prototype.add_water_rim = function(map, size, rim_size) {
+HexMapGenerator.prototype.addWaterRim = function(map, size, rim_size) {
 	
 	//center hex
 	var origin = new Hex(0,0);
@@ -212,7 +212,7 @@ HexMap_Generator.prototype.add_water_rim = function(map, size, rim_size) {
 		if (map.containsHex(thishex)) {
 
 			//analyse map
-			var distance_to_center = Math.max(hex_distance(origin,thishex),0);
+			var distance_to_center = Math.max(Hex.distance(origin,thishex),0);
 			var distance_to_edge = size - distance_to_center;
 			var rim_length = rim_size*size;
 			
@@ -238,7 +238,7 @@ HexMap_Generator.prototype.add_water_rim = function(map, size, rim_size) {
 
 }
 
-HexMap_Generator.prototype.flaten_range = function(map, size, range_min,range_max) {
+HexMapGenerator.prototype.flatenRange = function(map, size, range_min,range_max) {
 	
 	//for each cell
 	for (var q = -size; q <= size; q++) {
@@ -268,7 +268,7 @@ HexMap_Generator.prototype.flaten_range = function(map, size, range_min,range_ma
 	}
 }
 
-HexMap_Generator.prototype.add_shallow_water = function(map) {
+HexMapGenerator.prototype.addShallowWater = function(map) {
 	var neighbors = [];
 
 
@@ -282,7 +282,7 @@ HexMap_Generator.prototype.add_shallow_water = function(map) {
 
 				//check its neighbors
 				for (var dir =0; dir < 6; dir++) {
-					var neighbor = hex_neighbor(thishex,dir);
+					var neighbor = Hex.neighbor(thishex,dir);
 					if (map.containsHex(neighbor)) {
 						//and if they are land
 						if (map.getValue(neighbor) > 1) {
@@ -310,7 +310,7 @@ function gradient(x,y) {
 }
 
 
-function is_even(n) {
+function isEven(n) {
 	return n%2==0;
 }
 
