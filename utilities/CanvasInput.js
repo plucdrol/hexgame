@@ -76,7 +76,7 @@ function CanvasInput(canvas) {
         if (this.mouseButtonDown(event,'left')) {
 
             //check if the distance_dragged is over a treshold, to avoid mini-drags
-            if (this.distance(this.mouse_pos[0],this.mouse_pos_previous[0]) > drag_treshold) {
+            if (distance(this.mouse_pos[0],this.mouse_pos_previous[0]) > drag_treshold) {
                 this.is_dragging = true; //this variable prevents clicks from happening at the end of a drag
             }
             //call the drag function (should be replaced by an event)
@@ -121,8 +121,8 @@ function CanvasInput(canvas) {
         if (ev.touches.length == 2) {
                 
             if (this.mouse_pos_previous[id[0]] != undefined && this.mouse_pos_previous[id[1]] != undefined) {
-                var previous_distance = this.distance(this.mouse_pos_previous[id[0]], this.mouse_pos_previous[id[1]] );
-                var current_distance = this.distance(this.mouse_pos[id[0]], this.mouse_pos[id[1]] );
+                var previous_distance = distance(this.mouse_pos_previous[id[0]], this.mouse_pos_previous[id[1]] );
+                var current_distance = distance(this.mouse_pos[id[0]], this.mouse_pos[id[1]] );
                 var difference = current_distance-previous_distance;
 
                 world_interface.zoomView(1-difference/100);
@@ -219,11 +219,11 @@ function CanvasInput(canvas) {
         
     }
 
-    //returns the cartesian distance between two points
-    CanvasInput.prototype.distance = function(point1,point2) {
+//returns the cartesian distance between two points
+function distance(point1,point2) {
 
-        return Math.hypot(point2.x-point1.x, point2.y-point1.y);
-    }
+    return Math.hypot(point2.x-point1.x, point2.y-point1.y);
+}
 
 
 /* 
