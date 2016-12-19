@@ -30,9 +30,10 @@ function World(size,layout) {
 }
 
 //create a new Unit at position Hex
-World.prototype.createUnit = function(hex) {
-	var newUnit = new VirusUnit();
+World.prototype.createUnit = function(hex,unit_type) {
 	
+	//create new unit and add it to the map
+	var newUnit = new Unit(unit_type);
 	this.units.set(hex,newUnit);
 	return newUnit;
 }
@@ -51,9 +52,11 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 
 		//if a unit is already there, abort the move
 		//if (typeof this.unitAtPosition(new_hex) === 'undefined') {
+			//get the type of the unit
+			var unit_type = this.unitAtPosition(current_hex).getType();
 
 			//create the unit in the new location
-			this.createUnit(new_hex);
+			this.createUnit(new_hex,unit_type);
 			//delete the unit in the current location
 			this.removeUnit(current_hex);
 

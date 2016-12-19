@@ -35,8 +35,15 @@
 			canv_input.windowResize();
 			
 			//create a unit in the world
-			world.createUnit(new Hex(0,0));
-			world.createUnit(new Hex(1,0));
+			world.createUnit(new Hex(0,0),'player');
+			world.createUnit(new Hex(1,0),'tree');
+			world.createUnit(new Hex(15,-15),'fast-player');
+			world.createUnit(new Hex(15,0),'fast-player');
+			world.createUnit(new Hex(0,-15),'fast-player');
+			world.createUnit(new Hex(-15,-15),'fast-player');
+			world.createUnit(new Hex(-15,15),'fast-player');
+			world.createUnit(new Hex(-15,0),'fast-player');
+			world.createUnit(new Hex(1,0),'tree');
 
 
 
