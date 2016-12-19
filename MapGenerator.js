@@ -43,9 +43,9 @@ HexMapGenerator.prototype.generateMap = function(method,size) {
 	        		break;
 	        	case 'perlin_custom':
 	        		//create a world using the new world code
-					var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
-					var multis = [16,8,4,2,1,0];
-					var base = 4;
+							var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
+							var multis = [16,8,4,2,1,0];
+							var base = 4;
 	        		value = this.generateTilePerlinCustom(q,r,simplex,base,scales,scales,multis);
 	        		break;
 	        	case 'perlin_continents':
@@ -80,20 +80,30 @@ HexMapGenerator.prototype.generateTileRandom = function(range) {
 
 HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex) {
 
-	var value0 = Math.floor(simplex.noise(0.02*x,0.02*y)*10);
-	var value1 = Math.floor(simplex.noise(0.1*x,0.1*y)*7);
-	var value11 = Math.floor(simplex.noise(0.2*x,0.2*y)*4);
-	var value2 = Math.floor(simplex.noise(0.5*x,0.5*y)*2);
-	var value3 = Math.floor(simplex.noise(1.0*x,1.0*y)*1);
+	//create noise profile
+	var value_list = [];
+	value_list.push(6);
+	value_list.push(Math.floor(simplex.noise(0.02*x,0.02*y)*10));
+	value_list.push(Math.floor(simplex.noise(0.1*x,0.1*y)*7));
+	value_list.push(Math.floor(simplex.noise(0.2*x,0.2*y)*4));
+	value_list.push(Math.floor(simplex.noise(0.5*x,0.5*y)*2));
+	value_list.push(Math.floor(simplex.noise(1.0*x,1.0*y)*1));
 
-	var value = 6 + value0 + value1 + value11 + value2 + value3;
-	//if (value >= 7) 
-	//	{value = 7;}
+	//add the noise values together
+	var value = 0;
+	for (var i=0; i<value_list.length; i++) {
+		value += value_list[i];
+	}
+	
+	//add shallow water
 	if (value < 1 && value > -4) 
 		{value = 1;}
+
+	//prevent negative values
 	if (value < 0) 
 		{value = 0;}
-    return value;
+
+  return value;
 
 }
 
