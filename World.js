@@ -47,7 +47,7 @@ World.prototype.removeUnit = function(hex) {
 //If a unit is already there, abort the move
 World.prototype.moveUnit = function(current_hex,new_hex) {
 	//if there is no unit in that hex, abort the move
-	//if (typeof this.unitAtPosition(current_hex) != 'undefined') {
+	if (typeof this.unitAtPosition(current_hex) != 'undefined') {
 
 		//if a unit is already there, abort the move
 		//if (typeof this.unitAtPosition(new_hex) === 'undefined') {
@@ -60,7 +60,7 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 			//return the unit at the new position
 			return this.units.getValue(new_hex);
 	//	}
-	//}
+	}
 }
 
 //returns the Unit at position Hex. For now only a single unit can be on each hex
