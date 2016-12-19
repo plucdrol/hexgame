@@ -26,7 +26,7 @@ HexMapGenerator.prototype.generateMap = function(method,size) {
 	var simplex = new SimplexNoise();
 	var value;
 	
-
+	//Traverses the world map while staying inside the giant hexagon
 	for (var q = -size; q <= size; q++) {
 	    var r1 = Math.max(-size, -q - size);
 	    var r2 = Math.min(size, -q + size);
@@ -36,7 +36,7 @@ HexMapGenerator.prototype.generateMap = function(method,size) {
 
 	        switch (method) {
 	        	case 'random':
-	        		value = this.generateTileRandom(10);
+	        		value = this.generateTileRandom(20);
 	        		break;
 	        	case 'perlin':
 	        		value = this.generateTilePerlin(q,r,simplex);
@@ -46,7 +46,7 @@ HexMapGenerator.prototype.generateMap = function(method,size) {
 							var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
 							var multis = [16,8,4,2,1,0];
 							var base = 4;
-	        		value = this.generateTilePerlinCustom(q,r,simplex,base,scales,scales,multis);
+	        		value = this.generateTilePerlin(q,r,simplex,base,scales,scales,multis);
 	        		break;
 	        	case 'perlin_continents':
 	        		value = this.generateTilePerlinContinents(q,r,simplex,size);
@@ -76,42 +76,30 @@ HexMapGenerator.prototype.generateTileRandom = function(range) {
 	return value;
 }
 
+HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales_x,scales_y,multiplicands) {
 
-
-HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex) {
-
-	//create noise profile
-	var value_list = [];
-	value_list.push(6);
-	value_list.push(Math.floor(simplex.noise(0.02*x,0.02*y)*10));
-	value_list.push(Math.floor(simplex.noise(0.1*x,0.1*y)*7));
-	value_list.push(Math.floor(simplex.noise(0.2*x,0.2*y)*4));
-	value_list.push(Math.floor(simplex.noise(0.5*x,0.5*y)*2));
-	value_list.push(Math.floor(simplex.noise(1.0*x,1.0*y)*1));
-
-	//add the noise values together
-	var value = 0;
-	for (var i=0; i<value_list.length; i++) {
-		value += value_list[i];
+	//Set default values if absent
+	if (typeof base === 'undefined') {
+		base = 6;
 	}
-	
-	//add shallow water
-	if (value < 1 && value > -4) 
-		{value = 1;}
 
-	//prevent negative values
-	if (value < 0) 
-		{value = 0;}
+	if (typeof scales_x === 'undefined') {
+		scales_x = [0.02,0.1,0.2,0.5,1.0];
+	}
 
-  return value;
+	if (typeof scales_y === 'undefined') {
+		scales_y = [0.02,0.1,0.2,0.5,1.0];
+	}
 
-}
+	if (typeof multiplicands === 'undefined') {
+		multiplicands = [10,7,4,2,1];
+	}
 
-HexMapGenerator.prototype.generateTilePerlinCustom = function(x,y,simplex,base,scales_x,scales_y,multiplicands) {
-
+	//get minimum length
 	var length = Math.min( scales_x.length, scales_y.length, multiplicands.length );
+
+	//add up all the perlin values
 	var total = base;
-	var great_emptyness = false;
 
 	for (var i = 0; i < length; i++ ) {
 		total += Math.floor(simplex.noise(scales_x[i]*x, scales_y[i]*y)*multiplicands[i]);
@@ -139,7 +127,7 @@ HexMapGenerator.prototype.generateTilePerlinCustom = function(x,y,simplex,base,s
 	total += 0.75;
 
 
-    return total;
+  return total;
 
 }
 
@@ -215,7 +203,7 @@ HexMapGenerator.prototype.addWaterRim = function(map, size, rim_size) {
 	var origin = new Hex(0,0);
 	var value;
 
-
+	//run this code on each hex
 	for (let thishex of map.getArray()) {
 		
 		//for each hex
@@ -227,10 +215,7 @@ HexMapGenerator.prototype.addWaterRim = function(map, size, rim_size) {
 			var rim_length = rim_size*size;
 			
 			//define new value and insert
-			
-			//value = Math.max(  0, 1.5 * value * (distance_to_edge/2 - rim_size ) / (distance_to_edge/2+1)  )  ;
 			value = map.getValue(thishex);
-
 			value *= 1-Math.pow((rim_length/distance_to_edge),2);
 
 			//prevent negative values
@@ -241,11 +226,7 @@ HexMapGenerator.prototype.addWaterRim = function(map, size, rim_size) {
 			map.set(thishex, value);
 
 		}
-
 	}
-
-	//value = Math.max(  0, Math.floor(value * 4 * ((distance_to_edge*(15+distance_to_center)*distance_to_edge)/(size*size*size) ) )  );
-
 }
 
 HexMapGenerator.prototype.flatenRange = function(map, size, range_min,range_max) {
@@ -286,7 +267,7 @@ HexMapGenerator.prototype.addShallowWater = function(map) {
 		
 		//for each hex
 		if (map.containsHex(thishex)) {
-			///console.log('contains one hex');
+
 			//if the hex is deep water
 			if (map.getValue(thishex) == 0) {
 
