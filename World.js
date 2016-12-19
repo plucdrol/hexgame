@@ -45,24 +45,21 @@ World.prototype.removeUnit = function(hex) {
 
 
 //Move the unit from one hex to another hex
-//If a unit is already there, abort the move
 World.prototype.moveUnit = function(current_hex,new_hex) {
-	//if there is no unit in that hex, abort the move
+	//if there is a unit in that hex, abort the move
 	if (typeof this.unitAtPosition(current_hex) != 'undefined') {
 
-		//if a unit is already there, abort the move
-		//if (typeof this.unitAtPosition(new_hex) === 'undefined') {
-			//get the type of the unit
-			var unit_type = this.unitAtPosition(current_hex).getType();
+			//get the unit which is moving
+			var unit = this.unitAtPosition(current_hex);
 
-			//create the unit in the new location
-			this.createUnit(new_hex,unit_type);
-			//delete the unit in the current location
+			//place it at the new position
+			this.units.set(new_hex,unit);
+
+			//delete the unit in the old location
 			this.removeUnit(current_hex);
 
 			//return the unit at the new position
 			return this.units.getValue(new_hex);
-	//	}
 	}
 }
 
