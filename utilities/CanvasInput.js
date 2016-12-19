@@ -66,7 +66,7 @@ function CanvasInput(canvas) {
     CanvasInput.prototype.mouseMove = function(event) {
 
         var drag_treshold = 2;
-        //find the hovered hexagon
+        //find the hovered position
         this.mouse_pos[0] = this.getCursorPosition(event);
 
         //detect mouse hovering for animations
