@@ -199,6 +199,7 @@ WorldInterface.prototype.click = function(screen_position) {
 			//if you are clicking outside the unit's range
 			} else {
 				this.hex_selected = 'undefined';
+				this.click(screen_position);
 			}
 		}
 	} else {
