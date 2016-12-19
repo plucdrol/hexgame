@@ -19,7 +19,7 @@ function Unit(unit_type) {
 
 	Unit.prototype.findRange = function(map,position) {
 		var pathfinder = new PathFinder(map);
-		this.range = pathfinder.pathWithTerrain(position,this.movement);
+		this.range = pathfinder.pathWithTerrain(position,this.movement_left);
 	};
 
 	Unit.prototype.action = function(action) {
@@ -66,4 +66,15 @@ function Unit(unit_type) {
 	}
 	Unit.prototype.setColor = function(color) {
 		this.color = color;
+	}
+
+	Unit.prototype.move = function(map,current_hex,next_hex) {
+		//measure the distance moved
+		var pathfinder = new PathFinder(map);
+		var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex);
+		console.log(movement_cost);
+
+		//substract it from the movement remaining
+		this.movement_left -= movement_cost;
+
 	}

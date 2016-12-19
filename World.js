@@ -52,6 +52,9 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 			//get the unit which is moving
 			var unit = this.unitAtPosition(current_hex);
 
+			//let unit figure out its movement
+			unit.move(this.map,current_hex,new_hex);
+
 			//place it at the new position
 			this.units.set(new_hex,unit);
 
