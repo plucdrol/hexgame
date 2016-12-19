@@ -10,10 +10,15 @@
 	//path_distance(hex_origin,hex_destination) returns distance between two hexes
 
 
-
+function PathFinderCell() {
+	this.path_cost;
+	this.came_from;
+	this.value;
+}
 
 function PathFinder(map) {
 	this.map = map;
+
 
 
 	//Replaces the map that the pathfinder uses for calculations
@@ -69,6 +74,12 @@ function PathFinder(map) {
 		var cost_so_far = 0;
 		var came_from = undefined;
 
+		//create pathfinder cell for origin
+		var pathfinder_cell = new PathFinderCell();
+		pathfinder_cell.path_cost = cost_so_far;
+		pathfinder_cell.came_from = came_from;
+		pathfinder_cell.value = this.map.getValue(origin);
+
 		visited.set(origin,[cost_so_far,came_from,this.map.getValue(origin)]); //define this triad as an object
 
 		//while the frontier still has nodes to explore
@@ -102,6 +113,13 @@ function PathFinder(map) {
 					//add the cell if it hasnt been visited
 					if (this.moveCostAbsolute(neighbor) > 1 && this.moveCostAbsolute(neighbor) < 14) { //not water or mountain
 						frontier.put(neighbor);
+
+						//create pathfinder cell for this hex
+						pathfinder_cell.path_cost = path_cost;
+						pathfinder_cell.came_from = current;
+						pathfinder_cell.value = this.map.getValue(neighbor);
+
+						//add to visited cells
 						visited.set(neighbor,[path_cost,current,this.map.getValue(neighbor)]);
 					} 
 
@@ -113,6 +131,12 @@ function PathFinder(map) {
 
 						if (this.moveCostAbsolute(neighbor) > 1 && this.moveCostAbsolute(neighbor) < 14) { //not mountain
 							frontier.put(neighbor);
+
+							//create pathfinder cell for this hex
+							pathfinder_cell.path_cost = path_cost;
+							pathfinder_cell.came_from = current;
+							pathfinder_cell.value = this.map.getValue(neighbor);
+						
 							visited.set(neighbor,[path_cost,current,this.map.getValue(neighbor)]);
 						} 
 
@@ -124,6 +148,10 @@ function PathFinder(map) {
 		//return all cells that are within a certain movement cost
 		return visited;
 	}
+
+	
+	
+
 
 	//returns a hexmap containing only the hexes on the path to the destination
 	this.destinationPathfind = function(origin, destination, range) {
