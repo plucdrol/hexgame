@@ -61,14 +61,15 @@ function PathFinder(map) {
 
 	//Computes the total movement cost to all hexes within the given 'range' of the 'origin' hex
 	//Movement cost it calculated with the moveCostRelative() function
-	this.pathWithTerrain = function(origin,range) {
+	this.rangePathfind = function(origin,range) {
 		
 		var frontier = new Queue();	
 		frontier.put(origin);
 		var visited = new HexMap(); //this one takes three things as values: a momvement_cost, the cell it came from, and the value of the hex
 		var cost_so_far = 0;
 		var came_from = undefined;
-		visited.set(origin,[cost_so_far,came_from,this.map.getValue(origin)]);
+
+		visited.set(origin,[cost_so_far,came_from,this.map.getValue(origin)]); //define this triad as an object
 
 		//while the frontier still has nodes to explore
 		while ( !frontier.isEmpty() ) {
@@ -93,13 +94,13 @@ function PathFinder(map) {
 				}
 				
 				//calculate the distance from origin to this neighbor
-				var cost_to_neighbor = this.moveCostRelative( current, neighbor );
+				var cost_to_neighbor = this.moveCostNeighbor( current, neighbor );
 				var path_cost = cost_so_far + cost_to_neighbor;
 
 				
 				if ( !visited.containsHex(neighbor) ) {
 					//add the cell if it hasnt been visited
-					if (this.moveCostAbsolute(neighbor) > 1 && this.moveCostAbsolute(neighbor) < 14) { //not mountain
+					if (this.moveCostAbsolute(neighbor) > 1 && this.moveCostAbsolute(neighbor) < 14) { //not water or mountain
 						frontier.put(neighbor);
 						visited.set(neighbor,[path_cost,current,this.map.getValue(neighbor)]);
 					} 
@@ -124,19 +125,35 @@ function PathFinder(map) {
 		return visited;
 	}
 
+	//returns a hexmap containing only the hexes on the path to the destination
+	this.destinationPathfind = function(origin, destination, range) {
+			
+			//calculate all paths within the range
+			var visited = this.rangePathfind(origin,range);
 
-	//Takes a small hexmap
-	/*this.path = function(range,destination) {
-		var hexes = [];
-		hexes.push(destination);
-		var next = range.getValue(destination)[1]; //take the came from
-		while (next !== undefined) {
-			hexes.push(next);
-			next = range.getValue(next)[1];
-		}
-		return hexes;
-	}*/
+			//return false if the destination cannot be reached within the range
+			if (!visited.containsHex(destination)) {
+				console.log('range too short');
+				return false;
+			}
 
+			//add the path hexes on the return hex list
+			var hexes_on_path = [];
+			var hex_being_examined = destination;
+			do {
+
+				//add the visited hex to the path
+				hexes_on_path.unshift(visited.getValue(hex_being_examined));
+
+				//prepare to look at the hex before it
+				hex_being_examined = visited.getValue(hex_being_examined)[1];
+
+
+			} while (hex_being_examined != origin)
+
+			return hexes_on_path;
+
+	}
 
 	//Returns the absolute movement cost value of the tile given
 	this.moveCostAbsolute = function(other_tile) {
@@ -146,7 +163,7 @@ function PathFinder(map) {
 
 	//Returns the movement cost to move from the first tile to the second tile.
 	//For example, moving downhill is a smaller value than uphill.
-	this.moveCostRelative = function(this_tile, other_tile) {
+	this.moveCostNeighbor = function(this_tile, other_tile) {
 		
 		//returns a positive number for uphill movement, negative number for downhill movement
 		var difference = this.map.getValue(other_tile) - this.map.getValue(this_tile);
@@ -167,5 +184,11 @@ function PathFinder(map) {
 		if (difference < -4) {
 			return 100;
 		}
+	}
+
+	//return the cost to move from origin to destination
+	this.moveCostRelative = function(origin, destination,range) {
+		var hex_path = this.destinationPathfind(origin,destination,range);
+		return hex_path[hex_path.length-1][0];
 	}
 }
