@@ -10,10 +10,10 @@
 	//path_distance(hex_origin,hex_destination) returns distance between two hexes
 
 
-function PathFinderCell() {
-	this.path_cost;
-	this.came_from;
-	this.value;
+function PathFinderCell(path_cost,came_from,value) {
+	this.path_cost = path_cost;
+	this.came_from = came_from;
+	this.value = value;
 }
 
 function PathFinder(map) {
@@ -75,19 +75,15 @@ function PathFinder(map) {
 		var came_from = undefined;
 
 		//create pathfinder cell for origin
-		var pathfinder_cell = new PathFinderCell();
-		pathfinder_cell.path_cost = cost_so_far;
-		pathfinder_cell.came_from = came_from;
-		pathfinder_cell.value = this.map.getValue(origin);
-
-		visited.set(origin,[cost_so_far,came_from,this.map.getValue(origin)]); //define this triad as an object
+		var pathfinder_cell = new PathFinderCell(cost_so_far,came_from,this.map.getValue(origin));
+		visited.set(origin,pathfinder_cell); //define this triad as an object
 
 		//while the frontier still has nodes to explore
 		while ( !frontier.isEmpty() ) {
 			
 			//get a hex on the frontier
 			var current = frontier.pop();
-			cost_so_far = visited.getValue(current)[0];
+			cost_so_far = visited.getValue(current).path_cost;
 			
 			//stop looking once cost_so_far goes over the desired range
 			if (cost_so_far >= range) {
@@ -115,29 +111,24 @@ function PathFinder(map) {
 						frontier.put(neighbor);
 
 						//create pathfinder cell for this hex
-						pathfinder_cell.path_cost = path_cost;
-						pathfinder_cell.came_from = current;
-						pathfinder_cell.value = this.map.getValue(neighbor);
+						pathfinder_cell = new PathFinderCell(path_cost,current,this.map.getValue(neighbor));
 
 						//add to visited cells
-						visited.set(neighbor,[path_cost,current,this.map.getValue(neighbor)]);
+						visited.set(neighbor,pathfinder_cell);
 					} 
 
 				} else {
 					//also add the cell if it HAS been visited, but a shorter path is found
 					//if a shorter path is found, all neighboring cells will have their cost re-calculated
-					var previous_best_cost = visited.getValue(neighbor)[0];
+					var previous_best_cost = visited.getValue(neighbor).path_cost;
 					if (path_cost < previous_best_cost) {
 
 						if (this.moveCostAbsolute(neighbor) > 1 && this.moveCostAbsolute(neighbor) < 14) { //not mountain
 							frontier.put(neighbor);
 
 							//create pathfinder cell for this hex
-							pathfinder_cell.path_cost = path_cost;
-							pathfinder_cell.came_from = current;
-							pathfinder_cell.value = this.map.getValue(neighbor);
-						
-							visited.set(neighbor,[path_cost,current,this.map.getValue(neighbor)]);
+							pathfinder_cell = new PathFinderCell(path_cost,current,this.map.getValue(neighbor));
+							visited.set(neighbor,pathfinder_cell);
 						} 
 
 					}
@@ -146,6 +137,7 @@ function PathFinder(map) {
 		}
 
 		//return all cells that are within a certain movement cost
+		console.log(visited);
 		return visited;
 	}
 
@@ -174,7 +166,7 @@ function PathFinder(map) {
 				hexes_on_path.unshift(visited.getValue(hex_being_examined));
 
 				//prepare to look at the hex before it
-				hex_being_examined = visited.getValue(hex_being_examined)[1];
+				hex_being_examined = visited.getValue(hex_being_examined).came_from;
 
 
 			} while (hex_being_examined != origin)
@@ -217,6 +209,6 @@ function PathFinder(map) {
 	//return the cost to move from origin to destination
 	this.moveCostRelative = function(origin, destination,range) {
 		var hex_path = this.destinationPathfind(origin,destination,range);
-		return hex_path[hex_path.length-1][0];
+		return hex_path[hex_path.length-1].path_cost;
 	}
 }

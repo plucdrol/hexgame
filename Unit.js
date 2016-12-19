@@ -74,12 +74,12 @@ function Unit(unit_type) {
 		//var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex);
 		pathfinder.destinationPathfind(current_hex,next_hex,this.movement_left);
 		//calculate movement cost
-		//var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex,this.movement_left)
+		var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex,this.movement_left)
 		//substract it from the movement remaining
-		//this.movement_left -= movement_cost;
+		this.movement_left -= movement_cost;
 
-		//if (this.movement_left <= 0) {
-		//	this.movement_left = this.movement;
-		//}
+		if (this.movement_left <= 0) {
+			this.movement_left = this.movement;
+		}
 
 	}
