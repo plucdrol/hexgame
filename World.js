@@ -56,7 +56,7 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 			this.units.set(new_hex,unit);
 
 			//delete the unit in the old location
-			this.removeUnit(current_hex);
+			this.units.remove(current_hex);
 
 			//return the unit at the new position
 			return this.units.getValue(new_hex);
