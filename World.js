@@ -35,7 +35,6 @@ World.prototype.createUnit = function(hex,unit_type) {
 	//create new unit and add it to the map
 	var newUnit = new Unit(unit_type);
 	this.units.set(hex,newUnit);
-	return newUnit;
 }
 
 //delete the new Unit at position Hex
@@ -57,9 +56,6 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 
 		//find the range of the unit at its new position
 		this.unitAtPosition(new_hex).findRange(this.map,new_hex);
-
-		//return the unit at the new position
-		return this.units.getValue(new_hex);
 }
 
 //Does the current_hex unit's action unto the new_hex unit
@@ -69,23 +65,15 @@ World.prototype.actionUnit = function(current_hex,target_hex) {
 	var active_unit = this.unitAtPosition(current_hex);
 	var target_unit = this.unitAtPosition(target_hex);
 
-	//TODO THIS IS AN EXAMPLE OF WHY THE STRUCTURE OF THIS GAME NEESD TO BE REMADE
+	//Eat the tree if it is a tree
 	if (target_unit.unit_type == 'tree') {
 		this.removeUnit(target_hex);
 		this.moveUnit(current_hex,target_hex);
 		active_unit.movement_left = active_unit.movement;
-
-		//move selection to new spot
-		this.hex_selected = target_hex;
-		target_unit.findRange(this.map,target_hex);
-		this.hex_selected = target_hex;
-	} else {
-		//nothing happens
-		this.hex_selected = target_hex;
-		target_unit.findRange(this.map,target_hex);
-		this.hex_selected = target_hex;
 	}
 
+	//More actions to come here
+			
 }
 
 //returns the Unit at position Hex. For now only a single unit can be on each hex
@@ -112,6 +100,11 @@ World.prototype.generateWorldMap = function(size) {
 	//this.map = map_generator.generateMap('perlin_custom',size,base,scales,scales, multis);
 	this.map = map_generator.generateMap('perlin_continents',size);
 
+	this.addTreesToMap();
+
+}
+
+World.prototype.addTreesToMap = function() {
 	//add trees (this is the wrong place for world-generaion code)
 	for (let hex of this.map.getArray()) {
 		var hex_value = this.map.getValue(hex);
@@ -121,17 +114,8 @@ World.prototype.generateWorldMap = function(size) {
 			}
 		}
 	}
-
-
 }
 
-World.prototype.nextTick = function() {
-
-	//update all tickable elements
-	for (let unit of this.units.getValues()) {
-		unit.nextTick();
-	}
-}
 
 
 
@@ -285,6 +269,7 @@ WorldInterface.prototype.tellSelectedUnitToMove = function(hex_clicked) {
 	//Do the unit's action if there is something there
 	if (unit_there) {
 		this.world.actionUnit(this.hex_selected,hex_clicked);
+
 	
 	//Move the unit there if there is nothing
 	} else {	
