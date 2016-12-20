@@ -15,7 +15,6 @@ function complain(message) {
 	document.getElementById('console').innerHTML += message;
 }
 
-
 function listContainsHex(hex, list) {
     var i;
     for (i = 0; i < list.length; i++) {

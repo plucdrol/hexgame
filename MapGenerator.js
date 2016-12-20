@@ -79,21 +79,10 @@ HexMapGenerator.prototype.generateTileRandom = function(range) {
 HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales_x,scales_y,multiplicands) {
 
 	//Set default values if absent
-	if (typeof base === 'undefined') {
-		base = 6;
-	}
-
-	if (typeof scales_x === 'undefined') {
-		scales_x = [0.02,0.1,0.2,0.5,1.0];
-	}
-
-	if (typeof scales_y === 'undefined') {
-		scales_y = [0.02,0.1,0.2,0.5,1.0];
-	}
-
-	if (typeof multiplicands === 'undefined') {
-		multiplicands = [10,7,4,2,1];
-	}
+	if (typeof base === 'undefined') 					{ base = 6; }
+	if (typeof scales_x === 'undefined') 			{ scales_x = [0.02,0.1,0.2,0.5,1.0]; }
+	if (typeof scales_y === 'undefined') 			{ scales_y = [0.02,0.1,0.2,0.5,1.0]; }
+	if (typeof multiplicands === 'undefined') { multiplicands = [10,7,4,2,1];	}
 
 	//get minimum length
 	var length = Math.min( scales_x.length, scales_y.length, multiplicands.length );
