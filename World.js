@@ -46,6 +46,10 @@ World.prototype.removeUnit = function(hex) {
 
 //Move the unit from one hex to another hex
 World.prototype.moveUnit = function(current_hex,new_hex) {
+
+	//unit at the next position
+	var unit_at_position = this.unitAtPosition(new_hex);
+
 	//if there is a unit in that hex, abort the move
 	if (typeof this.unitAtPosition(current_hex) != 'undefined') {
 
@@ -76,7 +80,14 @@ World.prototype.unitAtPosition = function(hex) {
 }
 
 World.prototype.generateWorldMap = function(size) {
-	
+
+	//delete tree units
+	for (let hex of this.units.getArray())	{
+		var unit = this.units.getValue(hex);
+		if (unit.unit_type  == 'tree') {
+			this.removeUnit(hex);
+		}
+	}
 
 	//make a new map from scratch
 	var map_generator = new HexMapGenerator();
