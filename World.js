@@ -63,6 +63,32 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 		return this.units.getValue(new_hex);
 }
 
+//Does the current_hex unit's action unto the new_hex unit
+World.prototype.actionUnit = function(current_hex,target_hex) {
+
+	//get both units
+	var active_unit = this.unitAtPosition(current_hex);
+	var target_unit = this.unitAtPosition(target_hex);
+
+	//TODO THIS IS AN EXAMPLE OF WHY THE STRUCTURE OF THIS GAME NEESD TO BE REMADE
+	if (target_unit.unit_type == 'tree') {
+		this.removeUnit(target_hex);
+		this.moveUnit(current_hex,target_hex);
+		active_unit.movement_left = active_unit.movement;
+
+		//move selection to new spot
+		this.hex_selected = target_hex;
+		target_unit.findRange(this.map,target_hex);
+		this.hex_selected = target_hex;
+	} else {
+		//nothing happens
+		this.hex_selected = target_hex;
+		target_unit.findRange(this.map,target_hex);
+		this.hex_selected = target_hex;
+	}
+
+}
+
 //returns the Unit at position Hex. For now only a single unit can be on each hex
 World.prototype.unitAtPosition = function(hex) {
 	if (this.units.containsHex(hex)) {
@@ -202,9 +228,13 @@ WorldInterface.prototype.click = function(screen_position) {
 			if (this.world.unitAtPosition(this.hex_selected).range.containsHex(hex_clicked)) {
 
 				//if there is already a unit there
-				if (this.world.unitAtPosition(hex_clicked)) {
-					this.hex_selected = 'undefined';
-				} else { //if there is no unit there
+				var unit_there = this.world.unitAtPosition(hex_clicked);
+				if (unit_there) {
+					//do the unit's attack action
+					this.world.actionUnit(this.hex_selected,hex_clicked);
+					this.hex_selected = hex_clicked;
+				} else {
+					//if there is no unit there
 					//Move the unit then generate its new range
 					this.world.moveUnit(this.hex_selected,hex_clicked);
 					this.world.unitAtPosition(hex_clicked).findRange(this.world.map,hex_clicked);

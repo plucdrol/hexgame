@@ -79,7 +79,7 @@ function Unit(unit_type) {
 		this.movement_left -= movement_cost;
 
 		if (this.movement_left <= 0) {
-			this.movement_left = this.movement;
+			//this.movement_left = this.movement;
 		}
 
 	}
