@@ -218,7 +218,7 @@ WorldInterface.prototype.clickHex = function(hex_clicked) {
 
 
 WorldInterface.prototype.aUnitIsSelected = function() {
-	return this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit;
+	return (this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit);
 }
 
 WorldInterface.prototype.clickWhileNothingSelected = function(hex_clicked) {
@@ -235,31 +235,36 @@ WorldInterface.prototype.clickWhileNothingSelected = function(hex_clicked) {
 	} 
 }
 
+
 WorldInterface.prototype.clickWhileUnitSelected = function(hex_clicked) {
-	
-	//if you are reclicking the same unit
-	if ( Hex.equals(this.hex_selected, hex_clicked)) {
-			this.hex_selected = 'undefined';
-
-	//if you are clicking a different unit
-	} else {
-		this.clickSecondUnitWhileUnitSelected(hex_clicked);
-		
-	}
-}
-
-WorldInterface.prototype.clickSecondUnitWhileUnitSelected = function(hex_clicked) {
 	
 	//if you are clicking inside the unit's range
 	if (this.world.unitAtPosition(this.hex_selected).range.containsHex(hex_clicked)) {
-		this.tellSelectedUnitToMove(hex_clicked);
-		this.hex_selected = hex_clicked;
+		this.clickInsideSelectedUnitRange(hex_clicked);
 
 	//if you are clicking outside the unit's range
 	} else {
-		this.hex_selected = 'undefined';
-		this.clickHex(hex_clicked);
+		this.clickOutsideSelectedUnitRange(hex_clicked);
 	}
+
+}
+
+WorldInterface.prototype.clickInsideSelectedUnitRange = function(hex_clicked) {
+	
+	//if you are reclicking the unit
+	if ( Hex.equals(this.hex_selected, hex_clicked)) {
+		this.hex_selected = 'undefined';
+	
+	//if you are clicking somewhere else
+	} else {
+		this.tellSelectedUnitToMove(hex_clicked);
+		this.hex_selected = hex_clicked;
+	}
+}
+
+WorldInterface.prototype.clickOutsideSelectedUnitRange = function(hex_clicked) {
+	this.hex_selected = 'undefined';
+	this.clickHex(hex_clicked);
 }
 
 WorldInterface.prototype.tellSelectedUnitToMove = function(hex_clicked) {
@@ -299,7 +304,6 @@ WorldInterface.prototype.resizeZoom = function(width,height) {
 	//remember the current view
   var current_view = view;
 
-
 	//create the new view
   var view_ratio = width/height;
   var initial_zoom = 2;
@@ -322,6 +326,8 @@ WorldInterface.prototype.resizeZoom = function(width,height) {
   drawScreen();
 
 }
+
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -347,6 +353,5 @@ function Action(type,argument1,argument2,argument3) {
 			this.direction = argument1;
 			break;
 
-			
 	}
 }
