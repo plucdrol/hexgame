@@ -47,27 +47,20 @@ World.prototype.removeUnit = function(hex) {
 //Move the unit from one hex to another hex
 World.prototype.moveUnit = function(current_hex,new_hex) {
 
-	//unit at the next position
-	var unit_at_position = this.unitAtPosition(new_hex);
+		//get the unit which is moving
+		var unit = this.unitAtPosition(current_hex);
 
-	//if there is a unit in that hex, abort the move
-	if (typeof this.unitAtPosition(current_hex) != 'undefined') {
+		//let unit figure out its movement
+		unit.move(this.map,current_hex,new_hex);
 
-			//get the unit which is moving
-			var unit = this.unitAtPosition(current_hex);
+		//place it at the new position
+		this.units.set(new_hex,unit);
 
-			//let unit figure out its movement
-			unit.move(this.map,current_hex,new_hex);
+		//delete the unit in the old location
+		this.units.remove(current_hex);
 
-			//place it at the new position
-			this.units.set(new_hex,unit);
-
-			//delete the unit in the old location
-			this.units.remove(current_hex);
-
-			//return the unit at the new position
-			return this.units.getValue(new_hex);
-	}
+		//return the unit at the new position
+		return this.units.getValue(new_hex);
 }
 
 //returns the Unit at position Hex. For now only a single unit can be on each hex
