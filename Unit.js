@@ -22,17 +22,6 @@ function Unit(unit_type) {
 		this.range = pathfinder.rangePathfind(position,this.movement_left);
 	};
 
-	Unit.prototype.action = function(action) {
-		switch (action.type) {
-			//case 'move' :
-			//	this.move_to(action.position)
-				//break;
-			case 'shoot' :
-				this.attack(action.position);
-				break;
-
-		}
-	}
 
 	Unit.prototype.setType = function(unit_type) {
 		this.unit_type = unit_type;
