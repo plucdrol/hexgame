@@ -117,7 +117,9 @@ World.prototype.generateWorldMap = function(size) {
 	for (let hex of this.map.getArray()) {
 		var hex_value = this.map.getValue(hex);
 		if (hex_value >= 4 && hex_value <= 9) {
-			this.createUnit(hex,'tree');
+			if (Math.random() < 0.2) {
+				this.createUnit(hex,'tree');
+			}
 		}
 	}
 
