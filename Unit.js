@@ -47,7 +47,7 @@ function Unit(unit_type) {
 			break;
 		case 'tree':
 			this.setMovement(0);
-			this.setColor('green');
+			this.setColor('red');
 			break;
 		default:
 			this.setMovement(0);
