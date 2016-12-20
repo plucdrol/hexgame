@@ -50,14 +50,13 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 		//get the unit which is moving
 		var unit = this.unitAtPosition(current_hex);
 
-		//let unit figure out its movement
+		//move unit to the new position
 		unit.move(this.map,current_hex,new_hex);
-
-		//place it at the new position
 		this.units.set(new_hex,unit);
-
-		//delete the unit in the old location
 		this.units.remove(current_hex);
+
+		//find the range of the unit at its new position
+		this.unitAtPosition(new_hex).findRange(this.map,new_hex);
 
 		//return the unit at the new position
 		return this.units.getValue(new_hex);
@@ -144,6 +143,11 @@ World.prototype.nextTick = function() {
 
 
 
+
+
+
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,15 +191,10 @@ WorldInterface.prototype.getHex = function(screen_position) {
 	var hex = Hex.round(this.world.layout.pointToHex(world_position));
 	return hex;
 }
+
 WorldInterface.prototype.setHex = function(screen_position,value) {
 	var hex = this.getHex(screen_position);
 	this.world.map.set(hex,value);
-}
-
-WorldInterface.prototype.makeButton = function(unit,action,text) {
-
-	var button_text = "<button type='button' id='test123' onclick='world_interface.unitAction("+unit+","+action+")'>"+text+"</button>";
-
 }
 
 WorldInterface.prototype.hover = function(screen_position) {
@@ -212,61 +211,90 @@ WorldInterface.prototype.hover = function(screen_position) {
 	this.hex_hovered_previous = this.hex_hovered;
 }
 
-WorldInterface.prototype.click = function(screen_position) {
+WorldInterface.prototype.clickScreen = function(screen_position) {
 
-	//convert to hex coordinates
 	var hex_clicked = this.getHex(screen_position);
+	this.clickHex(hex_clicked);
+	drawScreen();
+
+}
+
+WorldInterface.prototype.clickHex = function(hex_clicked) {
 
 	//if there is already a unit on the hex selected
-	if (this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit) {
-
-		//and you are re-clicking the unit
-		if ( Hex.equals(this.hex_selected, hex_clicked)) {
-				this.hex_selected = 'undefined';
-
-		} else {
-			
-			//and you are clicking inside the unit's range outline
-			if (this.world.unitAtPosition(this.hex_selected).range.containsHex(hex_clicked)) {
-
-				//if there is already a unit there
-				var unit_there = this.world.unitAtPosition(hex_clicked);
-				if (unit_there) {
-					//do the unit's attack action
-					this.world.actionUnit(this.hex_selected,hex_clicked);
-					this.hex_selected = hex_clicked;
-				} else {
-					//if there is no unit there
-					//Move the unit then generate its new range
-					this.world.moveUnit(this.hex_selected,hex_clicked);
-					this.world.unitAtPosition(hex_clicked).findRange(this.world.map,hex_clicked);
-					this.hex_selected = hex_clicked;
-				}
-
-			//if you are clicking outside the unit's range
-			} else {
-				this.hex_selected = 'undefined';
-				this.click(screen_position);
-			}
-		}
+	if (this.aUnitIsSelected()) {
+		this.clickWhileUnitSelected(hex_clicked);
+		
+	//if there is no unit selected
 	} else {
-		//if there is no unit selected
+		this.clickWhileNothingSelected(hex_clicked);
+	}
+}
+
+
+
+WorldInterface.prototype.aUnitIsSelected = function() {
+	return this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit;
+}
+
+WorldInterface.prototype.clickWhileNothingSelected = function(hex_clicked) {
+	
+	//move the selection
+	this.hex_selected = hex_clicked;
+
+	//look if there is a unit
+	var potential_unit = this.world.unitAtPosition(hex_clicked);
+
+	if (potential_unit instanceof Unit) { 
+		//if the unit exists, find its range
+		potential_unit.findRange(this.world.map,hex_clicked);
+	} 
+}
+
+WorldInterface.prototype.clickWhileUnitSelected = function(hex_clicked) {
+	
+	//if you are reclicking the same unit
+	if ( Hex.equals(this.hex_selected, hex_clicked)) {
+			this.hex_selected = 'undefined';
+
+	//if you are clicking a different unit
+	} else {
+		this.clickSecondUnitWhileUnitSelected(hex_clicked);
+		
+	}
+}
+
+WorldInterface.prototype.clickSecondUnitWhileUnitSelected = function(hex_clicked) {
+	
+	//if you are clicking inside the unit's range
+	if (this.world.unitAtPosition(this.hex_selected).range.containsHex(hex_clicked)) {
+		this.tellSelectedUnitToMove(hex_clicked);
 		this.hex_selected = hex_clicked;
 
-		if (this.world.unitAtPosition(hex_clicked) instanceof Unit) { 
-			
-			//and you clicked a unit
-			console.log('selecting a unit');
-			this.world.unitAtPosition(this.hex_selected).findRange(this.world.map,hex_clicked);
-		} else {
+	//if you are clicking outside the unit's range
+	} else {
+		this.hex_selected = 'undefined';
+		this.clickHex(hex_clicked);
+	}
+}
 
-
-		}
+WorldInterface.prototype.tellSelectedUnitToMove = function(hex_clicked) {
 	
+	var unit_there = this.world.unitAtPosition(hex_clicked);
+
+	//Do the unit's action if there is something there
+	if (unit_there) {
+		this.world.actionUnit(this.hex_selected,hex_clicked);
+	
+	//Move the unit there if there is nothing
+	} else {	
+		this.world.moveUnit(this.hex_selected,hex_clicked);
 	}
 
-	drawScreen();
-	//console.log(this.unit_selected);
+}
+
+WorldInterface.prototype.unSelect = function() {
+	this.hex_selected = 'undefined';
 }
 
 WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {

@@ -40,7 +40,7 @@ function CanvasInput(canvas) {
         
             //trigger the click event
             var click_pos = this.getCursorPosition(event);
-            world_interface.click(click_pos);                //this is the part that should be replaced by an event
+            world_interface.clickScreen(click_pos);                //this is the part that should be replaced by an event
         }
         //remember that the mouse is done dragging
         this.is_dragging = false;
