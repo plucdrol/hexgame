@@ -13,8 +13,7 @@
 function World(size,layout) {
 
 
-	//A world is composed of a world map...
-	this.generateWorldMap(size);
+	
 	this.layout = layout;
 	this.size = size;
 
@@ -25,7 +24,8 @@ function World(size,layout) {
 	this.units = new HexMap();
 
 	this.map;
-
+	//A world is composed of a world map...
+	this.generateWorldMap(size);
 
 }
 
@@ -82,6 +82,14 @@ World.prototype.generateWorldMap = function(size) {
 	var map_generator = new HexMapGenerator();
 	//this.map = map_generator.generateMap('perlin_custom',size,base,scales,scales, multis);
 	this.map = map_generator.generateMap('perlin_continents',size);
+
+	//add trees (this is the wrong place for world-generaion code)
+	for (let hex of this.map.getArray()) {
+		var hex_value = this.map.getValue(hex);
+		if (hex_value >= 4 && hex_value <= 9) {
+			this.createUnit(hex,'tree');
+		}
+	}
 
 
 }
