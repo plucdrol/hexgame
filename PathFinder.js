@@ -137,7 +137,6 @@ function PathFinder(map) {
 		}
 
 		//return all cells that are within a certain movement cost
-		console.log(visited);
 		return visited;
 	}
 
