@@ -293,10 +293,6 @@ WorldInterface.prototype.tellSelectedUnitToMove = function(hex_clicked) {
 
 }
 
-WorldInterface.prototype.unSelect = function() {
-	this.hex_selected = 'undefined';
-}
-
 WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
 	
 	//get the movement the mouse has moved since last tick
