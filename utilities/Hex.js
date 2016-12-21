@@ -470,7 +470,7 @@ function HexMap() {
 		//look at each item in this map
 		for (var i=0;i<this.values.length; i++) {
 			var thehex = this.getHex(i);
-			//add the hex to the result if it is defined
+			//add the hex to the result if it has a value
 			if (this.getValue(thehex) !== undefined ) {
 				hexarray.push(thehex);
 			}
