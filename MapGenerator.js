@@ -16,6 +16,7 @@
 
 HexMapGenerator = function() {
 	this.map = new HexMap();
+	this.simplex = new SimplexNoise();
 
 	this.getMap = function(){
 		return this.map;
@@ -23,11 +24,16 @@ HexMapGenerator = function() {
 
 }
 
+HexMapGenerator.prototype.generateNoise = function() {
+	this.simplex = new SimplexNoise();
+}
+
 HexMapGenerator.prototype.generateMap = function(method,radius) {
 	
 	this.map = new HexMap();
+	this.generateNoise();
 	var hex, value; //contains the position and content of each tile
-	var simplex = new SimplexNoise();
+
 	
 	//Traverses the world map while staying inside the giant hexagon
 	for (var q = -radius; q <= radius; q++) {
@@ -36,7 +42,7 @@ HexMapGenerator.prototype.generateMap = function(method,radius) {
 
 	  for (var r = rmin; r <= rmax; r++) {
 	    hex = new Hex(q,r);
-	    value = this.generateTile(hex,method,simplex);
+	    value = this.generateTile(hex,method);
 	        		
 			//put in map
 	    this.map.set(hex,value);	
@@ -52,7 +58,7 @@ HexMapGenerator.prototype.generateMap = function(method,radius) {
 
 }
 
-HexMapGenerator.prototype.generateTile = function(hex,method,simplex) {
+HexMapGenerator.prototype.generateTile = function(hex,method) {
 	
 	var value;
 	var q = hex.getQ(),
@@ -65,7 +71,7 @@ HexMapGenerator.prototype.generateTile = function(hex,method,simplex) {
 		break;
 	
 	case 'perlin':
-		value = this.generateTilePerlin(q,r,simplex);
+		value = this.generateTilePerlin(q,r);
 		break;
 	
 	case 'perlin_custom':
@@ -73,11 +79,11 @@ HexMapGenerator.prototype.generateTile = function(hex,method,simplex) {
 		var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
 		var multis = [16,8,4,2,1,0];
 		var base = 4;
-		value = this.generateTilePerlin(q,r,simplex,base,scales,multis);
+		value = this.generateTilePerlin(q,r,base,scales,multis);
 		break;
 	
 	case 'perlin_continents':
-		value = this.generateTilePerlinContinents(q,r,simplex);
+		value = this.generateTilePerlinContinents(q,r);
 		break;
 	}
 
@@ -92,7 +98,7 @@ HexMapGenerator.prototype.generateTileRandom = function(range) {
 	return value;
 }
 
-HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales,multiplicands) {
+HexMapGenerator.prototype.generateTilePerlin = function(x,y,base,scales,multiplicands) {
 
 	//Set default values if absent
 	if (typeof base === 'undefined') 					{ base = 6; }
@@ -105,7 +111,7 @@ HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales,
 	//add up all the perlin values
 	var total = base;
 	for (var i = 0; i < length; i++ ) {
-		total += Math.floor(simplex.noise(scales[i]*x, scales[i]*y)*multiplicands[i]);
+		total += Math.floor(this.simplex.noise(scales[i]*x, scales[i]*y)*multiplicands[i]);
 	}
 
 	//shallow water for anything between these numbers
@@ -127,7 +133,7 @@ HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales,
 
 }
 
-HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y,simplex) {
+HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y) {
 
 
 	//initial settings
@@ -148,7 +154,7 @@ HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y,simplex) {
 	var multi = multi_initial;
 
 	while (scale < 1) {
-		total += Math.floor(simplex.noise(scale*x+multi,scale*y+multi) *multi);
+		total += Math.floor(this.simplex.noise(scale*x+multi,scale*y+multi) *multi);
 		multi = multi/1.4;
 		scale = scale*1.8;
 	
@@ -179,14 +185,9 @@ HexMapGenerator.prototype.roundDown = function() {
 	var value;
 
 	for (let thishex of this.map.getArray()) {
-		
-		//for each hex
-		if (this.map.containsHex(thishex)) {
 
-			value = Math.floor(this.map.getValue(thishex));
-			this.map.set(thishex, value);
-
-		}
+		value = Math.floor(this.map.getValue(thishex));
+		this.map.set(thishex, value);
 
 	}
 
@@ -202,27 +203,23 @@ HexMapGenerator.prototype.addWaterRim = function(size, rim_size) {
 
 	//run this code on each hex
 	for (let thishex of this.map.getArray()) {
+	
+		//analyse map
+		var distance_to_center = Math.max(Hex.distance(origin,thishex),0);
+		var distance_to_edge = size - distance_to_center;
+		var rim_length = rim_size*size;
 		
-		//for each hex
-		if (this.map.containsHex(thishex)) {
+		//define new value and insert
+		value = this.map.getValue(thishex);
+		value *= 1-Math.pow((rim_length/distance_to_edge),2);
 
-			//analyse map
-			var distance_to_center = Math.max(Hex.distance(origin,thishex),0);
-			var distance_to_edge = size - distance_to_center;
-			var rim_length = rim_size*size;
-			
-			//define new value and insert
-			value = this.map.getValue(thishex);
-			value *= 1-Math.pow((rim_length/distance_to_edge),2);
-
-			//prevent negative values
-			if (value < 0) {
-				value = 0;
-			}
-
-			this.map.set(thishex, value);
-
+		//prevent negative values
+		if (value < 0) {
+			value = 0;
 		}
+
+		this.map.set(thishex, value);
+
 	}
 }
 
@@ -260,11 +257,9 @@ HexMapGenerator.prototype.addShallowWater = function() {
 	var neighbors = [];
 
 
+	//for each hex
 	for (let thishex of this.map.getArray()) {
 		
-		//for each hex
-		if (this.map.containsHex(thishex)) {
-
 			//if the hex is deep water
 			if (this.map.getValue(thishex) == 0) {
 
@@ -281,7 +276,6 @@ HexMapGenerator.prototype.addShallowWater = function() {
 					}
 				}
 			}
-		}
 	}
 }
 
