@@ -20,58 +20,70 @@ HexMapGenerator = function() {
 	this.getMap = function(){
 		return this.map;
 	}
+
 }
 
-
-HexMapGenerator.prototype.generateMap = function(method,size) {
+HexMapGenerator.prototype.generateMap = function(method,radius) {
 	
 	this.map = new HexMap();
-
+	var hex, value; //contains the position and content of each tile
 	var simplex = new SimplexNoise();
-	var value;
 	
 	//Traverses the world map while staying inside the giant hexagon
-	for (var q = -size; q <= size; q++) {
-	    var r1 = Math.max(-size, -q - size);
-	    var r2 = Math.min(size, -q + size);
+	for (var q = -radius; q <= radius; q++) {
+	  var rmin = Math.max(-radius, -q - radius);
+	  var rmax = Math.min(radius, -q + radius);
 
-	    for (var r = r1; r <= r2; r++) {
-	        var this_hex = new Hex(q,r);
-
-	        switch (method) {
-	        	case 'random':
-	        		value = this.generateTileRandom(20);
-	        		break;
-	        	case 'perlin':
-	        		value = this.generateTilePerlin(q,r,simplex);
-	        		break;
-	        	case 'perlin_custom':
-	        		//create a world using the new world code
-							var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
-							var multis = [16,8,4,2,1,0];
-							var base = 4;
-	        		value = this.generateTilePerlin(q,r,simplex,base,scales,scales,multis);
-	        		break;
-	        	case 'perlin_continents':
-	        		value = this.generateTilePerlinContinents(q,r,simplex,size);
-	        		break;
-	        }
+	  for (var r = rmin; r <= rmax; r++) {
+	    hex = new Hex(q,r);
+	    value = this.generateTile(hex,method,simplex);
 	        		
 			//put in map
-	    this.map.set(this_hex,value);	
-	    }
+	    this.map.set(hex,value);	
+	  }
 	}
 
-	this.addWaterRim(size, 0.1);
+	//fine tune the map
+	this.addWaterRim(radius, 0.1);
 	this.roundDown();
 	this.addShallowWater();
-	this.flatenRange(size,2,3);
-	this.flatenRange(size,3,6);
-	return this.map;
+	this.flatenRange(radius,2,3);
+	this.flatenRange(radius,3,6);
 
 }
 
+HexMapGenerator.prototype.generateTile = function(hex,method,simplex) {
+	
+	var value;
+	var q = hex.getQ(),
+			r = hex.getR();
 
+	switch (method) {
+	
+	case 'random':
+		value = this.generateTileRandom(20);
+		break;
+	
+	case 'perlin':
+		value = this.generateTilePerlin(q,r,simplex);
+		break;
+	
+	case 'perlin_custom':
+		//create a world using the new world code
+		var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
+		var multis = [16,8,4,2,1,0];
+		var base = 4;
+		value = this.generateTilePerlin(q,r,simplex,base,scales,scales,multis);
+		break;
+	
+	case 'perlin_continents':
+		value = this.generateTilePerlinContinents(q,r,simplex);
+		break;
+	}
+
+	return value;
+
+}
 
 HexMapGenerator.prototype.generateTileRandom = function(range) {
 	var value = 1+1*Math.floor((range+2)*Math.random());
@@ -124,18 +136,19 @@ HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales_
 
 }
 
-HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y,simplex,size) {
+HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y,simplex) {
 
 
 	//initial settings
+	var size = 100;
 
 	//these settings make small continents
-	//var scale_initial = 1.5/size;	//for 100
-	//var multi_initial = 16;
+	var scale_initial = 1.5/size;	//for 100
+	var multi_initial = 16;
 
   //these settings make large continents
-	var scale_initial = 0.8/size;
-	var multi_initial = 16;
+	//var scale_initial = 0.8/size;
+	//var multi_initial = 16;
 	var base = 4;
 
 	//changing settings
