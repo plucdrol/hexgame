@@ -14,6 +14,54 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////*/
 
+PerlinConfiguration = function(config_name) {
+	
+	this.base;
+	this.scales;
+	this.weights;
+
+	
+
+	this.getLength = function() {
+		return Math.min( this.scales.length, this.weights.length );
+	}
+
+	this.setConfigAlgorithmically = function(base,scale_initial,scale_ratio,weight_initial,weight_ratio) {
+		
+		//reset values
+		this.base = base;
+		this.scales = [];
+		this.weights = [];
+		var i = 0;
+
+		//fill the scale and weight values
+		while (Math.pow(scale_ratio,i) < 1) {
+			this.scales[i] = scale_initial*Math.pow(scale_ratio,i);
+			this.weights[i] = weight_initial*Math.pow(weight_ratio,i);
+			i++;
+		}
+	}
+
+	this.setConfig = function(config_name) {
+		switch (config_name) {
+		case 'continents':
+			this.scales = [0.008,	0.014,0.025,0.083,0.151,0.272,0.489,0.881];
+			this.weights = [16,		11.2,	7.84,	5.48,	3.84,	2.69,	1.88, 1.32];
+			this.base = 4;
+
+
+			break;
+		default:
+			this.scales = [0.02,0.1,0.2,0.5,1.0,2.0];
+			this.weights = [16,8,4,2,1,0.5];
+			this.base = 4;
+		}
+	}
+
+	this.setConfig(config_name);
+}
+
+
 HexMapGenerator = function() {
 	this.map = new HexMap();
 	this.simplex = new SimplexNoise();
@@ -75,11 +123,8 @@ HexMapGenerator.prototype.generateTile = function(hex,method) {
 		break;
 	
 	case 'perlin_custom':
-		//create a world using the new world code
-		var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
-		var multis = [16,8,4,2,1,0];
-		var base = 4;
-		value = this.generateTilePerlin(q,r,base,scales,multis);
+		var config = new PerlinConfiguration('continents');
+		value = this.generateTilePerlin(q,r,config);
 		break;
 	
 	case 'perlin_continents':
@@ -98,20 +143,15 @@ HexMapGenerator.prototype.generateTileRandom = function(range) {
 	return value;
 }
 
-HexMapGenerator.prototype.generateTilePerlin = function(x,y,base,scales,multiplicands) {
-
-	//Set default values if absent
-	if (typeof base === 'undefined') 					{ base = 6; }
-	if (typeof scales === 'undefined') 			{ scales = [0.02,0.1,0.2,0.5,1.0]; }
-	if (typeof multiplicands === 'undefined') { multiplicands = [10,7,4,2,1];	}
+HexMapGenerator.prototype.generateTilePerlin = function(x,y,config) {
 
 	//get minimum length
-	var length = Math.min( scales.length, multiplicands.length );
+	var length = config.getLength();
 
 	//add up all the perlin values
-	var total = base;
+	var total = config.base;
 	for (var i = 0; i < length; i++ ) {
-		total += Math.floor(this.simplex.noise(scales[i]*x, scales[i]*y)*multiplicands[i]);
+		total += Math.floor(this.simplex.noise(config.scales[i]*x, config.scales[i]*y)*config.weights[i]);
 	}
 
 	//shallow water for anything between these numbers
@@ -179,7 +219,6 @@ HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y) {
 
 }
 
-//Adds water in the ratio from the edge of the map defined by rim_size/1
 HexMapGenerator.prototype.roundDown = function() {
 	
 	var value;
