@@ -145,12 +145,9 @@ HexMapGenerator.prototype.generateTileRandom = function(range) {
 
 HexMapGenerator.prototype.generateTilePerlin = function(x,y,config) {
 
-	//get minimum length
-	var length = config.getLength();
-
 	//add up all the perlin values
 	var total = config.base;
-	for (var i = 0; i < length; i++ ) {
+	for (var i = 0; i < config.getLength(); i++ ) {
 		total += Math.floor(this.simplex.noise(config.scales[i]*x, config.scales[i]*y)*config.weights[i]);
 	}
 
@@ -179,27 +176,18 @@ HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y) {
 	//initial settings
 	var size = 100;
 
-	//these settings make small continents
-	//var scale_initial = 1.5/size;	//for 100
-	//var multi_initial = 16;
-
   //these settings make large continents
-	var scale_initial = 0.8/size;
-	var multi_initial = 16;
+	var scale = 0.8/size; //increase this value for smaller continents
+	var multi = 16;
 	var base = 4;
 
-	//Setup settings
+	//Add up the perlin values
 	var total = base;
-	var scale = scale_initial;
-	var multi = multi_initial;
-
 	while (scale < 1) {
 		total += Math.floor(this.simplex.noise(scale*x+multi,scale*y+multi) *multi);
 		multi = multi/1.4;
-		scale = scale*1.8;
-	
+		scale = scale*1.8;	
 	}
-
 
 	//shallow water for anything between these numbers
 	if (total < 1 && total > -2) 
@@ -209,13 +197,7 @@ HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y) {
 	if (total < 0) 
 		{total = 0;}
 
-	//more flatlands, and more mountain heights
-	//total = Math.pow((total+1)/6,2);
-
-	//shallow water availability (between 0 and 1)
-	//total += 0.75;
-
-    return total;
+  return total;
 
 }
 
@@ -227,10 +209,7 @@ HexMapGenerator.prototype.roundDown = function() {
 
 		value = Math.floor(this.map.getValue(thishex));
 		this.map.set(thishex, value);
-
 	}
-
-
 }
 
 //Adds water in the ratio from the edge of the map defined by rim_size/1
