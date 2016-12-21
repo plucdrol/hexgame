@@ -15,13 +15,17 @@
 /////////////////////////////////////////////////////////////////////////////////////////////*/
 
 HexMapGenerator = function() {
+	this.map = new HexMap();
 
-
+	this.getMap = function(){
+		return this.map;
+	}
 }
+
 
 HexMapGenerator.prototype.generateMap = function(method,size) {
 	
-	var map = new HexMap();
+	this.map = new HexMap();
 
 	var simplex = new SimplexNoise();
 	var value;
@@ -54,16 +58,16 @@ HexMapGenerator.prototype.generateMap = function(method,size) {
 	        }
 	        		
 			//put in map
-	        map.set(this_hex,value);	
+	    this.map.set(this_hex,value);	
 	    }
 	}
 
-	this.addWaterRim(map,size, 0.1);
-	this.roundDown(map);
-	this.addShallowWater(map);
-	this.flatenRange(map,size,2,3);
-	this.flatenRange(map,size,3,6);
-	return map;
+	this.addWaterRim(size, 0.1);
+	this.roundDown();
+	this.addShallowWater();
+	this.flatenRange(size,2,3);
+	this.flatenRange(size,3,6);
+	return this.map;
 
 }
 
@@ -166,17 +170,17 @@ HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y,simplex,si
 }
 
 //Adds water in the ratio from the edge of the map defined by rim_size/1
-HexMapGenerator.prototype.roundDown = function(map) {
+HexMapGenerator.prototype.roundDown = function() {
 	
 	var value;
 
-	for (let thishex of map.getArray()) {
+	for (let thishex of this.map.getArray()) {
 		
 		//for each hex
-		if (map.containsHex(thishex)) {
+		if (this.map.containsHex(thishex)) {
 
-			value = Math.floor(map.getValue(thishex));
-			map.set(thishex, value);
+			value = Math.floor(this.map.getValue(thishex));
+			this.map.set(thishex, value);
 
 		}
 
@@ -186,17 +190,17 @@ HexMapGenerator.prototype.roundDown = function(map) {
 }
 
 //Adds water in the ratio from the edge of the map defined by rim_size/1
-HexMapGenerator.prototype.addWaterRim = function(map, size, rim_size) {
+HexMapGenerator.prototype.addWaterRim = function(size, rim_size) {
 	
 	//center hex
 	var origin = new Hex(0,0);
 	var value;
 
 	//run this code on each hex
-	for (let thishex of map.getArray()) {
+	for (let thishex of this.map.getArray()) {
 		
 		//for each hex
-		if (map.containsHex(thishex)) {
+		if (this.map.containsHex(thishex)) {
 
 			//analyse map
 			var distance_to_center = Math.max(Hex.distance(origin,thishex),0);
@@ -204,7 +208,7 @@ HexMapGenerator.prototype.addWaterRim = function(map, size, rim_size) {
 			var rim_length = rim_size*size;
 			
 			//define new value and insert
-			value = map.getValue(thishex);
+			value = this.map.getValue(thishex);
 			value *= 1-Math.pow((rim_length/distance_to_edge),2);
 
 			//prevent negative values
@@ -212,13 +216,13 @@ HexMapGenerator.prototype.addWaterRim = function(map, size, rim_size) {
 				value = 0;
 			}
 
-			map.set(thishex, value);
+			this.map.set(thishex, value);
 
 		}
 	}
 }
 
-HexMapGenerator.prototype.flatenRange = function(map, size, range_min,range_max) {
+HexMapGenerator.prototype.flatenRange = function(size, range_min,range_max) {
 	
 	//for each cell
 	for (var q = -size; q <= size; q++) {
@@ -227,7 +231,7 @@ HexMapGenerator.prototype.flatenRange = function(map, size, range_min,range_max)
 
 	    for (var r = r1; r <= r2; r++) {
 	    	var this_hex = new Hex(q,r);
-	    	var this_value = map.getValue(this_hex);
+	    	var this_value = this.map.getValue(this_hex);
 
 	    	//for cells between range_min and range_max
 			for (var i = range_min; i < range_max; i++) {
@@ -235,39 +239,39 @@ HexMapGenerator.prototype.flatenRange = function(map, size, range_min,range_max)
 
 				//if the cell is equal to a value between range_min and range_max
 				if (this_value == i) {
-					map.set(this_hex,this_value-diff);
+					this.map.set(this_hex,this_value-diff);
 				}
 
 			}
 
 			//for cells of value higher than range_max
 			if (this_value > range_max) {
-				map.set(this_hex,this_value-(range_max-range_min));
+				this.map.set(this_hex,this_value-(range_max-range_min));
 			}
 		}
 	}
 }
 
-HexMapGenerator.prototype.addShallowWater = function(map) {
+HexMapGenerator.prototype.addShallowWater = function() {
 	var neighbors = [];
 
 
-	for (let thishex of map.getArray()) {
+	for (let thishex of this.map.getArray()) {
 		
 		//for each hex
-		if (map.containsHex(thishex)) {
+		if (this.map.containsHex(thishex)) {
 
 			//if the hex is deep water
-			if (map.getValue(thishex) == 0) {
+			if (this.map.getValue(thishex) == 0) {
 
 				//check its neighbors
 				for (var dir =0; dir < 6; dir++) {
 					var neighbor = Hex.neighbor(thishex,dir);
-					if (map.containsHex(neighbor)) {
+					if (this.map.containsHex(neighbor)) {
 						//and if they are land
-						if (map.getValue(neighbor) > 1) {
+						if (this.map.getValue(neighbor) > 1) {
 							//turn the deep water into shallow water
-							map.set(thishex,1);
+							this.map.set(thishex,1);
 
 						}
 					}
