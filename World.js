@@ -19,11 +19,10 @@ function World(size,layout) {
 
 	this.button_ids = 1; //increments with every new button
 
-	//console.log(this.map);
 	//and a bunch of units in it
 	this.units = new HexMap();
 
-	this.map;
+	this.map = new HexMap();
 	//A world is composed of a world map...
 	this.generateWorldMap(size);
 
