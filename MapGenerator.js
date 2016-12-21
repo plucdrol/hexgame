@@ -73,7 +73,7 @@ HexMapGenerator.prototype.generateTile = function(hex,method,simplex) {
 		var scales = [0.02,0.1,0.2,0.5,1.0,2.0];
 		var multis = [16,8,4,2,1,0];
 		var base = 4;
-		value = this.generateTilePerlin(q,r,simplex,base,scales,scales,multis);
+		value = this.generateTilePerlin(q,r,simplex,base,scales,multis);
 		break;
 	
 	case 'perlin_continents':
@@ -92,29 +92,20 @@ HexMapGenerator.prototype.generateTileRandom = function(range) {
 	return value;
 }
 
-HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales_x,scales_y,multiplicands) {
+HexMapGenerator.prototype.generateTilePerlin = function(x,y,simplex,base,scales,multiplicands) {
 
 	//Set default values if absent
 	if (typeof base === 'undefined') 					{ base = 6; }
-	if (typeof scales_x === 'undefined') 			{ scales_x = [0.02,0.1,0.2,0.5,1.0]; }
-	if (typeof scales_y === 'undefined') 			{ scales_y = [0.02,0.1,0.2,0.5,1.0]; }
+	if (typeof scales === 'undefined') 			{ scales = [0.02,0.1,0.2,0.5,1.0]; }
 	if (typeof multiplicands === 'undefined') { multiplicands = [10,7,4,2,1];	}
 
 	//get minimum length
-	var length = Math.min( scales_x.length, scales_y.length, multiplicands.length );
+	var length = Math.min( scales.length, multiplicands.length );
 
 	//add up all the perlin values
 	var total = base;
-
 	for (var i = 0; i < length; i++ ) {
-		total += Math.floor(simplex.noise(scales_x[i]*x, scales_y[i]*y)*multiplicands[i]);
-		if (i==0 && total < 5) {
-			total -= 5;
-		}
-		if (i==1 && total > 5) {
-			total += 5;
-		}
-
+		total += Math.floor(simplex.noise(scales[i]*x, scales[i]*y)*multiplicands[i]);
 	}
 
 	//shallow water for anything between these numbers
@@ -143,15 +134,15 @@ HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y,simplex) {
 	var size = 100;
 
 	//these settings make small continents
-	var scale_initial = 1.5/size;	//for 100
-	var multi_initial = 16;
+	//var scale_initial = 1.5/size;	//for 100
+	//var multi_initial = 16;
 
   //these settings make large continents
-	//var scale_initial = 0.8/size;
-	//var multi_initial = 16;
+	var scale_initial = 0.8/size;
+	var multi_initial = 16;
 	var base = 4;
 
-	//changing settings
+	//Setup settings
 	var total = base;
 	var scale = scale_initial;
 	var multi = multi_initial;
