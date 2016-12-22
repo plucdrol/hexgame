@@ -87,7 +87,7 @@ World.prototype.selfActionUnit = function(unit_hex) {
 	//Become a player if unit is a hut
 	if (active_unit.unit_type === 'hut') {
 		this.removeUnit(unit_hex);
-		this.createUnit(unit_hex,'fast_player');
+		this.createUnit(unit_hex,'fast-player');
 	}
 }
 

@@ -350,7 +350,7 @@ function WorldRenderer (canvas_draw,view,world) {
         var position = this.world.layout.hexToPoint(hex);
         position = position.offset(0,-height);
         
-        this.drawDot(position,20,unit.color);
+        this.drawDot(position,10*unit.size,unit.color);
     };
 
     WorldRenderer.prototype.drawRange = function(range) {

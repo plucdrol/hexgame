@@ -4,11 +4,13 @@
 
 function Unit(unit_type) {
 	this.range = new HexMap();
-	this.sight = 3;
 	
-	this.color = 'black';
+	this.sight = 3;
 	this.movement = 0;
 	this.movement_left = 0;
+
+	this.color = 'black';
+	this.size = 2;
 
 	this.heighto = 0;
 
@@ -36,11 +38,13 @@ function Unit(unit_type) {
 		case 'tree':
 			this.setMovement(0);
 			this.setColor('red');
+			this.size = 1;
 			break;
 		case 'hut':
 			this.setMovement(2);
 			this.setColor('brown');
 			this.population = 1;
+			this.size = 4;
 			break;
 		default:
 			this.setMovement(0);
