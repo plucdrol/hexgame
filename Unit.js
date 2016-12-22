@@ -3,13 +3,12 @@
 //           GENERIC UNIT --------------------//
 
 function Unit(unit_type) {
-	this.range;
-	
+	this.range = new HexMap();
 	this.sight = 3;
 	
-	this.color;
-	this.movement;
-	this.movement_left;
+	this.color = 'black';
+	this.movement = 0;
+	this.movement_left = 0;
 
 	this.heighto = 0;
 
@@ -37,6 +36,11 @@ function Unit(unit_type) {
 		case 'tree':
 			this.setMovement(0);
 			this.setColor('red');
+			break;
+		case 'hut':
+			this.setMovement(2);
+			this.setColor('brown');
+			this.population = 1;
 			break;
 		default:
 			this.setMovement(0);

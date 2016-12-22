@@ -65,14 +65,30 @@ World.prototype.actionUnit = function(current_hex,target_hex) {
 	var target_unit = this.unitAtPosition(target_hex);
 
 	//Eat the tree if it is a tree
-	if (target_unit.unit_type == 'tree') {
+	if ((active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') && target_unit.unit_type === 'tree') {
 		this.removeUnit(target_hex);
 		this.moveUnit(current_hex,target_hex);
 		active_unit.movement_left = active_unit.movement;
 	}
 
-	//More actions to come here
-			
+
+}
+
+World.prototype.selfActionUnit = function(unit_hex) {
+	//get the unit
+	var active_unit = this.unitAtPosition(unit_hex);
+
+	//Become a hut if unit is a player
+	if (active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') {
+		this.removeUnit(unit_hex);
+		this.createUnit(unit_hex,'hut');
+	}
+
+	//Become a player if unit is a hut
+	if (active_unit.unit_type === 'hut') {
+		this.removeUnit(unit_hex);
+		this.createUnit(unit_hex,'fast_player');
+	}
 }
 
 //returns the Unit at position Hex. For now only a single unit can be on each hex
@@ -253,13 +269,18 @@ WorldInterface.prototype.clickInsideSelectedUnitRange = function(hex_clicked) {
 	
 	//if you are reclicking the unit
 	if ( Hex.equals(this.hex_selected, hex_clicked)) {
-		this.hex_selected = 'undefined';
+		this.reClickUnit();
 	
 	//if you are clicking somewhere else
 	} else {
 		this.tellSelectedUnitToMove(hex_clicked);
 		this.hex_selected = hex_clicked;
 	}
+}
+
+WorldInterface.prototype.reClickUnit = function() {
+	this.world.selfActionUnit(this.hex_selected);
+	this.hex_selected = 'undefined';
 }
 
 WorldInterface.prototype.clickOutsideSelectedUnitRange = function(hex_clicked) {
