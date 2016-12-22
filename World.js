@@ -70,6 +70,8 @@ World.prototype.moveUnit = function(current_hex,new_hex) {
 
 			//find the range of the unit at its new position
 			this.unitAtPosition(new_hex).findRange(this.map,new_hex);
+
+			this.hex_selected = new_hex;
 		}
 }
 
@@ -85,6 +87,7 @@ World.prototype.actionUnit = function(current_hex,target_hex) {
 		this.removeUnit(target_hex);
 		this.moveUnit(current_hex,target_hex);
 		active_unit.movement_left = active_unit.movement;
+		this.hex_selected = hex_clicked;
 	}
 
 	//increase population if a hut eats a tree
@@ -296,7 +299,6 @@ WorldInterface.prototype.clickInsideSelectedUnitRange = function(hex_clicked) {
 	//if you are clicking somewhere else
 	} else {
 		this.tellSelectedUnitToMove(hex_clicked);
-		this.hex_selected = hex_clicked;
 	}
 }
 
