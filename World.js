@@ -42,79 +42,7 @@ World.prototype.removeUnit = function(hex) {
 }
 
 
-//Move the unit from one hex to another hex
-World.prototype.moveUnit = function(current_hex,new_hex) {
 
-		//get the unit which is moving
-		var unit = this.unitAtPosition(current_hex);
-
-		//Create player if unit is a hut
-		if (unit.unit_type === 'hut') {
-			this.createUnit(new_hex,'fast-player');
-			
-			//reduce the population of the unit by one
-			if (unit.population > 1) {	
-				unit.population -= 1;
-			} else {
-				this.units.remove(current_hex);
-			}
-
-
-		//Move player if unit is a player
-		} else {
-
-			//move unit to the new position
-			unit.move(this.map,current_hex,new_hex);
-			this.units.set(new_hex,unit);
-			this.units.remove(current_hex);
-
-			//find the range of the unit at its new position
-			this.unitAtPosition(new_hex).findRange(this.map,new_hex);
-
-			this.hex_selected = new_hex;
-		}
-}
-
-//Does the current_hex unit's action unto the new_hex unit
-World.prototype.actionUnit = function(current_hex,target_hex) {
-
-	//get both units
-	var active_unit = this.unitAtPosition(current_hex);
-	var target_unit = this.unitAtPosition(target_hex);
-
-	//Eat the tree if it is a tree
-	if ((active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') && target_unit.unit_type === 'tree') {
-		this.removeUnit(target_hex);
-		this.moveUnit(current_hex,target_hex);
-		active_unit.movement_left = active_unit.movement;
-		this.hex_selected = hex_clicked;
-	}
-
-	//increase population if a hut eats a tree
-	if (active_unit.unit_type === 'hut' && target_unit.unit_type === 'tree' ) {
-		this.removeUnit(target_hex);
-		active_unit.population += 1;
-	}
-
-
-}
-
-World.prototype.selfActionUnit = function(unit_hex) {
-	//get the unit
-	var active_unit = this.unitAtPosition(unit_hex);
-
-	//Become a hut if unit is a player
-	if (active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') {
-		this.removeUnit(unit_hex);
-		this.createUnit(unit_hex,'hut');
-	}
-
-	//Become a player if unit is a hut
-	if (active_unit.unit_type === 'hut') {
-		//this.removeUnit(unit_hex);
-		//this.createUnit(unit_hex,'fast-player');
-	}
-}
 
 //returns the Unit at position Hex. For now only a single unit can be on each hex
 World.prototype.unitAtPosition = function(hex) {
@@ -315,8 +243,7 @@ WorldInterface.prototype.clickInsideSelectedUnitRange = function(hex_clicked) {
 }
 
 WorldInterface.prototype.reClickUnit = function() {
-	this.world.selfActionUnit(this.hex_selected);
-	this.hex_selected = 'undefined';
+	this.selfActionUnit(this.hex_selected);
 }
 
 WorldInterface.prototype.clickOutsideSelectedUnitRange = function(hex_clicked) {
@@ -330,14 +257,89 @@ WorldInterface.prototype.tellSelectedUnitToMove = function(hex_clicked) {
 
 	//Do the unit's action if there is something there
 	if (unit_there) {
-		this.world.actionUnit(this.hex_selected,hex_clicked);
+		this.actionUnit(this.hex_selected,hex_clicked);
 
 	
 	//Move the unit there if there is nothing
 	} else {	
-		this.world.moveUnit(this.hex_selected,hex_clicked);
+		this.moveUnit(this.hex_selected,hex_clicked);
 	}
 
+}
+
+//Move the unit from one hex to another hex
+WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
+
+		//get the unit which is moving
+		var unit = this.world.unitAtPosition(current_hex);
+
+		//Create player if unit is a hut
+		if (unit.unit_type === 'hut') {
+			this.world.createUnit(new_hex,'fast-player');
+			
+			//reduce the population of the unit by one
+			if (unit.population > 1) {	
+				unit.population -= 1;
+			} else {
+				this.world.units.remove(current_hex);
+				this.hex_selected = new_hex;
+			}
+
+
+		//Move player if unit is a player
+		} else {
+
+			//move unit to the new position
+			unit.move(this.world.map,current_hex,new_hex);
+			this.world.units.set(new_hex,unit);
+			this.world.units.remove(current_hex);
+
+			//find the range of the unit at its new position
+			this.world.unitAtPosition(new_hex).findRange(this.world.map,new_hex);
+
+			this.hex_selected = new_hex;
+		}
+}
+
+//Does the current_hex unit's action unto the new_hex unit
+WorldInterface.prototype.actionUnit = function(current_hex,target_hex) {
+
+	//get both units
+	var active_unit = this.world.unitAtPosition(current_hex);
+	var target_unit = this.world.unitAtPosition(target_hex);
+
+	//Eat the tree if it is a tree
+	if ((active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') && target_unit.unit_type === 'tree') {
+		this.world.removeUnit(target_hex);
+		this.moveUnit(current_hex,target_hex);
+		active_unit.movement_left = active_unit.movement;
+		this.hex_selected = target_hex;
+	}
+
+	//increase population if a hut eats a tree
+	if (active_unit.unit_type === 'hut' && target_unit.unit_type === 'tree' ) {
+		this.world.removeUnit(target_hex);
+		active_unit.population += 1;
+	}
+
+
+}
+
+WorldInterface.prototype.selfActionUnit = function(unit_hex) {
+	//get the unit
+	var active_unit = this.world.unitAtPosition(unit_hex);
+
+	//Become a hut if unit is a player
+	if (active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') {
+		this.world.removeUnit(unit_hex);
+		this.world.createUnit(unit_hex,'hut');
+	}
+
+	//Become a player if unit is a hut
+	if (active_unit.unit_type === 'hut') {
+		//this.removeUnit(unit_hex);
+		//this.createUnit(unit_hex,'fast-player');
+	}
 }
 
 WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
