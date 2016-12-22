@@ -142,6 +142,7 @@ World.prototype.generateWorldMap = function(size) {
 	this.map = map_generator.getMap();
 
 	this.addTreesToMap();
+	this.addFishToMap();
 
 }
 
@@ -157,6 +158,17 @@ World.prototype.addTreesToMap = function() {
 	}
 }
 
+World.prototype.addFishToMap = function() {
+	//add fish (this is the wrong place for world-generaion code)
+	for (let hex of this.map.getArray()) {
+		var hex_value = this.map.getValue(hex);
+		if (hex_value === 1) {
+			if (Math.random() < 0.2) {
+				this.createUnit(hex,'fish');
+			}
+		}
+	}
+}
 
 
 

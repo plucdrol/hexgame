@@ -40,6 +40,11 @@ function Unit(unit_type) {
 			this.setColor('red');
 			this.size = 1;
 			break;
+		case 'fish':
+			this.setMovement(0);
+			this.setColor('lightblue');
+			this.size = 1;
+			break;
 		case 'hut':
 			this.setMovement(2);
 			this.setColor('brown');
