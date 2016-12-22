@@ -364,12 +364,12 @@ function WorldRenderer (canvas_draw,view,world) {
         //this.drawPath(view,pathfinder,destination);
 
         //draw the outline of the range
-        this.drawOutline( outline ,3,"rgba(150,150,255, 0.2)","rgba(0,0,255,1)");
+        this.drawOutline( outline ,3,"rgba(255,255,150, 0.2)","rgba(255,255,100,1)");
         
         //draw the range background color
         for (let this_hex of range.getArray()) {
             if (range.containsHex( this_hex )) {
-                var value = range.getValue(this_hex)[0]*200/10;
+                //var value = range.getValue(this_hex)[0]*200/10;
                 //this.drawHex(thishex,0,"rgba(0,"+value+","+value+", 0.2)");
                 //view.drawHexElevated(thishex, 3*this.range.getValue(thishex)[2], 0, "rgba("+value+","+value+","+value+", 0)", "rgba("+value+","+value+","+value+", 0.5)" );
 

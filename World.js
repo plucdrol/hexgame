@@ -163,7 +163,7 @@ World.prototype.addFishToMap = function() {
 	for (let hex of this.map.getArray()) {
 		var hex_value = this.map.getValue(hex);
 		if (hex_value === 1) {
-			if (Math.random() < 0.2) {
+			if (Math.random() < 0.1) {
 				this.createUnit(hex,'fish');
 			}
 		}
