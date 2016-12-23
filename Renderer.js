@@ -138,7 +138,7 @@ function WorldRenderer (canvas_draw,view,world) {
         //if zoomed out enough, just draw a dot
         if (this.view.getScale() < 0.2 && this.drawn_at_least_one_polygon == true) {
             var point = this.world.layout.hexToPoint(hex);
-            this.canvas_draw.drawDot(this.view.worldToScreen(point),60*this.view.getScale(),fill_color);
+            this.drawDot(point,60,fill_color);
         } else {
             //otherwise, draw the actual hex
             var corners = this.world.layout.hexesToPoints(Hex.corners(hex));
@@ -158,7 +158,7 @@ function WorldRenderer (canvas_draw,view,world) {
 
         //this.drawPolygon(low_corners,line_width,color_sides);
         this.drawPolygon(column_corners,line_width,color_sides);
-        this.drawPolygon(high_corners,line_width,color_top);
+        this.drawHex(high_corners,line_width,color_top);
 
     };
 
