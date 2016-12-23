@@ -65,8 +65,8 @@ function Renderer(canvas_draw,view) {
         
         //this function draws directly, so modifies the coordinates
         var coord = this.view.worldToScreen(position);
-        //var newfontsize = this.view.worldToScreen1D(fontsize);
-        var newfontsize = fontsize;
+        var newfontsize = this.view.worldToScreen1D(fontsize);
+        //var newfontsize = fontsize;
 
         this.canvas_draw.drawText(text,coord,shade,newfontsize);
     };

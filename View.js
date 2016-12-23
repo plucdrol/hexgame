@@ -10,11 +10,11 @@ function Rect(position,size) {
 
 function View (input_rect,output_rect) {
 
-    this.input = input_rect;
-    this.output = output_rect;
+    //PRIVATE VARIABLES?
+    var input = input_rect;
+    var output = output_rect;
 
-}
-
+    //PRIVILEGES METHODS?
     View.prototype.worldToScreen = function(point) {
 
         var newPoint = new Point(0,0);
@@ -24,6 +24,10 @@ function View (input_rect,output_rect) {
 
         return newPoint;
     };
+
+}
+
+    //PUBLIC METHODS?
     View.prototype.worldToScreenMulti = function(points) {
 
         var newPoints = [];
