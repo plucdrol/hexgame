@@ -41,7 +41,7 @@ function View (input_rect,output_rect) {
       output = view_out;
     }
 
-    this.convertWorldToScreen = function(point) {
+    this.worldToScreen = function(point) {
 
         var newPoint = new Point(0,0);
 
@@ -51,7 +51,7 @@ function View (input_rect,output_rect) {
         return newPoint;
     };
 
-    this.convertScreenToWorld = function(point) {
+    this.screenToWorld = function(point) {
 
         var newPoint = new Point(0,0);
 
@@ -61,19 +61,37 @@ function View (input_rect,output_rect) {
         return newPoint;
     };
 
+    this.shiftPosition = function(point) {
+        input.position.x += point.x;
+        input.position.y += point.y;
+    };
+
+    this.setPosition = function(point) { 
+        input.position = point; 
+    };
+
+    this.focus = function(point) {
+        input.position.x = point.x-input.size.x/2;
+        input.position.y = point.y-input.size.y/2;
+    }
+
+    this.zoom = function(n) {
+        //scales the view by n but keeps the screen centered on the same location
+        var x = input.position.x;
+        var y = input.position.y;
+        var w = input.size.x;
+        var h = input.size.y;
+
+
+        input.size = new Point( w*n , h*n );
+        input.position = new Point( x + w/2 - w*n/2 , y + h/2 - h*n/2 );
+        //console.log('x:'+this.input.position.x+' y:'+this.input.position.y+' w:'+this.input.size.x+' h:'+this.input.size.y);
+    };
+
 
 }
 
     //PUBLIC FUNCTIONS
-    View.prototype.worldToScreen = function(point) {
-
-        return this.convertWorldToScreen(point);
-    };
-
-    View.prototype.screenToWorld = function(point) {
-        return this.convertScreenToWorld(point);
-    };
-
 
     View.prototype.worldToScreen1D = function(scalar) {
         var point = new Point(scalar,0);
@@ -87,53 +105,11 @@ function View (input_rect,output_rect) {
     };
 
     View.prototype.getScale = function() { 
-        return this.output.size.x/this.input.size.x; 
-    };
-    View.prototype.shiftPosition = function(point) {
-        this.input.position.x += point.x;
-        this.input.position.y += point.y;
-    };
-    View.prototype.move = function(direction,speed) {
-
-        switch (direction) {
-            case 'left':
-                var shift = new Point(-this.input.size.x*speed,0);
-            break;
-            case'right':
-                var shift = new Point(this.input.size.x*speed,0);
-            break;
-            case'up':
-                var shift = new Point(0,-this.input.size.y*speed);
-            break;
-            case'down':
-                var shift = new Point(0,this.input.size.y*speed);
-            break;
-        }
-        this.shiftPosition(shift);
-    }
-    
-    View.prototype.setPosition = function(point) { this.input.position = point; };
-
-    View.prototype.focus = function(point) {
-        this.input.position.x = point.x-this.input.size.x/2;
-        this.input.position.y = point.y-this.input.size.y/2;
-    }
-
-    View.prototype.zoom = function(n) {
-        //scales the view by n but keeps the screen centered on the same location
-        var x = this.input.position.x;
-        var y = this.input.position.y;
-        var w = this.input.size.x;
-        var h = this.input.size.y;
-
-
-        this.input.size = new Point( w*n , h*n );
-        this.input.position = new Point( x + w/2 - w*n/2 , y + h/2 - h*n/2 );
-        //console.log('x:'+this.input.position.x+' y:'+this.input.position.y+' w:'+this.input.size.x+' h:'+this.input.size.y);
+        return this.getOutputRect().size.x/this.getInputRect().size.x; 
     };
 
     View.prototype.resize = function (width,height) {
-                //remember the current view
+        //remember the current view
         this.resetView(width,height);
 
     }
