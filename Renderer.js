@@ -113,15 +113,16 @@ function Renderer(canvas_draw,view) {
 
 var greenscale_colors = function(i) {
     var greenscale = ['#005','#00D','#AA3','#080','#062','#052','#042','#032','#020','#010','#110500','#210','#410','#420','#777','#777','#777','#888','#888','#888','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF'];
+    var faded_greenscale = ['#335','#66D','#AA7','#686','#575','#464','#353','#242','#232','#232','#110','#321','#421','#432','#777','#777','#777','#888','#888','#888','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF'];
     return greenscale[i];
-    this.drawn_at_least_one_polygon = false; //for some reason, until the renderer has drawn one real polygon, it sucks drawing dots
+    
 }
 
 
 function WorldRenderer (canvas_draw,view,world) {
     Renderer.call(this,canvas_draw,view); 
     this.world = world;
-    
+    this.drawn_at_least_one_polygon = false; //for some reason, until the renderer has drawn one real polygon, it sucks drawing dots
 }
 
     WorldRenderer.prototype = Object.create(Renderer.prototype);
