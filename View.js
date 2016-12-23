@@ -61,6 +61,13 @@ function View (input_rect,output_rect) {
         return newPoint;
     };
 
+    this.screenToWorld1D = function(scalar) {
+        return scalar * input.size.x/output.size.x;
+    };
+    this.worldToScreen1D = function(scalar) {
+        return scalar*output.size.x/input.size.x;
+    };
+
     this.shiftPosition = function(point) {
         input.position.x += point.x;
         input.position.y += point.y;
@@ -93,16 +100,10 @@ function View (input_rect,output_rect) {
 
     //PUBLIC FUNCTIONS
 
-    View.prototype.worldToScreen1D = function(scalar) {
-        var point = new Point(scalar,0);
-        return this.worldToScreen(point).x;
-    };
 
 
-    View.prototype.screenToWorld1D = function(scalar) {
-        var point = new Point(scalar,0);
-        return this.screenToWorld(point).x;
-    };
+
+
 
     View.prototype.getScale = function() { 
         return this.getOutputRect().size.x/this.getInputRect().size.x; 

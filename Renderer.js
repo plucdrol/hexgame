@@ -232,7 +232,7 @@ function WorldRenderer (canvas_draw,view,world) {
         var this_unit = this.world.units.getValue(hex);
         if (typeof this_unit == 'object') {
 
-            this.drawUnit(this_unit,hex,0);
+            //this.drawUnit(this_unit,hex,0);
 
         }
     }
