@@ -180,37 +180,6 @@ function WorldRenderer (canvas_draw,view,world) {
         }
     };
 
-    WorldRenderer.prototype.getHexRectangleBoundaries = function() {
-        
-        //find the boundaries
-        var extra = 0; //this variable defines how much bigger than the screen to render
-        var left = this.view.input.position.x-extra;
-        var right = this.view.input.position.x+this.view.input.size.x+extra;
-        var top = this.view.input.position.y-extra;
-        var bottom = this.view.input.position.y+this.view.input.size.y+extra;
-
-        //find the corner points
-        var topleft = new Point(left,top);
-        var topright = new Point(right,top);
-        var bottomleft = new Point(left,bottom);
-        var bottomright = new Point(right,bottom);
-
-        //find the corner hexes
-        var toplefthex = Hex.round(this.world.layout.pointToHex(topleft));
-        var toprighthex = Hex.round(this.world.layout.pointToHex(topright));
-        var bottomlefthex = Hex.round(this.world.layout.pointToHex(bottomleft));
-        var bottomrighthex = Hex.round(this.world.layout.pointToHex(bottomright));
-
-        //define the limits of the iteration
-        var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),toprighthex.getQ(),bottomlefthex.getQ());
-        var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),bottomlefthex.getQ(),toprighthex.getQ());
-        var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
-        var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
-
-        var hex_rect = [qmin,qmax,rmin,rmax];
-        return hex_rect;
-    }
-
     WorldRenderer.prototype.drawRectangleSection = function(qmin,qmax,rmin,rmax) {
         //for columns
         for (var r = rmin; r <= rmax; r++) {
@@ -241,7 +210,7 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawWorld = function() {
 
-        var rectMap = this.getHexRectangleBoundaries();
+        var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
         this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
     }
 

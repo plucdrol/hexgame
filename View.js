@@ -11,38 +11,42 @@ function Rect(position,size) {
 function View (input_rect,output_rect) {
 
     //PRIVATE MMEMBERS
+
     var input = input_rect;
     var output = output_rect;
 
-
-
-
     //PRIVILEGED FUNCTIOONS
+
+    this.getInputRect = function() {
+        return input;
+    }
+    this.getOutputRect = function() {
+        return output;
+    }
 
     this.resetView = function(width,height) {
 
-        //create the new view
+      //create the new view
       var view_ratio = width/height;
       var initial_zoom = 2;
       var view_out = new Rect(    new Point(0,0), new Point(width,height));
-      var view_in = this.input;
+      var view_in = input;
 
       //match the aspect ratio to the new size
-      var resizing_ratio = new Point( this.output.size.x/width,
-                                      this.output.size.y/height);
+      var resizing_ratio = new Point( output.size.x/width, output.size.y/height);
       view_in.size.x = view_in.size.x/resizing_ratio.x;
       view_in.size.y = view_in.size.y/resizing_ratio.y;
 
-      this.input = view_in;
-      this.output = view_out;
+      input = view_in;
+      output = view_out;
     }
 
     this.convertWorldToScreen = function(point) {
 
         var newPoint = new Point(0,0);
 
-        newPoint.x = (point.x - this.input.position.x)*this.output.size.x/this.input.size.x;
-        newPoint.y = (point.y - this.input.position.y)*this.output.size.y/this.input.size.y;
+        newPoint.x = (point.x - input.position.x)*output.size.x/input.size.x;
+        newPoint.y = (point.y - input.position.y)*output.size.y/input.size.y;
 
         return newPoint;
     };
@@ -51,8 +55,8 @@ function View (input_rect,output_rect) {
 
         var newPoint = new Point(0,0);
 
-        newPoint.x = (point.x * this.input.size.x/this.output.size.x) + this.input.position.x ;
-        newPoint.y = (point.y * this.input.size.y/this.output.size.y) + this.input.position.y ;
+        newPoint.x = (point.x * input.size.x/output.size.x) + input.position.x ;
+        newPoint.y = (point.y * input.size.y/output.size.y) + input.position.y ;
 
         return newPoint;
     };
@@ -132,5 +136,36 @@ function View (input_rect,output_rect) {
                 //remember the current view
         this.resetView(width,height);
 
+    }
+
+    View.prototype.getHexRectangleBoundaries = function(layout) {
+        
+        //find the boundaries
+        var extra = 0; //this variable defines how much bigger than the screen to render
+        var left = this.getInputRect().position.x-extra;
+        var right = this.getInputRect().position.x+this.getInputRect().size.x+extra;
+        var top = this.getInputRect().position.y-extra;
+        var bottom = this.getInputRect().position.y+this.getInputRect().size.y+extra;
+
+        //find the corner points
+        var topleft = new Point(left,top);
+        var topright = new Point(right,top);
+        var bottomleft = new Point(left,bottom);
+        var bottomright = new Point(right,bottom);
+
+        //find the corner hexes
+        var toplefthex = Hex.round(layout.pointToHex(topleft));
+        var toprighthex = Hex.round(layout.pointToHex(topright));
+        var bottomlefthex = Hex.round(layout.pointToHex(bottomleft));
+        var bottomrighthex = Hex.round(layout.pointToHex(bottomright));
+
+        //define the limits of the iteration
+        var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),toprighthex.getQ(),bottomlefthex.getQ());
+        var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),bottomlefthex.getQ(),toprighthex.getQ());
+        var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
+        var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
+
+        var hex_rect = [qmin,qmax,rmin,rmax];
+        return hex_rect;
     }
 
