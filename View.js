@@ -15,7 +15,28 @@ function View (input_rect,output_rect) {
     var output = output_rect;
 
 
+
+
     //PRIVILEGED FUNCTIOONS
+
+    this.resetView = function(width,height) {
+
+        //create the new view
+      var view_ratio = width/height;
+      var initial_zoom = 2;
+      var view_out = new Rect(    new Point(0,0), new Point(width,height));
+      var view_in = this.input;
+
+      //match the aspect ratio to the new size
+      var resizing_ratio = new Point( this.output.size.x/width,
+                                      this.output.size.y/height);
+      view_in.size.x = view_in.size.x/resizing_ratio.x;
+      view_in.size.y = view_in.size.y/resizing_ratio.y;
+
+      this.input = view_in;
+      this.output = view_out;
+    }
+
     this.convertWorldToScreen = function(point) {
 
         var newPoint = new Point(0,0);
@@ -106,4 +127,10 @@ function View (input_rect,output_rect) {
         this.input.position = new Point( x + w/2 - w*n/2 , y + h/2 - h*n/2 );
         //console.log('x:'+this.input.position.x+' y:'+this.input.position.y+' w:'+this.input.size.x+' h:'+this.input.size.y);
     };
+
+    View.prototype.resize = function (width,height) {
+                //remember the current view
+        this.resetView(width,height);
+
+    }
 

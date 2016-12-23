@@ -363,6 +363,8 @@ WorldInterface.prototype.resizeZoom = function(width,height) {
 	//remember the current view
   var current_view = view;
 
+  view.resize(width,height);
+
 	//create the new view
   var view_ratio = width/height;
   var initial_zoom = 2;
