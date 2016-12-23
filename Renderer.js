@@ -232,7 +232,7 @@ function WorldRenderer (canvas_draw,view,world) {
         var this_unit = this.world.units.getValue(hex);
         if (typeof this_unit == 'object') {
 
-            //this.drawUnit(this_unit,hex,0);
+            this.drawUnit(this_unit,hex,0);
 
         }
     }
@@ -324,7 +324,7 @@ function WorldRenderer (canvas_draw,view,world) {
         
         this.drawDot(position,10*unit.size,unit.color);
         if (unit.population != undefined) {
-            this.drawText(unit.population,position,'black',14);
+            this.drawText(unit.population,position,'black',25);
 
         }
     };
