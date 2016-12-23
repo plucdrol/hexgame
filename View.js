@@ -109,12 +109,6 @@ function View (input_rect,output_rect) {
         return this.getOutputRect().size.x/this.getInputRect().size.x; 
     };
 
-    View.prototype.resize = function (width,height) {
-        //remember the current view
-        this.resetView(width,height);
-
-    }
-
     View.prototype.getHexRectangleBoundaries = function(layout) {
         
         //find the boundaries
