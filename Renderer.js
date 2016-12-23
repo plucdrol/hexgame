@@ -55,7 +55,10 @@ function Renderer(canvas_draw,view) {
         var coords = [];
         
         //otherwise actually draw a polygon
-        coords = this.view.worldToScreenMulti(points);
+        for (let point of points) {
+            coords.push(this.view.worldToScreen(point));
+        }
+        
         this.canvas_draw.drawPolygon(coords,line_width,fill_color,line_color);
         this.drawn_at_least_one_polygon = true;
 
@@ -66,7 +69,6 @@ function Renderer(canvas_draw,view) {
         //this function draws directly, so modifies the coordinates
         var coord = this.view.worldToScreen(position);
         var newfontsize = this.view.worldToScreen1D(fontsize);
-        //var newfontsize = fontsize;
 
         this.canvas_draw.drawText(text,coord,shade,newfontsize);
     };

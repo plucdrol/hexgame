@@ -10,12 +10,13 @@ function Rect(position,size) {
 
 function View (input_rect,output_rect) {
 
-    //PRIVATE VARIABLES?
+    //PRIVATE MMEMBERS
     var input = input_rect;
     var output = output_rect;
 
-    //PRIVILEGES METHODS?
-    View.prototype.worldToScreen = function(point) {
+
+    //PRIVILEGED FUNCTIOONS
+    this.convertWorldToScreen = function(point) {
 
         var newPoint = new Point(0,0);
 
@@ -25,27 +26,7 @@ function View (input_rect,output_rect) {
         return newPoint;
     };
 
-}
-
-    //PUBLIC METHODS?
-    View.prototype.worldToScreenMulti = function(points) {
-
-        var newPoints = [];
-
-        for (var i = 0; i < points.length; i++) {
-            
-            newPoints.push(this.worldToScreen(points[i]));
-        }
-        
-
-        return newPoints;
-    };
-
-    View.prototype.worldToScreen1D = function(scalar) {
-        return scalar*this.output.size.x/this.input.size.x;
-    };
-
-    View.prototype.screenToWorld = function(point) {
+    this.convertScreenToWorld = function(point) {
 
         var newPoint = new Point(0,0);
 
@@ -54,12 +35,35 @@ function View (input_rect,output_rect) {
 
         return newPoint;
     };
-    View.prototype.screenToWorld1D = function(scalar) {
-        return scalar*this.input.size.x/this.output.size.x;
+
+
+}
+
+    //PUBLIC FUNCTIONS
+    View.prototype.worldToScreen = function(point) {
+
+        return this.convertWorldToScreen(point);
     };
 
-    View.prototype.setScale = function(point) { this.input.size = point; };
-    View.prototype.getScale = function() { return this.output.size.x/this.input.size.x; };
+    View.prototype.screenToWorld = function(point) {
+        return this.convertScreenToWorld(point);
+    };
+
+
+    View.prototype.worldToScreen1D = function(scalar) {
+        var point = new Point(scalar,0);
+        return this.worldToScreen(point).x;
+    };
+
+
+    View.prototype.screenToWorld1D = function(scalar) {
+        var point = new Point(scalar,0);
+        return this.screenToWorld(point).x;
+    };
+
+    View.prototype.getScale = function() { 
+        return this.output.size.x/this.input.size.x; 
+    };
     View.prototype.shiftPosition = function(point) {
         this.input.position.x += point.x;
         this.input.position.y += point.y;
