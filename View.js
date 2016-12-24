@@ -23,12 +23,19 @@ function View (input_rect,output_rect) {
     this.getOutputRect = function() {
         return output;
     }
+    this.getCenter = function() {
+        var x = input.position.x + input.size.x/2;
+        var y = input.position.y + input.size.y/2;
+        return new Point(x,y);
+    }
+    this.setCenter = function(point) {
+        input.position.x = point.x-input.size.x/2;
+        input.position.y = point.y-input.size.y/2;
+    }
 
-    this.resetView = function(width,height) {
+    this.resizeOutput = function(width,height) {
 
-      //create the new view
-      var view_ratio = width/height;
-      var initial_zoom = 2;
+      //create the new view in the same position
       var view_out = new Rect(    new Point(0,0), new Point(width,height));
       var view_in = input;
 
@@ -37,6 +44,7 @@ function View (input_rect,output_rect) {
       view_in.size.x = view_in.size.x/resizing_ratio.x;
       view_in.size.y = view_in.size.y/resizing_ratio.y;
 
+      //apply the new view to
       input = view_in;
       output = view_out;
     }
@@ -77,12 +85,12 @@ function View (input_rect,output_rect) {
         input.position = point; 
     };
 
-    this.focus = function(point) {
-        input.position.x = point.x-input.size.x/2;
-        input.position.y = point.y-input.size.y/2;
-    }
+
 
     this.zoom = function(n) {
+
+        var center_point = this.getCenter();
+
         //scales the view by n but keeps the screen centered on the same location
         var x = input.position.x;
         var y = input.position.y;
@@ -91,8 +99,10 @@ function View (input_rect,output_rect) {
 
 
         input.size = new Point( w*n , h*n );
-        input.position = new Point( x + w/2 - w*n/2 , y + h/2 - h*n/2 );
+        //input.position = new Point( x + w/2 - w*n/2 , y + h/2 - h*n/2 );
         //console.log('x:'+this.input.position.x+' y:'+this.input.position.y+' w:'+this.input.size.x+' h:'+this.input.size.y);
+
+        setCenter(center_point);
     };
 
 

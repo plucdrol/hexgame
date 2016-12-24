@@ -360,7 +360,7 @@ WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
 
 WorldInterface.prototype.resizeZoom = function(width,height) {
 
-  view.resetView(width,height);
+  view.resizeOutput(width,height);
 
   //redraw the screen after resizing
   drawScreen();
