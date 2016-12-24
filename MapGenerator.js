@@ -3,16 +3,14 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 								
-			//						MAP GENERATOR
+			//					PERLIN CONFIGURATION
 
-			Creates a randomized world map using the HexMap data type
-			-method: What generation algorithm to use
-			-size: the radius of the map in hexes
-
+			A configuration object for the Perlin Tile Generator and Map Generator
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////*/
+
 
 PerlinConfiguration = function(config_name) {
 	
@@ -62,6 +60,182 @@ PerlinConfiguration = function(config_name) {
 }
 
 
+
+
+
+
+
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+								
+			//						TILE GENERATOR
+
+			Creates a single randomized tile, using different algorithms
+			Those tiles can be assembled by different map generators
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
+//TileGenerator is not an interface, because abstract classes dont exist in Javascript
+function TileGenerator() {
+}
+
+TileGenerator.prototype.generateTile = function(x,y) {
+}
+
+
+
+
+
+function RandomTileGenerator() {
+	var range = 10;
+
+	this.generateTile = function(x,y) {
+		var value = 1+1*Math.floor((range+2)*Math.random());
+		if (value >= range) 
+			{value = range;}
+		return value;
+	}
+}
+
+
+
+
+
+function PerlinTileGenerator() {
+  TileGenerator.call(this); 
+  var config = new PerlinConfiguration('continents');
+  var simplex = new SimplexNoise();  
+	
+	this.generateTile = function(x,y) {
+		//add up all the perlin values
+		var total = config.base;
+		for (var i = 0; i < config.getLength(); i++ ) {
+			total += Math.floor(this.simplex.noise(config.scales[i]*x, config.scales[i]*y)*config.weights[i]);
+		}
+
+		//shallow water for anything between these numbers
+		if (total < 1 && total > -7) 
+			{total = 1;}
+
+		//cutoff underwater to ocean
+		if (total < 0) 
+			{total = 0;}
+
+		//more flatlands, and more mountain heights
+		total = Math.pow((total+1)/6,2);
+
+		//shallow water availability (between 0 and 1)
+		total += 0.75;
+
+
+	  return total;
+	}
+}
+
+
+
+function PerlinCustomTileGenerator() {
+    TileGenerator.call(this); 
+    var config = new PerlinConfiguration('continents');
+    var simplex = new SimplexNoise();    	
+
+
+    this.generateNoise = function() {
+			simplex = new SimplexNoise();    	
+    }
+
+
+    this.generateTile = function(x,y) {
+    	//add up all the perlin values
+			var total = config.base;
+			for (var i = 0; i < config.getLength(); i++ ) {
+				total += Math.floor(simplex.noise(config.scales[i]*x, config.scales[i]*y)*config.weights[i]);
+			}
+
+			//shallow water for anything between these numbers
+			if (total < 1 && total > -7) 
+				{total = 1;}
+
+			//cutoff underwater to ocean
+			if (total < 0) 
+				{total = 0;}
+
+			//more flatlands, and more mountain heights
+			total = Math.pow((total+1)/6,2);
+
+			//shallow water availability (between 0 and 1)
+			total += 0.75;
+
+
+		  return total;
+    }
+  }
+
+PerlinTileGenerator.prototype = Object.create(TileGenerator.prototype);
+
+
+function ContinentsTileGenerator() {
+
+  TileGenerator.call(this); 
+  var config = new PerlinConfiguration('continents');
+  var simplex = new SimplexNoise();    	
+
+
+  this.generateTile = function(x,y) {
+		//initial settings
+		var size = 100;
+
+	  //these settings make large continents
+		var scale = 0.8/size; //increase this value for smaller continents
+		var multi = 16;
+		var base = 4;
+
+		//Add up the perlin values
+		var total = base;
+		while (scale < 1) {
+			total += Math.floor(simplex.noise(scale*x+multi,scale*y+multi) *multi);
+			multi = multi/1.4;
+			scale = scale*1.8;	
+		}
+
+		//shallow water for anything between these numbers
+		if (total < 1 && total > -2) 
+			{total = 2;}
+
+		//cutoff underwater to ocean
+		if (total < 0) 
+			{total = 0;}
+
+	  return total;
+	}
+
+}
+
+
+
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+								
+			//						MAP GENERATOR
+
+			Creates a randomized world map using the HexMap data type
+			-method: What generation algorithm to use
+			-size: the radius of the map in hexes
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////*/
+
+
 HexMapGenerator = function() {
 	this.map = new HexMap();
 	this.simplex = new SimplexNoise();
@@ -76,23 +250,44 @@ HexMapGenerator.prototype.generateNoise = function() {
 	this.simplex = new SimplexNoise();
 }
 
+HexMapGenerator.prototype.makeTileGenerator = function(method) {
+
+	switch (method){
+		case 'perlin':
+			tile_generator = new PerlinTileGenerator();	
+			break;
+		case 'perlin-continents':
+			tile_generator = new ContinentsTileGenerator();
+			break;
+		case 'random':
+			tile_generator = new RandomTileGenerator();
+			break;
+		default:
+			tile_generator = new PerlinTileGenerator();
+	}
+
+	return tile_generator;
+}
+
 HexMapGenerator.prototype.generateMap = function(method,radius) {
 	
 	this.map = new HexMap();
 	this.generateNoise();
 	var hex, value; //contains the position and content of each tile
+	var tile_generator = this.makeTileGenerator(method);
 
-	
 	//Traverses the world map while staying inside the giant hexagon
 	for (var q = -radius; q <= radius; q++) {
 	  var rmin = Math.max(-radius, -q - radius);
 	  var rmax = Math.min(radius, -q + radius);
 
 	  for (var r = rmin; r <= rmax; r++) {
-	    hex = new Hex(q,r);
-	    value = this.generateTile(hex,method);
+	    
+	    //get value
+	    value = tile_generator.generateTile(q,r);
 	        		
 			//put in map
+			hex = new Hex(q,r);
 	    this.map.set(hex,value);	
 	  }
 	}
@@ -103,101 +298,6 @@ HexMapGenerator.prototype.generateMap = function(method,radius) {
 	this.addShallowWater();
 	this.flatenRange(radius,2,3);
 	this.flatenRange(radius,3,6);
-
-}
-
-HexMapGenerator.prototype.generateTile = function(hex,method) {
-	
-	var value;
-	var q = hex.getQ(),
-			r = hex.getR();
-
-	switch (method) {
-	
-	case 'random':
-		value = this.generateTileRandom(20);
-		break;
-	
-	case 'perlin':
-		value = this.generateTilePerlin(q,r);
-		break;
-	
-	case 'perlin_custom':
-		var config = new PerlinConfiguration('continents');
-		value = this.generateTilePerlin(q,r,config);
-		break;
-	
-	case 'perlin_continents':
-		value = this.generateTilePerlinContinents(q,r);
-		break;
-	}
-
-	return value;
-
-}
-
-HexMapGenerator.prototype.generateTileRandom = function(range) {
-	var value = 1+1*Math.floor((range+2)*Math.random());
-	if (value >= range) 
-		{value = range;}
-	return value;
-}
-
-HexMapGenerator.prototype.generateTilePerlin = function(x,y,config) {
-
-	//add up all the perlin values
-	var total = config.base;
-	for (var i = 0; i < config.getLength(); i++ ) {
-		total += Math.floor(this.simplex.noise(config.scales[i]*x, config.scales[i]*y)*config.weights[i]);
-	}
-
-	//shallow water for anything between these numbers
-	if (total < 1 && total > -7) 
-		{total = 1;}
-
-	//cutoff underwater to ocean
-	if (total < 0) 
-		{total = 0;}
-
-	//more flatlands, and more mountain heights
-	total = Math.pow((total+1)/6,2);
-
-	//shallow water availability (between 0 and 1)
-	total += 0.75;
-
-
-  return total;
-
-}
-
-HexMapGenerator.prototype.generateTilePerlinContinents = function(x,y) {
-
-
-	//initial settings
-	var size = 100;
-
-  //these settings make large continents
-	var scale = 0.8/size; //increase this value for smaller continents
-	var multi = 16;
-	var base = 4;
-
-	//Add up the perlin values
-	var total = base;
-	while (scale < 1) {
-		total += Math.floor(this.simplex.noise(scale*x+multi,scale*y+multi) *multi);
-		multi = multi/1.4;
-		scale = scale*1.8;	
-	}
-
-	//shallow water for anything between these numbers
-	if (total < 1 && total > -2) 
-		{total = 2;}
-
-	//cutoff underwater to ocean
-	if (total < 0) 
-		{total = 0;}
-
-  return total;
 
 }
 
@@ -296,6 +396,30 @@ HexMapGenerator.prototype.addShallowWater = function() {
 			}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+								
+			//						SHARED FUNCTIONS
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////*/
 
  function lerp(a, b, x) {
      return (1.0 - x)*a + x*b;
