@@ -96,14 +96,15 @@ HexMapGenerator.prototype.addWaterRim = function(rim_size) {
 	//center hex
 	var origin = new Hex(0,0);
 	var value;
+	var size = this.radius;
 
 	//run this code on each hex
 	for (let thishex of this.map.getArray()) {
 	
 		//analyse map
 		var distance_to_center = Math.max(Hex.distance(origin,thishex),0);
-		var distance_to_edge = this.radius - distance_to_center;
-		var rim_length = rim_size*this.radius;
+		var distance_to_edge = size - distance_to_center;
+		var rim_length = rim_size*size;
 		
 		//define new value and insert
 		value = this.map.getValue(thishex);
