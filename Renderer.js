@@ -204,12 +204,9 @@ function WorldRenderer (canvas_draw,view,world) {
                 }
             }
         }
-
-        //test draw a rectangle
-        this.drawRenderingRectangle(qmin,qmax,rmin,rmax);
     }
 
-    WorldRenderer.prototype.drawRenderingRectangle = function(qmin,qmax,rmin,rmax) {
+    WorldRenderer.prototype.drawRedRenderingRectangle = function(qmin,qmax,rmin,rmax) {
         var corners = [];
         corners.push(this.world.layout.hexToPoint(new Hex(qmin,rmin)));
         corners.push(this.world.layout.hexToPoint(new Hex(qmin,rmax)));
