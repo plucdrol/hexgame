@@ -180,33 +180,44 @@ function WorldRenderer (canvas_draw,view,world) {
         }
     };
 
+
+
     WorldRenderer.prototype.drawRectangleSection = function(qmin,qmax,rmin,rmax) {
+        
+        var currentr = 0;
+        var r = 0;
+        var q = 0;
+        var hex = new Hex(0,0);
+
         //for columns
-        for (var r = rmin; r <= rmax; r++) {
+        for (r = rmin; r <= rmax; r++) {
             
-            //shift even-r lines
-            if (r%2!=0) {
-                var currentr = r+1;
-            } else {
-                var currentr = r;
-            }
-            
-            
+            //shift even lines
+            currentr = r;
+            if (r%2!=0) currentr += 1;
+
             //for rows ( each shifted to become rectangular)
-            for (var q = Math.floor(qmin+(rmax-currentr)/2); q<qmax+(rmax-currentr)/2-(qmax-qmin)*1/4; q++) { //I subsctract 1/4 of q to make up for the min and max being ill-defined
-                var hex = new Hex(q,r);
-                //rectMap.set(hex,1);
+            for (q = Math.floor(qmin+(rmax-currentr)/2); q<qmax+(rmax-currentr)/2; q++) {
+                hex = new Hex(q,r);
                 if (this.world.map.containsHex(hex)) {
-                    //this.drawTile3D(hex);
                     this.drawTile2D(hex);
-                    //this.drawText(hex.getQ(),this.world.layout.hexToPoint(hex),'black',10);
-                    //this.drawText(hex.getR(),this.world.layout.hexToPoint(hex),'black',10);
-                    //this.drawText('[]',this.world.layout.hexToPoint(hex),'black',15);
-                    //this.drawText(index,this.world.layout.hexToPoint(hex),'black',20);
                 }
             }
         }
+
+        //test draw a rectangle
+        this.drawRenderingRectangle(qmin,qmax,rmin,rmax);
     }
+
+    WorldRenderer.prototype.drawRenderingRectangle = function(qmin,qmax,rmin,rmax) {
+        var corners = [];
+        corners.push(this.world.layout.hexToPoint(new Hex(qmin,rmin)));
+        corners.push(this.world.layout.hexToPoint(new Hex(qmin,rmax)));
+        corners.push(this.world.layout.hexToPoint(new Hex(qmax,rmax)));
+        corners.push(this.world.layout.hexToPoint(new Hex(qmax,rmin)));
+
+        this.drawPolygon(corners,20,'transparent','red');
+    }    
 
     WorldRenderer.prototype.drawWorld = function() {
 
@@ -223,11 +234,7 @@ function WorldRenderer (canvas_draw,view,world) {
 
         //draw ground
         this.drawHex(hex,0,color);
-        
         //this.drawText(this.world.map.getValue(hex) ,this.world.layout.hexToPoint(hex),'black',20);
-
-
-        
         //draw unit
         var this_unit = this.world.units.getValue(hex);
         if (typeof this_unit == 'object') {
