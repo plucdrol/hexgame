@@ -59,9 +59,8 @@ function Renderer(canvas_draw,view) {
         for (let point of points) {
             coords.push(this.view.worldToScreen(point));
         }
-        
+
         this.canvas_draw.drawPolygon(coords,line_width,fill_color,line_color);
-        this.drawn_at_least_one_polygon = true;
 
     };
 
@@ -114,7 +113,7 @@ var greenscale_colors = function(i) {
 function WorldRenderer (canvas_draw,view,world) {
     Renderer.call(this,canvas_draw,view); 
     this.world = world;
-    this.drawn_at_least_one_polygon = false; //for some reason, until the renderer has drawn one real polygon, it sucks drawing dots
+    this.corners = [];
 }
 
     WorldRenderer.prototype = Object.create(Renderer.prototype);
@@ -126,7 +125,7 @@ function WorldRenderer (canvas_draw,view,world) {
     WorldRenderer.prototype.drawHex = function(hex,line_width,fill_color,line_color) {
 
         //if zoomed out enough, just draw a dot
-        if (this.view.getScale() < 0.2 && this.drawn_at_least_one_polygon == true) {
+        if (this.view.getScale() < 0.2) {
             var point = this.world.layout.hexToPoint(hex);
             this.drawDot(point,60,fill_color);
         } else {
