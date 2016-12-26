@@ -570,6 +570,10 @@ function Point (x,y) {
 	this.x = x;
 	this.y = y;
 
+	this.set = function(x,y) {
+		this.x = x;
+		this.y = y;
+	}
 	this.offset = function(xi,yi) {
 		return new Point(this.x+xi,this.y+yi);
 	}
@@ -620,6 +624,9 @@ function HexLayout (orientation, size, origin) {
 	this.orientation = orientation; //orientation object, defined below
 	this.size = size;     //point object
 	this.origin = origin; //point object
+
+	this.fast_points = [new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0)];
+	this.reusable_point = new Point(0,0);
 }
 
 
@@ -633,12 +640,32 @@ function HexLayout (orientation, size, origin) {
 
 	HexLayout.prototype.hexesToPoints = function(hexes) {
 		var points = [];
-		var i=0;
 		for (let hex of hexes) {							
-			points[i] = this.hexToPoint(hex);
-			i++;
+			points.push(this.hexToPoint(hex));
 		}
 		return points;
+	}
+	
+	HexLayout.prototype.fastHexesToPoints = function(hexes) {
+		
+		var ori = this.orientation;
+		var x=0;
+		var y=0;
+		//var points = [];
+		var i = 0;
+
+		for (let hex of hexes) {							
+
+			x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
+			y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
+			//points.push(new Point(x + this.origin.x, y + this.origin.y ) );
+			this.fast_points[i].set(x + this.origin.x, y + this.origin.y );
+			i++;
+		}
+		//return points;
+
+		return this.fast_points;
+		
 	}
 
 	HexLayout.prototype.pointToHex = function(point) {
