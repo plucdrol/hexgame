@@ -1,6 +1,7 @@
 
 
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -80,17 +81,6 @@ function Renderer(canvas_draw,view) {
             this.drawLine(points[i], points[i+1], width);
         }
     };
-
-    //this function is deprecated because the basic Renderer doesn't need to know about Edges
-    /*Renderer.prototype.draw_edges = function(edges,width) {
-
-        for (var i=0;i<edges.length;i++) {
-            drawLine( edges[i].getPoint1(layout), edges[i].getPoint2(layout) ,width);
-        }
-
-    };*/
-
-
 
 
 
@@ -231,8 +221,8 @@ function WorldRenderer (canvas_draw,view,world) {
 
         //draw ground
         this.drawHex(hex,0,color);
-        //this.drawText(this.world.map.getValue(hex) ,this.world.layout.hexToPoint(hex),'black',20);
-        //draw unit
+
+        //draw units
         var this_unit = this.world.units.getValue(hex);
         if (typeof this_unit == 'object') {
 
