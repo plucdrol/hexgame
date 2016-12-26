@@ -81,6 +81,24 @@ function Renderer(canvas_draw,view) {
         }
     };
 
+    Renderer.prototype.doneRendering = function() {
+        window.clearTimeout(this.render_timer);
+        this.keep_rendering = true;
+       
+
+    };
+
+    Renderer.prototype.stopRendering = function() {
+        this.keep_rendering = false;
+    };
+
+    Renderer.prototype.startRendering = function(maximum_rendering_time_in_milliseconds) {
+        this.keep_rendering = true;
+        this.render_timer = window.setTimeout(this.stopRendering, maximum_rendering_time_in_milliseconds);
+    };
+
+
+
 
 
 
@@ -193,22 +211,30 @@ function WorldRenderer (canvas_draw,view,world) {
         var q = 0;
         var hex = new Hex(0,0);
 
-        
 
         //for columns
         for (r = rmin; r <= rmax; r++) {
-            
+
             //shift even lines
             currentr = r;
             if (r%2!=0) currentr += 1;
 
-            //for rows ( each shifted to become rectangular)
-            for (q = Math.floor(qmin+(rmax-currentr)/2); q<qmax+(rmax-currentr)/2; q++) {
-                hex = new Hex(q,r);
-                if (this.world.map.containsHex(hex)) {
-                    this.drawTile2D(hex);
-                    
-                }
+            this.drawRectangleSectionLine(r,currentr,qmin,qmax,rmin,rmax);
+            
+        }
+    }
+
+    WorldRenderer.prototype.drawRectangleSectionLine = function(r,currentr,qmin,qmax,rmin,rmax) {
+       
+        var q=0;
+
+        //for rows ( each shifted to become rectangular)
+        for (q = Math.floor(qmin+(rmax-currentr)/2); q<qmax+(rmax-currentr)/2; q++) {
+            hex = new Hex(q,r);
+            if (this.world.map.containsHex(hex)) {
+
+                this.drawTile2D(hex);
+                
             }
         }
     }
@@ -225,10 +251,15 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawWorld = function() {
 
+        this.startRendering(1); //in milliseconds
+
         this.drawn_at_least_one_hex = false;
         var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
         this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
         this.drawn_at_least_one_hex = false;
+
+
+        this.doneRendering();
     }
 
 
