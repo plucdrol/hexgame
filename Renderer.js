@@ -114,6 +114,8 @@ function WorldRenderer (canvas_draw,view,world) {
     Renderer.call(this,canvas_draw,view); 
     this.world = world;
     this.corners = [];
+
+    this.drawn_at_least_one_hex = false;
 }
 
     WorldRenderer.prototype = Object.create(Renderer.prototype);
@@ -133,10 +135,20 @@ function WorldRenderer (canvas_draw,view,world) {
             var corners = this.world.layout.hexesToPoints(Hex.corners(hex));
             this.drawPolygon(corners,line_width,fill_color);
         }
-
-
-
+        this.drawn_at_least_one_hex = true;
     };
+
+    WorldRenderer.prototype.fastDrawHex = function(hex,fill_color) {
+
+            //console.log('fat');
+            //calculate shifted position between previous hex and next hex
+            var world_position = this.world.layout.hexToPoint(hex);
+            var screen_position = this.view.worldToScreen(world_position);
+
+
+            //draw a polygon
+            this.canvas_draw.reDrawPolygon(screen_position/*,fill_color*/);
+    }
 
     WorldRenderer.prototype.drawHexElevated = function(hex,height,line_width,color_sides,color_top) {
         var low_corners = this.world.layout.hexesToPoints(Hex.corners(hex));
@@ -181,6 +193,8 @@ function WorldRenderer (canvas_draw,view,world) {
         var q = 0;
         var hex = new Hex(0,0);
 
+        
+
         //for columns
         for (r = rmin; r <= rmax; r++) {
             
@@ -193,6 +207,7 @@ function WorldRenderer (canvas_draw,view,world) {
                 hex = new Hex(q,r);
                 if (this.world.map.containsHex(hex)) {
                     this.drawTile2D(hex);
+                    
                 }
             }
         }
@@ -210,8 +225,10 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawWorld = function() {
 
+        this.drawn_at_least_one_hex = false;
         var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
         this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
+        this.drawn_at_least_one_hex = false;
     }
 
 
@@ -222,7 +239,13 @@ function WorldRenderer (canvas_draw,view,world) {
         color = this.mapColors(height);
 
         //draw ground
-        this.drawHex(hex,0,color);
+        if (this.drawn_at_least_one_hex === true) {
+            //this.fastDrawHex(hex,color);
+            this.drawHex(hex,0,color);
+        } else {
+            this.drawHex(hex,0,color);
+        }
+        
 
         //draw units
         var this_unit = this.world.units.getValue(hex);

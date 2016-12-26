@@ -19,7 +19,7 @@
 
 			//create a default view, which can be edited
 			var view_ratio = canvas.width/canvas.height;
-			var initial_zoom = 2;
+			var initial_zoom = 1/8;
 			var view_out = new Rect(new Point(0,0),
 																        new Point(canvas.width,canvas.height));
 			var view_in = new Rect(	new Point(-canvas.width*initial_zoom,	-initial_zoom*canvas.height),

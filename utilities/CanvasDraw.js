@@ -37,35 +37,45 @@ function CanvasDraw (canvas) {
         return this.canvas.height;
     }
 
-    CanvasDraw.prototype.reDrawPolygon = function(new_position,fill_color) {
+    CanvasDraw.prototype.reDrawPolygon = function(new_position) {
+
 
         //get the previous polygon
         var line = this.saved_polygon;
+        console.log(line);
 
-        //default line color
+        /*//default fill color
         if (typeof fill_color === 'undefined') {
             fill_color = 'transparent';
         }
+        //default line color
+        if (typeof line.strokeStyle === 'undefined') {
+            line.strokeStyle = 'transparent';
+        }*/
 
 
         //apply the new colors and settings to it
-        line.fill_color = fill_color;
-        line.line_color = line_color;
-
+        //line.fillStyle = fill_color;
+        
         //move it to its new position
-        line.translate(new_position);
+        //line.translate(new_position.x,new_position.y);
+        
+        //line.translate(canvas.width/2,canvas.height/2);
+        line.translate(100,100);
 
         //draw it
-        if (line.width > 0) {
-            line.stroke(); 
-        }
+        //if (line.width > 0) {
+        //    line.stroke(); 
+        //}
 
         //optional fill color
-        if (typeof fill_color != 'undefined' && fill_color != 'transparent') {
+        if (line.fillStyle != 'transparent') {
 
-            line.fillStyle = fill_color;
+            //line.fillStyle = fill_color;
             line.fill();
         }
+        line.translate(-100,-100);
+        //line.translate(-canvas.width/2,-canvas.height/2);
     }
 
     //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
@@ -86,7 +96,9 @@ function CanvasDraw (canvas) {
         //line style
         line.lineWidth = width;
         line.lineCap = "butt";
-        line.strokeStyle = line_color;       
+        line.strokeStyle = line_color;  
+
+        line.alpha = false;     
 
         //polygon outline
         line.beginPath();
@@ -113,7 +125,7 @@ function CanvasDraw (canvas) {
         if (typeof fill_color != 'undefined' && fill_color != 'transparent') {
 
             line.fillStyle = fill_color;
-            line.fill();
+            line.fill(); 
         }
         
     };

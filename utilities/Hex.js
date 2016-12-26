@@ -583,6 +583,9 @@ function Point (x,y) {
 	this.scale = function(k) {
 		return new Point(this.x*k,this.y*k);
 	}
+	this.getDifference = function(point) {
+		return new Point(point.x-this.x,point.y-this.y);
+	}
 
 }
 
