@@ -133,6 +133,9 @@ function WorldRenderer (canvas_draw,view,world) {
             var corners = this.world.layout.hexesToPoints(Hex.corners(hex));
             this.drawPolygon(corners,line_width,fill_color);
         }
+
+
+
     };
 
     WorldRenderer.prototype.drawHexElevated = function(hex,height,line_width,color_sides,color_top) {
