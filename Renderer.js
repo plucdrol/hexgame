@@ -53,7 +53,7 @@ function Renderer(canvas_draw,view) {
     Renderer.prototype.drawPolygon = function(points,line_width,fill_color,line_color) {
         
         //this function draws directly, so modifies the coordinates
-        var coords = [];
+        var coords = []; //creates an array or an object (vim test)
         
         //otherwise actually draw a polygon
         for (let point of points) {
@@ -228,7 +228,7 @@ function WorldRenderer (canvas_draw,view,world) {
         var this_unit = this.world.units.getValue(hex);
         if (typeof this_unit == 'object') {
 
-            this.drawUnit(this_unit,hex,0);
+            //this.drawUnit(this_unit,hex,0);
 
         }
     }

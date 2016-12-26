@@ -23,6 +23,7 @@
 
 function CanvasDraw (canvas) {
     this.canvas = canvas;
+    this.saved_polygon = {};
 
 }
 
@@ -34,6 +35,37 @@ function CanvasDraw (canvas) {
     //Returns the Height of the HTML Canvas object
     CanvasDraw.prototype.getHeight = function() {
         return this.canvas.height;
+    }
+
+    CanvasDraw.prototype.reDrawPolygon = function(new_position,fill_color) {
+
+        //get the previous polygon
+        var line = this.saved_polygon;
+
+        //default line color
+        if (typeof fill_color === 'undefined') {
+            fill_color = 'transparent';
+        }
+
+
+        //apply the new colors and settings to it
+        line.fill_color = fill_color;
+        line.line_color = line_color;
+
+        //move it to its new position
+        line.translate(new_position);
+
+        //draw it
+        if (line.width > 0) {
+            line.stroke(); 
+        }
+
+        //optional fill color
+        if (typeof fill_color != 'undefined' && fill_color != 'transparent') {
+
+            line.fillStyle = fill_color;
+            line.fill();
+        }
     }
 
     //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
@@ -69,6 +101,8 @@ function CanvasDraw (canvas) {
             line.closePath();
         }
         
+        //remember the last polygon drawn
+        this.saved_polygon = line;
         
         //draw the line if thick enough
         if (width > 0) {
