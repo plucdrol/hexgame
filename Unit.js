@@ -75,9 +75,6 @@ function Unit(unit_type) {
 		this.components.movement = movement;
 		this.components.movement_left = movement;
 	}
-	Unit.prototype.setColor = function(color) {
-		this.components.color = color;
-	}
 
 	Unit.prototype.move = function(map,current_hex,next_hex) {
 		//measure the distance moved
@@ -88,9 +85,4 @@ function Unit(unit_type) {
 		var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex,this.components.movement_left)
 		//substract it from the movement remaining
 		this.components.movement_left -= movement_cost;
-
-		if (this.components.movement_left <= 0) {
-			//this.movement_left = this.movement;
-		}
-
 	}
