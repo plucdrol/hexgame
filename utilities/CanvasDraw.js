@@ -23,6 +23,7 @@
 
 function CanvasDraw (canvas) {
     this.canvas = canvas;
+    this.saved_polygon = {};
 
 }
 
@@ -34,6 +35,11 @@ function CanvasDraw (canvas) {
     //Returns the Height of the HTML Canvas object
     CanvasDraw.prototype.getHeight = function() {
         return this.canvas.height;
+    }
+
+    CanvasDraw.prototype.reDrawPolygon = function(new_position) {
+
+
     }
 
     //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
@@ -54,7 +60,9 @@ function CanvasDraw (canvas) {
         //line style
         line.lineWidth = width;
         line.lineCap = "butt";
-        line.strokeStyle = line_color;       
+        line.strokeStyle = line_color;  
+
+        line.alpha = false;     
 
         //polygon outline
         line.beginPath();
@@ -69,6 +77,8 @@ function CanvasDraw (canvas) {
             line.closePath();
         }
         
+        //remember the last polygon drawn
+        this.saved_polygon = line;
         
         //draw the line if thick enough
         if (width > 0) {
@@ -79,7 +89,7 @@ function CanvasDraw (canvas) {
         if (typeof fill_color != 'undefined' && fill_color != 'transparent') {
 
             line.fillStyle = fill_color;
-            line.fill();
+            line.fill(); 
         }
         
     };
@@ -96,10 +106,22 @@ function CanvasDraw (canvas) {
     //Draw a dot on the canvas at position 'point' with optional size and color
     CanvasDraw.prototype.drawDot = function (point,size,color) {
 
-        //draw the dot as a very short line
-        var point1 = new Point(point.x-size/2,point.y);
-        var point2 = new Point(point.x+size/2,point.y);
-        this.drawLine(point1,point2,size,color)
+        var line = this.canvas.getContext('2d');
+
+        //default line width
+        if (typeof color === 'undefined') {
+            color = 'black';
+        }
+
+        //draw the dot as a rectangle
+        var x = point.x-size/2;
+        var y = point.y-size/2;
+        var width = size;
+        var height = size;
+
+        line.fillStyle = color;
+        
+        line.fillRect(x,y,width,height);
 
     };
 

@@ -1,6 +1,7 @@
 
 
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -17,6 +18,9 @@
 function Renderer(canvas_draw,view) {
     this.canvas_draw = canvas_draw;
     this.view = view;
+
+    this.ready_to_render = true;
+    this.render_timer = {};
 }
 
 
@@ -52,15 +56,14 @@ function Renderer(canvas_draw,view) {
     Renderer.prototype.drawPolygon = function(points,line_width,fill_color,line_color) {
         
         //this function draws directly, so modifies the coordinates
-        var coords = [];
+        var coords = []; //creates an array or an object (vim test)
         
         //otherwise actually draw a polygon
         for (let point of points) {
             coords.push(this.view.worldToScreen(point));
         }
-        
+
         this.canvas_draw.drawPolygon(coords,line_width,fill_color,line_color);
-        this.drawn_at_least_one_polygon = true;
 
     };
 
@@ -81,7 +84,19 @@ function Renderer(canvas_draw,view) {
         }
     };
 
+    Renderer.prototype.doneRendering = function(maximum_rendering_time_in_milliseconds) {
+        
+        this.ready_to_render = false;
+        this.render_timer = window.setTimeout(this.readyToRender, maximum_rendering_time_in_milliseconds);
+    };
 
+    Renderer.prototype.readyToRender = function() {
+        this.ready_to_render = true;
+    };
+
+    Renderer.prototype.startRendering = function() {
+        
+    };
 
 
 
@@ -117,7 +132,11 @@ var greenscale_colors = function(i) {
 function WorldRenderer (canvas_draw,view,world) {
     Renderer.call(this,canvas_draw,view); 
     this.world = world;
-    this.layout = world.layout;
+
+    this.corners = [];
+
+    this.drawn_at_least_one_hex = false;
+    this.ready_to_render = true;
 }
 
     WorldRenderer.prototype = Object.create(Renderer.prototype);
@@ -130,14 +149,28 @@ function WorldRenderer (canvas_draw,view,world) {
 
         //if zoomed out enough, just draw a dot
         if (this.view.getScale() < 1) {
-            var point = this.layout.hexToPoint(hex);
-            this.drawDot(point,60,fill_color);
+
+            var point = this.world.layout.hexToPoint(hex);
+            this.drawDot(point,61,fill_color);
         } else {
             //otherwise, draw the actual hex
             var corners = this.layout.hexesToPoints(Hex.corners(hex));
             this.drawPolygon(corners,line_width,fill_color);
         }
+        this.drawn_at_least_one_hex = true;
     };
+
+    WorldRenderer.prototype.fastDrawHex = function(hex,fill_color) {
+
+            //console.log('fat');
+            //calculate shifted position between previous hex and next hex
+            var world_position = this.world.layout.hexToPoint(hex);
+            var screen_position = this.view.worldToScreen(world_position);
+
+
+            //draw a polygon
+            this.canvas_draw.reDrawPolygon(screen_position/*,fill_color*/);
+    }
 
     WorldRenderer.prototype.drawHexElevated = function(hex,height,line_width,color_sides,color_top) {
         var low_corners = this.world.layout.hexesToPoints(Hex.corners(hex));
@@ -184,24 +217,29 @@ function WorldRenderer (canvas_draw,view,world) {
         var value = 0;
         var tile_renderer = new TileRenderer2D(this);
 
+
         //for columns
         for (r = rmin; r <= rmax; r++) {
-            
+
             //shift even lines
             currentr = r;
             if (r%2!=0) currentr += 1;
 
-            //for rows ( each shifted to become rectangular)
-            for (q = Math.floor(qmin+(rmax-currentr)/2); q<qmax+(rmax-currentr)/2; q++) {
-                hex = new Hex(q,r);
-                if (this.world.map.containsHex(hex)) {
-                    this.drawTile2D(hex);
-                    value = Math.floor(this.world.map.getValue(hex));
-                    //tile_renderer.drawTile(hex,value);
-                    
-                    var this_unit = this.world.units.getValue(hex);
-                    if (typeof this_unit == 'object') this.drawUnit(this_unit,hex,0);
-                }
+            this.drawRectangleSectionLine(r,currentr,qmin,qmax,rmin,rmax);
+            
+        }
+    }
+
+    WorldRenderer.prototype.drawRectangleSectionLine = function(r,currentr,qmin,qmax,rmin,rmax) {
+       
+        var q=0;
+
+        //for rows ( each shifted to become rectangular)
+        for (q = Math.floor(qmin+(rmax-currentr)/2); q<qmax+(rmax-currentr)/2; q++) {
+            hex = new Hex(q,r);
+            if (this.world.map.containsHex(hex)) {
+
+                this.drawTile2D(hex);
             }
         }
     }
@@ -218,8 +256,17 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawWorld = function() {
 
-        var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
-        this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
+        
+        if (this.ready_to_render) {
+            this.startRendering(); //in milliseconds
+            this.drawn_at_least_one_hex = false;
+            var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
+            this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
+            this.drawn_at_least_one_hex = false;
+            //this.doneRendering(10);
+        }
+
+
     }
 
 
@@ -231,8 +278,8 @@ function WorldRenderer (canvas_draw,view,world) {
 
         //draw ground
         this.drawHex(hex,0,color);
-        //this.drawText(this.world.map.getValue(hex) ,this.world.layout.hexToPoint(hex),'black',20);
-        //draw unit
+
+        //draw units
         var this_unit = this.world.units.getValue(hex);
         if (typeof this_unit == 'object') {
 

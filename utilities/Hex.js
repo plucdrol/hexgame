@@ -334,27 +334,36 @@ Edge.sort = function(unsorted_edges) {
 	
 	//create a new ARRAY OF EDGE ARRAYS
 	var edge_arrays = [];
+	var sorted_edges = [];
+
+	var max_attempts = 30;
+	var attempts = 0;
+	
+	var current_edge = {};
+	var maybe_edge = {};
+	
+
+	var i = 0;
 
 	//while UNSORTED_EDGES is not empty
 	while (unsorted_edges.length > 0) {
 		
 		//create a new SORTED EDGES array
-		var sorted_edges = [];
+		sorted_edges = [];
 		
 		//pop and push the first UNSSORTE_edge to this SORTED_EDGES array
-		//var CURRENT EDGE = that edge
-		var current_edge = unsorted_edges.pop();
+		current_edge = unsorted_edges.pop();
 		sorted_edges.push( current_edge );
 		
 		//while the edges in sorted_edges do not make a loop
-		var attempts = 30;
+		attempts = max_attempts;
 		while ( !(current_edge.getVertex2().equals(sorted_edges[0].getVertex1() ))) {
 
-
+			//check all the unsorted edges for the matching one
 			attempts -= 1;
 			//for each edge in UNSORTED_EDGES as MAYBE_EDGE
-			for (var i=0; i<unsorted_edges.length; i++) {
-				var maybe_edge = unsorted_edges[i];
+			for (i=0; i<unsorted_edges.length; i++) {
+				maybe_edge = unsorted_edges[i];
 				//if the 1st point of MAYBE_EDGE is equal to the CURRENT_EDGE's 2nd point
 
 				if ( maybe_edge.getVertex1().equals( current_edge.getVertex2() ) ) {
@@ -570,6 +579,10 @@ function Point (x,y) {
 	this.x = x;
 	this.y = y;
 
+	this.set = function(x,y) {
+		this.x = x;
+		this.y = y;
+	}
 	this.offset = function(xi,yi) {
 		return new Point(this.x+xi,this.y+yi);
 	}
@@ -578,6 +591,9 @@ function Point (x,y) {
 	}
 	this.scale = function(k) {
 		return new Point(this.x*k,this.y*k);
+	}
+	this.getDifference = function(point) {
+		return new Point(point.x-this.x,point.y-this.y);
 	}
 
 }
@@ -620,6 +636,9 @@ function HexLayout (orientation, size, origin) {
 	this.orientation = orientation; //orientation object, defined below
 	this.size = size;     //point object
 	this.origin = origin; //point object
+
+	this.fast_points = [new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0)];
+	this.reusable_point = new Point(0,0);
 }
 
 
@@ -633,12 +652,32 @@ function HexLayout (orientation, size, origin) {
 
 	HexLayout.prototype.hexesToPoints = function(hexes) {
 		var points = [];
-		var i=0;
 		for (let hex of hexes) {							
-			points[i] = this.hexToPoint(hex);
-			i++;
+			points.push(this.hexToPoint(hex));
 		}
 		return points;
+	}
+	
+	HexLayout.prototype.fastHexesToPoints = function(hexes) {
+		
+		var ori = this.orientation;
+		var x=0;
+		var y=0;
+		//var points = [];
+		var i = 0;
+
+		for (let hex of hexes) {							
+
+			x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
+			y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
+			//points.push(new Point(x + this.origin.x, y + this.origin.y ) );
+			this.fast_points[i].set(x + this.origin.x, y + this.origin.y );
+			i++;
+		}
+		//return points;
+
+		return this.fast_points;
+		
 	}
 
 	HexLayout.prototype.pointToHex = function(point) {
