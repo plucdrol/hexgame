@@ -12,19 +12,17 @@
 
 function World(size,layout) {
 
-
-	
 	this.layout = layout;
 	this.size = size;
 
-	this.button_ids = 1; //increments with every new button
-
-	//and a bunch of units in it
 	this.units = new HexMap();
 	this.map = new HexMap();
 
-	//A world is composed of a world map...
-	this.generateWorldMap(size);
+	this.init();
+}
+
+World.prototype.init = function() {
+	this.generateWorldMap(this.size);
 
 }
 
@@ -186,8 +184,6 @@ WorldInterface.prototype.clickScreen = function(screen_position) {
 
 WorldInterface.prototype.clickHex = function(hex_clicked) {
 
-	console.log(this.world.map.getValue(hex_clicked));
-	console.log(this.world.units.getValue(hex_clicked));
 	//if there is already a unit on the hex selected
 	if (this.aUnitIsSelected()) {
 		this.clickWhileUnitSelected(hex_clicked);
@@ -260,7 +256,6 @@ WorldInterface.prototype.tellSelectedUnitToMove = function(hex_clicked) {
 	//Do the unit's action if there is something there
 	if (unit_there) {
 		this.actionUnit(this.hex_selected,hex_clicked);
-
 	
 	//Move the unit there if there is nothing
 	} else {	
