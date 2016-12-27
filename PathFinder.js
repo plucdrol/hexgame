@@ -35,7 +35,6 @@ function PathFinder(map) {
 		frontier.put(origin); 				//frontier begins as only the initial hex
 		var visited = new HexMap();		//visited is the list of hexes that will be returned as part of the 'visible' hexes
 		var distance = 0;							//distance from the origin hex is 0 for the origin hex
-		//var direction_from;						//direction_from remember which direction the expanding frontier came from
 		visited.set(origin,distance);	//the origin is always visible
 
 		//while the frontier still has nodes to explore
