@@ -81,14 +81,7 @@ function Renderer(canvas_draw,view) {
         }
     };
 
-    //this function is deprecated because the basic Renderer doesn't need to know about Edges
-    /*Renderer.prototype.draw_edges = function(edges,width) {
 
-        for (var i=0;i<edges.length;i++) {
-            drawLine( edges[i].getPoint1(layout), edges[i].getPoint2(layout) ,width);
-        }
-
-    };*/
 
 
 
@@ -124,7 +117,7 @@ var greenscale_colors = function(i) {
 function WorldRenderer (canvas_draw,view,world) {
     Renderer.call(this,canvas_draw,view); 
     this.world = world;
-    this.drawn_at_least_one_polygon = false; //for some reason, until the renderer has drawn one real polygon, it sucks drawing dots
+    this.layout = world.layout;
 }
 
     WorldRenderer.prototype = Object.create(Renderer.prototype);
@@ -136,12 +129,12 @@ function WorldRenderer (canvas_draw,view,world) {
     WorldRenderer.prototype.drawHex = function(hex,line_width,fill_color,line_color) {
 
         //if zoomed out enough, just draw a dot
-        if (this.view.getScale() < 0.2 && this.drawn_at_least_one_polygon == true) {
-            var point = this.world.layout.hexToPoint(hex);
+        if (this.view.getScale() < 0.2) {
+            var point = this.layout.hexToPoint(hex);
             this.drawDot(point,60,fill_color);
         } else {
             //otherwise, draw the actual hex
-            var corners = this.world.layout.hexesToPoints(Hex.corners(hex));
+            var corners = this.layout.hexesToPoints(Hex.corners(hex));
             this.drawPolygon(corners,line_width,fill_color);
         }
     };
@@ -188,6 +181,8 @@ function WorldRenderer (canvas_draw,view,world) {
         var r = 0;
         var q = 0;
         var hex = new Hex(0,0);
+        var value = 0;
+        var tile_renderer = new TileRenderer2D(this);
 
         //for columns
         for (r = rmin; r <= rmax; r++) {
@@ -201,6 +196,11 @@ function WorldRenderer (canvas_draw,view,world) {
                 hex = new Hex(q,r);
                 if (this.world.map.containsHex(hex)) {
                     this.drawTile2D(hex);
+                    value = Math.floor(this.world.map.getValue(hex));
+                    //tile_renderer.drawTile(hex,value);
+                    
+                    var this_unit = this.world.units.getValue(hex);
+                    if (typeof this_unit == 'object') this.drawUnit(this_unit,hex,0);
                 }
             }
         }
@@ -377,3 +377,128 @@ function WorldRenderer (canvas_draw,view,world) {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+//////                                                                                              
+//////                          TILE RENDERER
+//////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////
+
+function TileRenderer (layout) {
+    Renderer.call(this); 
+    this.layout = layout;
+}
+TileRenderer.prototype = Object.create(Renderer.prototype);
+TileRenderer.prototype.drawTile = function(hex,value) {
+}
+TileRenderer.prototype.mapColors = function(i) {
+    return greenscale_colors(i);  
+} 
+
+
+
+function TileRenderer2D() {
+    TileRenderer.call(this); 
+}
+TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
+TileRenderer2D.prototype.drawTile = function(hex,value) {
+        //analyze tile
+        var height = value;
+        color = this.mapColors(height);
+
+        //draw ground
+        this.drawHex(hex,0,color);
+    }
+
+/*
+
+
+function TileRenderer3D() {
+    this.drawTile = function(hex,value) {
+        //analyze tile
+        var color = value;
+        color = this.mapColors(color);
+        var height = color*6;
+
+        //draw ground
+        if (height > 1) {
+            this.drawHexElevated(hex,height,0,'#310',color);
+        } else {
+            this.drawHex(hex,0,color);
+        }
+    }
+}
+TileRenderer3D.prototype = Object.create(TileRenderer.prototype);
+
+function TileRendererSemi3D() {
+    this.drawTile = function(hex,value) {
+
+        //this code only works in POINTY_TOP layout
+
+
+        //analyze tile
+        var height = value;
+        var color = Math.floor(height);
+        color = this.mapColors(color);
+        this.drawHex(hex,0,color);
+        //draw ground
+        //
+        var shade  = Math.floor(255-255*height/20);
+        color =  "rgba("+shade+","+shade+","+shade+", 0.5)";
+        //this.drawHex(hex,0,color);
+
+        //draw walls
+        var wall_color = '#310';
+        var wall_height = 6;
+        
+        //analyze neighbors
+        var n_left = Hex.neighbor(hex,3);
+        var n_upleft = Hex.neighbor(hex,2);
+        var n_upright = Hex.neighbor(hex,1);
+
+        //get height of neighbors
+        var n_left_height = this.world.map.getValue(n_left);
+        var n_upleft_height = this.world.map.getValue(n_upleft);
+        var n_upright_height = this.world.map.getValue(n_upright);
+
+        var corners = this.world.layout.Hex.corners(hex);
+        //draw wall of the left if the heights are different
+        if (n_left_height != height) {
+           // wall_height = wall_height/2;
+           // this.drawLine(corners[3],corners[4],wall_height,wall_color);
+        }
+        //draw wall on the top-left if that tile is higher
+        if (n_upleft_height > height) {
+            wall_height = 1.5*(n_upleft_height-height);
+            this.drawLine(corners[2].offset(0,wall_height/2),corners[3].offset(0,wall_height/2),wall_height,wall_color);
+        }
+        //draw wall on the top-right if that tile is higher
+        if (n_upright_height > height) {
+            wall_height = 1.5*(n_upright_height-height);
+            this.drawLine(corners[1].offset(0,wall_height/2),corners[2].offset(0,wall_height/2),wall_height,wall_color);
+        }
+    }
+}
+TileRendererSemi3D.prototype = Object.create(TileRenderer.prototype);
+
+*/
