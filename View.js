@@ -97,11 +97,7 @@ function View (input_rect,output_rect) {
         var w = input.size.x;
         var h = input.size.y;
 
-
         input.size = new Point( w*n , h*n );
-        //input.position = new Point( x + w/2 - w*n/2 , y + h/2 - h*n/2 );
-        //console.log('x:'+this.input.position.x+' y:'+this.input.position.y+' w:'+this.input.size.x+' h:'+this.input.size.y);
-
         this.setCenter(center_point);
     };
 

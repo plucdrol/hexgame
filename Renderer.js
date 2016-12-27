@@ -83,6 +83,7 @@ function Renderer(canvas_draw,view) {
     };
 
     Renderer.prototype.startRendering = function() {
+        this.canvas_draw.clear();
     };
 
 
@@ -372,7 +373,7 @@ function WorldRenderer (canvas_draw,view,world) {
             this.drawHex(destination,1,"rgba(200, 255, 200, 0.5)");
             
             //calculate points of the hexes
-            var hexes = pathfinder.path(range,destination);
+            var hexes = pathfinder.destinationPathfind(range,destination);
             var points = [];
             for (var i = 0; i<hexes.length;i++) {
                 points.push(this.world.layout.hexToPoint(hexes[i]));
