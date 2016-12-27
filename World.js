@@ -169,7 +169,7 @@ WorldInterface.prototype.hover = function(screen_position) {
 
 	//if the mouse moved to a new hex, redraw the screen
 	if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
-		//drawScreen();
+		drawScreen();
 	}
 
 	//remember the currently hovered hex
