@@ -28,20 +28,12 @@ function Renderer(canvas_draw,view) {
 
     Renderer.prototype.drawDot = function (point,size,color) {
 
-
         //this function draws directly, so modifies the coordinates
         var coord = this.view.worldToScreen(point);
         size = this.view.worldToScreen1D(size);
 
         this.canvas_draw.drawDot(coord,size,color);
     };
-
-    //Draw multiple dots
-    Renderer.prototype.drawDots = function(points,size,color) {
-        for (let point of points) {
-            this.drawDot(point,size,color);
-        }
-    }
 
     Renderer.prototype.drawLine = function(point1,point2,line_width,color) {
 
@@ -54,7 +46,6 @@ function Renderer(canvas_draw,view) {
     };
 
     Renderer.prototype.drawPolygon = function(points,line_width,fill_color,line_color) {
-        
         //this function draws directly, so modifies the coordinates
         var coords = []; //creates an array or an object (vim test)
         
@@ -68,7 +59,6 @@ function Renderer(canvas_draw,view) {
     };
 
     Renderer.prototype.drawText = function(text,position,shade,fontsize) {
-        
         //this function draws directly, so modifies the coordinates
         var coord = this.view.worldToScreen(position);
         var newfontsize = this.view.worldToScreen1D(fontsize);
@@ -77,7 +67,6 @@ function Renderer(canvas_draw,view) {
     };
 
     //INDIRECT functions, use the previously defined functions to draw more complicated things
-
     Renderer.prototype.drawLines = function(points,width) {
         for (var i=0;i<points.length-1;i++) {
             this.drawLine(points[i], points[i+1], width);
@@ -85,7 +74,6 @@ function Renderer(canvas_draw,view) {
     };
 
     Renderer.prototype.doneRendering = function(maximum_rendering_time_in_milliseconds) {
-        
         this.ready_to_render = false;
         this.render_timer = window.setTimeout(this.readyToRender, maximum_rendering_time_in_milliseconds);
     };
@@ -95,7 +83,6 @@ function Renderer(canvas_draw,view) {
     };
 
     Renderer.prototype.startRendering = function() {
-        
     };
 
 
@@ -162,11 +149,9 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.fastDrawHex = function(hex,fill_color) {
 
-            //console.log('fat');
             //calculate shifted position between previous hex and next hex
             var world_position = this.world.layout.hexToPoint(hex);
             var screen_position = this.view.worldToScreen(world_position);
-
 
             //draw a polygon
             this.canvas_draw.reDrawPolygon(screen_position/*,fill_color*/);
@@ -181,8 +166,6 @@ function WorldRenderer (canvas_draw,view,world) {
 
         var column_corners = [low_corners[0],high_corners[1],high_corners[2],high_corners[3],low_corners[4],low_corners[5]];
 
-
-        //this.drawPolygon(low_corners,line_width,color_sides);
         this.drawPolygon(column_corners,line_width,color_sides);
         this.drawHex(high_corners,line_width,color_top);
 
@@ -202,11 +185,8 @@ function WorldRenderer (canvas_draw,view,world) {
                 corners.push( this.world.layout.hexToPoint(edges[i].getPoint1() ));
             }
             this.drawPolygon(corners,line_width,fill_color,line_color);
-            //this.drawDots(corners,10,fill_color);
         }
     };
-
-
 
     WorldRenderer.prototype.drawRectangleSection = function(qmin,qmax,rmin,rmax) {
         
@@ -217,7 +197,6 @@ function WorldRenderer (canvas_draw,view,world) {
         var value = 0;
         var tile_renderer = new TileRenderer2D(this);
 
-
         //for columns
         for (r = rmin; r <= rmax; r++) {
 
@@ -226,7 +205,6 @@ function WorldRenderer (canvas_draw,view,world) {
             if (r%2!=0) currentr += 1;
 
             this.drawRectangleSectionLine(r,currentr,qmin,qmax,rmin,rmax);
-            
         }
     }
 
@@ -256,7 +234,6 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawWorld = function() {
 
-        
         if (this.ready_to_render) {
             this.startRendering(); //in milliseconds
             this.drawn_at_least_one_hex = false;
@@ -265,8 +242,6 @@ function WorldRenderer (canvas_draw,view,world) {
             this.drawn_at_least_one_hex = false;
             //this.doneRendering(10);
         }
-
-
     }
 
 
@@ -383,22 +358,9 @@ function WorldRenderer (canvas_draw,view,world) {
     WorldRenderer.prototype.drawRange = function(range) {
         
         var outline = Hex.outline(range.getArray());
-        //var pathfinder = new PathFinder(map);
-        //this.drawPath(view,pathfinder,destination);
 
         //draw the outline of the range
         this.drawOutline( outline ,3,"rgba(255,255,150, 0.2)","rgba(255,255,100,1)");
-        
-        //draw the range background color
-        for (let this_hex of range.getArray()) {
-            if (range.containsHex( this_hex )) {
-                //var value = range.getValue(this_hex)[0]*200/10;
-                //this.drawHex(thishex,0,"rgba(0,"+value+","+value+", 0.2)");
-                //view.drawHexElevated(thishex, 3*this.range.getValue(thishex)[2], 0, "rgba("+value+","+value+","+value+", 0)", "rgba("+value+","+value+","+value+", 0.5)" );
-
-                
-            }
-        }
     }
 
     WorldRenderer.prototype.drawPath = function(range,destination) {
@@ -415,7 +377,6 @@ function WorldRenderer (canvas_draw,view,world) {
             for (var i = 0; i<hexes.length;i++) {
                 points.push(this.world.layout.hexToPoint(hexes[i]));
             }
-            //view.draw_multi_line(points,3);
 
             //draw on screen
             this.drawLines(points,3);
