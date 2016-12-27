@@ -62,7 +62,7 @@
 				if (world_interface.hex_selected instanceof Hex) {
 					var potentialUnit = world_interface.world.units.getValue(world_interface.hex_selected);
 					if (potentialUnit instanceof Unit) {
-						potentialUnit.findRange(world_interface.world.map,world_interface.hex_selected);
+						//potentialUnit.findRange(world_interface.world.map,world_interface.hex_selected);
 						//console.log(world_interface.unit_selected);
 						world_renderer.drawRange(potentialUnit.components.range);
 						//world_renderer.drawPath(world_interface.unit_selected.range,world_interface.hex_hovered);
@@ -70,7 +70,7 @@
 
 
 					//draw selection hex
-					world_renderer.drawHex(world_interface.hex_selected, 2);
+					world_renderer.drawHex(world_interface.hex_selected, 2, "rgba(200,200,0,0.5)");
 					//console.log(world_interface.hex_selected);
 				}
 

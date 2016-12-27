@@ -187,6 +187,7 @@ WorldInterface.prototype.clickScreen = function(screen_position) {
 WorldInterface.prototype.clickHex = function(hex_clicked) {
 
 	console.log(this.world.map.getValue(hex_clicked));
+	console.log(this.world.units.getValue(hex_clicked));
 	//if there is already a unit on the hex selected
 	if (this.aUnitIsSelected()) {
 		this.clickWhileUnitSelected(hex_clicked);
@@ -275,7 +276,7 @@ WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
 		var unit = this.world.unitAtPosition(current_hex);
 
 		//Create player if unit is a hut
-		if (unit.hasComponent('ground_action_create_unit')) {
+		if (unit.hasOwnProperty('ground_action_create_unit')) {
 			this.world.createUnit(new_hex,unit.components.ground_action_create_unit.type);
 			
 			//reduce the population of the unit by one

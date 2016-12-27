@@ -75,7 +75,7 @@ function PathFinder(map) {
 		var came_from = undefined;
 
 		//create pathfinder cell for origin
-		var pathfinder_cell = new PathFinderCell(cost_so_far,came_from,this.map.getValue(origin));
+		var pathfinder_cell = new PathFinderCell(cost_so_far,came_from,this.map.getValue(origin).components.elevation);
 		visited.set(origin,pathfinder_cell); //define this triad as an object
 
 		//while the frontier still has nodes to explore
@@ -111,7 +111,7 @@ function PathFinder(map) {
 						frontier.put(neighbor);
 
 						//create pathfinder cell for this hex
-						pathfinder_cell = new PathFinderCell(path_cost,current,this.map.getValue(neighbor));
+						pathfinder_cell = new PathFinderCell(path_cost,current,this.map.getValue(neighbor).components.elevation);
 
 						//add to visited cells
 						visited.set(neighbor,pathfinder_cell);
@@ -127,7 +127,7 @@ function PathFinder(map) {
 							frontier.put(neighbor);
 
 							//create pathfinder cell for this hex
-							pathfinder_cell = new PathFinderCell(path_cost,current,this.map.getValue(neighbor));
+							pathfinder_cell = new PathFinderCell(path_cost,current,this.map.getValue(neighbor).components.elevation);
 							visited.set(neighbor,pathfinder_cell);
 						} 
 
@@ -176,7 +176,7 @@ function PathFinder(map) {
 
 	//Returns the absolute movement cost value of the tile given
 	this.moveCostAbsolute = function(other_tile) {
-		return this.map.getValue(other_tile);
+		return this.map.getValue(other_tile).components.elevation;
 	}
 
 
@@ -185,7 +185,7 @@ function PathFinder(map) {
 	this.moveCostNeighbor = function(this_tile, other_tile) {
 		
 		//returns a positive number for uphill movement, negative number for downhill movement
-		var difference = this.map.getValue(other_tile) - this.map.getValue(this_tile);
+		var difference = this.map.getValue(other_tile).components.elevation - this.map.getValue(this_tile).components.elevation;
 
 		//Currently returns hard-coded values based on difference in elevation only
 		if (difference >= 4) {

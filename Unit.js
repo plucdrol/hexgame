@@ -11,7 +11,7 @@ function Unit(unit_type) {
 
 	Unit.prototype.findRange = function(map,position) {
 		var pathfinder = new PathFinder(map);
-		this.components.range = pathfinder.rangePathfind(position,this.movement_left);
+		this.components.range = pathfinder.rangePathfind(position,this.components.movement_left);
 	};
 
 
