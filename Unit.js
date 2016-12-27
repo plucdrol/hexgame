@@ -11,7 +11,7 @@ function Unit(unit_type) {
 
 	Unit.prototype.findRange = function(map,position) {
 		var pathfinder = new PathFinder(map);
-		this.range = pathfinder.rangePathfind(position,this.movement_left);
+		this.components.range = pathfinder.rangePathfind(position,this.movement_left);
 	};
 
 
@@ -26,7 +26,8 @@ function Unit(unit_type) {
 			this.components.controllable = true;
 			this.components.eats_food = true;
 			this.components.self_action_become_unit = 'hut';
-			this.range = new HexMap();
+			this.components.range = new HexMap();
+			this.components.size = 2;
 			break;
 		case 'fast-player':
 			this.setMovement(24);
@@ -34,7 +35,8 @@ function Unit(unit_type) {
 			this.components.controllable = true;
 			this.components.eats_food = true;
 			this.components.self_action_become_unit = 'hut';
-			this.range = new HexMap();
+			this.components.range = new HexMap();
+			this.components.size = 2;
 			break;
 		case 'tree':
 			this.setMovement(0);
@@ -56,6 +58,7 @@ function Unit(unit_type) {
 			this.components.controllable = true;
 			this.components.collects_ressources = true;
 			this.components.ground_action_create_unit = {range:0, type:'fast-player'};
+			this.components.range = new HexMap();
 			break;
 		case 'terrain':
 			this.components.elevation = 0;

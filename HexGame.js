@@ -64,7 +64,7 @@
 					if (potentialUnit instanceof Unit) {
 						potentialUnit.findRange(world_interface.world.map,world_interface.hex_selected);
 						//console.log(world_interface.unit_selected);
-						world_renderer.drawRange(potentialUnit.range);
+						world_renderer.drawRange(potentialUnit.components.range);
 						//world_renderer.drawPath(world_interface.unit_selected.range,world_interface.hex_hovered);
 					}
 

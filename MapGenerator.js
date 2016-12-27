@@ -87,7 +87,6 @@ HexMapGenerator.prototype.generateMap = function(method,radius) {
 	    this.setTile(hex,tile_generator.generateTile(q,r));
 	  }
 	}
-	console.log(this.map);
 
 	//fine tune the map
 	this.addWaterRim(0.1);

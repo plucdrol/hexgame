@@ -22,7 +22,7 @@ function World(size,layout) {
 	//and a bunch of units in it
 	this.units = new HexMap();
 	this.map = new HexMap();
-	
+
 	//A world is composed of a world map...
 	this.generateWorldMap(size);
 
@@ -221,7 +221,7 @@ WorldInterface.prototype.clickWhileNothingSelected = function(hex_clicked) {
 WorldInterface.prototype.clickWhileUnitSelected = function(hex_clicked) {
 	
 	//if you are clicking inside the unit's range
-	if (this.world.unitAtPosition(this.hex_selected).range.containsHex(hex_clicked)) {
+	if (this.world.unitAtPosition(this.hex_selected).components.range.containsHex(hex_clicked)) {
 		this.clickInsideSelectedUnitRange(hex_clicked);
 
 	//if you are clicking outside the unit's range
