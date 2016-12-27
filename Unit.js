@@ -3,17 +3,9 @@
 //           GENERIC UNIT --------------------//
 
 function Unit(unit_type) {
-	this.range = new HexMap();
 	
-	this.sight = 3;
-	this.movement = 0;
-	this.movement_left = 0;
-
-	this.color = 'black';
-	this.size = 2;
-
-	this.heighto = 0;
-
+	this.range = new HexMap();
+	this.components = {};
 	this.setType(unit_type);
 };
 
@@ -25,68 +17,72 @@ function Unit(unit_type) {
 
 
 	Unit.prototype.setType = function(unit_type) {
+
+		this.components = {};
+
 		switch (unit_type) {
 		case 'player':
 			this.setMovement(6);
-			this.setColor('red');
-			this.controllable = true;
-			this.eats_food = true;
-			this.self_action_become_unit = 'hut';
+			this.components.color = 'red';
+			this.components.controllable = true;
+			this.components.eats_food = true;
+			this.components.self_action_become_unit = 'hut';
 			break;
 		case 'fast-player':
 			this.setMovement(24);
-			this.setColor('blue');
-			this.controllable = true;
-			this.eats_food = true;
-			this.self_action_become_unit = 'hut';
+			this.components.color = 'blue';
+			this.components.controllable = true;
+			this.components.eats_food = true;
+			this.components.self_action_become_unit = 'hut';
 			break;
 		case 'tree':
 			this.setMovement(0);
-			this.setColor('red');
-			this.size = 1;
-			this.food_value = 1;
+			this.components.color = 'red';
+			this.components.size = 1;
+			this.components.food_value = 1;
 			break;
 		case 'fish':
 			this.setMovement(0);
-			this.setColor('lightblue');
-			this.size = 1;
-			this.food_value = 5;
+			this.components.color = 'lightblue';
+			this.components.size = 1;
+			this.components.food_value = 5;
 			break;
 		case 'hut':
 			this.setMovement(2);
-			this.setColor('brown');
-			this.population = 1;
-			this.size = 4;
-			this.controllable = true;
-			this.collects_ressources = true;
-			this.ground_action_create_unit = {range:0, type:'fast-player'};
+			this.components.color = 'brown';
+			this.components.population = 1;
+			this.components.size = 4;
+			this.components.controllable = true;
+			this.components.collects_ressources = true;
+			this.components.ground_action_create_unit = {range:0, type:'fast-player'};
 			break;
 		default:
+			this.components.size = 2;
 			this.setMovement(0);
-			this.setColor('yellow');
+			this.components.color = 'yellow';
 			break;
 		}
 	}
 
 	Unit.prototype.setMovement = function(movement) {
-		this.movement = movement;
-		this.movement_left = movement;
+		this.components.movement = movement;
+		this.components.movement_left = movement;
 	}
 	Unit.prototype.setColor = function(color) {
-		this.color = color;
+		this.components.color = color;
 	}
 
 	Unit.prototype.move = function(map,current_hex,next_hex) {
 		//measure the distance moved
 		var pathfinder = new PathFinder(map);
 		//var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex);
-		pathfinder.destinationPathfind(current_hex,next_hex,this.movement_left);
+		pathfinder.destinationPathfind(current_hex,next_hex,this.components.movement_left);
 		//calculate movement cost
-		var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex,this.movement_left)
+		var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex,this.components.movement_left)
 		//substract it from the movement remaining
-		this.movement_left -= movement_cost;
+		this.components.movement_left -= movement_cost;
 
-		if (this.movement_left <= 0) {
+		if (this.components.movement_left <= 0) {
 			//this.movement_left = this.movement;
 		}
 

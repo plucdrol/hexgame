@@ -55,10 +55,10 @@ World.prototype.unitAtPosition = function(hex) {
 
 World.prototype.generateWorldMap = function(size) {
 
-	//delete tree units
+	//delete units
 	for (let hex of this.units.getArray())	{
 		var unit = this.units.getValue(hex);
-		if (unit.hasOwnProperty('food_value')) {
+		if (unit.components.hasOwnProperty('food_value')) {
 			this.removeUnit(hex);
 		}
 	}
@@ -274,12 +274,12 @@ WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
 		var unit = this.world.unitAtPosition(current_hex);
 
 		//Create player if unit is a hut
-		if (unit.hasOwnProperty('ground_action_create_unit')) {
-			this.world.createUnit(new_hex,unit.ground_action_create_unit.type);
+		if (unit.hasComponent('ground_action_create_unit')) {
+			this.world.createUnit(new_hex,unit.components.ground_action_create_unit.type);
 			
 			//reduce the population of the unit by one
-			if (unit.population > 1) {	
-				unit.population -= 1;
+			if (unit.components.population > 1) {	
+				unit.components.population -= 1;
 			} else {
 				this.world.units.remove(current_hex);
 				this.hex_selected = new_hex;

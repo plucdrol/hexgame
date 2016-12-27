@@ -373,9 +373,9 @@ function WorldRenderer (canvas_draw,view,world) {
         var position = this.world.layout.hexToPoint(hex);
         position = position.offset(0,-height);
         
-        this.drawDot(position,10*unit.size,unit.color);
-        if (unit.population != undefined) {
-            this.drawText(unit.population,position,'black',25);
+        this.drawDot(position,10*unit.components.size,unit.components.color);
+        if (unit.components.population != undefined) {
+            this.drawText(unit.components.population,position,'black',25);
 
         }
     };
