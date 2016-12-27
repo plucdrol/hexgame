@@ -274,8 +274,8 @@ WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
 		var unit = this.world.unitAtPosition(current_hex);
 
 		//Create player if unit is a hut
-		if (unit.unit_type === 'hut') {
-			this.world.createUnit(new_hex,'fast-player');
+		if (unit.hasOwnProperty('ground_action_create_unit')) {
+			this.world.createUnit(new_hex,unit.ground_action_create_unit.type);
 			
 			//reduce the population of the unit by one
 			if (unit.population > 1) {	
@@ -317,7 +317,7 @@ WorldInterface.prototype.actionUnit = function(current_hex,target_hex) {
 	}
 
 	//increase population if a hut eats a tree
-	if (active_unit.unit_type === 'hut' && target_unit.unit_type === 'tree' ) {
+	if (active_unit.hasOwnProperty('collects_ressources') && target_unit.hasOwnProperty('food_value')) {
 		this.world.removeUnit(target_hex);
 		active_unit.population += 1;
 	}
@@ -330,15 +330,9 @@ WorldInterface.prototype.selfActionUnit = function(unit_hex) {
 	var active_unit = this.world.unitAtPosition(unit_hex);
 
 	//Become a hut if unit is a player
-	if (active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') {
+	if (active_unit.hasOwnProperty('self_action_become_unit')) {
 		this.world.removeUnit(unit_hex);
-		this.world.createUnit(unit_hex,'hut');
-	}
-
-	//Become a player if unit is a hut
-	if (active_unit.unit_type === 'hut') {
-		//this.removeUnit(unit_hex);
-		//this.createUnit(unit_hex,'fast-player');
+		this.world.createUnit(unit_hex,active_unit.self_action_become_unit);
 	}
 }
 

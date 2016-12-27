@@ -25,19 +25,20 @@ function Unit(unit_type) {
 
 
 	Unit.prototype.setType = function(unit_type) {
-		this.unit_type = unit_type;
 		switch (unit_type) {
 		case 'player':
 			this.setMovement(6);
 			this.setColor('red');
 			this.controllable = true;
 			this.eats_food = true;
+			this.self_action_become_unit = 'hut';
 			break;
 		case 'fast-player':
 			this.setMovement(24);
 			this.setColor('blue');
 			this.controllable = true;
 			this.eats_food = true;
+			this.self_action_become_unit = 'hut';
 			break;
 		case 'tree':
 			this.setMovement(0);
@@ -57,16 +58,14 @@ function Unit(unit_type) {
 			this.population = 1;
 			this.size = 4;
 			this.controllable = true;
+			this.collects_ressources = true;
+			this.ground_action_create_unit = {range:0, type:'fast-player'};
 			break;
 		default:
 			this.setMovement(0);
 			this.setColor('yellow');
 			break;
 		}
-	}
-
-	Unit.prototype.getType = function() {
-		return this.unit_type;
 	}
 
 	Unit.prototype.setMovement = function(movement) {
