@@ -56,6 +56,8 @@ function Unit(unit_type) {
 			this.components.collects_ressources = true;
 			this.components.ground_action_create_unit = {range:0, type:'fast-player'};
 			break;
+		case 'terrain':
+			this.components.elevation = 0;
 		default:
 			this.components.size = 2;
 			this.setMovement(0);
