@@ -21,8 +21,8 @@ function World(size,layout) {
 
 	//and a bunch of units in it
 	this.units = new HexMap();
-
 	this.map = new HexMap();
+	
 	//A world is composed of a world map...
 	this.generateWorldMap(size);
 
@@ -77,7 +77,7 @@ World.prototype.generateWorldMap = function(size) {
 World.prototype.addTreesToMap = function() {
 	//add trees (this is the wrong place for world-generaion code)
 	for (let hex of this.map.getArray()) {
-		var hex_value = this.map.getValue(hex);
+		var hex_value = this.map.getValue(hex).components.elevation;
 		if (hex_value >= 4 && hex_value <= 9) {
 			if (Math.random() < 0.2) {
 				this.createUnit(hex,'tree');
@@ -89,7 +89,7 @@ World.prototype.addTreesToMap = function() {
 World.prototype.addFishToMap = function() {
 	//add fish (this is the wrong place for world-generaion code)
 	for (let hex of this.map.getArray()) {
-		var hex_value = this.map.getValue(hex);
+		var hex_value = this.map.getValue(hex).components.elevation;
 		if (hex_value === 1) {
 			if (Math.random() < 0.1) {
 				this.createUnit(hex,'fish');
