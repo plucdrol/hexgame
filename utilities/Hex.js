@@ -334,27 +334,36 @@ Edge.sort = function(unsorted_edges) {
 	
 	//create a new ARRAY OF EDGE ARRAYS
 	var edge_arrays = [];
+	var sorted_edges = [];
+
+	var max_attempts = 30;
+	var attempts = 0;
+	
+	var current_edge = {};
+	var maybe_edge = {};
+	
+
+	var i = 0;
 
 	//while UNSORTED_EDGES is not empty
 	while (unsorted_edges.length > 0) {
 		
 		//create a new SORTED EDGES array
-		var sorted_edges = [];
+		sorted_edges = [];
 		
 		//pop and push the first UNSSORTE_edge to this SORTED_EDGES array
-		//var CURRENT EDGE = that edge
-		var current_edge = unsorted_edges.pop();
+		current_edge = unsorted_edges.pop();
 		sorted_edges.push( current_edge );
 		
 		//while the edges in sorted_edges do not make a loop
-		var attempts = 30;
+		attempts = max_attempts;
 		while ( !(current_edge.getVertex2().equals(sorted_edges[0].getVertex1() ))) {
 
-
+			//check all the unsorted edges for the matching one
 			attempts -= 1;
 			//for each edge in UNSORTED_EDGES as MAYBE_EDGE
-			for (var i=0; i<unsorted_edges.length; i++) {
-				var maybe_edge = unsorted_edges[i];
+			for (i=0; i<unsorted_edges.length; i++) {
+				maybe_edge = unsorted_edges[i];
 				//if the 1st point of MAYBE_EDGE is equal to the CURRENT_EDGE's 2nd point
 
 				if ( maybe_edge.getVertex1().equals( current_edge.getVertex2() ) ) {
