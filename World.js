@@ -58,7 +58,7 @@ World.prototype.generateWorldMap = function(size) {
 	//delete tree units
 	for (let hex of this.units.getArray())	{
 		var unit = this.units.getValue(hex);
-		if (unit.unit_type  == 'tree') {
+		if (unit.hasOwnProperty('food_value')) {
 			this.removeUnit(hex);
 		}
 	}

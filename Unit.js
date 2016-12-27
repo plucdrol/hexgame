@@ -30,26 +30,31 @@ function Unit(unit_type) {
 		case 'player':
 			this.setMovement(6);
 			this.setColor('red');
+			this.controllable = true;
 			break;
 		case 'fast-player':
 			this.setMovement(24);
 			this.setColor('blue');
+			this.controllable = true;
 			break;
 		case 'tree':
 			this.setMovement(0);
 			this.setColor('red');
 			this.size = 1;
+			this.food_value = 1;
 			break;
 		case 'fish':
 			this.setMovement(0);
 			this.setColor('lightblue');
 			this.size = 1;
+			this.food_value = 5;
 			break;
 		case 'hut':
 			this.setMovement(2);
 			this.setColor('brown');
 			this.population = 1;
 			this.size = 4;
+			this.controllable = true;
 			break;
 		default:
 			this.setMovement(0);
