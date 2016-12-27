@@ -276,7 +276,7 @@ WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
 		var unit = this.world.unitAtPosition(current_hex);
 
 		//Create player if unit is a hut
-		if (unit.hasOwnProperty('ground_action_create_unit')) {
+		if (unit.components.hasOwnProperty('ground_action_create_unit')) {
 			this.world.createUnit(new_hex,unit.components.ground_action_create_unit.type);
 			
 			//reduce the population of the unit by one
@@ -311,17 +311,17 @@ WorldInterface.prototype.actionUnit = function(current_hex,target_hex) {
 	var target_unit = this.world.unitAtPosition(target_hex);
 
 	//Eat the tree if it is a tree
-	if ((active_unit.hasOwnProperty('eats_food')) && target_unit.hasOwnProperty('food_value')) {
+	if ((active_unit.components.hasOwnProperty('eats_food')) && target_unit.components.hasOwnProperty('food_value')) {
 		this.world.removeUnit(target_hex);
 		this.moveUnit(current_hex,target_hex);
-		active_unit.movement_left = active_unit.movement;
+		active_unit.components.movement_left = active_unit.components.movement;
 		this.hex_selected = target_hex;
 	}
 
 	//increase population if a hut eats a tree
-	if (active_unit.hasOwnProperty('collects_ressources') && target_unit.hasOwnProperty('food_value')) {
+	if (active_unit.components.hasOwnProperty('collects_ressources') && target_unit.components.hasOwnProperty('food_value')) {
 		this.world.removeUnit(target_hex);
-		active_unit.population += 1;
+		active_unit.components.population += 1;
 	}
 
 
@@ -332,9 +332,9 @@ WorldInterface.prototype.selfActionUnit = function(unit_hex) {
 	var active_unit = this.world.unitAtPosition(unit_hex);
 
 	//Become a hut if unit is a player
-	if (active_unit.hasOwnProperty('self_action_become_unit')) {
+	if (active_unit.components.hasOwnProperty('self_action_become_unit')) {
 		this.world.removeUnit(unit_hex);
-		this.world.createUnit(unit_hex,active_unit.self_action_become_unit);
+		this.world.createUnit(unit_hex,active_unit.components.self_action_become_unit);
 	}
 }
 

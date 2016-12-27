@@ -57,7 +57,7 @@ function Unit(unit_type) {
 			this.components.size = 4;
 			this.components.controllable = true;
 			this.components.collects_ressources = true;
-			this.components.ground_action_create_unit = {range:0, type:'fast-player'};
+			this.components.ground_action_create_unit = {range:0, type:'tree'};
 			this.components.range = new HexMap();
 			break;
 		case 'terrain':
