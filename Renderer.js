@@ -145,9 +145,9 @@ function WorldRenderer (canvas_draw,view,world) {
     WorldRenderer.prototype.drawHex = function(hex,line_width,fill_color,line_color) {
 
         //if zoomed out enough, just draw a dot
-        if (this.view.getScale() < 0.2) {
+        if (this.view.getScale() < 1) {
             var point = this.world.layout.hexToPoint(hex);
-            this.drawDot(point,60,fill_color);
+            this.drawDot(point,61,fill_color);
         } else {
             //otherwise, draw the actual hex
             var corners = this.world.layout.hexesToPoints(Hex.corners(hex));
