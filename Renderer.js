@@ -274,13 +274,7 @@ function WorldRenderer (canvas_draw,view,world) {
         color = this.mapColors(height);
 
         //draw ground
-        if (this.drawn_at_least_one_hex === true) {
-            //this.fastDrawHex(hex,color);
-            this.drawHex(hex,0,color);
-        } else {
-            this.drawHex(hex,0,color);
-        }
-        
+        this.drawHex(hex,0,color);
 
         //draw units
         var this_unit = this.world.units.getValue(hex);
