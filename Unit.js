@@ -31,11 +31,13 @@ function Unit(unit_type) {
 			this.setMovement(6);
 			this.setColor('red');
 			this.controllable = true;
+			this.eats_food = true;
 			break;
 		case 'fast-player':
 			this.setMovement(24);
 			this.setColor('blue');
 			this.controllable = true;
+			this.eats_food = true;
 			break;
 		case 'tree':
 			this.setMovement(0);

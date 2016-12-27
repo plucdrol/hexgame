@@ -309,7 +309,7 @@ WorldInterface.prototype.actionUnit = function(current_hex,target_hex) {
 	var target_unit = this.world.unitAtPosition(target_hex);
 
 	//Eat the tree if it is a tree
-	if ((active_unit.unit_type === 'player' || active_unit.unit_type === 'fast-player') && target_unit.unit_type === 'tree') {
+	if ((active_unit.hasOwnProperty('eats_food')) && target_unit.hasOwnProperty('food_value')) {
 		this.world.removeUnit(target_hex);
 		this.moveUnit(current_hex,target_hex);
 		active_unit.movement_left = active_unit.movement;
