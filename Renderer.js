@@ -154,7 +154,7 @@ function WorldRenderer (canvas_draw,view,world) {
             this.drawDot(point,61,fill_color);
         } else {
             //otherwise, draw the actual hex
-            var corners = this.layout.hexesToPoints(Hex.corners(hex));
+            var corners = this.world.layout.hexesToPoints(Hex.corners(hex));
             this.drawPolygon(corners,line_width,fill_color);
         }
         this.drawn_at_least_one_hex = true;
