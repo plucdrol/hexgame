@@ -18,6 +18,9 @@
 function Renderer(canvas_draw,view) {
     this.canvas_draw = canvas_draw;
     this.view = view;
+
+    this.ready_to_render = true;
+    this.render_timer = {};
 }
 
 
@@ -81,20 +84,18 @@ function Renderer(canvas_draw,view) {
         }
     };
 
-    Renderer.prototype.doneRendering = function() {
-        window.clearTimeout(this.render_timer);
-        this.keep_rendering = true;
-       
-
+    Renderer.prototype.doneRendering = function(maximum_rendering_time_in_milliseconds) {
+        
+        this.ready_to_render = false;
+        this.render_timer = window.setTimeout(this.readyToRender, maximum_rendering_time_in_milliseconds);
     };
 
-    Renderer.prototype.stopRendering = function() {
-        this.keep_rendering = false;
+    Renderer.prototype.readyToRender = function() {
+        this.ready_to_render = true;
     };
 
-    Renderer.prototype.startRendering = function(maximum_rendering_time_in_milliseconds) {
-        this.keep_rendering = true;
-        this.render_timer = window.setTimeout(this.stopRendering, maximum_rendering_time_in_milliseconds);
+    Renderer.prototype.startRendering = function() {
+        
     };
 
 
@@ -134,6 +135,7 @@ function WorldRenderer (canvas_draw,view,world) {
     this.corners = [];
 
     this.drawn_at_least_one_hex = false;
+    this.ready_to_render = true;
 }
 
     WorldRenderer.prototype = Object.create(Renderer.prototype);
@@ -251,15 +253,17 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawWorld = function() {
 
-        this.startRendering(1); //in milliseconds
+        
+        if (this.ready_to_render) {
+            this.startRendering(); //in milliseconds
+            this.drawn_at_least_one_hex = false;
+            var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
+            this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
+            this.drawn_at_least_one_hex = false;
+            //this.doneRendering(10);
+        }
 
-        this.drawn_at_least_one_hex = false;
-        var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
-        this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
-        this.drawn_at_least_one_hex = false;
 
-
-        this.doneRendering();
     }
 
 
@@ -282,7 +286,7 @@ function WorldRenderer (canvas_draw,view,world) {
         var this_unit = this.world.units.getValue(hex);
         if (typeof this_unit == 'object') {
 
-            //this.drawUnit(this_unit,hex,0);
+            this.drawUnit(this_unit,hex,0);
 
         }
     }
