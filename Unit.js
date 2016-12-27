@@ -4,7 +4,6 @@
 
 function Unit(unit_type) {
 	
-	this.range = new HexMap();
 	this.components = {};
 	this.setType(unit_type);
 };
@@ -27,6 +26,7 @@ function Unit(unit_type) {
 			this.components.controllable = true;
 			this.components.eats_food = true;
 			this.components.self_action_become_unit = 'hut';
+			this.range = new HexMap();
 			break;
 		case 'fast-player':
 			this.setMovement(24);
@@ -34,6 +34,7 @@ function Unit(unit_type) {
 			this.components.controllable = true;
 			this.components.eats_food = true;
 			this.components.self_action_become_unit = 'hut';
+			this.range = new HexMap();
 			break;
 		case 'tree':
 			this.setMovement(0);
@@ -58,6 +59,7 @@ function Unit(unit_type) {
 			break;
 		case 'terrain':
 			this.components.elevation = 0;
+			break;
 		default:
 			this.components.size = 2;
 			this.setMovement(0);

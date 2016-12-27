@@ -13,13 +13,13 @@
 			var canv_input = new CanvasInput(canvas);
 
 			//create a world
-			var map_radius = 100;
+			var map_radius = 50;
 			var world_layout = new HexLayout(orientation_pointy,new Point(35,35),new Point(canvas.width,canvas.height));
 			var world = new World(map_radius,world_layout);
 
 			//create a default view, which can be edited
 			var view_ratio = canvas.width/canvas.height;
-			var initial_zoom = 1/8;
+			var initial_zoom = 1/4;
 			var view_out = new Rect(new Point(0,0),
 																        new Point(canvas.width,canvas.height));
 			var view_in = new Rect(	new Point(-canvas.width*initial_zoom,	-initial_zoom*canvas.height),

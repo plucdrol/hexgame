@@ -186,6 +186,7 @@ WorldInterface.prototype.clickScreen = function(screen_position) {
 
 WorldInterface.prototype.clickHex = function(hex_clicked) {
 
+	console.log(this.world.map.getValue(hex_clicked));
 	//if there is already a unit on the hex selected
 	if (this.aUnitIsSelected()) {
 		this.clickWhileUnitSelected(hex_clicked);
