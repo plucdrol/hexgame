@@ -138,6 +138,19 @@ function WorldInterface(world,view) {
 	this.view = view;
 
 	this.unit_controller = new UnitController(this.world);
+
+	this.init();
+	
+}
+
+WorldInterface.prototype.init = function() {
+	var wif = this;
+	listenForEvent('hexgame_click', function(e){ wif.clickScreenEvent(e.detail.click_pos);} );
+	listenForEvent('hexgame_zoom', function(e){ wif.zoomViewEvent(e.detail.amount);} );
+	listenForEvent('hexgame_hover', function(e){ wif.hoverEvent(e.detail.mousepos);} );
+	listenForEvent('hexgame_drag', function(e){ wif.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);} );
+	listenForEvent('hexgame_resize', function(e){ wif.resizeEvent(e.detail.width, e.detail.height);} );
+
 }
 
 WorldInterface.prototype.setView = function(view) {
@@ -151,7 +164,7 @@ WorldInterface.prototype.moveView = function(direction) {
 	
 	this.view.move(direction,0.2);
 }
-WorldInterface.prototype.zoomView = function(zoom) {
+WorldInterface.prototype.zoomViewEvent = function(zoom) {
 	
 	this.view.zoom(zoom);
 	drawScreen();
@@ -168,7 +181,7 @@ WorldInterface.prototype.setHex = function(screen_position,value) {
 	this.world.map.set(hex,value);
 }
 
-WorldInterface.prototype.hover = function(screen_position) {
+WorldInterface.prototype.hoverEvent = function(screen_position) {
 	
 	//get the hex being hovered
 	this.hex_hovered = this.getHex(screen_position);
@@ -182,7 +195,7 @@ WorldInterface.prototype.hover = function(screen_position) {
 	this.hex_hovered_previous = this.hex_hovered;
 }
 
-WorldInterface.prototype.clickScreen = function(screen_position) {
+WorldInterface.prototype.clickScreenEvent = function(screen_position) {
 
 	var hex_clicked = this.getHex(screen_position);
 
@@ -192,7 +205,7 @@ WorldInterface.prototype.clickScreen = function(screen_position) {
 
 }
 
-WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
+WorldInterface.prototype.dragEvent = function(current_mouse,previous_mouse) {
 	
 	//get the movement the mouse has moved since last tick
 	var drag_movement = new Point(this.view.screenToWorld1D(previous_mouse.x-current_mouse.x),
@@ -208,7 +221,7 @@ WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
 	world_renderer.drawLine(this.view.screenToWorld(previous_mouse),this.view.screenToWorld(current_mouse),5,'lightblue');
 }
 
-WorldInterface.prototype.resizeZoom = function(width,height) {
+WorldInterface.prototype.resizeEvent = function(width,height) {
 
   view.resizeOutput(width,height);
 
