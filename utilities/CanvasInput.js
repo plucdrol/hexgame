@@ -252,4 +252,6 @@ HTMLCanvasElement.prototype.rel_mouse_coords = rel_mouse_coords;
 
 
 
-
+function EventTarget() {
+    
+}
