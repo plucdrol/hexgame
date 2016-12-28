@@ -181,6 +181,9 @@ WorldInterface.prototype.setHex = function(screen_position,value) {
 	this.world.map.set(hex,value);
 }
 
+
+///////// EVENTS /////////
+
 WorldInterface.prototype.hoverEvent = function(screen_position) {
 	
 	//get the hex being hovered
