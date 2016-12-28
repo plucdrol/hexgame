@@ -129,6 +129,20 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype = Object.create(Renderer.prototype);
 
+    WorldRenderer.prototype.hexToPoint = function(hex) {
+        return this.world.hexToPoint(hex);
+    }
+    WorldRenderer.prototype.hexesToPoints = function(hexes) {
+        var points = [];
+        for (let hex of hexes) {                            
+            points.push(this.hexToPoint(hex));
+        }
+        return points;
+    }
+    WorldRenderer.prototype.pointToHex = function(point) {
+        return this.world.pointToHex(point);
+    }
+
     WorldRenderer.prototype.mapColors = function(i) {
         return greenscale_colors(i);  
     } 
@@ -138,11 +152,11 @@ function WorldRenderer (canvas_draw,view,world) {
         //if zoomed out enough, just draw a dot
         if (this.view.getScale() < 1) {
 
-            var point = this.world.layout.hexToPoint(hex);
+            var point = this.hexToPoint(hex);
             this.drawDot(point,61,fill_color);
         } else {
             //otherwise, draw the actual hex
-            var corners = this.world.layout.hexesToPoints(Hex.corners(hex));
+            var corners = this.hexesToPoints(Hex.corners(hex));
             this.drawPolygon(corners,line_width,fill_color);
         }
         this.drawn_at_least_one_hex = true;
@@ -151,7 +165,7 @@ function WorldRenderer (canvas_draw,view,world) {
     WorldRenderer.prototype.fastDrawHex = function(hex,fill_color) {
 
             //calculate shifted position between previous hex and next hex
-            var world_position = this.world.layout.hexToPoint(hex);
+            var world_position = this.hexToPoint(hex);
             var screen_position = this.view.worldToScreen(world_position);
 
             //draw a polygon
@@ -159,7 +173,7 @@ function WorldRenderer (canvas_draw,view,world) {
     }
 
     WorldRenderer.prototype.drawHexElevated = function(hex,height,line_width,color_sides,color_top) {
-        var low_corners = this.world.layout.hexesToPoints(Hex.corners(hex));
+        var low_corners = this.hexesToPoints(Hex.corners(hex));
         var high_corners = [];
         for (var i=0;i<low_corners.length;i++) {
             high_corners[i] = new Point(low_corners[i].x,low_corners[i].y - height);
@@ -183,7 +197,7 @@ function WorldRenderer (canvas_draw,view,world) {
             var corners = [];
             var edges = edge_arrays[outline];    
             for (var i=0;i<edges.length;i++){
-                corners.push( this.world.layout.hexToPoint(edges[i].getPoint1() ));
+                corners.push( this.hexToPoint(edges[i].getPoint1() ));
             }
             this.drawPolygon(corners,line_width,fill_color,line_color);
         }
@@ -223,12 +237,44 @@ function WorldRenderer (canvas_draw,view,world) {
         }
     }
 
+
+    WorldRenderer.prototype.getHexRectangleBoundaries = function() {
+        
+        //find the boundaries
+        var extra = 0; //this variable defines how much bigger than the screen to render
+        var left = this.view.getInputRect().position.x-extra;
+        var right = this.view.getInputRect().position.x+this.view.getInputRect().size.x+extra;
+        var top = this.view.getInputRect().position.y-extra;
+        var bottom = this.view.getInputRect().position.y+this.view.getInputRect().size.y+extra;
+
+        //find the corner points
+        var topleft = new Point(left,top);
+        var topright = new Point(right,top);
+        var bottomleft = new Point(left,bottom);
+        var bottomright = new Point(right,bottom);
+
+        //find the corner hexes
+        var toplefthex = Hex.round(this.pointToHex(topleft));
+        var toprighthex = Hex.round(this.pointToHex(topright));
+        var bottomlefthex = Hex.round(this.pointToHex(bottomleft));
+        var bottomrighthex = Hex.round(this.pointToHex(bottomright));
+
+        //define the limits of the iteration
+        var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),toprighthex.getQ(),bottomlefthex.getQ());
+        var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),bottomlefthex.getQ(),toprighthex.getQ());
+        var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
+        var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
+
+        var hex_rect = [qmin,qmax,rmin,rmax];
+        return hex_rect;
+    }
+
     WorldRenderer.prototype.drawRedRenderingRectangle = function(qmin,qmax,rmin,rmax) {
         var corners = [];
-        corners.push(this.world.layout.hexToPoint(new Hex(qmin,rmin)));
-        corners.push(this.world.layout.hexToPoint(new Hex(qmin,rmax)));
-        corners.push(this.world.layout.hexToPoint(new Hex(qmax,rmax)));
-        corners.push(this.world.layout.hexToPoint(new Hex(qmax,rmin)));
+        corners.push(this.hexToPoint(new Hex(qmin,rmin)));
+        corners.push(this.hexToPoint(new Hex(qmin,rmax)));
+        corners.push(this.hexToPoint(new Hex(qmax,rmax)));
+        corners.push(this.hexToPoint(new Hex(qmax,rmin)));
 
         this.drawPolygon(corners,20,'transparent','red');
     }    
@@ -238,7 +284,7 @@ function WorldRenderer (canvas_draw,view,world) {
         if (this.ready_to_render) {
             this.startRendering(); //in milliseconds
             this.drawn_at_least_one_hex = false;
-            var rectMap = this.view.getHexRectangleBoundaries(this.world.layout);
+            var rectMap = this.getHexRectangleBoundaries();
             this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
             this.drawn_at_least_one_hex = false;
             //this.doneRendering(10);
@@ -289,7 +335,7 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawTileSemi3D = function(hex) {
         
-        //this code only works in POINTY_TOP layout
+        //this code only works in POINTY_TOP style
 
 
         //analyze tile
@@ -317,7 +363,7 @@ function WorldRenderer (canvas_draw,view,world) {
         var n_upleft_height = this.world.map.getValue(n_upleft);
         var n_upright_height = this.world.map.getValue(n_upright);
 
-        var corners = this.world.layout.Hex.corners(hex);
+        var corners = Hex.corners(hex);
         //draw wall of the left if the heights are different
         if (n_left_height != height) {
            // wall_height = wall_height/2;
@@ -346,7 +392,7 @@ function WorldRenderer (canvas_draw,view,world) {
 
     WorldRenderer.prototype.drawUnit = function(unit,hex,height) {
 
-        var position = this.world.layout.hexToPoint(hex);
+        var position = this.hexToPoint(hex);
         position = position.offset(0,-height);
         
         this.drawDot(position,10*unit.components.size,unit.components.color);
@@ -376,7 +422,7 @@ function WorldRenderer (canvas_draw,view,world) {
             var hexes = pathfinder.destinationPathfind(range,destination);
             var points = [];
             for (var i = 0; i<hexes.length;i++) {
-                points.push(this.world.layout.hexToPoint(hexes[i]));
+                points.push(this.hexToPoint(hexes[i]));
             }
 
             //draw on screen
@@ -413,9 +459,8 @@ function WorldRenderer (canvas_draw,view,world) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-function TileRenderer (layout) {
+function TileRenderer () {
     Renderer.call(this); 
-    this.layout = layout;
 }
 TileRenderer.prototype = Object.create(Renderer.prototype);
 TileRenderer.prototype.drawTile = function(hex,value) {
@@ -462,7 +507,7 @@ TileRenderer3D.prototype = Object.create(TileRenderer.prototype);
 function TileRendererSemi3D() {
     this.drawTile = function(hex,value) {
 
-        //this code only works in POINTY_TOP layout
+        //this code only works in POINTY_TOP
 
 
         //analyze tile
@@ -490,7 +535,7 @@ function TileRendererSemi3D() {
         var n_upleft_height = this.world.map.getValue(n_upleft);
         var n_upright_height = this.world.map.getValue(n_upright);
 
-        var corners = this.world.layout.Hex.corners(hex);
+        var corners = Hex.corners(hex);
         //draw wall of the left if the heights are different
         if (n_left_height != height) {
            // wall_height = wall_height/2;

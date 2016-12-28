@@ -633,7 +633,7 @@ const orientation_flat = new Orientation(  3.0/2.0, 0.0, Math.sqrt(3.0)/2.0, Mat
 
 
 function HexLayout (orientation, size, origin) {
-	this.orientation = orientation; //orientation object, defined below
+	this.orientation = orientation; //orientation object, defined above
 	this.size = size;     //point object
 	this.origin = origin; //point object
 
@@ -648,14 +648,6 @@ function HexLayout (orientation, size, origin) {
 		var x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
 		var y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
 		return new Point(x + this.origin.x, y + this.origin.y );
-	}
-
-	HexLayout.prototype.hexesToPoints = function(hexes) {
-		var points = [];
-		for (let hex of hexes) {							
-			points.push(this.hexToPoint(hex));
-		}
-		return points;
 	}
 
 	HexLayout.prototype.pointToHex = function(point) {

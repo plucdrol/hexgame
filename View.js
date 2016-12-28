@@ -115,34 +115,4 @@ function View (input_rect,output_rect) {
         return this.getOutputRect().size.x/this.getInputRect().size.x; 
     };
 
-    View.prototype.getHexRectangleBoundaries = function(layout) {
-        
-        //find the boundaries
-        var extra = 0; //this variable defines how much bigger than the screen to render
-        var left = this.getInputRect().position.x-extra;
-        var right = this.getInputRect().position.x+this.getInputRect().size.x+extra;
-        var top = this.getInputRect().position.y-extra;
-        var bottom = this.getInputRect().position.y+this.getInputRect().size.y+extra;
-
-        //find the corner points
-        var topleft = new Point(left,top);
-        var topright = new Point(right,top);
-        var bottomleft = new Point(left,bottom);
-        var bottomright = new Point(right,bottom);
-
-        //find the corner hexes
-        var toplefthex = Hex.round(layout.pointToHex(topleft));
-        var toprighthex = Hex.round(layout.pointToHex(topright));
-        var bottomlefthex = Hex.round(layout.pointToHex(bottomleft));
-        var bottomrighthex = Hex.round(layout.pointToHex(bottomright));
-
-        //define the limits of the iteration
-        var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),toprighthex.getQ(),bottomlefthex.getQ());
-        var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),bottomlefthex.getQ(),toprighthex.getQ());
-        var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
-        var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
-
-        var hex_rect = [qmin,qmax,rmin,rmax];
-        return hex_rect;
-    }
 

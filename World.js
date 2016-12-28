@@ -26,6 +26,13 @@ World.prototype.init = function() {
 
 }
 
+World.prototype.hexToPoint = function(hex) {
+	return this.layout.hexToPoint(hex);
+}
+World.prototype.pointToHex = function(point) {
+	return this.layout.pointToHex(point);
+}
+
 //create a new Unit at position Hex
 World.prototype.createUnit = function(hex,unit_type) {
 	
@@ -151,7 +158,7 @@ WorldInterface.prototype.zoomView = function(zoom) {
 
 WorldInterface.prototype.getHex = function(screen_position) {
 	var world_position = this.view.screenToWorld(screen_position);
-	var hex = Hex.round(this.world.layout.pointToHex(world_position));
+	var hex = Hex.round(this.world.pointToHex(world_position));
 	return hex;
 }
 
