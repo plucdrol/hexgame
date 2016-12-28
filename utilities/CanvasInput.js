@@ -29,9 +29,6 @@ function CanvasInput(canvas) {
     this.is_dragging = false;
 }
 
-    //JAVASCRIPT EVENT FUNCTIONS
-
-
     //react to clicking canvas by drawing a dot
     CanvasInput.prototype.clickCanvas = function(event) {
         
@@ -253,5 +250,5 @@ HTMLCanvasElement.prototype.rel_mouse_coords = rel_mouse_coords;
 
 
 function EventTarget() {
-    
+
 }
