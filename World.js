@@ -182,6 +182,23 @@ WorldInterface.prototype.clickScreen = function(screen_position) {
 
 }
 
+WorldInterface.prototype.selectHex = function(hex) {
+	if (hex instanceof Hex && this.world.map.containsHex(hex)) {
+		this.hex_selected = hex;
+		//look if there is a unit
+		var potential_unit = this.world.unitAtPosition(hex);
+
+		if (potential_unit instanceof Unit) { 
+			//if the unit exists, find its range
+			if (potential_unit.hasComponent('range')) {
+				potential_unit.findRange(this.world.map,hex);
+			}
+		} 
+	} else {
+		this.hex_selected = undefined;
+	}
+}
+
 WorldInterface.prototype.clickHex = function(hex_clicked) {
 
 	//if there is already a unit on the hex selected
@@ -202,16 +219,7 @@ WorldInterface.prototype.aUnitIsSelected = function() {
 
 WorldInterface.prototype.clickWhileNothingSelected = function(hex_clicked) {
 	
-	//move the selection
-	this.hex_selected = hex_clicked;
-
-	//look if there is a unit
-	var potential_unit = this.world.unitAtPosition(hex_clicked);
-
-	if (potential_unit instanceof Unit) { 
-		//if the unit exists, find its range
-		potential_unit.findRange(this.world.map,hex_clicked);
-	} 
+	this.selectHex(hex_clicked);
 }
 
 
@@ -245,7 +253,7 @@ WorldInterface.prototype.reClickUnit = function() {
 }
 
 WorldInterface.prototype.clickOutsideSelectedUnitRange = function(hex_clicked) {
-	this.hex_selected = 'undefined';
+	this.selectHex('none');
 	this.clickHex(hex_clicked);
 }
 
@@ -271,7 +279,7 @@ WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
 		var unit = this.world.unitAtPosition(current_hex);
 
 		//Create player if unit is a hut
-		if (unit.components.hasOwnProperty('ground_action_create_unit')) {
+		if (unit.hasComponent('ground_action_create_unit')) {
 			this.world.createUnit(new_hex,unit.components.ground_action_create_unit.type);
 			
 			//reduce the population of the unit by one
@@ -279,7 +287,7 @@ WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
 				unit.components.population -= 1;
 			} else {
 				this.world.units.remove(current_hex);
-				this.hex_selected = new_hex;
+				this.selectHex(new_hex);
 			}
 
 
@@ -294,7 +302,7 @@ WorldInterface.prototype.moveUnit = function(current_hex,new_hex) {
 			//find the range of the unit at its new position
 			this.world.unitAtPosition(new_hex).findRange(this.world.map,new_hex);
 
-			this.hex_selected = new_hex;
+			this.selectHex(new_hex);
 		}
 }
 
@@ -310,7 +318,8 @@ WorldInterface.prototype.actionUnit = function(current_hex,target_hex) {
 		this.world.removeUnit(target_hex);
 		this.moveUnit(current_hex,target_hex);
 		active_unit.components.movement_left = active_unit.components.movement;
-		this.hex_selected = target_hex;
+		active_unit.findRange(this.world.map,target_hex);
+		this.selectHex(target_hex);
 	}
 
 	//increase population if a hut eats a tree
@@ -330,7 +339,15 @@ WorldInterface.prototype.selfActionUnit = function(unit_hex) {
 	if (active_unit.components.hasOwnProperty('self_action_become_unit')) {
 		this.world.removeUnit(unit_hex);
 		this.world.createUnit(unit_hex,active_unit.components.self_action_become_unit);
+		
+		new_unit = this.world.unitAtPosition(unit_hex);
+		if (new_unit.hasComponent('range')) {
+			new_unit.findRange(this.world.map,unit_hex);
+		}	
+	} else {
+		this.selectHex('none');
 	}
+
 }
 
 WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {

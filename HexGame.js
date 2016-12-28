@@ -58,8 +58,8 @@
 				//draw range of selected unit
 				if (world_interface.hex_selected instanceof Hex) {
 					var potentialUnit = world_interface.world.units.getValue(world_interface.hex_selected);
-					if (potentialUnit instanceof Unit) {
-						world_renderer.drawRange(potentialUnit.components.range);
+					if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
+						world_renderer.drawRange(potentialUnit.getComponent('range'));
 						//world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
 					}
 

@@ -57,7 +57,7 @@ function Unit(unit_type) {
 			this.components.size = 4;
 			this.components.controllable = true;
 			this.components.collects_ressources = true;
-			this.components.ground_action_create_unit = {range:0, type:'tree'};
+			this.components.ground_action_create_unit = {range:0, type:'fast-player'};
 			this.components.range = new HexMap();
 			break;
 		case 'terrain':
@@ -68,6 +68,18 @@ function Unit(unit_type) {
 			this.setMovement(0);
 			this.components.color = 'yellow';
 			break;
+		}
+	}
+
+	Unit.prototype.hasComponent = function(component_name) {
+		if (this.components.hasOwnProperty(component_name)) {
+			return true;
+		}
+		return false;
+	}
+	Unit.prototype.getComponent = function(component_name) {
+		if (this.hasComponent(component_name)) {
+			return this.components[component_name];
 		}
 	}
 
