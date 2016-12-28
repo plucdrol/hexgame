@@ -8,29 +8,71 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-function UnitController(world,world_interface) {
-	this.world_interface = world_interface;
+function UnitController(world) {
 	this.world = world;
+	this.hex_selected = undefined;
 
 }
 
+UnitControle.prototype.clickHex = function(hex_clicked) {
+	//if there is already a unit on the hex selected
+	if (this.aUnitIsSelected()) {
+		this.clickWhileUnitSelected(hex_clicked);
+		
+	//if there is no unit selected
+	} else {
+		this.clickWhileNothingSelected(hex_clicked);
+	}
+}
+
+WorldInterface.prototype.getHexSelected = function()  {
+	return this.hex_selected;
+}
+
+WorldInterface.prototype.selectHex = function(hex) {
+	if (hex instanceof Hex && this.world.map.containsHex(hex)) {
+		this.hex_selected = hex;
+		//look if there is a unit
+		var potential_unit = this.world.unitAtPosition(hex);
+
+		if (potential_unit instanceof Unit) { 
+			//if the unit exists, find its range
+			if (potential_unit.hasComponent('range')) {
+				potential_unit.findRange(this.world.map,hex);
+			}
+		} 
+	} else {
+		this.hex_selected = undefined;
+	}
+}
+
+WorldInterface.prototype.aUnitIsSelected = function() {
+	return (this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit);
+}
+
+WorldInterface.prototype.getUnitSelected = function() {
+	if (this.aUnitIsSelected()) {
+		return this.world.unitAtPosition(this.getHexSelected());
+	}
+}
+
 UnitController.prototype.aUnitIsSelected = function() {
-	var hex_selected = this.world_interface.getHexSelected();
-	var unit_selected = this.world_interface.getUnitSelected();
+	var hex_selected = this.getHexSelected();
+	var unit_selected = this.getUnitSelected();
 
 	return (hex_selected instanceof Hex && unit_selected instanceof Unit);
 }
 
 UnitController.prototype.clickWhileNothingSelected = function(hex_clicked) {
 	
-	this.world_interface.selectHex(hex_clicked);
+	this.selectHex(hex_clicked);
 }
 
 
 UnitController.prototype.clickWhileUnitSelected = function(hex_clicked) {
 	
 	//if you are clicking inside the unit's range
-	if (this.world.unitAtPosition(this.world_interface.getHexSelected()).components.range.containsHex(hex_clicked)) {
+	if (this.world.unitAtPosition(this.getHexSelected()).components.range.containsHex(hex_clicked)) {
 		this.clickInsideSelectedUnitRange(hex_clicked);
 
 	//if you are clicking outside the unit's range
@@ -43,7 +85,7 @@ UnitController.prototype.clickWhileUnitSelected = function(hex_clicked) {
 UnitController.prototype.clickInsideSelectedUnitRange = function(hex_clicked) {
 	
 	//if you are reclicking the unit
-	if ( Hex.equals(this.world_interface.getHexSelected(), hex_clicked)) {
+	if ( Hex.equals(this.getHexSelected(), hex_clicked)) {
 		this.reClickUnit();
 	
 	//if you are clicking somewhere else
@@ -53,12 +95,12 @@ UnitController.prototype.clickInsideSelectedUnitRange = function(hex_clicked) {
 }
 
 UnitController.prototype.reClickUnit = function() {
-	this.selfActionUnit(this.world_interface.getHexSelected());
+	this.selfActionUnit(this.getHexSelected());
 }
 
 UnitController.prototype.clickOutsideSelectedUnitRange = function(hex_clicked) {
-	this.world_interface.selectHex('none');
-	this.world_interface.clickHex(hex_clicked);
+	this.selectHex('none');
+	this.clickHex(hex_clicked);
 }
 
 UnitController.prototype.tellSelectedUnitToMove = function(hex_clicked) {
@@ -67,11 +109,11 @@ UnitController.prototype.tellSelectedUnitToMove = function(hex_clicked) {
 
 	//Do the unit's action if there is something there
 	if (unit_there) {
-		this.actionUnit(this.world_interface.hex_selected,hex_clicked);
+		this.actionUnit(this.getHexSelected(),hex_clicked);
 	
 	//Move the unit there if there is nothing
 	} else {	
-		this.moveUnit(this.world_interface.hex_selected,hex_clicked);
+		this.moveUnit(this.getHexSelected(),hex_clicked);
 	}
 
 }
@@ -91,7 +133,7 @@ UnitController.prototype.moveUnit = function(current_hex,new_hex) {
 				unit.components.population -= 1;
 			} else {
 				this.world.units.remove(current_hex);
-				this.world_interface.selectHex(new_hex);
+				this.selectHex(new_hex);
 			}
 
 
@@ -106,7 +148,7 @@ UnitController.prototype.moveUnit = function(current_hex,new_hex) {
 			//find the range of the unit at its new position
 			this.world.unitAtPosition(new_hex).findRange(this.world.map,new_hex);
 
-			this.world_interface.selectHex(new_hex);
+			this.selectHex(new_hex);
 		}
 }
 
@@ -123,7 +165,7 @@ UnitController.prototype.actionUnit = function(current_hex,target_hex) {
 		this.moveUnit(current_hex,target_hex);
 		active_unit.components.movement_left = active_unit.components.movement;
 		active_unit.findRange(this.world.map,target_hex);
-		this.world_interface.selectHex(target_hex);
+		this.selectHex(target_hex);
 	}
 
 	//increase population if a hut eats a tree
@@ -149,7 +191,7 @@ UnitController.prototype.selfActionUnit = function(unit_hex) {
 			new_unit.findRange(this.world.map,unit_hex);
 		}	
 	} else {
-		this.world_interface.selectHex('none');
+		this.selectHex('none');
 	}
 
 }

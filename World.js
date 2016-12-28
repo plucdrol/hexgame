@@ -132,7 +132,6 @@ World.prototype.addFishToMap = function() {
 function WorldInterface(world,view) {
 	
 	this.world = world;
-	this.hex_selected = 'undefined';
 	this.hex_hovered = new Hex(0,0);
 	this.hex_hovered_previous = new Hex(0,0);
 	this.edge_hovered = 'undefined';
@@ -184,55 +183,12 @@ WorldInterface.prototype.hover = function(screen_position) {
 WorldInterface.prototype.clickScreen = function(screen_position) {
 
 	var hex_clicked = this.getHex(screen_position);
-	this.clickHex(hex_clicked);
+	
+	var unit_controller = new UnitController(this.world,this);
+	unit_controller.clickHex(hex_clicked);
+	
 	drawScreen();
 
-}
-
-WorldInterface.prototype.getHexSelected = function()  {
-	return this.hex_selected;
-}
-
-WorldInterface.prototype.selectHex = function(hex) {
-	if (hex instanceof Hex && this.world.map.containsHex(hex)) {
-		this.hex_selected = hex;
-		//look if there is a unit
-		var potential_unit = this.world.unitAtPosition(hex);
-
-		if (potential_unit instanceof Unit) { 
-			//if the unit exists, find its range
-			if (potential_unit.hasComponent('range')) {
-				potential_unit.findRange(this.world.map,hex);
-			}
-		} 
-	} else {
-		this.hex_selected = undefined;
-	}
-}
-
-WorldInterface.prototype.getUnitSelected = function() {
-	if (this.getHexSelected() instanceof Hex) {
-		return this.world.unitAtPosition(this.getHexSelected());
-	}
-}
-
-WorldInterface.prototype.clickHex = function(hex_clicked) {
-
-	var unit_controller = new UnitController(this.world,this);
-	//if there is already a unit on the hex selected
-	if (this.aUnitIsSelected()) {
-		unit_controller.clickWhileUnitSelected(hex_clicked);
-		
-	//if there is no unit selected
-	} else {
-		unit_controller.clickWhileNothingSelected(hex_clicked);
-	}
-}
-
-
-
-WorldInterface.prototype.aUnitIsSelected = function() {
-	return (this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit);
 }
 
 WorldInterface.prototype.drag = function(current_mouse,previous_mouse) {
