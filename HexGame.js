@@ -56,15 +56,15 @@
 				world_renderer.drawWorld();		
 
 				//draw range of selected unit
-				if (world_interface.hex_selected instanceof Hex) {
-					var potentialUnit = world_interface.world.units.getValue(world_interface.hex_selected);
+				if (world_interface.unit_controller.hex_selected instanceof Hex) {
+					var potentialUnit = world_interface.world.units.getValue(world_interface.unit_controller.hex_selected);
 					if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
 						world_renderer.drawRange(potentialUnit.getComponent('range'));
 						//world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
 					}
 
 					//draw selection hex
-					world_renderer.drawHex(world_interface.hex_selected, 2, "rgba(200,200,0,0.5)");
+					world_renderer.drawHex(world_interface.unit_controller.hex_selected, 2, "rgba(200,200,0,0.5)");
 				}
 
 				//draw hovered hex

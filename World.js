@@ -136,6 +136,8 @@ function WorldInterface(world,view) {
 	this.hex_hovered_previous = new Hex(0,0);
 	this.edge_hovered = 'undefined';
 	this.view = view;
+
+	this.unit_controller = new UnitController(this.world);
 }
 
 WorldInterface.prototype.setView = function(view) {
@@ -183,9 +185,8 @@ WorldInterface.prototype.hover = function(screen_position) {
 WorldInterface.prototype.clickScreen = function(screen_position) {
 
 	var hex_clicked = this.getHex(screen_position);
-	
-	var unit_controller = new UnitController(this.world,this);
-	unit_controller.clickHex(hex_clicked);
+
+	this.unit_controller.clickHex(hex_clicked);
 	
 	drawScreen();
 

@@ -14,7 +14,7 @@ function UnitController(world) {
 
 }
 
-UnitControle.prototype.clickHex = function(hex_clicked) {
+UnitController.prototype.clickHex = function(hex_clicked) {
 	//if there is already a unit on the hex selected
 	if (this.aUnitIsSelected()) {
 		this.clickWhileUnitSelected(hex_clicked);
@@ -25,11 +25,11 @@ UnitControle.prototype.clickHex = function(hex_clicked) {
 	}
 }
 
-WorldInterface.prototype.getHexSelected = function()  {
+UnitController.prototype.getHexSelected = function()  {
 	return this.hex_selected;
 }
 
-WorldInterface.prototype.selectHex = function(hex) {
+UnitController.prototype.selectHex = function(hex) {
 	if (hex instanceof Hex && this.world.map.containsHex(hex)) {
 		this.hex_selected = hex;
 		//look if there is a unit
@@ -46,21 +46,14 @@ WorldInterface.prototype.selectHex = function(hex) {
 	}
 }
 
-WorldInterface.prototype.aUnitIsSelected = function() {
+UnitController.prototype.aUnitIsSelected = function() {
 	return (this.hex_selected instanceof Hex && this.world.unitAtPosition(this.hex_selected) instanceof Unit);
 }
 
-WorldInterface.prototype.getUnitSelected = function() {
+UnitController.prototype.getUnitSelected = function() {
 	if (this.aUnitIsSelected()) {
 		return this.world.unitAtPosition(this.getHexSelected());
 	}
-}
-
-UnitController.prototype.aUnitIsSelected = function() {
-	var hex_selected = this.getHexSelected();
-	var unit_selected = this.getUnitSelected();
-
-	return (hex_selected instanceof Hex && unit_selected instanceof Unit);
 }
 
 UnitController.prototype.clickWhileNothingSelected = function(hex_clicked) {
