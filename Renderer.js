@@ -315,7 +315,10 @@ function WorldRenderer (canvas_draw,view,world) {
         //draw ground
         this.drawHex(hex,0,color);
         var position = this.hexToPoint(hex);
-        this.drawText(this.getTile(hex).components.wind, position);
+
+        //wind arrows
+        var charcode = this.getWindArrowCharacter( this.getTile(hex).getComponent('wind') );
+        this.drawText(String.fromCharCode(charcode), position, 'white', 30);
 
         //draw units
         var this_unit = this.world.units.getValue(hex);
@@ -325,6 +328,19 @@ function WorldRenderer (canvas_draw,view,world) {
 
 
 
+        }
+    }
+
+    WorldRenderer.prototype.getWindArrowCharacter = function(direction) {
+
+        switch (direction) {
+            case 0: return 8594; break;
+            case 1: return 8599; break;
+            case 2: return 8598; break;
+            case 3: return 8592; break;
+            case 4: return 8601; break;
+            case 5: return 8600; break;
+            default: return 8635;
         }
     }
 
