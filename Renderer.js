@@ -292,14 +292,27 @@ function WorldRenderer (canvas_draw,view,world) {
     }
 
 
+
+
+
+
+
+    
+    WorldRenderer.prototype.getTile = function(hex) {
+        return this.world.map.getValue(hex);
+    }
+
+
     WorldRenderer.prototype.drawTile2D = function(hex) {
         
         //analyze tile
-        var height = Math.floor(this.world.map.getValue(hex).components.elevation);
+        var height = Math.floor(this.getTile(hex).components.elevation);
         color = this.mapColors(height);
 
         //draw ground
         this.drawHex(hex,0,color);
+        var position = this.hexToPoint(hex);
+        this.drawText(this.getTile(hex).components.wind, position);
 
         //draw units
         var this_unit = this.world.units.getValue(hex);
@@ -307,18 +320,20 @@ function WorldRenderer (canvas_draw,view,world) {
 
             this.drawUnit(this_unit,hex,0);
 
+
+
         }
     }
 
     WorldRenderer.prototype.drawTile3D = function(hex) {
         
         //analyze tile
-        var color = Math.floor(this.world.map.getValue(hex).components.elevation);
+        var color = Math.floor(this.getTile(hex).components.elevation);
         color = this.mapColors(color);
-        var height = this.world.map.getValue(hex).components.elevation*6;
+        var height = this.getTile(hex).components.elevation*6;
 
         //draw ground
-        if (this.world.map.getValue(hex).components.elevation > 1) {
+        if (this.getTile(hex).components.elevation > 1) {
             this.drawHexElevated(hex,height,0,'#310',color);
         } else {
             this.drawHex(hex,0,color);
@@ -339,7 +354,7 @@ function WorldRenderer (canvas_draw,view,world) {
 
 
         //analyze tile
-        var height = this.world.map.getValue(hex).components.elevation;
+        var height = this.getTile(hex).components.elevation;
         var color = Math.floor(height);
         color = this.mapColors(color);
         this.drawHex(hex,0,color);
