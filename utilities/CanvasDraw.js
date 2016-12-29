@@ -134,7 +134,7 @@ function CanvasDraw (canvas) {
         }
         //default color value
         if (typeof color === "undefined") {
-            color = black;
+            color = 'black';
         }
 
         //get the canvas
