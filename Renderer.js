@@ -61,6 +61,9 @@ function Renderer(canvas_draw,view) {
     Renderer.prototype.drawText = function(text,position,shade,fontsize) {
         //this function draws directly, so modifies the coordinates
         var coord = this.view.worldToScreen(position);
+        if (!fontsize) {
+            var fontsize = 13;
+        }
         var newfontsize = this.view.worldToScreen1D(fontsize);
 
         this.canvas_draw.drawText(text,coord,shade,newfontsize);
@@ -297,7 +300,7 @@ function WorldRenderer (canvas_draw,view,world) {
 
 
 
-    
+
     WorldRenderer.prototype.getTile = function(hex) {
         return this.world.map.getValue(hex);
     }
