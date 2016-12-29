@@ -57,13 +57,29 @@ Hex.distance = function(hex_a,hex_b) {
 	return Hex.distanceToCenter(Hex.substract(hex_a,hex_b));
 }
 
+
 //gives the 6 hex neighbor direction in layout-independent hex coordinates
 var hex_direction = [new Hex(1,0),new Hex(1,-1),new Hex(0,-1),
       new Hex(-1,0),new Hex(-1,1),new Hex(0,1)] ;
 
+Hex.spiralDirection = function(q,r) {
+
+	var sum = q+r;
+
+	if ( sum<0 && q>=0 ) return 0;
+	if ( q<0 && r<=0 ) return 1;
+	if ( sum<=0 && r>0 ) return 2;
+	if ( q<=0 && sum>0 ) return 3;
+	if ( r>=0 && q>0 ) return 4;
+	if (sum>=0 && r<0 ) return 5;
+	return -1;
+	
+}
+
 //gives the 6 corner directions in layout-independent hex coordinates
 var hex_corner = [new Hex(1.0/3.0, 1.0/3.0),new Hex(2.0/3.0, -1.0/3.0),new Hex(1.0/3.0, -2.0/3.0),
     new Hex(-1.0/3.0,-1.0/3.0),new Hex(-2.0/3.0,1.0/3.0),new Hex(-1.0/3.0,2.0/3.0)] ;
+
 
 
 Hex.corners = function (hex) {

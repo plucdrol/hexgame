@@ -24,12 +24,25 @@ HexMapGenerator = function() {
 	this.getMap = function(){
 		return this.map;
 	}
-	this.getTile = function(hex) {
+	this.getElevation = function(hex) {
 		return this.map.getValue(hex).components.elevation;
 	}
-	this.setTile = function(hex,new_value) {
+	this.setWind = function(hex,new_value) {
+
 		var current_tile = this.map.getValue(hex);
-		if (typeof current_tile === 'Unit') {
+		if (current_tile instanceof Unit) {
+			current_tile.components.wind = new_value;	
+		} else {
+			//get value
+	    var new_tile = new Unit('terrain');
+	    new_tile.components.wind = new_value;
+	    this.map.set(hex,new_tile)
+		}
+	}
+	this.setElevation = function(hex,new_value) {
+		
+		var current_tile = this.map.getValue(hex);
+		if (current_tile instanceof Unit) {
 			current_tile.components.elevation = new_value;	
 		} else {
 			//get value
@@ -57,7 +70,7 @@ HexMapGenerator.prototype.makeTileGenerator = function(method) {
 			tile_generator = new RandomTileGenerator();
 			break;
 		default:
-			tile_generator = new PerlinTileGenerator();
+			tile_generator = new ContinentsTileGenerator();
 	}
 
 	return tile_generator;
@@ -84,7 +97,8 @@ HexMapGenerator.prototype.generateMap = function(method,radius) {
 	        		
 			//put in map
 			hex = new Hex(q,r);
-	    this.setTile(hex,tile_generator.generateTile(q,r));
+	    this.setElevation(hex,tile_generator.generateTile(q,r));
+	    this.setWind(hex,tile_generator.generateWind(q,r));
 	  }
 	}
 
@@ -103,9 +117,9 @@ HexMapGenerator.prototype.roundDown = function() {
 
 	for (let thishex of this.map.getArray()) {
 
-		value = Math.floor(this.getTile(thishex));
+		value = Math.floor(this.getElevation(thishex));
 
-		this.setTile(thishex,value);
+		this.setElevation(thishex,value);
 	}
 }
 
@@ -126,7 +140,7 @@ HexMapGenerator.prototype.addWaterRim = function(rim_size) {
 		var rim_length = rim_size*size;
 		
 		//define new value and insert
-		value = this.getTile(thishex);
+		value = this.getElevation(thishex);
 		value *= 1-Math.pow((rim_length/distance_to_edge),2);
 
 		//prevent negative values
@@ -134,7 +148,7 @@ HexMapGenerator.prototype.addWaterRim = function(rim_size) {
 			value = 0;
 		}
 
-		this.setTile(thishex,value);
+		this.setElevation(thishex,value);
 
 	}
 }
@@ -150,7 +164,7 @@ HexMapGenerator.prototype.flatenRange = function(range_min,range_max) {
 
 	    for (var r = r1; r <= r2; r++) {
 	    	var this_hex = new Hex(q,r);
-	    	var this_value = this.getTile(this_hex);
+	    	var this_value = this.getElevation(this_hex);
 
 	    	//for cells between range_min and range_max
 			for (var i = range_min; i < range_max; i++) {
@@ -158,7 +172,7 @@ HexMapGenerator.prototype.flatenRange = function(range_min,range_max) {
 
 				//if the cell is equal to a value between range_min and range_max
 				if (this_value == i) {
-					this.setTile(this_hex,this_value-diff);
+					this.setElevation(this_hex,this_value-diff);
 
 				}
 
@@ -166,7 +180,7 @@ HexMapGenerator.prototype.flatenRange = function(range_min,range_max) {
 
 			//for cells of value higher than range_max
 			if (this_value > range_max) {
-				this.setTile(this_hex,this_value-(range_max-range_min));
+				this.setElevation(this_hex,this_value-(range_max-range_min));
 			}
 		}
 	}
@@ -180,16 +194,16 @@ HexMapGenerator.prototype.addShallowWater = function() {
 	for (let thishex of this.map.getArray()) {
 		
 			//if the hex is deep water
-			if (this.getTile(thishex) == 0) {
+			if (this.getElevation(thishex) == 0) {
 
 				//check its neighbors
 				for (var dir =0; dir < 6; dir++) {
 					var neighbor = Hex.neighbor(thishex,dir);
 					if (this.map.containsHex(neighbor)) {
 						//and if they are land
-						if (this.getTile(neighbor) > 1) {
+						if (this.getElevation(neighbor) > 1) {
 							//turn the deep water into shallow water
-							this.setTile(thishex,1);
+							this.setElevation(thishex,1);
 
 						}
 					}

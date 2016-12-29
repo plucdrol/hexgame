@@ -137,6 +137,10 @@ function PerlinTileGenerator() {
 
 	  return total;
 	}
+	this.generateWind = function(x,y) {
+		var wind = Hex.spiralDirection(x,y);
+		return wind;
+	}
 }
 PerlinTileGenerator.prototype = Object.create(TileGenerator.prototype);
 
@@ -182,6 +186,10 @@ function PerlinCustomTileGenerator() {
 
 		  return total;
     }
+	  this.generateWind = function(x,y) {
+			var wind = Hex.spiralDirection(x,y);
+			return wind;
+		}
   }
 
 PerlinCustomTileGenerator.prototype = Object.create(TileGenerator.prototype);
@@ -225,6 +233,11 @@ function ContinentsTileGenerator() {
 			{total = 0;}
 
 	  return total;
+	}
+
+	this.generateWind = function(x,y) {
+		var wind = Hex.spiralDirection(x,y);
+		return wind;
 	}
 
 }

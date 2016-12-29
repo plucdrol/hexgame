@@ -62,6 +62,7 @@ function Unit(unit_type) {
 			break;
 		case 'terrain':
 			this.components.elevation = 0;
+			this.components.wind = 0;
 			break;
 		default:
 			this.components.size = 2;
