@@ -202,6 +202,8 @@ WorldInterface.prototype.clickScreenEvent = function(screen_position) {
 
 	var hex_clicked = this.getHex(screen_position);
 
+	console.log(this.world.map.getValue(hex_clicked));
+
 	this.unit_controller.clickHex(hex_clicked);
 	
 	drawScreen();

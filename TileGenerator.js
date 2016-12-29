@@ -95,6 +95,7 @@ TileGenerator.prototype.generateTile = function(x,y) {
 function RandomTileGenerator() {
 	TileGenerator.call(this);
 	var range = 10;
+	console.log('new random tile generator');
 
 	this.generateTile = function(x,y) {
 		var value = 1+1*Math.floor((range+2)*Math.random());
@@ -112,6 +113,7 @@ function PerlinTileGenerator() {
   TileGenerator.call(this); 
   var config = new PerlinConfiguration('continents');
   var simplex = new SimplexNoise();  
+  console.log('new perlin tile generator');
 	
 	this.generateTile = function(x,y) {
 		//add up all the perlin values
@@ -154,7 +156,8 @@ PerlinTileGenerator.prototype = Object.create(TileGenerator.prototype);
 function PerlinCustomTileGenerator() {
     TileGenerator.call(this); 
     var config = new PerlinConfiguration('continents');
-    var simplex = new SimplexNoise();    	
+    var simplex = new SimplexNoise();   
+    console.log('new perlin-custom tile generator'); 	
 
 
     this.generateNoise = function() {
@@ -204,7 +207,8 @@ function ContinentsTileGenerator() {
 
   TileGenerator.call(this); 
   var config = new PerlinConfiguration('continents');
-  var simplex = new SimplexNoise();    	
+  var simplex = new SimplexNoise();    
+  console.log('new continents tile generator');	
 
 
   this.generateTile = function(x,y) {
