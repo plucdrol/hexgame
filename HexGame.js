@@ -64,11 +64,17 @@
 					}
 
 					//draw selection hex
-					world_renderer.drawHex(world_interface.unit_controller.hex_selected, 2, "rgba(200,200,0,0.5)");
+					var select_style = new RenderStyle();
+					select_style.fill_color = "rgba(200,200,0,0.5)";
+					select_style.line_width = 2;
+					world_renderer.drawHex(world_interface.unit_controller.hex_selected, select_style);
 				}
 
 				//draw hovered hex
-				world_renderer.drawHex(world_interface.hex_hovered, 0, "rgba(200,200,200,0.4)",'rgba(0,0,0,0)' );
+				var hover_style = new RenderStyle();
+				hover_style.fill_color = "rgba(200,200,200,0.4)";
+				hover_style.line_width = 0;
+				world_renderer.drawHex(world_interface.hex_hovered, hover_style );
 			}
 
 			
