@@ -73,16 +73,16 @@ Renderer.prototype.drawText = function(text,position,style) {
   this.canvas_draw.drawText(text,coord,style.text_color,newfontsize);
 };
 
-//INDIRECT functions, use the previously defined functions to draw more complicated things
+//INDIRECT functions, use the previous functions to draw complicated things
 Renderer.prototype.drawLines = function(points,style) {
   for (var i=0;i<points.length-1;i++) {
       this.drawLine(points[i], points[i+1], width);
   }
 };
 
-Renderer.prototype.doneRendering = function(max_rendering_time) {
+Renderer.prototype.doneRendering = function(max_render_time) {
   this.ready_to_render = false;
-  this.render_timer = window.setTimeout(this.readyToRender, max_rendering_time);
+  this.render_timer = window.setTimeout(this.readyToRender, max_render_time);
 };
 
 Renderer.prototype.readyToRender = function() {
@@ -105,21 +105,34 @@ Renderer.prototype.startRendering = function() {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-//////                                                                                              
-//////                          WORLD RENDERER
-//////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+                                                                                       
+                   //WORLD RENDERER
+
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
 
 
 var greenscale_colors = function(i) {
-    var greenscale = ['#005','#00D','#AA3','#080','#062','#052','#042','#032','#020','#010','#110500','#210','#410','#420','#777','#777','#777','#888','#888','#888','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF'];
-    var faded_greenscale = ['#335','#66D','#AA7','#686','#575','#464','#353','#242','#232','#232','#110','#321','#421','#432','#777','#777','#777','#888','#888','#888','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF'];
-    return greenscale[i];
+  var greenscale = ['#005','#00D','#AA3','#080','#062',
+  		    '#052','#042','#032','#020','#010',
+		    '#110','#210','#410','#420','#777',
+		    '#777','#777','#888','#888','#888',
+		    '#FFF','#FFF','#FFF','#FFF','#FFF',
+		    '#FFF','#FFF','#FFF','#FFF','#FFF',
+		    '#FFF','#FFF'];
+
+  var fadedscale = ['#335','#66D','#AA7','#686','#575',
+                   '#464','#353','#242','#232','#232',
+		   '#110','#321','#421','#432','#777',
+		   '#777','#777','#888','#888','#888',
+		   '#FFF','#FFF','#FFF','#FFF','#FFF',
+		   '#FFF','#FFF','#FFF','#FFF','#FFF',
+		   '#FFF','#FFF'];
+  return greenscale[i];
     
 }
 
@@ -185,11 +198,12 @@ WorldRenderer.prototype.drawHexElevated = function(hex,height,style) {
   for (var i=0;i<low_corners.length;i++) {
       high_corners[i] = new Point(low_corners[i].x,low_corners[i].y - height);
   }
+  
+  var column_corners = [low_corners[0],high_corners[1],high_corners[2],
+                        high_corners[3],low_corners[4],low_corners[5]];
 
-  var column_corners = [low_corners[0],high_corners[1],high_corners[2],high_corners[3],low_corners[4],low_corners[5]];
-
-  this.drawPolygon(column_corners,style.line_width,style.line_color);
-  this.drawHex(high_corners,style.line_width,style.fill_color);
+  this.drawPolygon(column_corners,style);
+  this.drawHex(high_corners,style);
 
 };
 
@@ -210,7 +224,7 @@ WorldRenderer.prototype.drawOutline = function(edge_arrays,style) {
     }
 };
 
-WorldRenderer.prototype.drawRectangleSection = function(qmin,qmax,rmin,rmax) {
+WorldRenderer.prototype.drawRectangleSection = function(rectmap) {
     
     var currentr = 0;
     var r = 0;
@@ -220,22 +234,24 @@ WorldRenderer.prototype.drawRectangleSection = function(qmin,qmax,rmin,rmax) {
     var tile_renderer = new TileRenderer2D(this);
 
     //for columns
-    for (r = rmin; r <= rmax; r++) {
+    for (r = rectmap.rmin; r <= rectmap.rmax; r++) {
 
         //shift even lines
         currentr = r;
         if (r%2!=0) currentr += 1;
 
-        this.drawRectangleSectionLine(r,currentr,qmin,qmax,rmin,rmax);
+        this.drawLineSection(r,currentr,rectmap);
     }
 }
 
-WorldRenderer.prototype.drawRectangleSectionLine = function(r,currentr,qmin,qmax,rmin,rmax) {
+WorldRenderer.prototype.drawLineSection= function(r,currentr,rectmap) {
    
     var q=0;
 
     //for rows ( each shifted to become rectangular)
-    for (q = Math.floor(qmin+(rmax-currentr)/2); q<qmax+(rmax-currentr)/2; q++) {
+    var qstart = Math.floor(rectmap.qmin+(rectmap.rmax-currentr)/2);
+    var qend = rectmap.qmax+(rectmap.rmax+(rectmap.rmax-currentr))/2;
+    for (q = qstart; q < qend; q++) {
         hex = new Hex(q,r);
         if (this.world.map.containsHex(hex)) {
 
@@ -246,13 +262,19 @@ WorldRenderer.prototype.drawRectangleSectionLine = function(r,currentr,qmin,qmax
 
 
 WorldRenderer.prototype.getHexRectangleBoundaries = function() {
-    
+   
+
+    //find the screen position and width
+    var x = this.view.getInputRect().position.x;
+    var y = this.view.getInputRect().position.y;
+    var height = this.view.getInputRect().size.x;
+    var width = this.view.getInputRect().size.y;
+
     //find the boundaries
-    var extra = 0; //this variable defines how much bigger than the screen to render
-    var left = this.view.getInputRect().position.x-extra;
-    var right = this.view.getInputRect().position.x+this.view.getInputRect().size.x+extra;
-    var top = this.view.getInputRect().position.y-extra;
-    var bottom = this.view.getInputRect().position.y+this.view.getInputRect().size.y+extra;
+    var left = x; 
+    var right = x+width;
+    var top = y;
+    var bottom = y+height;
 
     //find the corner points
     var topleft = new Point(left,top);
@@ -267,23 +289,33 @@ WorldRenderer.prototype.getHexRectangleBoundaries = function() {
     var bottomrighthex = Hex.round(this.pointToHex(bottomright));
 
     //define the limits of the iteration
-    var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),toprighthex.getQ(),bottomlefthex.getQ());
-    var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),bottomlefthex.getQ(),toprighthex.getQ());
-    var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
-    var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),toprighthex.getR(),bottomlefthex.getR());
+    var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),
+		        toprighthex.getQ(),bottomlefthex.getQ());
+    var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),
+		        bottomlefthex.getQ(),toprighthex.getQ());
+    var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),
+		        toprighthex.getR(),bottomlefthex.getR());
+    var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),
+		        toprighthex.getR(),bottomlefthex.getR());
 
     var hex_rect = [qmin,qmax,rmin,rmax];
     return hex_rect;
 }
 
-WorldRenderer.prototype.drawRedRenderingRectangle = function(qmin,qmax,rmin,rmax) {
+WorldRenderer.prototype.drawRedRenderingRectangle = function(rectmap) {
     var corners = [];
     corners.push(this.hexToPoint(new Hex(qmin,rmin)));
     corners.push(this.hexToPoint(new Hex(qmin,rmax)));
     corners.push(this.hexToPoint(new Hex(qmax,rmax)));
     corners.push(this.hexToPoint(new Hex(qmax,rmin)));
 
-    this.drawPolygon(corners,20,'transparent','red');
+    var rect_style = new RenderStyle();
+    rect_style.fill_color = 'transparent';
+    rect_style.line_color = 'red';
+    rect_style.line_width = 20;
+
+
+    this.drawPolygon(corners,rect_style);
 }    
 
 WorldRenderer.prototype.drawWorld = function() {
@@ -292,7 +324,7 @@ WorldRenderer.prototype.drawWorld = function() {
         this.startRendering(); //in milliseconds
         this.drawn_at_least_one_hex = false;
         var rectMap = this.getHexRectangleBoundaries();
-        this.drawRectangleSection(rectMap[0],rectMap[1],rectMap[2],rectMap[3]);
+        this.drawRectangleSection(rectMap);
         this.drawn_at_least_one_hex = false;
         //this.doneRendering(10);
     }
@@ -441,13 +473,13 @@ WorldRenderer.prototype.drawUnit = function(unit,hex,height) {
    
     var unit_style = new RenderStyle();
     unit_style.line_color = unit.components.color;
-    var text_style = new RenderStyle();
-    text_style.font_size = 25;
-            
+
     this.drawDot(position,10*unit.components.size,unit_style);
     if (unit.components.population != undefined) {
-        this.drawText(unit.components.population,position,text_style);
-
+      var text_style = new RenderStyle();
+      text_style.font_size = 25;
+            
+      this.drawText(unit.components.population,position,text_style);
     }
 };
 
@@ -470,7 +502,11 @@ WorldRenderer.prototype.drawPath = function(range,destination) {
 
     //draw the path
     if (range.containsHex(destination)) {
-        this.drawHex(destination,1,"rgba(200, 255, 200, 0.5)");
+	var hex_style = new RenderStyle();
+	hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
+	hex_style.width = 2;
+
+	this.drawHex(destination,hex_style);
         
         //calculate points of the hexes
         var hexes = pathfinder.destinationPathfind(range,destination);
