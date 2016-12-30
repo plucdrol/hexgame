@@ -232,26 +232,24 @@ WorldRenderer.prototype.drawRectangleSection = function(rectmap) {
     var hex = new Hex(0,0);
     var value = 0;
     var tile_renderer = new TileRenderer2D(this);
-
     //for columns
     for (r = rectmap.rmin; r <= rectmap.rmax; r++) {
+
 
         //shift even lines
         currentr = r;
         if (r%2!=0) currentr += 1;
 
-        this.drawLineSection(r,currentr,rectmap);
+        this.drawRectangleSectionLine(r,currentr,rectmap);
     }
 }
 
-WorldRenderer.prototype.drawLineSection= function(r,currentr,rectmap) {
+WorldRenderer.prototype.drawRectangleSectionLine = function(r,currentr,rectmap) {
    
     var q=0;
 
     //for rows ( each shifted to become rectangular)
-    var qstart = Math.floor(rectmap.qmin+(rectmap.rmax-currentr)/2);
-    var qend = rectmap.qmax+(rectmap.rmax+(rectmap.rmax-currentr))/2;
-    for (q = qstart; q < qend; q++) {
+    for (q = Math.floor(rectmap.qmin+(rectmap.rmax-currentr)/2); q<rectmap.qmax+(rectmap.rmax-currentr)/2; q++) {
         hex = new Hex(q,r);
         if (this.world.map.containsHex(hex)) {
 
@@ -298,7 +296,13 @@ WorldRenderer.prototype.getHexRectangleBoundaries = function() {
     var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),
 		        toprighthex.getR(),bottomlefthex.getR());
 
-    var hex_rect = [qmin,qmax,rmin,rmax];
+    var hex_rect = {
+      qmin:qmin,
+      qmax:qmax,
+      rmin:rmin, 
+      rmax:rmax
+    };
+    
     return hex_rect;
 }
 
