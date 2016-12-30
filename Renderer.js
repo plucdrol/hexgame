@@ -240,16 +240,18 @@ WorldRenderer.prototype.drawRectangleSection = function(rectmap) {
         currentr = r;
         if (r%2!=0) currentr += 1;
 
-        this.drawRectangleSectionLine(r,currentr,rectmap);
+        this.drawLineSection(r,currentr,rectmap);
     }
 }
 
-WorldRenderer.prototype.drawRectangleSectionLine = function(r,currentr,rectmap) {
+WorldRenderer.prototype.drawLineSection = function(r,currentr,rectmap) {
    
     var q=0;
 
     //for rows ( each shifted to become rectangular)
-    for (q = Math.floor(rectmap.qmin+(rectmap.rmax-currentr)/2); q<rectmap.qmax+(rectmap.rmax-currentr)/2; q++) {
+    var qstart = Math.floor(rectmap.qmin+(rectmap.rmax-currentr)/2); 
+    var qend = rectmap.qmax+(rectmap.rmax-currentr)/2;
+    for (q = qstart; q<qend; q++) {
         hex = new Hex(q,r);
         if (this.world.map.containsHex(hex)) {
 
@@ -388,87 +390,6 @@ WorldRenderer.prototype.getWindArrowCharacter = function(direction) {
         default: return 8635;
     }
 }
-
-/*
-WorldRenderer.prototype.drawTile3D = function(hex) {
-    
-    //analyze tile
-    var color = Math.floor(this.getTile(hex).components.elevation);
-    color = this.mapColors(color);
-    var height = this.getTile(hex).components.elevation*6;
-
-    //draw ground
-    if (this.getTile(hex).components.elevation > 1) {
-        this.drawHexElevated(hex,height,0,'#310',color);
-    } else {
-        this.drawHex(hex,0,color);
-    }
-
-    //draw unit
-    //var this_unit = this.world.unitAtPosition(hex);
-    //if (typeof this_unit == 'object') {
-
-        //this.drawUnit(this_unit,hex,height);
-
-    //}
-}
-
-WorldRenderer.prototype.drawTileSemi3D = function(hex) {
-    
-    //this code only works in POINTY_TOP style
-
-
-    //analyze tile
-    var height = this.getTile(hex).components.elevation;
-    var color = Math.floor(height);
-    color = this.mapColors(color);
-    this.drawHex(hex,0,color);
-    //draw ground
-    //
-    var shade  = Math.floor(255-255*height/20);
-    color =  "rgba("+shade+","+shade+","+shade+", 0.5)";
-    //this.drawHex(hex,0,color);
-
-    //draw walls
-    var wall_color = '#310';
-    var wall_height = 6;
-    
-    //analyze neighbors
-    var n_left = Hex.neighbor(hex,3);
-    var n_upleft = Hex.neighbor(hex,2);
-    var n_upright = Hex.neighbor(hex,1);
-
-    //get height of neighbors
-    var n_left_height = this.world.map.getValue(n_left);
-    var n_upleft_height = this.world.map.getValue(n_upleft);
-    var n_upright_height = this.world.map.getValue(n_upright);
-
-    var corners = Hex.corners(hex);
-    //draw wall of the left if the heights are different
-    if (n_left_height != height) {
-       // wall_height = wall_height/2;
-       // this.drawLine(corners[3],corners[4],wall_height,wall_color);
-    }
-    //draw wall on the top-left if that tile is higher
-    if (n_upleft_height > height) {
-        wall_height = 1.5*(n_upleft_height-height);
-        this.drawLine(corners[2].offset(0,wall_height/2),corners[3].offset(0,wall_height/2),wall_height,wall_color);
-    }
-    //draw wall on the top-right if that tile is higher
-    if (n_upright_height > height) {
-        wall_height = 1.5*(n_upright_height-height);
-        this.drawLine(corners[1].offset(0,wall_height/2),corners[2].offset(0,wall_height/2),wall_height,wall_color);
-    }
-
-    //draw unit
-    var this_unit = this.world.unitAtPosition(hex);
-    if (typeof this_unit == 'object') {
-
-        this.drawUnit(this_unit,hex,0);
-
-    }
-}
-*/
 
 WorldRenderer.prototype.drawUnit = function(unit,hex,height) {
 
