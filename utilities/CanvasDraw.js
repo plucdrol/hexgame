@@ -120,7 +120,7 @@ function CanvasDraw (canvas) {
         var height = size;
 
         line.fillStyle = color;
-        
+       console.log('draw dot in canvas_draw'); 
         line.fillRect(x,y,width,height);
 
     };

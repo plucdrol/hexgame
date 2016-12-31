@@ -5,9 +5,10 @@
 	//map of (hex,movement_cost) pairs
 
 //pathfinding algorithms:
-	//findRange(hex_origin,range) returns an array of hexes reachable from hex_origin in n steps
+	//findRange(hex_origin,range) returns an array of hexes reachable 
+        //from hex_origin in n steps
 	//find_path(hex_origin,hex_destination) returns shortest path
-	//path_distance(hex_origin,hex_destination) returns distance between two hexes
+	//path_distance(origin,destination) returns distance between two hexes
 
 
 function PathFinderCell(path_cost,came_from,value) {
@@ -19,7 +20,7 @@ function PathFinderCell(path_cost,came_from,value) {
 function PathFinder(map) {
 	this.map = map;
 
-
+                                                                               
 
 	//Replaces the map that the pathfinder uses for calculations
 	this.updateMap = function(map) {
@@ -31,9 +32,9 @@ function PathFinder(map) {
 	//Sight-cost is not implemented (for example, mountains do not block sight)
 	this.sight = function(origin,range) {
 		
-		var frontier = new Queue(); 	//frontier contains a growing perimeter of hexes to be examined
-		frontier.put(origin); 				//frontier begins as only the initial hex
-		var visited = new HexMap();		//visited is the list of hexes that will be returned as part of the 'visible' hexes
+		var frontier = new Queue(); 	//growing perimeter of hexes
+		frontier.put(origin); 		//frontier begins at initial hex
+		var visited = new HexMap();	//visited is the list of hexes that will be returned as part of the 'visible' hexes
 		var distance = 0;							//distance from the origin hex is 0 for the origin hex
 		visited.set(origin,distance);	//the origin is always visible
 

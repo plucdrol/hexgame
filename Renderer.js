@@ -370,7 +370,7 @@ WorldRenderer.prototype.drawTile2D = function(hex) {
     //draw units
     var this_unit = this.world.units.getValue(hex);
     if (typeof this_unit == 'object') {
-
+        console.log('draw unit');
         this.drawUnit(this_unit,hex,0);
 
 
@@ -398,7 +398,6 @@ WorldRenderer.prototype.drawUnit = function(unit,hex,height) {
    
     var unit_style = new RenderStyle();
     unit_style.line_color = unit.components.color;
-
     this.drawDot(position,10*unit.components.size,unit_style);
     if (unit.components.population != undefined) {
       var text_style = new RenderStyle();
@@ -464,40 +463,40 @@ WorldRenderer.prototype.drawPath = function(range,destination) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-//////                                                                                              
-//////                          TILE RENDERER
-//////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+                                                                                       
+//                   TILE RENDERER
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 function TileRenderer () {
-    Renderer.call(this); 
+  Renderer.call(this); 
 }
 TileRenderer.prototype = Object.create(Renderer.prototype);
 TileRenderer.prototype.drawTile = function(hex,value) {
 }
 TileRenderer.prototype.mapColors = function(i) {
-    return greenscale_colors(i);  
+  return greenscale_colors(i);  
 } 
 
 
 
 function TileRenderer2D() {
-    TileRenderer.call(this); 
+  TileRenderer.call(this); 
 }
 TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
 TileRenderer2D.prototype.drawTile = function(hex,value) {
-        //analyze tile
-        var height = value;
-        color = this.mapColors(height);
+  //analyze tile
+  var height = value;
+  color = this.mapColors(height);
 
-        //draw ground
-        this.drawHex(hex,0,color);
-    }
+  //draw ground
+    this.drawHex(hex,0,color);
+  }
 
 /*
 
