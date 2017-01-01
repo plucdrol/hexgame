@@ -1,18 +1,18 @@
-
+//-------1----------2---------3---------4---------5---------6---------7--------8
 
 //           GENERIC UNIT --------------------//
 
 function Unit(unit_type) {
-	
-	this.components = {};
-	this.setType(unit_type);
+  
+  this.components = {};
+  this.setType(unit_type);
 };
 
 
-	Unit.prototype.findRange = function(map,position) {
-		var pathfinder = new PathFinder(map);
-		this.components.range = pathfinder.rangePathfind(position,this.components.movement_left);
-	};
+  Unit.prototype.findRange = function(map,position) {
+    var pathfinder = new PathFinder(map);
+    this.components.range = pathfinder.rangePathfind(position,this.components.movement_left);
+  };
 
 
 Unit.prototype.setType = function(unit_type) {
@@ -83,12 +83,12 @@ Unit.prototype.getComponent = function(component_name) {
   }
 }
 
-Unit.prototype.setComponent = function(component_name,value) {
-  this.components['component_name'] = value;  
+Unit.prototype.setComponent = function(component_name, value) {
+  this.components[component_name] = value;  
 }
 Unit.prototype.increaseComponent = function(component_name, value) {
   if (this.hasComponent(component_name)){
-    this.components['component_name'] += value;
+    this.components[component_name] += value;
   }
 }
 Unit.prototype.setMovement = function(movement) {
@@ -100,7 +100,7 @@ Unit.prototype.move = function(map,current_hex,next_hex) {
   //measure the distance moved
   var pathfinder = new PathFinder(map);
   //find the path to destination
-  pathfinder.destinationPathfind(current_hex,next_hex,this.components.movement_left);
+  //pathfinder.destinationPathfind(current_hex,next_hex,this.components.movement_left);
   //calculate movement cost
   var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex,this.components.movement_left)
   //substract it from the movement remaining

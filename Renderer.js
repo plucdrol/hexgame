@@ -61,7 +61,7 @@ Renderer.prototype.drawPolygon = function(points,style) {
   }
 
   this.canvas_draw.drawPolygon(coords,style.line_width,
-		  style.fill_color,style.line_color);
+      style.fill_color,style.line_color);
 
 };
 
@@ -118,20 +118,20 @@ Renderer.prototype.startRendering = function() {
 
 var greenscale_colors = function(i) {
   var greenscale = ['#005','#00D','#AA3','#080','#062',
-  		    '#052','#042','#032','#020','#010',
-		    '#110','#210','#410','#420','#777',
-		    '#777','#777','#888','#888','#888',
-		    '#FFF','#FFF','#FFF','#FFF','#FFF',
-		    '#FFF','#FFF','#FFF','#FFF','#FFF',
-		    '#FFF','#FFF'];
+          '#052','#042','#032','#020','#010',
+        '#110','#210','#410','#420','#777',
+        '#777','#777','#888','#888','#888',
+        '#FFF','#FFF','#FFF','#FFF','#FFF',
+        '#FFF','#FFF','#FFF','#FFF','#FFF',
+        '#FFF','#FFF'];
 
   var fadedscale = ['#335','#66D','#AA7','#686','#575',
                    '#464','#353','#242','#232','#232',
-		   '#110','#321','#421','#432','#777',
-		   '#777','#777','#888','#888','#888',
-		   '#FFF','#FFF','#FFF','#FFF','#FFF',
-		   '#FFF','#FFF','#FFF','#FFF','#FFF',
-		   '#FFF','#FFF'];
+       '#110','#321','#421','#432','#777',
+       '#777','#777','#888','#888','#888',
+       '#FFF','#FFF','#FFF','#FFF','#FFF',
+       '#FFF','#FFF','#FFF','#FFF','#FFF',
+       '#FFF','#FFF'];
   return greenscale[i];
     
 }
@@ -290,13 +290,13 @@ WorldRenderer.prototype.getHexRectangleBoundaries = function() {
 
     //define the limits of the iteration
     var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),
-		        toprighthex.getQ(),bottomlefthex.getQ());
+            toprighthex.getQ(),bottomlefthex.getQ());
     var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),
-		        bottomlefthex.getQ(),toprighthex.getQ());
+            bottomlefthex.getQ(),toprighthex.getQ());
     var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),
-		        toprighthex.getR(),bottomlefthex.getR());
+            toprighthex.getR(),bottomlefthex.getR());
     var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),
-		        toprighthex.getR(),bottomlefthex.getR());
+            toprighthex.getR(),bottomlefthex.getR());
 
     var hex_rect = {
       qmin:qmin,
@@ -370,7 +370,6 @@ WorldRenderer.prototype.drawTile2D = function(hex) {
     //draw units
     var this_unit = this.world.units.getValue(hex);
     if (typeof this_unit == 'object') {
-        console.log('draw unit');
         this.drawUnit(this_unit,hex,0);
 
 
@@ -397,7 +396,7 @@ WorldRenderer.prototype.drawUnit = function(unit,hex,height) {
     position = position.offset(0,-height);
    
     var unit_style = new RenderStyle();
-    unit_style.line_color = unit.components.color;
+    unit_style.fill_color = unit.components.color;
     this.drawDot(position,10*unit.components.size,unit_style);
     if (unit.components.population != undefined) {
       var text_style = new RenderStyle();
@@ -426,11 +425,11 @@ WorldRenderer.prototype.drawPath = function(range,destination) {
 
     //draw the path
     if (range.containsHex(destination)) {
-	var hex_style = new RenderStyle();
-	hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
-	hex_style.width = 2;
+  var hex_style = new RenderStyle();
+  hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
+  hex_style.width = 2;
 
-	this.drawHex(destination,hex_style);
+  this.drawHex(destination,hex_style);
         
         //calculate points of the hexes
         var hexes = pathfinder.destinationPathfind(range,destination);

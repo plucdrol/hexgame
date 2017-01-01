@@ -35,6 +35,8 @@ UnitController.prototype.selectHex = function(hex) {
     if (potential_unit instanceof Unit) { 
       //if the unit exists, find its range
       if (potential_unit.hasComponent('range')) {
+	console.log(potential_unit+" looks for range starting at");
+	console.log(hex);
         potential_unit.findRange(this.world.map,hex);
       }
     } 
@@ -58,8 +60,16 @@ UnitController.prototype.getUnit = function(hex) {
   return this.world.unitAtPosition(hex);
 }
 UnitController.prototype.aUnitIsSelected = function() {
+  if (!this.aHexIsSelected()) 
+    return false;
+
   var maybe_unit = this.getUnit(this.getHexSelected());
-  return (maybe_unit instanceof Unit);
+  if (maybe_unit) {
+    return (maybe_unit instanceof Unit);
+  } else {
+    console.log('error no hex selected');
+    return false;
+  }
 }
 UnitController.prototype.getUnitSelected = function() {
   if (this.aUnitIsSelected()) {
@@ -117,9 +127,9 @@ UnitController.prototype.commandUnit = function(hex) {
 
 //Move the unit from one hex to another hex
 UnitController.prototype.commandUnitToGround = function(current_hex,new_hex) {
-
     //get the unit which is moving
     var unit = this.getUnit(current_hex);
+    console.log(unit);
 
     //Create player if unit is a hut
     if (unit.hasComponent('ground_action_create_unit')) {
@@ -137,21 +147,17 @@ UnitController.prototype.commandUnitToGround = function(current_hex,new_hex) {
 
     //Move player if unit is a player
     } else {
-
       //move unit to the new position
       unit.move(this.world.map,current_hex,new_hex);
       this.world.units.set(new_hex,unit);
       this.world.units.remove(current_hex);
-
-      //find the range of the unit at its new position
-      this.getUnit(new_hex).findRange(this.world.map,new_hex);
 
       this.selectHex(new_hex);
     }
 }
 
 //Does the current_hex unit's action unto the new_hex unit
-UnitController.prototype.commandUntoUnit = function(current_hex,target_hex) {
+UnitController.prototype.commandUnitToOtherUnit = function(current_hex,target_hex) {
 
   //get both units
   var active_unit = this.getUnit(current_hex);
@@ -163,7 +169,8 @@ UnitController.prototype.commandUntoUnit = function(current_hex,target_hex) {
       this.world.removeUnit(target_hex);
       this.commandUnitToGround(current_hex,target_hex);
       var full_movement = active_unit.getComponent('movement');
-      active_unit.getComponent('movement_left') = full_movement;
+      active_unit.setComponent('movement_left', full_movement);
+      console.log(full_movement);
       active_unit.findRange(this.world.map,target_hex);
       this.selectHex(target_hex);
     }
