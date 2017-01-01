@@ -35,8 +35,6 @@ UnitController.prototype.selectHex = function(hex) {
     if (potential_unit instanceof Unit) { 
       //if the unit exists, find its range
       if (potential_unit.hasComponent('range')) {
-	console.log(potential_unit+" looks for range starting at");
-	console.log(hex);
         potential_unit.findRange(this.world.map,hex);
       }
     } 
@@ -67,7 +65,6 @@ UnitController.prototype.aUnitIsSelected = function() {
   if (maybe_unit) {
     return (maybe_unit instanceof Unit);
   } else {
-    console.log('error no hex selected');
     return false;
   }
 }
@@ -129,7 +126,6 @@ UnitController.prototype.commandUnit = function(hex) {
 UnitController.prototype.commandUnitToGround = function(current_hex,new_hex) {
     //get the unit which is moving
     var unit = this.getUnit(current_hex);
-    console.log(unit);
 
     //Create player if unit is a hut
     if (unit.hasComponent('ground_action_create_unit')) {
@@ -170,7 +166,6 @@ UnitController.prototype.commandUnitToOtherUnit = function(current_hex,target_he
       this.commandUnitToGround(current_hex,target_hex);
       var full_movement = active_unit.getComponent('movement');
       active_unit.setComponent('movement_left', full_movement);
-      console.log(full_movement);
       active_unit.findRange(this.world.map,target_hex);
       this.selectHex(target_hex);
     }

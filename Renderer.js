@@ -1,14 +1,14 @@
+//-------1---------2---------3---------4---------5---------6---------7---------8
 
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-/////                        BASIC RENDERING FUNCTIONS
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+////                     BASIC RENDERING FUNCTIONS
+//////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
 
 //this is a style for renderer
 function RenderStyle() {
@@ -267,8 +267,8 @@ WorldRenderer.prototype.getHexRectangleBoundaries = function() {
     //find the screen position and width
     var x = this.view.getInputRect().position.x;
     var y = this.view.getInputRect().position.y;
-    var height = this.view.getInputRect().size.x;
-    var width = this.view.getInputRect().size.y;
+    var height = this.view.getInputRect().size.y;
+    var width = this.view.getInputRect().size.x;
 
     //find the boundaries
     var left = x; 
@@ -310,10 +310,10 @@ WorldRenderer.prototype.getHexRectangleBoundaries = function() {
 
 WorldRenderer.prototype.drawRedRenderingRectangle = function(rectmap) {
     var corners = [];
-    corners.push(this.hexToPoint(new Hex(qmin,rmin)));
-    corners.push(this.hexToPoint(new Hex(qmin,rmax)));
-    corners.push(this.hexToPoint(new Hex(qmax,rmax)));
-    corners.push(this.hexToPoint(new Hex(qmax,rmin)));
+    corners.push(this.hexToPoint(new Hex(rectmap.qmin,rectmap.rmin)));
+    corners.push(this.hexToPoint(new Hex(rectmap.qmin,rectmap.rmax)));
+    corners.push(this.hexToPoint(new Hex(rectmap.qmax,rectmap.rmax)));
+    corners.push(this.hexToPoint(new Hex(rectmap.qmax,rectmap.rmin)));
 
     var rect_style = new RenderStyle();
     rect_style.fill_color = 'transparent';
@@ -331,6 +331,7 @@ WorldRenderer.prototype.drawWorld = function() {
         this.drawn_at_least_one_hex = false;
         var rectMap = this.getHexRectangleBoundaries();
         this.drawRectangleSection(rectMap);
+        //this.drawRedRenderingRectangle(rectMap);
         this.drawn_at_least_one_hex = false;
         //this.doneRendering(10);
     }
