@@ -4,18 +4,16 @@
 //pathfinding arguments:
   //map of (hex,movement_cost) pairs
 
-function PathFinderCell(path_cost,came_from,value) {
+function PathFinderCell(path_cost,came_from) {
   this.path_cost = 0;
   this.came_from = {};
-  this.value = 0;
   
-  this.set = function (path_cost,came_from,value) {
+  this.set = function (path_cost,came_from) {
     this.path_cost = path_cost;
     this.came_from = came_from;
-    this.value = value;
   };
 
-  this.set(path_cost,came_from,value);
+  this.set(path_cost,came_from);
 }
 
 function PathFinder(map) {
@@ -42,15 +40,11 @@ function PathFinder(map) {
     var visited = new HexMap(); 
     var cost_so_far = 0;
     var came_from; 
-    var neighbor_elevation = 0;
-    var best_cell = {};
     var path_cost = 0;
     
     //create pathfinder cell for origin
     var origin_elevation = this.getElevation(origin);
-    var new_cell = new PathFinderCell(cost_so_far,
-                                      came_from, 
-				      origin_elevation);
+    var new_cell = new PathFinderCell(cost_so_far, undefined);
     visited.set(origin, new_cell); 
 
     //while the frontier still has nodes to explore
@@ -61,7 +55,7 @@ function PathFinder(map) {
       var current_cell = visited.getValue(current_hex);
       cost_so_far = current_cell.path_cost;
       
-      //stop looking once  over the desired range
+      //ignore that hex if it is too far
       if (cost_so_far >= range) {
         continue;
       }
@@ -89,7 +83,7 @@ function PathFinder(map) {
         }
       } else {
         //Add the new cell if it has not been visited
-        if (this.checkCell(new_cell)) {
+        if (this.checkHex(neighbor_hex)) {
           frontier.put(neighbor_hex);
           visited.set(neighbor_hex, new_cell);
         }
@@ -108,7 +102,7 @@ function PathFinder(map) {
     var path_cost = cost_so_far  + cost_to_neighbor;
     
     neighbor_elevation = this.moveCostAbsolute(neighbor_hex);
-    var new_cell = new PathFinderCell(path_cost,current_hex,neighbor_elevation);
+    var new_cell = new PathFinderCell(path_cost,current_hex);
 
     return new_cell;
   }
@@ -125,17 +119,18 @@ function PathFinder(map) {
   };
 
   //While pathfinding, returns true to add the new cell
-  this.checkCell = function(new_cell) {
-    if (this.cellIsPassable(new_cell)) {
+  this.checkHex = function(hex) {
+    if (this.hexIsPassable(hex)) {
       return true;
     }
       
     return false;
   };
 
-  //Returns if the cell can be walked on
-  this.cellIsPassable = function(cell) {
-    if (cell.value > 1 && cell.value < 14) {
+  //Returns if the hex can be walked on
+  this.hexIsPassable = function(hex) {
+    var elevation = this.getElevation(hex);
+    if (elevation > 1 && elevation < 14) {
       return true;
     } else {
       return false;
@@ -148,9 +143,7 @@ function PathFinder(map) {
     var cost_b = cell_b.path_cost;
 
     if (cost_b < cost_a) {
-      if (this.cellIsPassable(cell_b)) {
-	return cell_b;
-      }
+      return cell_b;
     } 
 
     return cell_a;    
@@ -158,20 +151,20 @@ function PathFinder(map) {
   };  
 
 
-  //returns a hexmap containing only the hexes on the path to the destination
-  this.destinationPathfind = function(origin, destination, range) {
+  //returns a hexmap containing only the hexes on the path to the target
+  this.targetPathfind = function(origin, target, range) {
       
       //calculate all paths within the range
       var visited = this.rangePathfind(origin,range);
 
-      //return false if the destination cannot be reached within the range
-      if (!visited.containsHex(destination)) {
+      //return false if the target cannot be reached within the range
+      if (!visited.containsHex(target)) {
         return false;
       }
 
       //add the path hexes on the return hex list
       var hexes_on_path = [];
-      var hex_being_examined = destination;
+      var hex_being_examined = target;
       do {
 
         //add the visited hex to the path
@@ -194,12 +187,16 @@ function PathFinder(map) {
 
 
   //Returns the movement cost to move from the first tile to the second tile.
-  //For example, moving downhill is a smaller value than uphill.
-  this.moveCostNeighbor = function(this_tile, other_tile) {
+  //For example, moving downhill is a smaller,
+  //				      undefined, value than uphill.
+  this.moveCostNeighbor = function(hex_from,hex_to) {
     
-    //returns a positive number for uphill, negative for downhill
-    var difference = this.getElevation(other_tile)-this.getElevation(this_tile);
-    //Currently returns hard-coded values based on difference in elevation only
+    //returns a positive number for uphill
+    var elevation_from = this.getElevation(hex_from);
+    var elevation_to = this.getElevation(hex_to);
+    var difference = elevation_to - elevation_from;
+
+    //returns values based on difference in elevation only
     if (difference >= 4) {
       return 100;
     }
@@ -217,9 +214,9 @@ function PathFinder(map) {
     }
   };
 
-  //return the cost to move from origin to destination
-  this.moveCostRelative = function(origin, destination,range) {
-    var hex_path = this.destinationPathfind(origin,destination,range);
+  //return the cost to move from origin to target
+  this.moveCostRelative = function(origin, target,range) {
+    var hex_path = this.targetPathfind(origin,target,range);
     return hex_path[hex_path.length-1].path_cost;
   };
 }
