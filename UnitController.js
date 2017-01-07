@@ -1,19 +1,19 @@
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
                               
  //             UNIT CONTROLLER
 
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 
 function UnitController(world) {
   this.world = world;
   this.hex_selected = undefined;
 
 }
-//--------1---------2---------3---------4---------5---------6--------
+//-------1---------2---------3---------4---------5---------6--------
 
 UnitController.prototype.clickHex = function(hex) {
   //if there is already a unit on the hex selected
@@ -27,15 +27,18 @@ UnitController.prototype.clickHex = function(hex) {
 }
 
 UnitController.prototype.selectHex = function(hex) {
-  if (hex instanceof Hex && this.world.map.containsHex(hex)) {
-    this.hex_selected = hex;
-    //look if there is a unit
-    var potential_unit = this.getUnit(hex);
+  if (hex instanceof Hex) {
+    if (this.world.map.containsHex(hex)) {
+      this.hex_selected = hex;
+      //look if there is a unit
+      var potential_unit = this.getUnit(hex);
 
-    if (potential_unit instanceof Unit) { 
-      //if the unit exists, find its range
-      if (potential_unit.hasComponent('range')) {
-        potential_unit.findRange(this.world.map,hex);
+      if (potential_unit instanceof Unit) { 
+        //if the unit exists, find its range
+        if (potential_unit.hasComponent('range')) {
+	  console.log(potential_unit);
+          potential_unit.findRange(this.world.map,hex);
+        }
       }
     } 
   } else {
@@ -79,8 +82,10 @@ UnitController.prototype.clickWithNoSelection = function(hex) {
 
 
 UnitController.prototype.clickWithUnitSelected = function(hex) {
+  var unit_selected = this.getUnitSelected();
+  var unit_range = unit_selected.getComponent('range');
   //if you are clicking inside the unit's range
-  if (this.getUnitSelected().components.range.containsHex(hex)) {
+  if (unit_range.containsHex(hex)) {
     this.clickInsideUnitRange(hex);
 
   //if you are clicking outside the unit's range
@@ -144,9 +149,7 @@ UnitController.prototype.commandUnitToGround = function(current_hex,new_hex) {
     //Move player if unit is a player
     } else {
       //move unit to the new position
-      unit.move(this.world.map,current_hex,new_hex);
-      this.world.units.set(new_hex,unit);
-      this.world.units.remove(current_hex);
+      this.moveUnit(current_hex,new_hex);
 
       this.selectHex(new_hex);
     }
@@ -198,4 +201,20 @@ UnitController.prototype.commandUnitToSelf = function(unit_hex) {
     this.selectHex('none');
   }
 
+}
+
+UnitController.prototype.moveUnit = function(current_hex,next_hex) {
+  //measure the distance moved
+  var pathfinder = new PathFinder(this.world.map);
+  //calculate movements remaining
+  var the_unit = this.getUnit(current_hex);
+  var max_movement = the_unit.getComponent('movement_left');
+  //find the path to destination
+  var cost = pathfinder.moveCostRelative(current_hex, next_hex, max_movement);
+  //substract it from the movement remaining
+  the_unit.increaseComponent('movement_left', -cost);
+  
+  //update the world maap
+  this.world.units.set(next_hex,the_unit);
+  this.world.units.remove(current_hex);
 }
