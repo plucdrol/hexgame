@@ -540,9 +540,9 @@ function TileRendererSemi3D() {
         var wall_height = 6;
         
         //analyze neighbors
-        var n_left = Hex.neighbor(hex,3);
-        var n_upleft = Hex.neighbor(hex,2);
-        var n_upright = Hex.neighbor(hex,1);
+        var n_left = hex.getNeighbor(3);
+        var n_upleft = hex.getNeighbor(2);
+        var n_upright = hex.getNeighbor(1);
 
         //get height of neighbors
         var n_left_height = this.world.map.getValue(n_left);
