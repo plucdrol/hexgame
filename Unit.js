@@ -9,10 +9,12 @@ function Unit(unit_type) {
 };
 
 
-  Unit.prototype.findRange = function(map,position) {
-    var pathfinder = new PathFinder(map);
-    this.components.range = pathfinder.rangePathfind(position,this.components.movement_left);
-  };
+Unit.prototype.findRange = function(map,position) {
+  var pathfinder = new PathFinder(map);
+  var max_movement = this.getComponent('movement_left');
+  var range = pathfinder.rangePathfind(position,max_movement);
+  this.setComponent('range', range);
+};
 
 
 Unit.prototype.setType = function(unit_type) {
@@ -99,10 +101,10 @@ Unit.prototype.setMovement = function(movement) {
 Unit.prototype.move = function(map,current_hex,next_hex) {
   //measure the distance moved
   var pathfinder = new PathFinder(map);
+  //calculate movements remaining
+  var max_movement = this.getComponent('movement_left');
   //find the path to destination
-  //pathfinder.destinationPathfind(current_hex,next_hex,this.components.movement_left);
-  //calculate movement cost
-  var movement_cost = pathfinder.moveCostRelative(current_hex,next_hex,this.components.movement_left)
+  var movement_cost = pathfinder.moveCostRelative(current_hex, next_hex, max_movement);
   //substract it from the movement remaining
   this.components.movement_left -= movement_cost;
 }
