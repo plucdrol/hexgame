@@ -1,22 +1,22 @@
 //-------1---------2---------3---------4---------5---------6---------7---------8
 /*
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
                 
                       MAP GENERATOR
 
-    Creates a randomized world map using the HexMap data type
+    Creates a randomized world map using the HexMap struct 
     -method: What generation algorithm to use
     -size: the radius of the map in hexes
 
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////*/
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////*/
 
 
-HexMapGenerator = function() {
+MapGenerator = function() {
   this.map = new HexMap();
   this.simplex = new SimplexNoise();
   this.radius = 0;
@@ -57,9 +57,9 @@ HexMapGenerator = function() {
 
 }
 
-HexMapGenerator.prototype.makeTileGenerator = function(method) {
+MapGenerator.prototype.makeTileGenerator = function(type) {
 
-  switch (method){
+  switch (type){
     case 'perlin':
       tile_generator = new PerlinTileGenerator();  
       break;
@@ -75,16 +75,17 @@ HexMapGenerator.prototype.makeTileGenerator = function(method) {
 
 
 
-HexMapGenerator.prototype.generateMap = function(method,radius) {
+MapGenerator.prototype.makeMap = function(type,radius) {
   
   this.map = new HexMap();
   this.radius = radius;
 
   var hex = new Hex(0,0);
-  var value = {}; //contains the position and content of each tile
-  var tile_generator = this.makeTileGenerator(method);
+  //contains the position and content of each tile
+  var value = {}; 
+  var tile_gen = this.makeTileGenerator(type);
 
-  //Traverses the world map while staying inside the giant hexagon
+  // Iterates over the giant hexagon
   for (var q = -radius; q <= radius; q++) {
     var rmin = Math.max(-radius, -q - radius);
     var rmax = Math.min(radius, -q + radius);
@@ -94,8 +95,8 @@ HexMapGenerator.prototype.generateMap = function(method,radius) {
               
       //put in map
       hex = new Hex(q,r);
-      this.setElevation(hex,tile_generator.generateTile(q,r));
-      this.setWind(hex,tile_generator.generateWind(q,r));
+      this.setElevation(hex,tile_gen.generateTile(q,r));
+      this.setWind(hex,tile_gen.generateWind(q,r));
     }
   }
 
@@ -108,7 +109,7 @@ HexMapGenerator.prototype.generateMap = function(method,radius) {
 
 }
 
-HexMapGenerator.prototype.roundDown = function() {
+MapGenerator.prototype.roundDown = function() {
   
   var value;
 
@@ -120,8 +121,9 @@ HexMapGenerator.prototype.roundDown = function() {
   }
 }
 
-//Adds water in the ratio from the edge of the map defined by rim_size/1
-HexMapGenerator.prototype.addWaterRim = function(rim_size) {
+//Adds water in the ratio from the edge of the map
+//defined by rim_size/1
+MapGenerator.prototype.addWaterRim = function(rim_size) {
   
   //center hex
   var origin = new Hex(0,0);
@@ -132,7 +134,8 @@ HexMapGenerator.prototype.addWaterRim = function(rim_size) {
   for (let thishex of this.map.getArray()) {
   
     //analyse map
-    var distance_to_center = Math.max(Hex.distance(origin,thishex),0);
+    var distance_to_center = Hex.distance(origin, thishex);
+    distance_to_center = Math.max(distance_to_center,0);
     var distance_to_edge = size - distance_to_center;
     var rim_length = rim_size*size;
     
@@ -150,7 +153,7 @@ HexMapGenerator.prototype.addWaterRim = function(rim_size) {
   }
 }
 
-HexMapGenerator.prototype.flatenRange = function(range_min,range_max) {
+MapGenerator.prototype.flatenRange = function(min,max) {
   
   var size = this.radius;
 
@@ -164,10 +167,10 @@ HexMapGenerator.prototype.flatenRange = function(range_min,range_max) {
         var this_value = this.getElevation(this_hex);
 
         //for cells between range_min and range_max
-      for (var i = range_min; i < range_max; i++) {
-        var diff = i-range_min;
+      for (var i = min; i < max; i++) {
+        var diff = i-min;
 
-        //if the cell is equal to a value between range_min and range_max
+        //if the cell is between min and max
         if (this_value == i) {
           this.setElevation(this_hex,this_value-diff);
 
@@ -176,14 +179,14 @@ HexMapGenerator.prototype.flatenRange = function(range_min,range_max) {
       }
 
       //for cells of value higher than range_max
-      if (this_value > range_max) {
-        this.setElevation(this_hex,this_value-(range_max-range_min));
+      if (this_value > max) {
+        this.setElevation(this_hex,this_value-(max-min));
       }
     }
   }
 }
 
-HexMapGenerator.prototype.addShallowWater = function() {
+MapGenerator.prototype.addShallowWater = function() {
   var neighbors = [];
 
 
@@ -195,7 +198,7 @@ HexMapGenerator.prototype.addShallowWater = function() {
 
         //check its neighbors
         for (var dir =0; dir < 6; dir++) {
-          var neighbor = Hex.neighbor(thishex,dir);
+          var neighbor = thishex.getNeighbor(dir);
           if (this.map.containsHex(neighbor)) {
             //and if they are land
             if (this.getElevation(neighbor) > 1) {
