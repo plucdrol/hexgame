@@ -41,12 +41,22 @@ Hex.prototype.getS = function() {
 Hex.equals = function(hex_a,hex_b) {
   return hex_a.getQ()==hex_b.getQ() && hex_a.getR()==hex_b.getR();
 }
+Hex.prototype.equals = function(hex_b) {
+  return Hex.equals(this,hex_b);
+}
+
 Hex.add = function(hex_a, hex_b)  {
   return new Hex( hex_a.getQ()+hex_b.getQ(), hex_a.getR()+hex_b.getR() );
 }
+Hex.prototype.add = function(hex_b) {
+  return Hex.add(this,hex_b);
+}
+
 Hex.substract = function(hex_a, hex_b)  {
   return new Hex( hex_a.getQ()-hex_b.getQ(), hex_a.getR()-hex_b.getR() );
 }
+
+
 Hex.multiply = function(hex, k)  {
   return new Hex( hex.getQ()*k, hex.getR()*k );
 }
@@ -77,8 +87,12 @@ Hex.spiralDirection = function(q,r) {
 }
 
 //gives the 6 corner directions in layout-independent hex coordinates
-var hex_corner = [new Hex(1.0/3.0, 1.0/3.0),new Hex(2.0/3.0, -1.0/3.0),new Hex(1.0/3.0, -2.0/3.0),
-    new Hex(-1.0/3.0,-1.0/3.0),new Hex(-2.0/3.0,1.0/3.0),new Hex(-1.0/3.0,2.0/3.0)] ;
+var hex_corner = [  new Hex( 1.0/3.0,  1.0/3.0),
+		    new Hex( 2.0/3.0, -1.0/3.0),
+		    new Hex( 1.0/3.0, -2.0/3.0),
+		    new Hex(-1.0/3.0, -1.0/3.0),
+		    new Hex(-2.0/3.0,  1.0/3.0),
+		    new Hex(-1.0/3.0,  2.0/3.0)] ;
 
 
 
@@ -91,17 +105,19 @@ Hex.corners = function (hex) {
   return corners;
 }              
 
-Hex.neighbor = function(hex,direction_number) {
+Hex.prototype.getNeighbor = function(direction_number) {
   //takes a hex and a direction (from 0 to 6), and returns a neighboring hex
-  return Hex.add(hex, hex_direction[direction_number%6] );
+  return Hex.add(this, hex_direction[direction_number%6] );
 }
 
 //takes a hex and returns all 6 neighbors
-Hex.neighbors = function(hex) {
+Hex.prototype.getNeighbors = function() {
   var neighbors = [];
-
-
-  //continue
+  var i;
+  for (i=0; i<6; i++) {
+    neighbors.push( this.getNeighbor(i) );
+  }
+  return neighbors;
 }
 
 // FRACTIONAL FUNCTIONS
@@ -190,11 +206,11 @@ function Vertex(hex,direction_number) {
     return this.hex;
   }
   Vertex.prototype.getOuterHex = function() {
-    return Hex.neighbor(this.hex, this.direction_number);
+    return this.hex.getNeighbor( this.direction_number );
   };
   Vertex.prototype.getClockwiseHex = function() {
     //returns the hex which is clockwise from the outer hex
-    return Hex.neighbor(this.hex, (this.direction_number+5)%6 );
+    return this.hex.getNeighbor( (this.direction_number+5)%6 );
   };
 
   //returns the vertex coordinate in fractional hexes 
@@ -254,7 +270,7 @@ function Edge(hex,direction_number) {
 
   //Returns the Hex on the other side of the edge
   Edge.prototype.getOuterHex = function() {
-    return Hex.neighbor(this.hex, this.direction_number);
+    return this.hex.getNeighbor( this.direction_number );
   };
 
   //As seen from the InnerHex's perspective, Point2 is counterclockwise from Point1
@@ -315,7 +331,7 @@ Hex.outline = function(hexes) {
       var edge = new Edge( hexes[i], d);
 
       //get the neighbor across that edge
-      var neighbor = Hex.neighbor( hexes[i], d );
+      var neighbor = hexes[i].getNeighbor( d );
 
       if ( !( Hex.equals(edge.getOuterHex(), neighbor) )) {
         console.log ('hex_equal doesnt work');
