@@ -66,8 +66,8 @@ World.prototype.generateWorldMap = function(size) {
   }
 
   //make a new map from scratch
-  var map_generator = new HexMapGenerator();
-  map_generator.generateMap('perlin',size);
+  var map_generator = new MapGenerator();
+  map_generator.makeMap('perlin',size);
   this.map = map_generator.getMap();
 
   this.addTreesToMap();
