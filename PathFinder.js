@@ -18,6 +18,8 @@ function PathFinderCell(path_cost,came_from,value) {
 //PathFinder takes maps and generates ranges and paths
 function PathFinder(map) {
   this.map = map;
+  this.visited = new HexMap();
+  this.frontier = new Queue();
 
   //Replaces the map that the pathfinder uses
   this.replaceMap = function(map) {
@@ -30,61 +32,77 @@ function PathFinder(map) {
     return elevation;
   }
 
+  //Deletes previous path to start a new path search
+  this.reset = function() {
+    this.visited = new HexMap();
+    this.frontier = new Queue();
+  }
+
+  //Modifies the pathfinder array result to be returned
+  this.getCell(hex) {
+    return this.visited.getValue(hex);
+  } 
+  this.setCell(hex, cell) {
+    this.visited.setValue(hex,cell);
+  }
+  this.hasCell(hex) {
+    return this.visited.containsHex(hex);
+  }
+
   //Find movement cost to all cells within range of origin
   this.rangePathfind = function(origin,range) {
     
-    var frontier = new Queue();  
-    frontier.put(origin);
+    this.reset();
+    this.frontier.put(origin);
+
     //this one takes pathfinder cells input
-    var visited = new HexMap(); 
-    var cost_so_far = 0;
-    var came_from; 
     var path_cost = 0;
+    var came_from; 
     
     //create pathfinder cell for origin
     var origin_elevation = this.getElevation(origin);
-    var new_cell = new PathFinderCell(cost_so_far, undefined);
-    visited.set(origin, new_cell); 
+    var new_cell = new PathFinderCell(path_cost, undefined);
+    this.setCell(origin, new_cell);
 
     //while the frontier still has nodes to explore
-    while ( !frontier.isEmpty() ) {
+    while ( !this.frontier.isEmpty() ) {
       
       //get a hex on the frontier
-      var current_hex = frontier.pop();
-      var current_cell = visited.getValue(current_hex);
-      cost_so_far = current_cell.path_cost;
+      var current_hex = this.frontier.pop();
+      var current_cell = this.getCell(current_hex);
+      cost = current_cell.path_cost;
       
       //ignore that hex if it is too far
-      if (cost_so_far >= range) {
+      if (cost >= range) {
         continue;
       }
       //look at all its neighbors
       for (neighbor of current_hex.getNeighbors()) {
-	this.processCell(current_hex, neighbor, visited, frontier, cost_so_far);
+	this.processCell(current_hex, neighbor);
       }
     }
     //return all cells that are within a certain distance 
-    return visited;
+    return this.visited;
   };
 
   //Process a cell while pathfinding
-  this.processCell = function(current_hex,neighbor_hex,visited,frontier,cost_so_far) {
-    var already_visited = visited.containsHex(neighbor_hex);
-    var neighbor_cell = visited.getValue(neighbor_hex);
+  this.processCell = function(current_hex, neighbor_hex) {
+    var already_visited = this.hasCell(neighbor_hex);
+    var neighbor_cell = this.getCell(neighbor_hex);
     var new_cell = this.getNeighborCell(current_hex,neighbor_hex,cost_so_far);
 
     if (new_cell) {
       if (already_visited) {
       //Compare the two cells if it has been visited
         if (this.recheckNeighborCell(neighbor_cell,new_cell)) {
-          frontier.put(neighbor_hex);
-          visited.set(neighbor_hex, new_cell);
+          this.frontier.put(neighbor_hex);
+          this.setCell(neighbor_hex, new_cell);
         }
       } else {
         //Add the new cell if it has not been visited
-        if (this.checkHex(neighbor_hex)) {
-          frontier.put(neighbor_hex);
-          visited.set(neighbor_hex, new_cell);
+        if (this.hexIsPassable(neighbor_hex)) {
+          this.frontier.put(neighbor_hex);
+          this.setCell(neighbor_hex, new_cell);
         }
      }
     }
@@ -117,15 +135,6 @@ function PathFinder(map) {
     return false;
   };
 
-  //While pathfinding, returns true to add the new cell
-  this.checkHex = function(hex) {
-    if (this.hexIsPassable(hex)) {
-      return true;
-    }
-      
-    return false;
-  };
-
   //Returns if the hex can be walked on
   this.hexIsPassable = function(hex) {
     var elevation = this.getElevation(hex);
@@ -154,29 +163,30 @@ function PathFinder(map) {
   //to the target
   this.targetPathfind = function(origin, target, range) {
       
-      //calculate all paths within the range
-      var visited = this.rangePathfind(origin,range);
+    //calculate all paths within the range
+    this.visited = this.rangePathfind(origin,range);
 
-      //return false if the target cannot be reached within the range
-      if (!visited.containsHex(target)) {
-        return false;
-      }
+    //return false if the target is out of range 
+    if (!this.visited.containsHex(target)) {
+      return false;
+    }
 
-      //add the path hexes on the return hex list
-      var hexes_on_path = [];
-      var hex_being_examined = target;
-      do {
+    //add the path hexes on the return hex list
+    var hexes_on_path = [];
+    var hex_being_examined = target;
+    do {
 
-        //add the visited hex to the path
-        hexes_on_path.unshift(visited.getValue(hex_being_examined));
+      //add the visited hex to the path
+      var visited_cell = this.getCell(hex_being_examined);
+      hexes_on_path.unshift(visited_cell);
 
-        //prepare to look at the hex before it
-        hex_being_examined = visited.getValue(hex_being_examined).came_from;
+      //prepare to look at the hex before it
+      hex_being_examined = visited_cell.came_from;
 
 
-      } while (hex_being_examined != origin);
+    } while (hex_being_examined != origin);
 
-      return hexes_on_path;
+    return hexes_on_path;
 
   };
 
