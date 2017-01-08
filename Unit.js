@@ -12,7 +12,7 @@ function Unit(unit_type) {
 Unit.prototype.findRange = function(map,position) {
   var pathfinder = new PathFinder(map);
   var max_movement = this.getComponent('movement_left');
-  var range = pathfinder.rangePathfind(position,max_movement);
+  var range = pathfinder.getRange(position, max_movement);
   this.setComponent('range', range);
 };
 
@@ -58,7 +58,8 @@ Unit.prototype.setType = function(unit_type) {
     this.components.size = 4;
     this.components.controllable = true;
     this.components.collects_ressources = true;
-    this.components.ground_action_create_unit = {range:0, type:'fast-player'};
+    let creation = {range:0, type:'fast-player'};
+    this.components.ground_action_create_unit = creation;
     this.components.range = new HexMap();
     break;
   case 'terrain':
