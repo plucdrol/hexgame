@@ -1,10 +1,7 @@
 //-------1---------2---------3---------4---------5---------6---------7--------8
-// RANGE FINDING
+//PathFinder cell used for mapping paths
 
-//pathfinding arguments:
-  //map of (hex,movement_cost) pairs
-
-function PathFinderCell(path_cost,came_from) {
+function PathFinderCell(path_cost,came_from,value) {
   this.path_cost = 0;
   this.came_from = {};
   
@@ -16,9 +13,11 @@ function PathFinderCell(path_cost,came_from) {
   this.set(path_cost,came_from);
 }
 
+
+
+//PathFinder takes maps and generates ranges and paths
 function PathFinder(map) {
   this.map = map;
-
 
   //Replaces the map that the pathfinder uses
   this.replaceMap = function(map) {
@@ -26,12 +25,12 @@ function PathFinder(map) {
   };
 
   this.getElevation = function(hex) {
-    var this_tile = this.map.getValue(hex);
-    return this_tile.getComponent('elevation');
-  };
+    var tile = this.map.getValue(hex);
+    var elevation = tile.getComponent('elevation');
+    return elevation;
+  }
 
-  //Computes the movement cost to hexes within
-  // a 'range' of the 'origin' hex
+  //Find movement cost to all cells within range of origin
   this.rangePathfind = function(origin,range) {
     
     var frontier = new Queue();  
@@ -151,7 +150,8 @@ function PathFinder(map) {
   };  
 
 
-  //returns a hexmap containing only the hexes on the path to the target
+  //returns a hexmap containing only the hexes on the path
+  //to the target
   this.targetPathfind = function(origin, target, range) {
       
       //calculate all paths within the range
@@ -180,23 +180,22 @@ function PathFinder(map) {
 
   };
 
-  //Returns the absolute movement cost value of the tile given
+  //Returns the absolute movement cost value of the tile 
   this.moveCostAbsolute = function(other_tile) {
     return this.getElevation(other_tile);
   };
 
 
-  //Returns the movement cost to move from the first tile to the second tile.
-  //For example, moving downhill is a smaller,
-  //				      undefined, value than uphill.
-  this.moveCostNeighbor = function(hex_from,hex_to) {
+ //Returns the movement cost from first tile to second.
+  //Moving downhill is a smaller value than uphill.
+  this.moveCostNeighbor = function(this_tile, other_tile) {
     
-    //returns a positive number for uphill
-    var elevation_from = this.getElevation(hex_from);
-    var elevation_to = this.getElevation(hex_to);
-    var difference = elevation_to - elevation_from;
-
-    //returns values based on difference in elevation only
+    //returns a positive number for uphill movement
+    // negative number for downhill movement
+    var cost_this  = this.get_elevation(other_tile);
+    var cost_other = this.getElevation(other_tile);
+    var difference = cost_other - cost_this; 
+    //Returns values based on difference in elevation only
     if (difference >= 4) {
       return 100;
     }
@@ -216,7 +215,7 @@ function PathFinder(map) {
 
   //return the cost to move from origin to target
   this.moveCostRelative = function(origin, target,range) {
-    var hex_path = this.targetPathfind(origin,target,range);
+    var path = this.targetPathfind(origin,target,range);
     return hex_path[hex_path.length-1].path_cost;
-  };
+  }
 }
