@@ -1,15 +1,6 @@
-//-------1----------2---------3---------4---------5---------6---------7--------8
-// RANGE FINDING
+//-------1---------2---------3---------4---------5---------6---------7--------8
 
-//pathfinding arguments:
-  //map of (hex,movement_cost) pairs
-
-//pathfinding algorithms:
-  //findRange(hex_origin,range) returns an array of hexes reachable 
-        //from hex_origin in n steps
-  //find_path(hex_origin,hex_destination) returns shortest path
-  //path_distance(origin,destination) returns distance between two hexes
-
+//PathFinder cell used for mapping paths
 
 function PathFinderCell(path_cost,came_from,value) {
   this.path_cost = 0;
@@ -25,22 +16,24 @@ function PathFinderCell(path_cost,came_from,value) {
   this.set(path_cost,came_from,value);
 }
 
+
+
+//PathFinder takes maps and generates ranges and paths
 function PathFinder(map) {
   this.map = map;
 
-                                                                               
-
-  //Replaces the map that the pathfinder uses for calculations
+//Replaces the map the pathfinder uses for calculations
   this.updateMap = function(map) {
     this.map = map;
   }
 
   this.getElevation = function(hex) {
-    return this.map.getValue(hex).getComponent('elevation');
+    var tile = this.map.getValue(hex);
+    var elevation = tile.getComponent('elevation');
+    return elevation;
   }
 
-  //Computes the movement cost to hexes within a 'range' of the 'origin' hex
-  //Movement cost it calculated with the moveCostRelative() function
+  //Find movement cost to all cells within range of origin
   this.rangePathfind = function(origin,range) {
     
     var frontier = new Queue();  
@@ -122,20 +115,21 @@ function PathFinder(map) {
   
 
 
-  //returns a hexmap containing only the hexes on the path to the destination
-  this.destinationPathfind = function(origin, destination, range) {
+  //returns a hexmap containing only the hexes on the path
+  //to the target
+  this.targetPathfind = function(origin, target, range) {
       
       //calculate all paths within the range
       var visited = this.rangePathfind(origin,range);
 
       //return false if the destination cannot be reached within the range
-      if (!visited.containsHex(destination)) {
+      if (!visited.containsHex(target)) {
         return false;
       }
 
       //add the path hexes on the return hex list
       var hexes_on_path = [];
-      var hex_being_examined = destination;
+      var hex_being_examined = target;
       do {
 
         //add the visited hex to the path
@@ -151,19 +145,22 @@ function PathFinder(map) {
 
   }
 
-  //Returns the absolute movement cost value of the tile given
+  //Returns the absolute movement cost value of the tile 
   this.moveCostAbsolute = function(other_tile) {
     return this.getElevation(other_tile);
   }
 
 
-  //Returns the movement cost to move from the first tile to the second tile.
-  //For example, moving downhill is a smaller value than uphill.
+  //Returns the movement cost from first tile to second.
+  //Moving downhill is a smaller value than uphill.
   this.moveCostNeighbor = function(this_tile, other_tile) {
     
-    //returns a positive number for uphill movement, negative number for downhill movement
-    var difference = this.getElevation(other_tile) - this.getElevation(this_tile);
-    //Currently returns hard-coded values based on difference in elevation only
+    //returns a positive number for uphill movement
+    // negative number for downhill movement
+    var cost_this  = this.get_elevation(other_tile);
+    var cost_other = this.getElevation(other_tile);
+    var difference = cost_other - cost_this; 
+    //Returns values based on difference in elevation only
     if (difference >= 4) {
       return 100;
     }
@@ -181,9 +178,9 @@ function PathFinder(map) {
     }
   }
 
-  //return the cost to move from origin to destination
-  this.moveCostRelative = function(origin, destination,range) {
-    var hex_path = this.destinationPathfind(origin,destination,range);
+  //return the cost to move from origin to target
+  this.moveCostRelative = function(origin, target,range) {
+    var path = this.targetPathfind(origin,target,range);
     return hex_path[hex_path.length-1].path_cost;
   }
 }
