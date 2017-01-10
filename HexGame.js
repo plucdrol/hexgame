@@ -2,7 +2,9 @@
 //-------1----------2---------3---------4---------5---------6---------7--------8
 
 
-
+// Here is where all the javascript modules should be combined
+// Avoid all cross-dependencies!
+// Allow modules to be interconnected at this level
 //////////////////////////// CREATING THE WORLD //////////////////////////////
 
 //define the screen which can be drawn on
@@ -12,12 +14,12 @@ var canvas = document.getElementById('mycanvas');
 var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
+//Create a map generator
+var hexmap_generator = new MapGenerator(); 
+
 //create a world
 var map_radius = 50;
-var layout_size = new Point(35, 35);
-var origin = new Point(canvas.width, canvas.height);
-var world_layout = new HexLayout(orientation_pointy, layout_size, origin);
-var world = new World(map_radius, world_layout);
+var world = new World(map_radius, hexmap_generator);
 
 //create a default view, which can be edited
 var view_ratio = canvas.width/canvas.height;
@@ -81,7 +83,7 @@ function drawScreen() {
 
 ///////////////////////////////////////// CHANGING THE WORLD //////////////////////////////////////////
 function newWorld() {
-  world.generateWorldMap(map_radius);
+  world.generateWorld(map_radius);
   drawScreen();
 }
 
