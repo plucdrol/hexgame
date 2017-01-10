@@ -1,5 +1,7 @@
 //-------1---------2---------3---------4---------5---------6---------7--------8
-
+// Dependencies:
+//   PathFinder.js
+//
 //           GENERIC UNIT --------------------//
 
 function Unit(unit_type) {
@@ -39,7 +41,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.controllable = true;
     this.components.eats_food = true;
     this.components.self_action_become_unit = 'hut';
-    this.components.range = new HexMap();
+    this.components.range = {};
     this.components.size = 2;
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
@@ -50,7 +52,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.controllable = true;
     this.components.eats_food = true;
     this.components.self_action_become_unit = 'hut';
-    this.components.range = new HexMap();
+    this.components.range = {};
     this.components.size = 2;
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
@@ -76,7 +78,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.collects_ressources = true;
     let creation = {range:0, type:'fast-player'};
     this.components.ground_action_create_unit = creation;
-    this.components.range = new HexMap();
+    this.components.range = {};
     break;
   case 'terrain':
     this.components.elevation = 0;
