@@ -173,7 +173,7 @@ function PathFinder(map, tile_cost_function) {
   //Returns true if hex is a path worth exploring
   this.pathShouldContinue = function(hex, previous_hex) {
     
-    var hex_already_visited = this.hasCell(hex);
+    var already_visited = this.hasCell(hex);
 
     var current_cell = this.getCell(hex);
     var new_cell = this.makeNeighborCell(hex,previous_hex);
@@ -214,7 +214,7 @@ function PathFinder(map, tile_cost_function) {
   //Calculate current minimum cost to a cell
   this.calculatePathCost = function(hex, previous_hex) {
     let cost_so_far = this.getCell(previous_hex).path_cost;
-    let step_cost = this.moveCostNeighbor(previous_hex,hex);
+    let step_cost = this.stepCost(previous_hex,hex);
     
     if (step_cost === undefined) {
       return undefined;
@@ -249,11 +249,6 @@ function PathFinder(map, tile_cost_function) {
   
   };  
 
-  //Returns the absolute movement cost value of the tile 
-  this.moveCostAbsolute = function(other_tile) {
-    return this.getTileCost(other_tile);
-  };
-
  //Returns the movement cost from first tile to second.
   //Moving downhill is a smaller value than uphill.
   this.stepCost = function(this_tile, other_tile) {
@@ -262,6 +257,14 @@ function PathFinder(map, tile_cost_function) {
     // negative number for downhill movement
     var cost_this  = this.getTileCost(this_tile);
     var cost_other = this.getTileCost(other_tile);
+
+    if (cost_this === undefined) {
+      return undefined;
+    }
+
+    if (cost_other === undefined) {
+      return undefined;
+    }
     var difference = cost_other - cost_this; 
 
     //Returns values based on difference in elevation only

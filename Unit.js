@@ -12,10 +12,10 @@ Unit.prototype.tileCostFunction = function(tile) {
 
   var cost = tile.getComponent('elevation');
   if (cost > this.getComponent('maximum_elevation')) {
-    cost = 9999;
+    cost = undefined;
   }
   if (cost < this.getComponent('minimum_elevation')) {
-    cost = 9999;
+    cost = undefined;
   }
   return cost;
 }
