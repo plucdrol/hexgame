@@ -22,6 +22,21 @@ function PathFinder(map) {
 
   //Cells at the edge of the pathfinding
   this.frontier = new Queue();
+  
+  //Initialize a pathfinding algorithm on the origin cell
+  this.init = function(origin) {
+    this.reset();
+    this.frontier.put(origin);
+    
+    var first_cell = new PathFinderCell(0, undefined);
+    this.setCell(origin, first_cell);
+  }
+
+  //Deletes previous path to start a new path search
+  this.reset = function() {
+    this.visited = new HexMap();
+    this.frontier = new Queue();
+  }
 
   //Replaces the map that the pathfinder uses
   this.replaceMap = function(map) {
@@ -35,20 +50,7 @@ function PathFinder(map) {
     return elevation;
   }
 
-  //Deletes previous path to start a new path search
-  this.reset = function() {
-    this.visited = new HexMap();
-    this.frontier = new Queue();
-  }
-
-  //Initialize a pathfinding algorithm on the origin cell
-  this.init = function(origin) {
-    this.reset();
-    this.frontier.put(origin);
-    
-    var first_cell = new PathFinderCell(0, undefined);
-    this.setCell(origin, first_cell);
-  }
+  
   //Modifies the pathfinder array result to be returned
   this.getCell = function(hex) {
     return this.visited.getValue(hex);
@@ -85,6 +87,9 @@ function PathFinder(map) {
     
     this.init(origin);
     
+    if (max_cost <= 0) 
+      return;
+
     while ( this.frontierHasHexes() ) {
       var hex = this.getFrontierHex();
       this.examineFrontierHex(hex, max_cost);          
@@ -103,23 +108,22 @@ function PathFinder(map) {
       return false;
     }
     
-    return this.makePath(origin, target);
+    return this.findPathInVisited(origin, target);
 
   };
 
-  this.makePath = function(origin, target) {
+  this.findPathInVisited = function(origin, target) {
     //add the path hexes on the return hex list
     var hexes_on_path = [];
     var previous_hex = target;
     do {
 
       //add the visited hex to the path
-      var visited_cell = this.getCell(previous_hex);
-      hexes_on_path.unshift(visited_cell);
+      var previous_cell = this.getCell(previous_hex);
+      hexes_on_path.unshift(previous_cell);
 
       //prepare to look at the hex before it
-      previous_hex = visited_cell.came_from;
-
+      previous_hex = previous_cell.came_from;
 
     } while (previous_hex != origin);
 
@@ -153,13 +157,13 @@ function PathFinder(map) {
   this.processNeighbors = function(previous_hex) {
     for (let hex of previous_hex.getNeighbors()) {
       if (this.hexIsOnTheMap(hex, previous_hex)) {
-	this.processHex(hex, previous_hex);
+	this.considerHex(hex, previous_hex);
       }
     }
   }
 
   //Process a cell while pathfinding
-  this.processHex = function(hex, previous_hex) {
+  this.considerHex = function(hex, previous_hex) {
 
     var new_cell = this.makeNeighborCell(hex,previous_hex);
    
@@ -171,11 +175,12 @@ function PathFinder(map) {
   //Returns true if hex is a path worth exploring
   this.pathShouldContinue = function(hex, previous_hex) {
     
-    var already_visited = this.hasCell(hex);
+    var hex_already_visited = this.hasCell(hex);
+
     var current_cell = this.getCell(hex);
     var new_cell = this.makeNeighborCell(hex,previous_hex);
     
-    if (already_visited) {
+    if (hex_already_visited) {
       if (this.newCellIsBetter(current_cell, new_cell)) {
 	return true;
       }
@@ -211,7 +216,7 @@ function PathFinder(map) {
   //Calculate current minimum cost to a cell
   this.calculatePathCost = function(hex, previous_hex) {
     let cost_so_far = this.getCell(previous_hex).path_cost;
-    let step_cost = this.moveCostNeighbor(previous_hex,hex);
+    let step_cost = this.stepCost(previous_hex,hex);
     let path_cost = cost_so_far + step_cost;
     return path_cost;
   }
@@ -250,16 +255,9 @@ function PathFinder(map) {
   
   };  
 
-
-  //Returns the absolute movement cost value of the tile 
-  this.moveCostAbsolute = function(other_tile) {
-    return this.getElevation(other_tile);
-  };
-
-
  //Returns the movement cost from first tile to second.
   //Moving downhill is a smaller value than uphill.
-  this.moveCostNeighbor = function(this_tile, other_tile) {
+  this.stepCost = function(this_tile, other_tile) {
     
     //returns a positive number for uphill movement
     // negative number for downhill movement
@@ -286,7 +284,7 @@ function PathFinder(map) {
   };
 
   //return the cost to move from origin to target
-  this.moveCostRelative = function(origin, target, range) {
+  this.getPathCost = function(origin, target, range) {
     var path = this.targetPathfind(origin,target,range);
     return path[path.length-1].path_cost;
   }
