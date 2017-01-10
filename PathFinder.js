@@ -18,7 +18,8 @@ function PathFinderCell(path_cost,came_from) {
 //PathFinder takes maps and generates ranges and paths
 function PathFinder(map, tile_cost_function) {
   this.map = map;
-  
+  this.tile_cost_function = tile_cost_function;
+
   //Cells visited during pathfinding
   this.visited = new HexMap();
 
@@ -172,14 +173,14 @@ function PathFinder(map, tile_cost_function) {
     var current_cell = this.getCell(hex);
     var new_cell = this.makeNeighborCell(hex,previous_hex);
     
-    if (already_visited) {
-      if (this.newCellIsBetter(current_cell, new_cell)) {
-	return true;
-      }
-    } else {
-      if (this.hexIsPassable(hex)) {
-	return true;
-      }
+    if (new_cell.path_cost === undefined) {
+      return false;
+    }
+    if (!already_visited) {
+      return true;
+    }
+    if (this.newCellIsBetter(current_cell, new_cell)) {
+      return true;
     }
     return false;
   }
@@ -209,7 +210,13 @@ function PathFinder(map, tile_cost_function) {
   this.calculatePathCost = function(hex, previous_hex) {
     let cost_so_far = this.getCell(previous_hex).path_cost;
     let step_cost = this.moveCostNeighbor(previous_hex,hex);
+    
+    if (step_cost === undefined) {
+      return undefined;
+    }
+
     let path_cost = cost_so_far + step_cost;
+    
     return path_cost;
   }
 
@@ -224,16 +231,6 @@ function PathFinder(map, tile_cost_function) {
     return false;
   };
 
-  //Returns if the hex can be walked on
-  this.hexIsPassable = function(hex) {
-    let elevation = this.getElevation(hex);
-    if (elevation > 1 && elevation < 14) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-  
   //Returns which cell is the best path step
   this.getBestCell = function(cell_a, cell_b) {
     var cost_a = cell_a.path_cost;
@@ -250,7 +247,7 @@ function PathFinder(map, tile_cost_function) {
 
   //Returns the absolute movement cost value of the tile 
   this.moveCostAbsolute = function(other_tile) {
-    return this.get_tile_cost(other_tile);
+    return this.getTileCost(other_tile);
   };
 
 
@@ -260,13 +257,13 @@ function PathFinder(map, tile_cost_function) {
     
     //returns a positive number for uphill movement
     // negative number for downhill movement
-    var cost_this  = this.get_tile_cost(this_tile);
-    var cost_other = this.get_tile_cost(other_tile);
+    var cost_this  = this.getTileCost(this_tile);
+    var cost_other = this.getTileCost(other_tile);
     var difference = cost_other - cost_this; 
 
     //Returns values based on difference in elevation only
     if (difference >= 4) {
-      return 100;
+      return undefined;
     }
     if (difference > 0)  {
       return 6;
@@ -278,7 +275,7 @@ function PathFinder(map, tile_cost_function) {
       return 3;
     }
     if (difference < -4) {
-      return 100;
+      return undefined;
     }
   };
 
