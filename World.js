@@ -10,23 +10,37 @@
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
+//Dependencies
+//  Hex.js
+//  Unit.js
+//  View.js
 
-function World(size,layout) {
+//pass a object implementing this interfce as generator
+function MapGeneratorInterface() {
+  this.makeMap = function(size){};
+  this.getMap = function(){};
+}
 
-  this.layout = layout;
+
+function World(size, generator) {
+  var tile_size = new Point(35,35);
+  var origin = new Point(0,0);
+  var pointy = orientation_pointy;
+  this.layout = new HexLayout(pointy, tile_size, origin);
+ 
   this.size = size;
 
   this.units = new HexMap();
   this.map = new HexMap();
 
+  this.hexmapGenerator = generator;
   this.init();
 }
 
 World.prototype.init = function() {
-  this.generateWorldMap(this.size);
+  this.generateWorld(this.size);
 
 }
-
 World.prototype.hexToPoint = function(hex) {
   return this.layout.hexToPoint(hex);
 }
@@ -56,7 +70,7 @@ World.prototype.unitAtPosition = function(hex) {
   }
 }
 
-World.prototype.generateWorldMap = function(size) {
+World.prototype.generateWorld = function(size) {
   //delete units
   for (let hex of this.units.getArray())  {
     var unit = this.units.getValue(hex);
@@ -66,9 +80,8 @@ World.prototype.generateWorldMap = function(size) {
   }
 
   //make a new map from scratch
-  var map_generator = new MapGenerator();
-  map_generator.makeMap('perlin',size);
-  this.map = map_generator.getMap();
+  this.hexmapGenerator.makeMap(size);
+  this.map = this.hexmapGenerator.getMap();
 
   this.addTreesToMap();
   this.addFishToMap();
