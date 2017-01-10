@@ -14,8 +14,9 @@ function UnitController(world) {
 
 }
 //-------1---------2---------3---------4---------5---------6--------
+UnitController.p = UnitController.prototype;
 
-UnitController.prototype.clickHex = function(hex) {
+UnitController.p.clickHex = function(hex) {
   //if there is already a unit on the hex selected
   if (this.aUnitIsSelected()) {
     this.clickWithUnitSelected(hex);
@@ -26,7 +27,7 @@ UnitController.prototype.clickHex = function(hex) {
   }
 }
 
-UnitController.prototype.selectHex = function(hex) {
+UnitController.p.selectHex = function(hex) {
   if (hex instanceof Hex) {
     if (this.world.map.containsHex(hex)) {
       this.hex_selected = hex;
@@ -46,21 +47,21 @@ UnitController.prototype.selectHex = function(hex) {
   }
 }
 
-UnitController.prototype.aHexIsSelected = function() {
+UnitController.p.aHexIsSelected = function() {
   return (this.hex_selected instanceof Hex);
 }
 
-UnitController.prototype.getHexSelected = function()  {
+UnitController.p.getHexSelected = function()  {
   if (this.aHexIsSelected())
     return this.hex_selected;
   else
     return false;
 }
 
-UnitController.prototype.getUnit = function(hex) {
+UnitController.p.getUnit = function(hex) {
   return this.world.unitAtPosition(hex);
 }
-UnitController.prototype.aUnitIsSelected = function() {
+UnitController.p.aUnitIsSelected = function() {
   if (!this.aHexIsSelected()) 
     return false;
 
@@ -71,17 +72,17 @@ UnitController.prototype.aUnitIsSelected = function() {
     return false;
   }
 }
-UnitController.prototype.getUnitSelected = function() {
+UnitController.p.getUnitSelected = function() {
   if (this.aUnitIsSelected()) {
     return this.getUnit(this.getHexSelected());
   }
 }
-UnitController.prototype.clickWithNoSelection = function(hex) {
+UnitController.p.clickWithNoSelection = function(hex) {
   this.selectHex(hex);
 }
 
 
-UnitController.prototype.clickWithUnitSelected = function(hex) {
+UnitController.p.clickWithUnitSelected = function(hex) {
   var unit_selected = this.getUnitSelected();
   var unit_range = unit_selected.getComponent('range');
   //if you are clicking inside the unit's range
@@ -94,7 +95,7 @@ UnitController.prototype.clickWithUnitSelected = function(hex) {
   }
 }
 
-UnitController.prototype.clickInsideUnitRange = function(hex) {
+UnitController.p.clickInsideUnitRange = function(hex) {
   //if you are reclicking the unit
   if ( Hex.equals(this.getHexSelected(), hex)) {
     this.reClickUnit();
@@ -105,16 +106,16 @@ UnitController.prototype.clickInsideUnitRange = function(hex) {
   }
 }
 
-UnitController.prototype.reClickUnit = function() {
+UnitController.p.reClickUnit = function() {
   this.commandUnitToSelf(this.getHexSelected());
 }
 
-UnitController.prototype.clickOutsideUnitRange = function(hex) {
+UnitController.p.clickOutsideUnitRange = function(hex) {
   this.selectHex('none');
   this.clickHex(hex);
 }
 
-UnitController.prototype.commandUnit = function(hex) {
+UnitController.p.commandUnit = function(hex) {
   var unit_there = this.getUnit(hex);
 
   //Do the unit's action if there is something there
@@ -128,7 +129,7 @@ UnitController.prototype.commandUnit = function(hex) {
 }
 
 //Move the unit from one hex to another hex
-UnitController.prototype.commandUnitToGround = function(current_hex,new_hex) {
+UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
     //get the unit which is moving
     var unit = this.getUnit(current_hex);
 
@@ -156,7 +157,7 @@ UnitController.prototype.commandUnitToGround = function(current_hex,new_hex) {
 }
 
 //Does the current_hex unit's action unto the new_hex unit
-UnitController.prototype.commandUnitToOtherUnit = function(current_hex,target_hex) {
+UnitController.p.commandUnitToOtherUnit = function(current_hex,target_hex) {
 
   //get both units
   var active_unit = this.getUnit(current_hex);
@@ -183,7 +184,7 @@ UnitController.prototype.commandUnitToOtherUnit = function(current_hex,target_he
   }
 }
 
-UnitController.prototype.commandUnitToSelf = function(unit_hex) {
+UnitController.p.commandUnitToSelf = function(unit_hex) {
   //get the unit
   var active_unit = this.getUnit(unit_hex);
 
@@ -203,7 +204,7 @@ UnitController.prototype.commandUnitToSelf = function(unit_hex) {
 
 }
 
-UnitController.prototype.moveUnit = function(current_hex,next_hex) {
+UnitController.p.moveUnit = function(current_hex,next_hex) {
   //measure the distance moved
   var tile_cost_function = function(tile){
     return tile.getComponent('elevation');
@@ -214,7 +215,7 @@ UnitController.prototype.moveUnit = function(current_hex,next_hex) {
   var the_unit = this.getUnit(current_hex);
   var max_movement = the_unit.getComponent('movement_left');
   //find the path to destination
-  var cost = pathfinder.moveCostRelative(current_hex, next_hex, max_movement);
+  var cost = pathfinder.getPathCost(current_hex, next_hex, max_movement);
   //substract it from the movement remaining
   the_unit.increaseComponent('movement_left', -cost);
   

@@ -122,7 +122,7 @@ Unit.prototype.move = function(map,current_hex,next_hex) {
   //calculate movements remaining
   var max_movement = this.getComponent('movement_left');
   //find the path to destination
-  var movement_cost = pathfinder.moveCostRelative(current_hex, next_hex, max_movement);
+  var movement_cost = pathfinder.getPathCost(current_hex, next_hex, max_movement);
   //substract it from the movement remaining
   this.components.movement_left -= movement_cost;
 }
