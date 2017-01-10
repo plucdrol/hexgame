@@ -102,19 +102,4 @@ function newWorld() {
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
-
-//add click, mouse, and touch functionality to canvas//
-canvas.addEventListener('click', function() {canv_input.clickCanvas(event);}, false);
-canvas.addEventListener('mousemove', function() {canv_input.mouseMove(event);}, false);
-canvas.addEventListener('touchmove', function() {canv_input.touchMove(event);}, false);
-canvas.addEventListener('touchend', function() {canv_input.touchEnd(event);}, false);
-canvas.addEventListener('touchstart', function() {canv_input.touchStart(event);}, false);
-if (canvas.addEventListener) {
-  // IE9, Chrome, Safari, Opera
-  canvas.addEventListener("mousewheel", function(){canv_input.mouseWheel(event);}, false);
-  // Firefox
-  canvas.addEventListener("DOMMouseScroll", function(){canv_input.mouseWheel(event);}, false);
-}
-
-//add window resize event
-window.addEventListener('resize',function() {canv_input.windowResize();}, false);
+canv_input.registerEvents();

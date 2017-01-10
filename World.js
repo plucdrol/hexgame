@@ -13,13 +13,6 @@
 //Dependencies
 //  Hex.js
 
-//pass a object implementing this interfce as generator
-function MapGeneratorInterface() {
-  this.makeMap = function(size){};
-  this.getMap = function(){};
-}
-
-
 function World(map) {
   var tile_size = new Point(35,35);
   var origin = new Point(0,0);
@@ -38,8 +31,9 @@ World.prototype.hexToPoint = function(hex) {
 World.prototype.pointToHex = function(point) {
   return this.layout.pointToHex(point);
 }
-
-
+World.prototype.setTile = function(hex, value) {
+  this.map.set(hex, value);
+}
 
 
 
@@ -71,6 +65,7 @@ World.prototype.pointToHex = function(point) {
 //  Unitcontroller.js
 //  View.js
 //  World.js
+//  Events.js
 
 function WorldInterface(world,view,unit_controller) {
   

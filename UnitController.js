@@ -21,6 +21,47 @@ function UnitController(map) {
 //-------1---------2---------3---------4---------5---------6--------
 UnitController.p = UnitController.prototype;
 
+UnitController.p.newMap = function(map) {
+  
+  this.map = map;
+  
+  //delete units
+  for (let hex of this.units.getArray())  {
+    var unit = this.units.getValue(hex);
+    if (unit.components.hasOwnProperty('food_value')) {
+      this.removeUnit(hex);
+    }
+  }
+
+}
+UnitController.p.fillMap = function() {
+  this.addTreesToMap();
+  this.addFishToMap();
+}
+UnitController.prototype.addTreesToMap = function() {
+  //add trees (this is the wrong place for world-generaion code)
+  for (let hex of this.map.getArray()) {
+    var hex_value = this.map.getValue(hex).components.elevation;
+    if (hex_value >= 4 && hex_value <= 9) {
+      if (Math.random() < 0.2) {
+        this.createUnit(hex,'tree');
+      }
+    }
+  }
+}
+
+UnitController.prototype.addFishToMap = function() {
+  //add fish (this is the wrong place for world-generaion code)
+  for (let hex of this.map.getArray()) {
+    var hex_value = this.map.getValue(hex).components.elevation;
+    if (hex_value === 1) {
+      if (Math.random() < 0.1) {
+        this.createUnit(hex,'fish');
+      }
+    }
+  }
+}
+
 //create a new Unit at position Hex
 UnitController.p.createUnit = function(hex,unit_type) {
   var newUnit = new Unit(unit_type);
