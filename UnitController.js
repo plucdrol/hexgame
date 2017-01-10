@@ -10,16 +10,36 @@
 
 //Dependencies
 //  Hex.js
-//  World.js
-//  
+//  PathFinder.js 
 
-function UnitController(world) {
-  this.world = world;
+function UnitController(map) {
+  this.map = map;
   this.hex_selected = undefined;
+  this.units = new HexMap();
 
 }
 //-------1---------2---------3---------4---------5---------6--------
 UnitController.p = UnitController.prototype;
+
+//create a new Unit at position Hex
+UnitController.p.createUnit = function(hex,unit_type) {
+  var newUnit = new Unit(unit_type);
+  this.units.set(hex,newUnit);
+}
+
+//delete the new Unit at position Hex
+UnitController.p.removeUnit = function(hex) {
+  this.units.remove(hex);
+}
+
+//returns the Unit at position Hex. only a single unit can be on each hex
+UnitController.p.unitAtPosition = function(hex) {
+  if (this.units.containsHex(hex)) {
+    return this.units.getValue(hex);
+  } else {
+    return false;
+  }
+}
 
 UnitController.p.clickHex = function(hex) {
   //if there is already a unit on the hex selected
@@ -34,7 +54,7 @@ UnitController.p.clickHex = function(hex) {
 
 UnitController.p.selectHex = function(hex) {
   if (hex instanceof Hex) {
-    if (this.world.map.containsHex(hex)) {
+    if (this.map.containsHex(hex)) {
       this.hex_selected = hex;
       //look if there is a unit
       var potential_unit = this.getUnit(hex);
@@ -43,7 +63,7 @@ UnitController.p.selectHex = function(hex) {
         //if the unit exists, find its range
         if (potential_unit.hasComponent('range')) {
 	  console.log(potential_unit);
-          potential_unit.findRange(this.world.map,hex);
+          potential_unit.findRange(this.map,hex);
         }
       }
     } 
@@ -64,7 +84,7 @@ UnitController.p.getHexSelected = function()  {
 }
 
 UnitController.p.getUnit = function(hex) {
-  return this.world.unitAtPosition(hex);
+  return this.unitAtPosition(hex);
 }
 UnitController.p.aUnitIsSelected = function() {
   if (!this.aHexIsSelected()) 
@@ -141,13 +161,13 @@ UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
     //Create player if unit is a hut
     if (unit.hasComponent('ground_action_create_unit')) {
       var new_unit_type = unit.components.ground_action_create_unit.type;
-      this.world.createUnit(new_hex, new_unit_type);
+      this.createUnit(new_hex, new_unit_type);
       
       //reduce the population of the unit by one
       if (unit.components.population > 1) {  
         unit.components.population -= 1;
       } else {
-        this.world.units.remove(current_hex);
+        this.units.remove(current_hex);
         this.selectHex(new_hex);
       }
 
@@ -171,11 +191,11 @@ UnitController.p.commandUnitToOtherUnit = function(current_hex,target_hex) {
   //Eat the tree if it is a tree
   if (active_unit.hasComponent('eats_food')) { 
     if (target_unit.hasComponent('food_value')) {
-      this.world.removeUnit(target_hex);
+      this.removeUnit(target_hex);
       this.commandUnitToGround(current_hex,target_hex);
       var full_movement = active_unit.getComponent('movement');
       active_unit.setComponent('movement_left', full_movement);
-      active_unit.findRange(this.world.map,target_hex);
+      active_unit.findRange(this.map,target_hex);
       this.selectHex(target_hex);
     }
   }
@@ -183,7 +203,7 @@ UnitController.p.commandUnitToOtherUnit = function(current_hex,target_hex) {
   //increase population if a hut eats a tree
   if (active_unit.hasComponent('collects_ressources')) {
     if (target_unit.hasComponent('food_value')) {
-      this.world.removeUnit(target_hex);
+      this.removeUnit(target_hex);
       active_unit.increaseComponent('population', 1);
     }
   }
@@ -195,13 +215,13 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
 
   //Become a hut if unit is a player
   if (active_unit.hasComponent('self_action_become_unit')) {
-    this.world.removeUnit(unit_hex);
+    this.removeUnit(unit_hex);
     var type = active_unit.getComponent('self_action_become_unit');
-    this.world.createUnit(unit_hex,type);
+    this.createUnit(unit_hex,type);
     
     new_unit = this.getUnit(unit_hex);
     if (new_unit.hasComponent('range')) {
-      new_unit.findRange(this.world.map,unit_hex);
+      new_unit.findRange(this.map,unit_hex);
     }  
   } else {
     this.selectHex('none');
@@ -214,7 +234,7 @@ UnitController.p.moveUnit = function(current_hex,next_hex) {
   var tile_cost_function = function(tile){
     return tile.getComponent('elevation');
   }
-  var pathfinder = new PathFinder(this.world.map,
+  var pathfinder = new PathFinder(this.map,
       tile_cost_function);
   //calculate movements remaining
   var the_unit = this.getUnit(current_hex);
@@ -224,7 +244,7 @@ UnitController.p.moveUnit = function(current_hex,next_hex) {
   //substract it from the movement remaining
   the_unit.increaseComponent('movement_left', -cost);
   
-  //update the world maap
-  this.world.units.set(next_hex,the_unit);
-  this.world.units.remove(current_hex);
+  //update the map
+  this.units.set(next_hex,the_unit);
+  this.units.remove(current_hex);
 }

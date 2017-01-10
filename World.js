@@ -12,8 +12,6 @@
 
 //Dependencies
 //  Hex.js
-//  Unit.js
-//  View.js
 
 //pass a object implementing this interfce as generator
 function MapGeneratorInterface() {
@@ -22,24 +20,17 @@ function MapGeneratorInterface() {
 }
 
 
-function World(size, generator) {
+function World(map) {
   var tile_size = new Point(35,35);
   var origin = new Point(0,0);
   var pointy = orientation_pointy;
   this.layout = new HexLayout(pointy, tile_size, origin);
  
-  this.size = size;
-
-  this.units = new HexMap();
-  this.map = new HexMap();
-
-  this.hexmapGenerator = generator;
-  this.init();
+  this.map = map;
 }
 
-World.prototype.init = function() {
-  this.generateWorld(this.size);
-
+World.prototype.setMap = function(map) {
+  this.map = map;
 }
 World.prototype.hexToPoint = function(hex) {
   return this.layout.hexToPoint(hex);
@@ -48,69 +39,7 @@ World.prototype.pointToHex = function(point) {
   return this.layout.pointToHex(point);
 }
 
-//create a new Unit at position Hex
-World.prototype.createUnit = function(hex,unit_type) {
-  
-  //create new unit and add it to the map
-  var newUnit = new Unit(unit_type);
-  this.units.set(hex,newUnit);
-}
 
-//delete the new Unit at position Hex
-World.prototype.removeUnit = function(hex) {
-  this.units.remove(hex);
-}
-
-//returns the Unit at position Hex. only a single unit can be on each hex
-World.prototype.unitAtPosition = function(hex) {
-  if (this.units.containsHex(hex)) {
-    return this.units.getValue(hex);
-  } else {
-    return false;
-  }
-}
-
-World.prototype.generateWorld = function(size) {
-  //delete units
-  for (let hex of this.units.getArray())  {
-    var unit = this.units.getValue(hex);
-    if (unit.components.hasOwnProperty('food_value')) {
-      this.removeUnit(hex);
-    }
-  }
-
-  //make a new map from scratch
-  this.hexmapGenerator.makeMap(size);
-  this.map = this.hexmapGenerator.getMap();
-
-  this.addTreesToMap();
-  this.addFishToMap();
-
-}
-
-World.prototype.addTreesToMap = function() {
-  //add trees (this is the wrong place for world-generaion code)
-  for (let hex of this.map.getArray()) {
-    var hex_value = this.map.getValue(hex).components.elevation;
-    if (hex_value >= 4 && hex_value <= 9) {
-      if (Math.random() < 0.2) {
-        this.createUnit(hex,'tree');
-      }
-    }
-  }
-}
-
-World.prototype.addFishToMap = function() {
-  //add fish (this is the wrong place for world-generaion code)
-  for (let hex of this.map.getArray()) {
-    var hex_value = this.map.getValue(hex).components.elevation;
-    if (hex_value === 1) {
-      if (Math.random() < 0.1) {
-        this.createUnit(hex,'fish');
-      }
-    }
-  }
-}
 
 
 
@@ -137,8 +66,13 @@ World.prototype.addFishToMap = function() {
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
+//Dependencies
+//  Hex.js
+//  Unitcontroller.js
+//  View.js
+//  World.js
 
-function WorldInterface(world,view) {
+function WorldInterface(world,view,unit_controller) {
   
   this.world = world;
   this.hex_hovered = new Hex(0,0);
@@ -146,8 +80,9 @@ function WorldInterface(world,view) {
   this.edge_hovered = 'undefined';
   this.view = view;
 
-  this.unit_controller = new UnitController(this.world);
 
+  this.unit_controller = unit_controller;
+  
   this.init();
   
 }
@@ -227,7 +162,8 @@ WorldInterface.prototype.clickScreenEvent = function(screen_position) {
 
   console.log(this.world.map.getValue(hex_clicked));
 
-  this.unit_controller.clickHex(hex_clicked);
+  //Only reference to unit controller
+  unit_controller.clickHex(hex_clicked);
   
   drawScreen();
 
