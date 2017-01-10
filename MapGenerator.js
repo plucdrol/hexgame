@@ -16,7 +16,7 @@
 /////////////////////////////////////////////////////////*/
 
 
-MapGenerator = function() {
+MapGenerator = function(map_type) {
   this.map = new HexMap();
   this.simplex = new SimplexNoise();
   this.radius = 0;
@@ -75,11 +75,12 @@ MapGenerator.prototype.makeTileGenerator = function(type) {
 
 
 
-MapGenerator.prototype.makeMap = function(type,radius) {
+MapGenerator.prototype.makeMap = function(radius) {
   
   this.map = new HexMap();
   this.radius = radius;
 
+  var type = this.map_type;
   var hex = new Hex(0,0);
   //contains the position and content of each tile
   var value = {}; 
