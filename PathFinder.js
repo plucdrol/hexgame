@@ -1,5 +1,7 @@
 //-------1---------2---------3---------4---------5---------6---------7--------8
 //PathFinder cell used for mapping paths
+//Tracks the previous cell and total path cost
+//on 5e path.from the origin to this cell
 
 function PathFinderCell(path_cost,came_from) {
   this.path_cost = 0;
@@ -14,7 +16,7 @@ function PathFinderCell(path_cost,came_from) {
 }
 
 //PathFinder takes maps and generates ranges and paths
-function PathFinder(map) {
+function PathFinder(map, tile_cost_function) {
   this.map = map;
   
   //Cells visited during pathfinding
@@ -23,16 +25,11 @@ function PathFinder(map) {
   //Cells at the edge of the pathfinding
   this.frontier = new Queue();
 
-  //Replaces the map that the pathfinder uses
-  this.replaceMap = function(map) {
-    this.map = map;
-  };
-
   //Returns the elevation of the terrain at position hex
-  this.getElevation = function(hex) {
+  this.getTileCost = function(hex) {
     var tile = this.map.getValue(hex);
-    var elevation = tile.getComponent('elevation');
-    return elevation;
+    var tile_cost = this.tile_cost_function(tile);
+    return tile_cost;
   }
 
   //Deletes previous path to start a new path search
@@ -253,7 +250,7 @@ function PathFinder(map) {
 
   //Returns the absolute movement cost value of the tile 
   this.moveCostAbsolute = function(other_tile) {
-    return this.getElevation(other_tile);
+    return this.get_tile_cost(other_tile);
   };
 
 
@@ -263,8 +260,8 @@ function PathFinder(map) {
     
     //returns a positive number for uphill movement
     // negative number for downhill movement
-    var cost_this  = this.getElevation(this_tile);
-    var cost_other = this.getElevation(other_tile);
+    var cost_this  = this.get_tile_cost(this_tile);
+    var cost_other = this.get_tile_cost(other_tile);
     var difference = cost_other - cost_this; 
 
     //Returns values based on difference in elevation only

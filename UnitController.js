@@ -205,7 +205,11 @@ UnitController.prototype.commandUnitToSelf = function(unit_hex) {
 
 UnitController.prototype.moveUnit = function(current_hex,next_hex) {
   //measure the distance moved
-  var pathfinder = new PathFinder(this.world.map);
+  var tile_cost_function = function(tile){
+    return tile.getComponent('elevation');
+  }
+  var pathfinder = new PathFinder(this.world.map,
+      tile_cost_function);
   //calculate movements remaining
   var the_unit = this.getUnit(current_hex);
   var max_movement = the_unit.getComponent('movement_left');

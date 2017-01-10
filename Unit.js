@@ -8,9 +8,12 @@ function Unit(unit_type) {
   this.setType(unit_type);
 };
 
+Unit.prototype.tileCostFunction = function(tile){
+    return tile.getComponent('elevation');
+  }
 
 Unit.prototype.findRange = function(map,position) {
-  var pathfinder = new PathFinder(map);
+  var pathfinder = new PathFinder(map, this.tileCostFunction );
   var max_movement = this.getComponent('movement_left');
   var range = pathfinder.getRange(position, max_movement);
   this.setComponent('range', range);
@@ -101,7 +104,7 @@ Unit.prototype.setMovement = function(movement) {
 
 Unit.prototype.move = function(map,current_hex,next_hex) {
   //measure the distance moved
-  var pathfinder = new PathFinder(map);
+  var pathfinder = new PathFinder(map, this.tileCostFunction);
   //calculate movements remaining
   var max_movement = this.getComponent('movement_left');
   //find the path to destination
