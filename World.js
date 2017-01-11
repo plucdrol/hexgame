@@ -58,7 +58,7 @@ World.prototype.unitAtPosition = function(hex) {
 
 World.prototype.generateWorldMap = function(size) {
   //delete units
-  for (let hex of this.units.getArray())  {
+  for (let hex of this.units.getHexArray())  {
     var unit = this.units.getValue(hex);
     if (unit.components.hasOwnProperty('food_value')) {
       this.removeUnit(hex);
@@ -77,7 +77,7 @@ World.prototype.generateWorldMap = function(size) {
 
 World.prototype.addTreesToMap = function() {
   //add trees (this is the wrong place for world-generaion code)
-  for (let hex of this.map.getArray()) {
+  for (let hex of this.map.getHexArray()) {
     var hex_value = this.map.getValue(hex).components.elevation;
     if (hex_value >= 4 && hex_value <= 9) {
       if (Math.random() < 0.2) {
@@ -89,7 +89,7 @@ World.prototype.addTreesToMap = function() {
 
 World.prototype.addFishToMap = function() {
   //add fish (this is the wrong place for world-generaion code)
-  for (let hex of this.map.getArray()) {
+  for (let hex of this.map.getHexArray()) {
     var hex_value = this.map.getValue(hex).components.elevation;
     if (hex_value === 1) {
       if (Math.random() < 0.1) {

@@ -425,7 +425,7 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
 WorldRenderer.p.drawRange = function(range) {
     
-    var outline = Hex.outline(range.getArray());
+    var outline = Hex.outline(range.getHexArray());
 
     var range_style = new RenderStyle();
     range_style.fill_color = "rgba(255,255,150, 0.2)";
