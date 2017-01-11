@@ -471,7 +471,7 @@ Edge.sort = function(unsorted_edges) {
 //value can be anything, even an array. use as needed
 function HexMap() {
 
-  this.values = [];
+  this.values = {};
 }
 
 HexMap.prototype.set = function(hex,value) {
@@ -583,7 +583,48 @@ HexMap.prototype.hexHash = function(hex) {
 }
 
 
+//Following functions deal with submaps
 
+HexMap.prototype.addSubmap = function(submap) {
+
+  for (let key in submap.values) {
+    let hex = this.getHex(key);
+    let value = submap.getValue(hex);
+    this.set(hex, value);
+  }
+}
+HexMap.prototype.getRectangleSubMap = function(qmin,qmax,rmin,rmax) {
+  var submap = new HexMap();
+  for (let r = rmin; r<rmax; r++) {
+    let currentr = r;
+    if (!isEven(r)) currentr += 1;
+
+    let qstart = this.getLineShift(currentr,rmax,qmin);
+    let qend = this.getLineShift(currentr,rmax,qmax);
+
+    let linemap = this.getLineSubMap(r, qstart, qend);
+    submap.addSubmap(linemap);
+  }
+  return submap;
+}
+
+HexMap.prototype.getLineShift = function(r, rmax, q) {
+  let step_shift = (rmax - r)/2;
+  let q_shifted = Math.floor( q + step_shift);
+  return q_shifted;
+}
+
+HexMap.prototype.getLineSubMap = function(r, qmin, qmax) {
+  var submap = new HexMap();
+  for (let q=qmin; q<qmax; q++) {
+    let hex = new Hex(q,r);
+    if (this.containsHex(hex)) {
+      let value = this.getValue(hex);
+      submap.set(hex, value);
+    }
+  }
+  return submap;
+}
 
 
 function isEven(n) {

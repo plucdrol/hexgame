@@ -237,47 +237,14 @@ WorldRenderer.p.drawOutline = function(edge_arrays,style) {
   }
 };
 
-WorldRenderer.p.drawRectangleSection = function(rectmap) {
-    
-  var tile_renderer = new TileRenderer2D(this);
-  
-  //for columns
-  for (let r = rectmap.rmin; r <= rectmap.rmax; r++) {
+WorldRenderer.p.drawHexMap = function(hexmap) {
+  //get the array
+  var hexarray = hexmap.getHexArray();
 
-    //shift even lines
-    let currentr = r;
-    if (r%2!=0) currentr += 1;
-    
-    //measure line start and end
-    qstart = this.getLineStart(currentr,rectmap)
-    qend = this.getLineEnd(currentr,rectmap)
-
-    //draw line
-    this.drawLineSection(r,qstart, qend);
+  //draw the tiles of the array
+  for (hex of hexarray) {
+    this.drawTile2D(hex);
   }
-}
-
-WorldRenderer.p.getLineStart = function(currentr, rectmap) {
-
-  let step_shift = (rectmap.rmax - currentr)/2;
-  let qstart = Math.floor( rectmap.qmin + step_shift ); 
-  return qstart;
-}
-WorldRenderer.p.getLineEnd = function(currentr, rectmap) {
-
-  let step_shift = (rectmap.rmax - currentr)/2;
-  let qend = Math.floor( rectmap.qmax + step_shift );
-  return qend;
-}
-WorldRenderer.p.drawLineSection = function(r,qstart,qend) {
-
-    for (let q = qstart; q < qend; q++) {
-        let hex = new Hex(q,r);
-        if (this.world.map.containsHex(hex)) {
-
-            this.drawTile2D(hex);
-        }
-    }
 }
 
 
@@ -317,7 +284,7 @@ WorldRenderer.p.getHexRectangleBoundaries = function() {
             toprighthex.getR(),bottomlefthex.getR());
     var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),
             toprighthex.getR(),bottomlefthex.getR());
-
+  
     var hex_rect = {
       qmin:qmin,
       qmax:qmax,
@@ -346,11 +313,18 @@ WorldRenderer.p.drawRedRenderingRectangle = function(rectmap) {
 
 WorldRenderer.p.drawWorld = function() {
 
-    if (this.ready_to_render) {
-        this.canvas_draw.clear();
-        var rectMap = this.getHexRectangleBoundaries();
-        this.drawRectangleSection(rectMap);
-    }
+  if (this.ready_to_render) {
+    this.canvas_draw.clear();
+    var rectMap = this.getHexRectangleBoundaries();
+
+    //get the rectangular map
+    let hexmap = this.world.map.getRectangleSubMap(rectMap.qmin,
+						  rectMap.qmax,
+                                                  rectMap.rmin, 
+                                                  rectMap.rmax);
+    //this.drawRectangleSection(rectMap);
+    this.drawHexMap(hexmap);
+  }
 }
 
 
