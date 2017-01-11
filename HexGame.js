@@ -10,8 +10,9 @@
 //define the screen which can be drawn on
 var canvas = document.getElementById('mycanvas');
 
-//an interface for drawing on the canvas
+//Interface for rendering on the Canvas
 var canv_draw = new CanvasDraw(canvas);
+//Interface for receiving input from the page
 var canv_input = new CanvasInput(canvas);
 
 //Create a map generator
@@ -31,8 +32,10 @@ var unit_controller = new UnitController(map);
 var view_ratio = canvas.width/canvas.height;
 var initial_zoom = 1/4;
 var view_out = new Rect(new Point(0,0), new Point(canvas.width,canvas.height));
-var view_in = new Rect(  new Point(-canvas.width*initial_zoom,  -initial_zoom*canvas.height),
-                        new Point(canvas.width*initial_zoom*view_ratio,  initial_zoom*canvas.height*view_ratio));
+var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
+                                   -initial_zoom*canvas.height),
+                        new Point(canvas.width*initial_zoom*view_ratio,
+			          initial_zoom*canvas.height*view_ratio));
 var view = new View(view_in,view_out);
 
 
@@ -57,7 +60,7 @@ unit_controller.createUnit(new Hex(1,0),'tree');
 
 
 
-////////////////////////////////////////// DRAWING TO THE CANVAS ///////////////////////////////////
+////////////////////////// DRAWING TO THE CANVAS //////////////////
 
 function drawScreen() {
 

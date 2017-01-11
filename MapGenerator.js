@@ -114,7 +114,7 @@ MapGenerator.prototype.roundDown = function() {
   
   var value;
 
-  for (let thishex of this.map.getArray()) {
+  for (let thishex of this.map.getHexArray()) {
 
     value = Math.floor(this.getElevation(thishex));
 
@@ -132,7 +132,7 @@ MapGenerator.prototype.addWaterRim = function(rim_size) {
   var size = this.radius;
 
   //run this code on each hex
-  for (let thishex of this.map.getArray()) {
+  for (let thishex of this.map.getHexArray()) {
   
     //analyse map
     var distance_to_center = Hex.distance(origin, thishex);
@@ -192,7 +192,7 @@ MapGenerator.prototype.addShallowWater = function() {
 
 
   //for each hex
-  for (let thishex of this.map.getArray()) {
+  for (let thishex of this.map.getHexArray()) {
     
       //if the hex is deep water
       if (this.getElevation(thishex) == 0) {

@@ -174,15 +174,15 @@ Hex.line = function(hex_a,hex_b) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-                
-      //           VERTEX
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+  
+     // VERTEX
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////
+///////////////////////////////////////////////
+///////////////////////////////////////////////
 
 function Vertex(hex,direction_number) {
   this.hex = hex;
@@ -236,15 +236,15 @@ function Vertex(hex,direction_number) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
                 
       //            EDGES
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 
 function Edge(hex,direction_number) {
   this.hex = hex;
@@ -252,11 +252,13 @@ function Edge(hex,direction_number) {
 }
   Edge.prototype.equals = function(other_edge) {
     //same hex, same direction
-    if (Hex.equals(this.getInnerHex(),other_edge.getInnerHex()) && this.direction_number == other_edge.direction_number) {
+    if (Hex.equals(this.getInnerHex(),other_edge.getInnerHex()) 
+        && this.direction_number == other_edge.direction_number) {
       return true;
     }
     //opposite hex, opposite direction
-    if (Hex.equals(this.getInnerHex(),other_edge.getOuterHex()) && this.direction_number == (other_edge.direction_number+3)%6) {
+    if (Hex.equals(this.getInnerHex(),other_edge.getOuterHex()) 
+      && this.direction_number == (other_edge.direction_number+3)%6) {
       return true;
     }
 
@@ -469,118 +471,160 @@ Edge.sort = function(unsorted_edges) {
 //value can be anything, even an array. use as needed
 function HexMap() {
 
-  this.values = [];
+  this.values = {};
 }
 
-  HexMap.prototype.set = function(hex,value) {
-      this.values[this.hexHash(hex)] = value;
+HexMap.prototype.set = function(hex,value) {
+  let key = this.hexHash(hex);
+  this.values[key] = value;
+}
+HexMap.prototype.remove = function(hex) {
+  if (this.containsHex(hex)) {
+    this.set(hex,undefined);
   }
-  HexMap.prototype.remove = function(hex) {
+}
+HexMap.prototype.getValue = function(hex) {
+  var key = this.hexHash(hex);
+  return this.values[key];
+}
+HexMap.prototype.getHex = function(key) {
+
+  if (key === 0) {
+    return new Hex(0,0);
+  }
+  //else, reverse Szudzik's function
+  var z = key;
+  var f = Math.floor(Math.sqrt(key));
+  var f2 = Math.pow(f,2);
+  var Q = ((z-f2)<f)?(z-f2):(f);
+  var R = ((z-f2)<f)?(f):(z-f2-f);
+
+  var q = isEven(Q)?(Q/2):((Q+1)/-2);
+  var r = isEven(R)?(R/2):((R+1)/-2);
+
+  return new Hex(q,r);
+};
+HexMap.prototype.size = function() {
+  return this.values.length;
+}
+
+//returns a simple array of each hex(q,r) contained in this map
+HexMap.prototype.getHexArray = function() {
+  var hexarray = [];
+  //look at each item in this map
+  //for (var i=0;i<this.values.length; i++) {
+  for (key in this.values) {
+    let hex = this.getHex(key);
+    //add the hex to the result if it has a value
     if (this.containsHex(hex)) {
-      this.set(hex,undefined);
+      hexarray.push(hex);
     }
   }
-  HexMap.prototype.getValue = function(hex) {
-    var key = this.hexHash(hex);
-    return this.values[key];
-  }
-  HexMap.prototype.getHex = function(key) {
-
-    if (key === 0) {
-      return new Hex(0,0);
-    }
-    //else, reverse Szudzik's function
-    var z = key;
-    var f = Math.floor(Math.sqrt(key));
-    var f2 = Math.pow(f,2);
-    var Q = ((z-f2)<f)?(z-f2):(f);
-    var R = ((z-f2)<f)?(f):(z-f2-f);
-
-    var q = isEven(Q)?(Q/2):((Q+1)/-2);
-    var r = isEven(R)?(R/2):((R+1)/-2);
-
-    return new Hex(q,r);
-  };
-  HexMap.prototype.size = function() {
-    return this.values.length;
-  }
-
-  //HexMap getArray returns a simple array of each hex(q,r) contained in this map
-  HexMap.prototype.getArray = function() {
-    var hexarray = [];
-    //look at each item in this map
-    for (var i=0;i<this.values.length; i++) {
-      var thehex = this.getHex(i);
-      //add the hex to the result if it has a value
-      if (this.getValue(thehex) !== undefined ) {
-        hexarray.push(thehex);
-      }
-    }
-    return hexarray;
-  }
-  //HexMap getValues returns a simple array of each defined value
-  HexMap.prototype.getValues = function() {
-    var value_array = [];
-    //look at each item in this map
-    for (var i=0;i<this.values.length; i++) {
-      var thehex = this.getHex(i);
-      //add the hex to the result if it is defined
-      if (this.getValue(thehex) !== undefined ) {
-        value_array.push(this.getValue(thehex));
-      }
-    }
-    return value_array;
-  }
-
-  //HexMap contains: finds if the hex is part of the map by checking if its value is defined
-  HexMap.prototype.containsHex = function(hex) {
-    if (this.getValue(hex) !== undefined) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  //HexMap containsKey: finds if the key is defined by checking for the key directly 
-  HexMap.prototype.containsKey = function(key) {
-    //if (this.getValueByKey(key) !== undefined) {
-    if (key in this.values) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  //HexMap flip: if the value of hex is in the 'values' array, changes it to the next value in the array
-  HexMap.prototype.flip = function(hex,values) {
+  return hexarray;
+}
+//HexMap getValues returns a simple array of each defined value
+HexMap.prototype.getValues = function() {
+  var value_array = [];
+  //look at each item in this map
+  //for (var i=0;i<this.values.length; i++) {
+  for (key in this.values) {
+    let hex = this.getHex(key);
+    //add the hex to the result if it is defined
     if (this.containsHex(hex)) {
-      for (var i=0; i < values.length; i++) {
-        if (this.getValue(hex) == values[i]) {
-          this.set(hex,values[(i+1)%values.length]);
-          return true;
-        }
-      }
+      value_array.push(this.getValue(hex));
     }
+  }
+  return value_array;
+}
+
+//HexMap contains: finds if the hex is part of the map by checking if its value is defined
+HexMap.prototype.containsHex = function(hex) {
+  if (this.getValue(hex) !== undefined) {
+    return true;
+  } else {
     return false;
   }
+}
 
-  //Hexmap hexHash: turns the coordinates of a hex into a unique number, starting from (0,0) => 0
-  //uses Szudzik's function turns 2 numbers into a unique number, increasing away from the origin
-  HexMap.prototype.hexHash = function(hex) {
-    var q = hex.getQ();
-    var r = hex.getR();
-
-    var A = (q >= 0 ? 2 * q : -2 * q - 1);
-      var B = (r >= 0 ? 2 * r : -2 * r - 1);
-      var C = ((A >= B ? A * A + A + B : A + B * B) / 2);
-      return Math.floor(2*C);
-      return Math.floor(q < 0 && r < 0 || q >= 0 && r >= 0 ? C : -C - 1);
+//HexMap containsKey: finds if the key is defined by checking for the key directly 
+HexMap.prototype.containsKey = function(key) {
+  //if (this.getValueByKey(key) !== undefined) {
+  if (key in this.values) {
+    return true;
+  } else {
+    return false;
   }
-  
+}
+
+//HexMap flip: if the value of hex is in the 'values' array, changes it to the next value in the array
+HexMap.prototype.flip = function(hex,values) {
+  if (this.containsHex(hex)) {
+    for (var i=0; i < values.length; i++) {
+      if (this.getValue(hex) == values[i]) {
+        this.set(hex,values[(i+1)%values.length]);
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+//Hexmap hexHash: turns the coordinates of a hex into a unique number, starting from (0,0) => 0
+//uses Szudzik's function turns 2 numbers into a unique number, increasing away from the origin
+HexMap.prototype.hexHash = function(hex) {
+  var q = hex.getQ();
+  var r = hex.getR();
+
+  var A = (q >= 0 ? 2 * q : -2 * q - 1);
+    var B = (r >= 0 ? 2 * r : -2 * r - 1);
+    var C = ((A >= B ? A * A + A + B : A + B * B) / 2);
+    return Math.floor(2*C);
+    return Math.floor(q < 0 && r < 0 || q >= 0 && r >= 0 ? C : -C - 1);
+}
 
 
+//Following functions deal with submaps
 
+HexMap.prototype.addSubmap = function(submap) {
 
+  for (let key in submap.values) {
+    let hex = this.getHex(key);
+    let value = submap.getValue(hex);
+    this.set(hex, value);
+  }
+}
+HexMap.prototype.getRectangleSubMap = function(qmin,qmax,rmin,rmax) {
+  var submap = new HexMap();
+  for (let r = rmin; r<rmax; r++) {
+    let currentr = r;
+    if (!isEven(r)) currentr += 1;
+
+    let qstart = this.getLineShift(currentr,rmax,qmin);
+    let qend = this.getLineShift(currentr,rmax,qmax);
+
+    let linemap = this.getLineSubMap(r, qstart, qend);
+    submap.addSubmap(linemap);
+  }
+  return submap;
+}
+
+HexMap.prototype.getLineShift = function(r, rmax, q) {
+  let step_shift = (rmax - r)/2;
+  let q_shifted = Math.floor( q + step_shift);
+  return q_shifted;
+}
+
+HexMap.prototype.getLineSubMap = function(r, qmin, qmax) {
+  var submap = new HexMap();
+  for (let q=qmin; q<qmax; q++) {
+    let hex = new Hex(q,r);
+    if (this.containsHex(hex)) {
+      let value = this.getValue(hex);
+      submap.set(hex, value);
+    }
+  }
+  return submap;
+}
 
 
 function isEven(n) {
