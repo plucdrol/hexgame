@@ -2,13 +2,17 @@
 
 
 
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-////                     BASIC RENDERING FUNCTIONS
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//   BASIC RENDERING FUNCTIONS
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+
+//Dependencies:
+//  CanvasDraw.js
+//  View.js
 
 //this is a style for renderer
 function RenderStyle() {
@@ -19,7 +23,7 @@ function RenderStyle() {
   this.text_size = '12';
 }
 
-//this is a basic Renderer, it doesn't know about hexes! only points
+//this is a basic Renderer, it doesn't know about hexes!
 
 function Renderer(canvas_draw,view) {
     this.canvas_draw = canvas_draw;
@@ -27,111 +31,126 @@ function Renderer(canvas_draw,view) {
 
     this.ready_to_render = true;
     this.render_timer = {};
+    
+    this.worldToScreen;
+}
+
+//Coordinate transformation
+Renderer.prototype.setWorldToScreen = function(callback) {
+  this.worldToScreen = callback;
+}
+Renderer.prototype.worldToScreen = function(point) {
+  return this.view.worldToScreen(point);
+}
+Renderer.prototype.worldToScreen1D = function(scalar) {
+  return this.view.worldToScreen1D(scalar);
 }
 
 
-//PURE functions, use the CANVAS INTERFACE directly to draw on the screen
-
+//PURE functions, directly draw on the screen
 Renderer.prototype.drawDot = function (point,size,style) {
 
-    //this function draws directly, so modifies the coordinates
-    var coord = this.view.worldToScreen(point);
-    newsize = this.view.worldToScreen1D(size);
+    var coord = this.worldToScreen(point);
+    newsize = this.worldToScreen1D(size);
+    var color = style.fill_color;
 
-    this.canvas_draw.drawDot(coord, newsize, style.fill_color);
+    this.canvas_draw.drawDot(coord, newsize, color);
 };
 
-Renderer.prototype.drawLine = function(point1,point2,style) {
+//Transform coordinates and draw a line using CanvasDraw
+Renderer.prototype.drawLine=function(point1,point2,style) {
 
-    //this function draws directly, so modifies the coordinates
-    var p1 = this.view.worldToScreen(point1);
-    var p2 = this.view.worldToScreen(point2);
-    var newwidth = this.view.worldToScreen1D(style.line_width);
+  var p1 = this.worldToScreen(point1);
+  var p2 = this.worldToScreen(point2);
+  var newwidth = this.worldToScreen1D(style.line_width);
+  var color = style.line_color;
 
-    this.canvas_draw.drawLine(p1,p2,newwidth,style.line_color)
+  this.canvas_draw.drawLine(p1, p2, newwidth, color);
 };
 
+//Transform coordinates and draw a polyon using CanvasDraw
 Renderer.prototype.drawPolygon = function(points,style) {
-  //this function draws directly, so modifies the coordinates
-  var coords = []; //creates an array or an object (vim test)
+  var coords = []; //creates an array 
   
   //otherwise actually draw a polygon
   for (let point of points) {
-      coords.push(this.view.worldToScreen(point));
+    let coord = this.worldToScreen(point);
+    coords.push(coord);
   }
 
   this.canvas_draw.drawPolygon(coords,style.line_width,
-      style.fill_color,style.line_color);
+    style.fill_color,style.line_color);
 
 };
 
-Renderer.prototype.drawText = function(text,position,style) {
-  //this function draws directly, so modifies the coordinates
-  var coord = this.view.worldToScreen(position);
-  var newfontsize = this.view.worldToScreen1D(style.text_size);
+//Transform coordinatess and draw text using CanvasDraw
+Renderer.prototype.drawText=function(text,position,style) {
+  var coord = this.worldToScreen(position);
+  var newfontsize = this.worldToScreen1D(style.text_size);
+  var color = style.text_color;
 
-  this.canvas_draw.drawText(text,coord,style.text_color,newfontsize);
+  this.canvas_draw.drawText(text,coord,color,newfontsize);
 };
 
-//INDIRECT functions, use the previous functions to draw complicated things
+//Draw multiple lines using the drawLine function
 Renderer.prototype.drawLines = function(points,style) {
   for (var i=0;i<points.length-1;i++) {
       this.drawLine(points[i], points[i+1], width);
   }
 };
 
-Renderer.prototype.doneRendering = function(max_render_time) {
-  this.ready_to_render = false;
-  this.render_timer = window.setTimeout(this.readyToRender, max_render_time);
-};
-
-Renderer.prototype.readyToRender = function() {
- this.ready_to_render = true;
-};
-
-Renderer.prototype.startRendering = function() {
- this.canvas_draw.clear();
-};
 
 
 
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+//                HEXMAP RENDERER
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+function HexMapRenderer(canvas_draw, view, hexmap) {
+  Renderer.call(this,canvas_draw,view); 
 
+}
 
-
+WorldRenderer.prototype = Object.create(Renderer.prototype);
 
 
 
 
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+                                                                    
+                     //WORLD RENDERER
 
-
-
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-                                                                                       
-                   //WORLD RENDERER
-
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+//Dependencies
+//  CanvasDraw.js
+//  View.js
+//  World.js
+//  Renderer.js
+//  Hex.js
 
 var greenscale_colors = function(i) {
   var greenscale = ['#005','#00D','#AA3','#080','#062',
-          '#052','#042','#032','#020','#010',
-        '#110','#210','#410','#420','#777',
-        '#777','#777','#888','#888','#888',
-        '#FFF','#FFF','#FFF','#FFF','#FFF',
-        '#FFF','#FFF','#FFF','#FFF','#FFF',
-        '#FFF','#FFF'];
+                    '#052','#042','#032','#020','#010',
+                    '#110','#210','#410','#420','#777',
+                    '#777','#777','#888','#888','#888',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF'];
 
   var fadedscale = ['#335','#66D','#AA7','#686','#575',
-                   '#464','#353','#242','#232','#232',
-       '#110','#321','#421','#432','#777',
-       '#777','#777','#888','#888','#888',
-       '#FFF','#FFF','#FFF','#FFF','#FFF',
-       '#FFF','#FFF','#FFF','#FFF','#FFF',
-       '#FFF','#FFF'];
+                    '#464','#353','#242','#232','#232',
+                    '#110','#321','#421','#432','#777',
+                    '#777','#777','#888','#888','#888',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF'];
   return greenscale[i];
     
 }
@@ -143,31 +162,31 @@ function WorldRenderer (canvas_draw,view,world) {
 
   this.corners = [];
 
-  this.drawn_at_least_one_hex = false;
   this.ready_to_render = true;
 }
 
 WorldRenderer.prototype = Object.create(Renderer.prototype);
+WorldRenderer.p = WorldRenderer.prototype;
 
-WorldRenderer.prototype.hexToPoint = function(hex) {
+WorldRenderer.p.hexToPoint = function(hex) {
   return this.world.hexToPoint(hex);
 }
-WorldRenderer.prototype.hexesToPoints = function(hexes) {
+WorldRenderer.p.hexesToPoints = function(hexes) {
   var points = [];
   for (let hex of hexes) {                            
       points.push(this.hexToPoint(hex));
   }
   return points;
 }
-WorldRenderer.prototype.pointToHex = function(point) {
+WorldRenderer.p.pointToHex = function(point) {
   return this.world.pointToHex(point);
 }
 
-WorldRenderer.prototype.mapColors = function(i) {
+WorldRenderer.p.mapColors = function(i) {
   return greenscale_colors(i);  
 } 
 
-WorldRenderer.prototype.drawHex = function(hex, style) {
+WorldRenderer.p.drawHex = function(hex, style) {
 
   //if zoomed out enough, just draw a dot
   if (this.view.getScale() < 1) {
@@ -179,80 +198,81 @@ WorldRenderer.prototype.drawHex = function(hex, style) {
       var corners = this.hexesToPoints(Hex.corners(hex));
       this.drawPolygon(corners,style);
   }
-  this.drawn_at_least_one_hex = true;
 };
 
-WorldRenderer.prototype.fastDrawHex = function(hex,style) {
-
-      //calculate shifted position between previous hex and next hex
-      var world_position = this.hexToPoint(hex);
-      var screen_position = this.view.worldToScreen(world_position);
-
-      //draw a polygon
-      this.canvas_draw.reDrawPolygon(screen_position/*,fill_color*/);
-}
-
-WorldRenderer.prototype.drawHexElevated = function(hex,height,style) {
+WorldRenderer.p.drawHexElevated = function(hex,height,style) {
   var low_corners = this.hexesToPoints(Hex.corners(hex));
   var high_corners = [];
-  for (var i=0;i<low_corners.length;i++) {
-      high_corners[i] = new Point(low_corners[i].x,low_corners[i].y - height);
+  for (let i=0;i<low_corners.length;i++) {
+    let shifted_x = low_corners[i].x;
+    let shifted_y = low_Corners[i].y-height;
+    high_corners[i] = new Point(shifted_x, shifted_y);
   }
   
-  var column_corners = [low_corners[0],high_corners[1],high_corners[2],
-                        high_corners[3],low_corners[4],low_corners[5]];
+  var column_corners = [low_corners[0],  high_corners[1],
+                        high_corners[2], high_corners[3],
+                        low_corners[4],  low_corners[5]];
 
   this.drawPolygon(column_corners,style);
   this.drawHex(high_corners,style);
 
 };
 
-WorldRenderer.prototype.drawHexes = function(hexes,style) {
+WorldRenderer.p.drawHexes = function(hexes,style) {
     for (var i=0;i<hexes.length;i++) {
         this.drawHex(hexes[i], style)
     }
 };
 
-WorldRenderer.prototype.drawOutline = function(edge_arrays,style) {
-    for (var outline = 0; outline < edge_arrays.length; outline++) {
-        var corners = [];
-        var edges = edge_arrays[outline];    
-        for (var i=0;i<edges.length;i++){
-            corners.push( this.hexToPoint(edges[i].getPoint1() ));
-        }
-        this.drawPolygon(corners,style);
+WorldRenderer.p.drawOutline = function(edge_arrays,style) {
+    
+  var number_of_loops = edge_arrays.length;
+  for (let outline = 0; outline<number_of_loops; outline++){
+    var corners = [];
+    var edges = edge_arrays[outline];    
+    for (var i=0;i<edges.length;i++){
+      corners.push( this.hexToPoint(edges[i].getPoint1() ));
     }
+    this.drawPolygon(corners,style);
+  }
 };
 
-WorldRenderer.prototype.drawRectangleSection = function(rectmap) {
+WorldRenderer.p.drawRectangleSection = function(rectmap) {
     
-    var currentr = 0;
-    var r = 0;
-    var q = 0;
-    var hex = new Hex(0,0);
-    var value = 0;
-    var tile_renderer = new TileRenderer2D(this);
-    //for columns
-    for (r = rectmap.rmin; r <= rectmap.rmax; r++) {
+  var tile_renderer = new TileRenderer2D(this);
+  
+  //for columns
+  for (let r = rectmap.rmin; r <= rectmap.rmax; r++) {
 
+    //shift even lines
+    let currentr = r;
+    if (r%2!=0) currentr += 1;
+    
+    //measure line start and end
+    qstart = this.getLineStart(currentr,rectmap)
+    qend = this.getLineEnd(currentr,rectmap)
 
-        //shift even lines
-        currentr = r;
-        if (r%2!=0) currentr += 1;
-
-        this.drawLineSection(r,currentr,rectmap);
-    }
+    //draw line
+    this.drawLineSection(r,qstart, qend);
+  }
 }
 
-WorldRenderer.prototype.drawLineSection = function(r,currentr,rectmap) {
-   
-    var q=0;
+WorldRenderer.p.getLineStart = function(currentr, rectmap) {
 
-    //for rows ( each shifted to become rectangular)
-    var qstart = Math.floor(rectmap.qmin+(rectmap.rmax-currentr)/2); 
-    var qend = rectmap.qmax+(rectmap.rmax-currentr)/2;
-    for (q = qstart; q<qend; q++) {
-        hex = new Hex(q,r);
+  let step_shift = (rectmap.rmax - currentr)/2;
+  let qstart = Math.floor( rectmap.qmin + step_shift ); 
+  return qstart;
+}
+WorldRenderer.p.getLineEnd = function(currentr, rectmap) {
+
+  let step_shift = (rectmap.rmax - currentr)/2;
+  let qend = Math.floor( rectmap.qmax + step_shift );
+  return qend;
+}
+WorldRenderer.p.drawLineSection = function(r,qstart,qend) {
+
+    for (let q = qstart; q < qend; q++) {
+        let hex = new Hex(q,r);
         if (this.world.map.containsHex(hex)) {
 
             this.drawTile2D(hex);
@@ -261,7 +281,7 @@ WorldRenderer.prototype.drawLineSection = function(r,currentr,rectmap) {
 }
 
 
-WorldRenderer.prototype.getHexRectangleBoundaries = function() {
+WorldRenderer.p.getHexRectangleBoundaries = function() {
    
 
     //find the screen position and width
@@ -308,7 +328,7 @@ WorldRenderer.prototype.getHexRectangleBoundaries = function() {
     return hex_rect;
 }
 
-WorldRenderer.prototype.drawRedRenderingRectangle = function(rectmap) {
+WorldRenderer.p.drawRedRenderingRectangle = function(rectmap) {
     var corners = [];
     corners.push(this.hexToPoint(new Hex(rectmap.qmin,rectmap.rmin)));
     corners.push(this.hexToPoint(new Hex(rectmap.qmin,rectmap.rmax)));
@@ -324,16 +344,12 @@ WorldRenderer.prototype.drawRedRenderingRectangle = function(rectmap) {
     this.drawPolygon(corners,rect_style);
 }    
 
-WorldRenderer.prototype.drawWorld = function() {
+WorldRenderer.p.drawWorld = function() {
 
     if (this.ready_to_render) {
-        this.startRendering(); //in milliseconds
-        this.drawn_at_least_one_hex = false;
+        this.canvas_draw.clear();
         var rectMap = this.getHexRectangleBoundaries();
         this.drawRectangleSection(rectMap);
-        //this.drawRedRenderingRectangle(rectMap);
-        this.drawn_at_least_one_hex = false;
-        //this.doneRendering(10);
     }
 }
 
@@ -344,12 +360,12 @@ WorldRenderer.prototype.drawWorld = function() {
 
 
 
-WorldRenderer.prototype.getTile = function(hex) {
+WorldRenderer.p.getTile = function(hex) {
     return this.world.map.getValue(hex);
 }
 
 
-WorldRenderer.prototype.drawTile2D = function(hex) {
+WorldRenderer.p.drawTile2D = function(hex) {
     var style = new RenderStyle();  
     var tile = this.getTile(hex);
 
@@ -378,7 +394,7 @@ WorldRenderer.prototype.drawTile2D = function(hex) {
     }
 }
 
-WorldRenderer.prototype.getWindArrowCharacter = function(direction) {
+WorldRenderer.p.getWindArrowCharacter = function(direction) {
 
     switch (direction) {
         case 0: return 8594; break;
@@ -391,7 +407,7 @@ WorldRenderer.prototype.getWindArrowCharacter = function(direction) {
     }
 }
 
-WorldRenderer.prototype.drawUnit = function(unit,hex,height) {
+WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
     var position = this.hexToPoint(hex);
     position = position.offset(0,-height);
@@ -407,7 +423,7 @@ WorldRenderer.prototype.drawUnit = function(unit,hex,height) {
     }
 };
 
-WorldRenderer.prototype.drawRange = function(range) {
+WorldRenderer.p.drawRange = function(range) {
     
     var outline = Hex.outline(range.getArray());
 
@@ -420,7 +436,7 @@ WorldRenderer.prototype.drawRange = function(range) {
     this.drawOutline( outline,range_style);
 }
 
-WorldRenderer.prototype.drawPath = function(range,destination) {
+WorldRenderer.p.drawPath = function(range,destination) {
     
     var pathfinder = new PathFinder(this.world.map);
 
@@ -463,15 +479,15 @@ WorldRenderer.prototype.drawPath = function(range,destination) {
 
 
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-                                                                                       
-//                   TILE RENDERER
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+                                                                
+//   TILE RENDERER
 
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 
 function TileRenderer () {
   Renderer.call(this); 
