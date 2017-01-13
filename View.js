@@ -1,5 +1,6 @@
 //-------0---------1---------2---------3---------4---------5---------6---------8
-//takes two vectors. Position is the top-left corner, size is a vector across
+//takes two vectors. Position is the top-left corner, 
+//size is a vector across
 function Rect(position,size) {
   this.position = position;
   this.size = size;
@@ -36,14 +37,19 @@ function View (input_rect,output_rect) {
 
   this.resizeOutput = function(width,height) {
 
+    var canvas_position = new Point(0,0);
+    var canvas_size = new Point(width,height);
+
     //create the new view in the same position
-    var view_out = new Rect(    new Point(0,0), new Point(width,height));
+    var view_out = new Rect(canvas_position, canvas_size);
     var view_in = input;
 
+    var x_scaling = output.size.x / width;
+    var y_scaling = output.size.y / height;
+
     //match the aspect ratio to the new size
-    var ratio = new Point( output.size.x/width, output.size.y/height);
-    view_in.size.x = view_in.size.x/ratio.x;
-    view_in.size.y = view_in.size.y/ratio.y;
+    view_in.size.x = view_in.size.x / x_scaling ;
+    view_in.size.y = view_in.size.y / y_scaling ;
 
     //apply the new view to
     input = view_in;
@@ -52,20 +58,24 @@ function View (input_rect,output_rect) {
 
   this.worldToScreen = function(point) {
 
-      var newPoint = new Point(0,0);
+    var newPoint = new Point(0,0);
 
-      newPoint.x = (point.x - input.position.x)*output.size.x/input.size.x;
-      newPoint.y = (point.y - input.position.y)*output.size.y/input.size.y;
+    newPoint.x = (point.x - input.position.x)*
+                  output.size.x/input.size.x;
+    newPoint.y = (point.y - input.position.y)*
+                  output.size.y/input.size.y;
 
-      return newPoint;
+    return newPoint;
   };
 
   this.screenToWorld = function(point) {
 
-      var newPoint = new Point(0,0);
+    var newPoint = new Point(0,0);
 
-      newPoint.x = (point.x * input.size.x/output.size.x) + input.position.x ;
-      newPoint.y = (point.y * input.size.y/output.size.y) + input.position.y ;
+    newPoint.x = (point.x * input.size.x/output.size.x) +
+                  input.position.x ;
+    newPoint.y = (point.y * input.size.y/output.size.y) 
+                  + input.position.y ;
 
       return newPoint;
   };
@@ -92,7 +102,8 @@ function View (input_rect,output_rect) {
 
       var center_point = this.getCenter();
 
-      //scales the view by n but keeps the screen centered on the same location
+      //scales the view by n but keeps the screen centered 
+      //on the same location
       var x = input.position.x;
       var y = input.position.y;
       var w = input.size.x;
@@ -101,19 +112,33 @@ function View (input_rect,output_rect) {
       input.size = new Point( w*n , h*n );
       this.setCenter(center_point);
   };
-};
 
-
-
-  //PUBLIC FUNCTIONS
-
-
-
-
-
-
-  View.prototype.getScale = function() { 
-      return this.getOutputRect().size.x/this.getInputRect().size.x; 
+  this.getScale = function() { 
+      return output.size.x / input.size.x; 
   };
 
+  this.getCorners = function() {
+    var corners = {};
+    
+    //find the screen position and width
+    var x = input.position.x;
+    var y = input.position.y;
+    var height = input.size.y;
+    var width = input.size.x;
+
+    //find the boundaries
+    var left = x; 
+    var right = x+width;
+    var top = y;
+    var bottom = y+height;
+
+    //find the corner points
+    corners.topleft = new Point(left,top);
+    corners.topright = new Point(right,top);
+    corners.bottomleft = new Point(left,bottom);
+    corners.bottomright = new Point(right,bottom);
+
+    return corners;
+  }
+};
 
