@@ -2,7 +2,9 @@
 //-------1----------2---------3---------4---------5---------6---------7--------8
 
 
-
+// Here is where all the javascript modules should be combined
+// Avoid all cross-dependencies!
+// Allow modules to be interconnected at this level
 //////////////////////////// CREATING THE WORLD //////////////////////////////
 
 //define the screen which can be drawn on
@@ -13,12 +15,18 @@ var canv_draw = new CanvasDraw(canvas);
 //Interface for receiving input from the page
 var canv_input = new CanvasInput(canvas);
 
-//create a world
+//Create a map generator
 var map_radius = 50;
-var layout_size = new Point(35, 35);
-var origin = new Point(canvas.width, canvas.height);
-var world_layout = new HexLayout(orientation_pointy, layout_size, origin);
-var world = new World(map_radius, world_layout);
+var hexmap_generator = new MapGenerator('perlin'); 
+hexmap_generator.makeMap(map_radius);
+var map = hexmap_generator.getMap();
+
+//create a world
+var world = new World(map_radius);
+world.setMap(map);
+
+//populate the world
+var unit_controller = new UnitController(map);
 
 //create a default view, which can be edited
 var view_ratio = canvas.width/canvas.height;
@@ -33,21 +41,21 @@ var view = new View(view_in,view_out);
 
 
 //create a controller and renderer for the world
-var world_interface = new WorldInterface(world,view);
-var world_renderer = new WorldRenderer(canv_draw,view,world);
+var world_interface = new WorldInterface(world,view,unit_controller);
+var world_renderer = new WorldRenderer(canv_draw,view,world,unit_controller);
 
 canv_input.windowResize();
 
 //create a unit in the world
-world.createUnit(new Hex(0,0),'player');
-world.createUnit(new Hex(1,0),'tree');
-world.createUnit(new Hex(15,-15),'fast-player');
-world.createUnit(new Hex(15,0),'fast-player');
-world.createUnit(new Hex(0,-15),'fast-player');
-world.createUnit(new Hex(-15,-15),'fast-player');
-world.createUnit(new Hex(-15,15),'fast-player');
-world.createUnit(new Hex(-15,0),'fast-player');
-world.createUnit(new Hex(1,0),'tree');
+unit_controller.createUnit(new Hex(0,0),'player');
+unit_controller.createUnit(new Hex(1,0),'tree');
+unit_controller.createUnit(new Hex(15,-15),'fast-player');
+unit_controller.createUnit(new Hex(15,0),'fast-player');
+unit_controller.createUnit(new Hex(0,-15),'fast-player');
+unit_controller.createUnit(new Hex(-15,-15),'fast-player');
+unit_controller.createUnit(new Hex(-15,15),'fast-player');
+unit_controller.createUnit(new Hex(-15,0),'fast-player');
+unit_controller.createUnit(new Hex(1,0),'tree');
 
 
 
@@ -60,8 +68,8 @@ function drawScreen() {
   world_renderer.drawWorld();    
 
   //draw range of selected unit
-  if (world_interface.unit_controller.hex_selected instanceof Hex) {
-    var potentialUnit = world_interface.world.units.getValue(world_interface.unit_controller.hex_selected);
+  if (unit_controller.hex_selected instanceof Hex) {
+    var potentialUnit = unit_controller.units.getValue(unit_controller.hex_selected);
     if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
       world_renderer.drawRange(potentialUnit.getComponent('range'));
       //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
@@ -71,7 +79,7 @@ function drawScreen() {
     var select_style = new RenderStyle();
     select_style.fill_color = "rgba(200,200,0,0.5)";
     select_style.line_width = 2;
-    world_renderer.drawHex(world_interface.unit_controller.hex_selected, select_style);
+    world_renderer.drawHex(unit_controller.hex_selected, select_style);
   }
 
   //draw hovered hex
@@ -84,24 +92,17 @@ function drawScreen() {
 
 ///////////////////////////////////////// CHANGING THE WORLD //////////////////////////////////////////
 function newWorld() {
-  world.generateWorldMap(map_radius);
+  
+  var new_map =  hexmap_generator.makeMap(map_radius);
+  //update the world map
+  world.setMap(new_map);
+
+  //update the units 
+  unit_controller.newMap(new_map);
+  unit_controller.fillMap();
+  
   drawScreen();
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
-
-//add click, mouse, and touch functionality to canvas//
-canvas.addEventListener('click', function() {canv_input.clickCanvas(event);}, false);
-canvas.addEventListener('mousemove', function() {canv_input.mouseMove(event);}, false);
-canvas.addEventListener('touchmove', function() {canv_input.touchMove(event);}, false);
-canvas.addEventListener('touchend', function() {canv_input.touchEnd(event);}, false);
-canvas.addEventListener('touchstart', function() {canv_input.touchStart(event);}, false);
-if (canvas.addEventListener) {
-  // IE9, Chrome, Safari, Opera
-  canvas.addEventListener("mousewheel", function(){canv_input.mouseWheel(event);}, false);
-  // Firefox
-  canvas.addEventListener("DOMMouseScroll", function(){canv_input.mouseWheel(event);}, false);
-}
-
-//add window resize event
-window.addEventListener('resize',function() {canv_input.windowResize();}, false);
+canv_input.registerEvents();

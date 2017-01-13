@@ -1,5 +1,7 @@
 //-------1---------2---------3---------4---------5---------6---------7--------8
 //PathFinder cell used for mapping paths
+//Tracks the previous cell and total path cost
+//on 5e path.from the origin to this cell
 
 function PathFinderCell(path_cost,came_from) {
   this.path_cost = 0;
@@ -14,9 +16,10 @@ function PathFinderCell(path_cost,came_from) {
 }
 
 //PathFinder takes maps and generates ranges and paths
-function PathFinder(map) {
+function PathFinder(map, tile_cost_function) {
   this.map = map;
-  
+  this.tile_cost_function = tile_cost_function;
+
   //Cells visited during pathfinding
   this.visited = new HexMap();
 
@@ -38,16 +41,11 @@ function PathFinder(map) {
     this.frontier = new Queue();
   }
 
-  //Replaces the map that the pathfinder uses
-  this.replaceMap = function(map) {
-    this.map = map;
-  };
-
   //Returns the elevation of the terrain at position hex
-  this.getElevation = function(hex) {
+  this.getTileCost = function(hex) {
     var tile = this.map.getValue(hex);
-    var elevation = tile.getComponent('elevation');
-    return elevation;
+    var tile_cost = this.tile_cost_function(tile);
+    return tile_cost;
   }
 
   
@@ -175,19 +173,19 @@ function PathFinder(map) {
   //Returns true if hex is a path worth exploring
   this.pathShouldContinue = function(hex, previous_hex) {
     
-    var hex_already_visited = this.hasCell(hex);
+    var already_visited = this.hasCell(hex);
 
     var current_cell = this.getCell(hex);
     var new_cell = this.makeNeighborCell(hex,previous_hex);
     
-    if (hex_already_visited) {
-      if (this.newCellIsBetter(current_cell, new_cell)) {
-	return true;
-      }
-    } else {
-      if (this.hexIsPassable(hex)) {
-	return true;
-      }
+    if (new_cell.path_cost === undefined) {
+      return false;
+    }
+    if (!already_visited) {
+      return true;
+    }
+    if (this.newCellIsBetter(current_cell, new_cell)) {
+      return true;
     }
     return false;
   }
@@ -217,7 +215,13 @@ function PathFinder(map) {
   this.calculatePathCost = function(hex, previous_hex) {
     let cost_so_far = this.getCell(previous_hex).path_cost;
     let step_cost = this.stepCost(previous_hex,hex);
+    
+    if (step_cost === undefined) {
+      return undefined;
+    }
+
     let path_cost = cost_so_far + step_cost;
+    
     return path_cost;
   }
 
@@ -232,16 +236,6 @@ function PathFinder(map) {
     return false;
   };
 
-  //Returns if the hex can be walked on
-  this.hexIsPassable = function(hex) {
-    let elevation = this.getElevation(hex);
-    if (elevation > 1 && elevation < 14) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-  
   //Returns which cell is the best path step
   this.getBestCell = function(cell_a, cell_b) {
     var cost_a = cell_a.path_cost;
@@ -261,13 +255,21 @@ function PathFinder(map) {
     
     //returns a positive number for uphill movement
     // negative number for downhill movement
-    var cost_this  = this.getElevation(this_tile);
-    var cost_other = this.getElevation(other_tile);
+    var cost_this  = this.getTileCost(this_tile);
+    var cost_other = this.getTileCost(other_tile);
+
+    if (cost_this === undefined) {
+      return undefined;
+    }
+
+    if (cost_other === undefined) {
+      return undefined;
+    }
     var difference = cost_other - cost_this; 
 
     //Returns values based on difference in elevation only
     if (difference >= 4) {
-      return 100;
+      return undefined;
     }
     if (difference > 0)  {
       return 6;
@@ -279,7 +281,7 @@ function PathFinder(map) {
       return 3;
     }
     if (difference < -4) {
-      return 100;
+      return undefined;
     }
   };
 
