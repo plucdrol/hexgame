@@ -9,8 +9,10 @@
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
-//This library defines the Hex grid and a map for containing multiple hexes
-//it also defines multiple functions for dealing with Hexes, structuring them, and relating them to a cartesian grid
+//This library defines the Hex grid and a map for 
+//containing multiple hexes, it also defines multiple 
+//functions for dealing with Hexes, structuring them,
+//and relating them to a cartesian grid
 
 // HEX OBJECT
 
@@ -39,30 +41,39 @@ Hex.prototype.getS = function() {
 // BASIC HEX FUNCTIONS
 
 Hex.equals = function(hex_a,hex_b) {
-  return hex_a.getQ()==hex_b.getQ() && hex_a.getR()==hex_b.getR();
+  return hex_a.getQ()==hex_b.getQ() 
+      && hex_a.getR()==hex_b.getR();
 }
 Hex.prototype.equals = function(hex_b) {
   return Hex.equals(this,hex_b);
 }
 
 Hex.add = function(hex_a, hex_b)  {
-  return new Hex( hex_a.getQ()+hex_b.getQ(), hex_a.getR()+hex_b.getR() );
+  return new Hex( hex_a.getQ()+hex_b.getQ(), 
+                  hex_a.getR()+hex_b.getR() );
 }
 Hex.prototype.add = function(hex_b) {
   return Hex.add(this,hex_b);
 }
 
 Hex.substract = function(hex_a, hex_b)  {
-  return new Hex( hex_a.getQ()-hex_b.getQ(), hex_a.getR()-hex_b.getR() );
+  return new Hex( hex_a.getQ()-hex_b.getQ(), 
+                  hex_a.getR()-hex_b.getR() );
 }
 
-
+//Multiply the hex with a scalar
 Hex.multiply = function(hex, k)  {
   return new Hex( hex.getQ()*k, hex.getR()*k );
 }
-Hex.distanceToCenter = function(hex) { //returns distance from origin
-  return (Math.abs(hex.getQ()) + Math.abs(hex.getR()) + Math.abs(hex.getS())) / 2;
+
+//returns distance from origin
+Hex.distanceToCenter = function(hex) { 
+  return (Math.abs(hex.getQ()) + 
+          Math.abs(hex.getR()) + 
+          Math.abs(hex.getS())) / 2;
 }
+
+//Returns the distance in hexes along a line
 Hex.distance = function(hex_a,hex_b) {
   return Hex.distanceToCenter(Hex.substract(hex_a,hex_b));
 }
@@ -106,7 +117,8 @@ Hex.corners = function (hex) {
 }              
 
 Hex.prototype.getNeighbor = function(direction_number) {
-  //takes a hex and a direction (from 0 to 6), and returns a neighboring hex
+  //takes a hex and a direction (from 0 to 6), and 
+  //returns a neighboring hex
   return Hex.add(this, hex_direction[direction_number%6] );
 }
 
@@ -144,9 +156,11 @@ Hex.round = function(fractional_hex) {
 }
 
 Hex.linearInterpolate = function(hex_a,hex_b,t) {
-  return new Hex( hex_a.getQ() + (hex_b.getQ() - hex_a.getQ()) * t,
+  return new Hex( 
+          hex_a.getQ() + (hex_b.getQ() - hex_a.getQ()) * t,
           hex_a.getR() + (hex_b.getR() - hex_a.getR()) * t,
-          hex_a.getS() + (hex_b.getS() - hex_a.getS()) * t);
+          hex_a.getS() + (hex_b.getS() - hex_a.getS()) * t
+          );
 
 }
 
@@ -199,7 +213,10 @@ function Vertex(hex,direction_number) {
 
   //getHexes returns the 3 hexes that neighbor a Vertex
   Vertex.prototype.getHexes = function() {
-    return [this.getInnerHex(), this.getOuterHex(), this.getClockwiseHex()];
+    return [this.getInnerHex(), 
+            this.getOuterHex(), 
+            this.getClockwiseHex()];
+
   }
   //getInnerHex
   Vertex.prototype.getInnerHex = function() {
@@ -210,16 +227,18 @@ function Vertex(hex,direction_number) {
   };
   Vertex.prototype.getClockwiseHex = function() {
     //returns the hex which is clockwise from the outer hex
-    return this.hex.getNeighbor( (this.direction_number+5)%6 );
+    var direction = (this.direction_number+5)%6;
+    var clockwise_hex = this.hex.getNeighbor(direction);
+    return clockwise_hex
   };
 
   //returns the vertex coordinate in fractional hexes 
   Vertex.prototype.getPoint = function() {
 
-    //from the hex's center, move in fractional hex to the corner given by direction_number
-    return Hex.add(this.hex, hex_corner[this.direction_number] );
+    //returns the fractional hex coordinates of the corner
+    var corner = hex_corner[this.direction_number];
+    return Hex.add( this.hex, corner );
   };
-
 
 
 
@@ -275,23 +294,26 @@ function Edge(hex,direction_number) {
     return this.hex.getNeighbor( this.direction_number );
   };
 
-  //As seen from the InnerHex's perspective, Point2 is counterclockwise from Point1
+  //As seen from the InnerHex's perspective, 
+  //Point2 is counterclockwise from Point1
   Edge.prototype.getPoint1 = function() {
     return this.getVertex1().getPoint();
   };
   Edge.prototype.getVertex1 = function() {
-    return new Vertex(this.hex, this.direction_number);
+    var vertex_direction = (this.direction_number);
+    return new Vertex(this.hex, vertex_direction);
   };
+  //return the coordinates of the second one
   Edge.prototype.getPoint2 = function() {
-    //return the coordinates of the second one
     return this.getVertex2().getPoint();
   };
   Edge.prototype.getVertex2 = function() {
-    return new Vertex(this.hex, (this.direction_number+1)%6)
+    var vertex_direction = (this.direction_number+1)%6;
+    return new Vertex(this.hex, vertex_direction);
   }
 
 
-/////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 
 
 
@@ -299,15 +321,15 @@ function Edge(hex,direction_number) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
                 
       //            OUTLINE OF HEXES
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////
 
 
 
@@ -318,7 +340,9 @@ function Edge(hex,direction_number) {
 Hex.outline = function(hexes) {
 
   //HEXES: array of hexes
-  //var UNSORTED_EDGES: array of edges (order the coordinates counter-clockwise so it is possible to follow them around the shape)
+  //var UNSORTED_EDGES: array of edges (order the 
+  //coordinates counter-clockwise so it is possible 
+  //to follow them around the shape)
   var unsorted_edges = []; //array of edges for all hexes
 
   //for each hex in HEXES
@@ -363,7 +387,7 @@ Hex.outline = function(hexes) {
   return sorted_edges;
 }
 
-//sorts an array of edges into many arrays of connected edges
+//sorts an array of edges into many loops of connected edges
 Edge.sort = function(unsorted_edges) {
   
   //create a new ARRAY OF EDGE ARRAYS
@@ -385,22 +409,28 @@ Edge.sort = function(unsorted_edges) {
     //create a new SORTED EDGES array
     sorted_edges = [];
     
-    //pop and push the first UNSSORTE_edge to this SORTED_EDGES array
+    //pop and push the first UNSSORTE_edge 
+    //to this SORTED_EDGES array
     current_edge = unsorted_edges.pop();
     sorted_edges.push( current_edge );
     
     //while the edges in sorted_edges do not make a loop
     attempts = max_attempts;
-    while ( !(current_edge.getVertex2().equals(sorted_edges[0].getVertex1() ))) {
+    let vertexA = current_edge.getVertex2();
+    let vertexB = sorted_edges[0].getVertex1();
+    while ( ! vertexA.equals(vertexB)  ) {
 
       //check all the unsorted edges for the matching one
       attempts -= 1;
       //for each edge in UNSORTED_EDGES as MAYBE_EDGE
       for (i=0; i<unsorted_edges.length; i++) {
         maybe_edge = unsorted_edges[i];
-        //if the 1st point of MAYBE_EDGE is equal to the CURRENT_EDGE's 2nd point
+        //if the 1st point of MAYBE_EDGE is equal to the 
+	//CURRENT_EDGE's 2nd point
 
-        if ( maybe_edge.getVertex1().equals( current_edge.getVertex2() ) ) {
+	vertexA = maybe_edge.getVertex1();
+	vertexB = current_edge.getVertex2();
+        if ( vertexA.equals(vertexB)   ) {
 
           //push MAYBE_EDGE to the SORTED EDGES array
           sorted_edges.push ( maybe_edge );
@@ -419,27 +449,24 @@ Edge.sort = function(unsorted_edges) {
       }
 
       if (attempts <= 0) {
-        console.log('too many attempts in sorted_edge function');
+        console.log('too many attempts in sorted_edge');
         break;
       }
     }
-    //if you are here, it means the loop found a circle of connecting edges
-    //verify that the last edge in SORTED_EDGES matche the first edge in SORTED EDGES
-    if (!(sorted_edges[0].getVertex1().equals( sorted_edges[sorted_edges.length-1].getVertex2() ) ) ) {
+    //if you are here, it means the loop found a circle of 
+    //connecting edges. verify that the last edge in 
+    //SORTED_EDGES matche the first edge in SORTED EDGES
+    vertexA = sorted_edges[0].getVertex1()
+    vertexB = sorted_edges[sorted_edges.length-1].getVertex2();
+    if (!(vertexA.equals(vertexB) ) ) {
       console.log('hex boundaries do not match');
-
     }
-    
     //popp that SORTED_EDGES array in ARRAY OF EDGE ARRAYS
     edge_arrays.push(sorted_edges);
-    
-    
   }
   
   //return the ARRAY OF EDGE ARRAYS
   return edge_arrays;
-
-
 }
 
 
@@ -452,18 +479,19 @@ Edge.sort = function(unsorted_edges) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
                 
       //            HEXMAP DATA STRUCTURE
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 
 /*
-  a HexMap is an array of hex positions (keys), with content defined for each position (value)
+  a HexMap is an array of hex positions (keys), 
+  with content defined for each position (value)
   if no value is defined, the hex is not part of the map
   the areas of a HexMap are not necessarily contiguous
 */
@@ -508,7 +536,7 @@ HexMap.prototype.size = function() {
   return this.values.length;
 }
 
-//returns a simple array of each hex(q,r) contained in this map
+//returns a simple array of each hex contained in this map
 HexMap.prototype.getHexArray = function() {
   var hexarray = [];
   //look at each item in this map
@@ -522,7 +550,7 @@ HexMap.prototype.getHexArray = function() {
   }
   return hexarray;
 }
-//HexMap getValues returns a simple array of each defined value
+//HexMap getValues returns an array of each defined value
 HexMap.prototype.getValues = function() {
   var value_array = [];
   //look at each item in this map
@@ -537,7 +565,8 @@ HexMap.prototype.getValues = function() {
   return value_array;
 }
 
-//HexMap contains: finds if the hex is part of the map by checking if its value is defined
+//HexMap contains: finds if the hex is part of the map 
+//by checking if its value is defined
 HexMap.prototype.containsHex = function(hex) {
   if (this.getValue(hex) !== undefined) {
     return true;
@@ -546,7 +575,8 @@ HexMap.prototype.containsHex = function(hex) {
   }
 }
 
-//HexMap containsKey: finds if the key is defined by checking for the key directly 
+//HexMap containsKey: finds if the key is defined by 
+//checking for the key directly 
 HexMap.prototype.containsKey = function(key) {
   //if (this.getValueByKey(key) !== undefined) {
   if (key in this.values) {
@@ -556,7 +586,8 @@ HexMap.prototype.containsKey = function(key) {
   }
 }
 
-//HexMap flip: if the value of hex is in the 'values' array, changes it to the next value in the array
+//HexMap flip: if the value of hex is in the 'values' 
+//array, changes it to the next value in the array
 HexMap.prototype.flip = function(hex,values) {
   if (this.containsHex(hex)) {
     for (var i=0; i < values.length; i++) {
@@ -569,17 +600,19 @@ HexMap.prototype.flip = function(hex,values) {
   return false;
 }
 
-//Hexmap hexHash: turns the coordinates of a hex into a unique number, starting from (0,0) => 0
-//uses Szudzik's function turns 2 numbers into a unique number, increasing away from the origin
+//Hexmap hexHash: turns the coordinates of a hex into 
+//a unique number, starting from (0,0) => 0
+//uses Szudzik's function turns 2 numbers into a 
+//unique number, increasing away from the origin
 HexMap.prototype.hexHash = function(hex) {
   var q = hex.getQ();
   var r = hex.getR();
 
   var A = (q >= 0 ? 2 * q : -2 * q - 1);
-    var B = (r >= 0 ? 2 * r : -2 * r - 1);
-    var C = ((A >= B ? A * A + A + B : A + B * B) / 2);
-    return Math.floor(2*C);
-    return Math.floor(q < 0 && r < 0 || q >= 0 && r >= 0 ? C : -C - 1);
+  var B = (r >= 0 ? 2 * r : -2 * r - 1);
+  var C = ((A >= B ? A * A + A + B : A + B * B) / 2);
+  return Math.floor(2*C);
+  //return Math.floor(q < 0 && r < 0 || q >= 0 && r >= 0 ? C : -C - 1);
 }
 
 
@@ -592,6 +625,11 @@ HexMap.prototype.addSubmap = function(submap) {
     let value = submap.getValue(hex);
     this.set(hex, value);
   }
+}
+HexMap.prototype.getHexagonSubMap = function(origin,radius){
+  var submap = new HexMap();
+    
+  return submap;
 }
 HexMap.prototype.getRectangleSubMap = function(qmin,qmax,rmin,rmax) {
   var submap = new HexMap();
@@ -638,18 +676,19 @@ function isEven(n) {
 
 
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
                 
       //            HEX LAYOUT
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
+////////////////////////////////////////////////////
 
 // POINT
-// The Point class is a simple cartesian coordinate with some helper functions
+// The Point class is a simple cartesian coordinate 
+// with some helper functions
 
 function Point (x,y) {
   this.x = x;
@@ -678,9 +717,11 @@ function Point (x,y) {
 //  ORIENTATION
 //the F numbers are the forward matrix xy = f*qr
 //the b numbers are the backwards matrix qr = b*xy
-//the start_angle defines where the first corner of the hexagon is
+//start_angle defines the first corner of the hexagon 
 
-function Orientation(_f0,_f1,_f2,_f3,_b0,_b1,_b2,_b3,_start_angle) {
+function Orientation(_f0,_f1,_f2,_f3,
+                     _b0,_b1,_b2,_b3,
+                     _start_angle) {
   this.f0=_f0; 
   this.f1=_f1;
   this.f2=_f2;
@@ -693,7 +734,8 @@ function Orientation(_f0,_f1,_f2,_f3,_b0,_b1,_b2,_b3,_start_angle) {
 }
 
 //Pointy orientation has hexes with neighbors directly to the left and right
-const orientation_pointy = new Orientation(Math.sqrt(3.0),Math.sqrt(3.0)/2.0, 0.0, 3.0/2.0, 
+const orientation_pointy = new Orientation(Math.sqrt(3.0),
+                                           Math.sqrt(3.0)/2.0, 0.0, 3.0/2.0, 
           Math.sqrt(3.0)/3.0, -1.0/3.0, 0.0, 2.0/3.0,
           0.5 );
 
@@ -734,7 +776,6 @@ function HexLayout (orientation, size, origin) {
     var r = ori.b2 * pt.x + ori.b3 * pt.y;
     return new Hex(q,r);
   }
-
   HexLayout.prototype.pointsToHexes = function(points) {
     var hexes = [];
     var i=0;

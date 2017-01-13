@@ -100,8 +100,94 @@ Renderer.prototype.drawLines = function(points,style) {
 };
 
 
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+//                HEX RENDERER
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+function HexRenderer(canvas_draw, view, hexlayout) {
+  Renderer.call(this,canvas_draw,view); 
+  this.hexlayout = hexlayout;
+}
 
+HexRenderer.prototype = Object.create(Renderer.prototype);
+HexRenderer.p = HexRenderer.prototype;
 
+// HEX AND POINT CONVERSION
+HexRenderer.p.hexToPoint = function(hex) {
+  return this.hexlayout.hexToPoint(hex);
+}
+HexRenderer.p.hexesToPoints = function(hexes) {
+  var points = [];
+  for (let hex of hexes) {                            
+      points.push(this.hexToPoint(hex));
+  }
+  return points;
+}
+HexRenderer.p.pointToHex = function(point) {
+  return this.hexlayout.pointToHex(point);
+}
+
+HexRenderer.p.mapColors = function(i) {
+  return greenscale_colors(i);  
+} 
+
+// RENDERING FUNCTIONS
+HexRenderer.p.drawHex = function(hex, style) {
+
+  //if zoomed out enough, just draw a dot
+  if (this.view.getScale() < 1) {
+
+      var point = this.hexToPoint(hex);
+      this.drawDot(point, 60, style);
+  } else {
+      //otherwise, draw the actual hex
+      var corners = this.hexesToPoints(Hex.corners(hex));
+      this.drawPolygon(corners,style);
+  }
+
+};
+
+HexRenderer.p.drawOutline = function(edge_arrays,style) {
+    
+  var number_of_loops = edge_arrays.length;
+  for (let outline = 0; outline<number_of_loops; outline++){
+    var corners = [];
+    var edges = edge_arrays[outline];    
+    for (var i=0;i<edges.length;i++){
+      corners.push( this.hexToPoint(edges[i].getPoint1() ));
+    }
+    this.drawPolygon(corners,style);
+  }
+};
+
+HexRenderer.p.drawRange = function(range) {
+  
+  var outline = Hex.outline(range.getHexArray());
+
+  var range_style = new RenderStyle();
+  range_style.fill_color = "rgba(255,255,150, 0.2)";
+  range_style.line_width = 3;
+  range_style.line_color = "rgba(255,255,100,1)";
+
+  //draw the outline of the range
+  this.drawOutline( outline,range_style);
+}
+
+HexRenderer.p.drawHexMap = function(hexmap) {
+  //get the array
+  var hexarray = hexmap.getHexArray();
+
+  //make a tile renderer
+  //var tile_renderer = new TileRenderer2D();
+  //draw the tiles of the array
+  for (hex of hexarray) {
+    this.drawTile2D(hex);
+    //tile_renderer.drawTile(hex);
+  }
+}
 /////////////////////////////////////////
 /////////////////////////////////////////
 /////////////////////////////////////////
@@ -157,7 +243,7 @@ var greenscale_colors = function(i) {
 
 
 function WorldRenderer (canvas_draw,view,world) {
-  Renderer.call(this,canvas_draw,view); 
+  HexRenderer.call(this,canvas_draw,view,world.layout); 
   this.world = world;
 
   this.corners = [];
@@ -165,64 +251,8 @@ function WorldRenderer (canvas_draw,view,world) {
   this.ready_to_render = true;
 }
 
-WorldRenderer.prototype = Object.create(Renderer.prototype);
+WorldRenderer.prototype = Object.create(HexRenderer.prototype);
 WorldRenderer.p = WorldRenderer.prototype;
-
-WorldRenderer.p.hexToPoint = function(hex) {
-  return this.world.hexToPoint(hex);
-}
-WorldRenderer.p.hexesToPoints = function(hexes) {
-  var points = [];
-  for (let hex of hexes) {                            
-      points.push(this.hexToPoint(hex));
-  }
-  return points;
-}
-WorldRenderer.p.pointToHex = function(point) {
-  return this.world.pointToHex(point);
-}
-
-WorldRenderer.p.mapColors = function(i) {
-  return greenscale_colors(i);  
-} 
-
-WorldRenderer.p.drawHex = function(hex, style) {
-
-  //if zoomed out enough, just draw a dot
-  if (this.view.getScale() < 1) {
-
-      var point = this.hexToPoint(hex);
-      this.drawDot(point, 60, style);
-  } else {
-      //otherwise, draw the actual hex
-      var corners = this.hexesToPoints(Hex.corners(hex));
-      this.drawPolygon(corners,style);
-  }
-};
-
-WorldRenderer.p.drawHexElevated = function(hex,height,style) {
-  var low_corners = this.hexesToPoints(Hex.corners(hex));
-  var high_corners = [];
-  for (let i=0;i<low_corners.length;i++) {
-    let shifted_x = low_corners[i].x;
-    let shifted_y = low_Corners[i].y-height;
-    high_corners[i] = new Point(shifted_x, shifted_y);
-  }
-  
-  var column_corners = [low_corners[0],  high_corners[1],
-                        high_corners[2], high_corners[3],
-                        low_corners[4],  low_corners[5]];
-
-  this.drawPolygon(column_corners,style);
-  this.drawHex(high_corners,style);
-
-};
-
-WorldRenderer.p.drawHexes = function(hexes,style) {
-    for (var i=0;i<hexes.length;i++) {
-        this.drawHex(hexes[i], style)
-    }
-};
 
 WorldRenderer.p.drawOutline = function(edge_arrays,style) {
     
@@ -241,39 +271,35 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   //get the array
   var hexarray = hexmap.getHexArray();
 
+  //make a tile renderer
+  var tile_renderer = new TileRenderer2D(this.canvas_draw,
+                       this.view,this.world.layout);
   //draw the tiles of the array
   for (hex of hexarray) {
-    this.drawTile2D(hex);
+    
+    //draw tile
+    tile_renderer.drawTile(hex, this.getTile(hex));
+    
+    //draw units
+    var this_unit = this.world.units.getValue(hex);
+    if (typeof this_unit == 'object') {
+        this.drawUnit(this_unit,hex,0);
+    }
   }
 }
 
 
+// CALCULATING RECTANGLE FUNCTIONS!?
 WorldRenderer.p.getHexRectangleBoundaries = function() {
    
 
-    //find the screen position and width
-    var x = this.view.getInputRect().position.x;
-    var y = this.view.getInputRect().position.y;
-    var height = this.view.getInputRect().size.y;
-    var width = this.view.getInputRect().size.x;
-
-    //find the boundaries
-    var left = x; 
-    var right = x+width;
-    var top = y;
-    var bottom = y+height;
-
-    //find the corner points
-    var topleft = new Point(left,top);
-    var topright = new Point(right,top);
-    var bottomleft = new Point(left,bottom);
-    var bottomright = new Point(right,bottom);
+    var corners = this.view.getCorners();
 
     //find the corner hexes
-    var toplefthex = Hex.round(this.pointToHex(topleft));
-    var toprighthex = Hex.round(this.pointToHex(topright));
-    var bottomlefthex = Hex.round(this.pointToHex(bottomleft));
-    var bottomrighthex = Hex.round(this.pointToHex(bottomright));
+    var toplefthex = Hex.round(this.pointToHex(corners.topleft));
+    var toprighthex = Hex.round(this.pointToHex(corners.topright));
+    var bottomlefthex = Hex.round(this.pointToHex(corners.bottomleft));
+    var bottomrighthex = Hex.round(this.pointToHex(corners.bottomright));
 
     //define the limits of the iteration
     var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),
@@ -295,13 +321,12 @@ WorldRenderer.p.getHexRectangleBoundaries = function() {
     return hex_rect;
 }
 
-WorldRenderer.p.drawRedRenderingRectangle = function(rectmap) {
+WorldRenderer.p.drawRedRenderingRectangle = function() {
+    var object = this.view.getCorners();
     var corners = [];
-    corners.push(this.hexToPoint(new Hex(rectmap.qmin,rectmap.rmin)));
-    corners.push(this.hexToPoint(new Hex(rectmap.qmin,rectmap.rmax)));
-    corners.push(this.hexToPoint(new Hex(rectmap.qmax,rectmap.rmax)));
-    corners.push(this.hexToPoint(new Hex(rectmap.qmax,rectmap.rmin)));
-
+    for (corner in object) {
+      corners.push(corner);
+    }
     var rect_style = new RenderStyle();
     rect_style.fill_color = 'transparent';
     rect_style.line_color = 'red';
@@ -322,15 +347,10 @@ WorldRenderer.p.drawWorld = function() {
 						  rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
-    //this.drawRectangleSection(rectMap);
+    this.drawRedRenderingRectangle();
     this.drawHexMap(hexmap);
   }
 }
-
-
-
-
-
 
 
 
@@ -339,99 +359,47 @@ WorldRenderer.p.getTile = function(hex) {
 }
 
 
-WorldRenderer.p.drawTile2D = function(hex) {
-    var style = new RenderStyle();  
-    var tile = this.getTile(hex);
-
-    //analyze tile
-    var height = Math.floor(tile.components.elevation);
-    style.fill_color = this.mapColors(height);
-
-    //draw ground
-    this.drawHex(hex, style);
-    var position = this.hexToPoint(hex);
-
-    //wind arrows
-    var charcode = this.getWindArrowCharacter( tile.getComponent('wind') );
-    var arrow_style = new RenderStyle();
-    arrow_style.font_size = 30;
-    arrow_style.text_color = 'white';
-    this.drawText(String.fromCharCode(charcode), position, arrow_style);
-
-    //draw units
-    var this_unit = this.world.units.getValue(hex);
-    if (typeof this_unit == 'object') {
-        this.drawUnit(this_unit,hex,0);
-
-
-
-    }
-}
-
-WorldRenderer.p.getWindArrowCharacter = function(direction) {
-
-    switch (direction) {
-        case 0: return 8594; break;
-        case 1: return 8599; break;
-        case 2: return 8598; break;
-        case 3: return 8592; break;
-        case 4: return 8601; break;
-        case 5: return 8600; break;
-        default: return 8635;
-    }
-}
-
 WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
-    var position = this.hexToPoint(hex);
-    position = position.offset(0,-height);
-   
-    var unit_style = new RenderStyle();
-    unit_style.fill_color = unit.components.color;
-    this.drawDot(position,10*unit.components.size,unit_style);
-    if (unit.components.population != undefined) {
-      var text_style = new RenderStyle();
-      text_style.font_size = 25;
-            
-      this.drawText(unit.components.population,position,text_style);
-    }
+  var position = this.hexToPoint(hex);
+  position = position.offset(0,-height);
+ 
+  var unit_style = new RenderStyle();
+  unit_style.fill_color = unit.getComponent('color');
+  let size = 10*unit.getComponent('size');
+  this.drawDot(position, size, unit_style);
+  
+  if (unit.components.population != undefined) {
+    let text_style = new RenderStyle();
+    text_style.font_size = 25;
+    let text = unit.components.population;      
+    this.drawText(text, position, text_style);
+  }
 };
 
-WorldRenderer.p.drawRange = function(range) {
-    
-    var outline = Hex.outline(range.getHexArray());
-
-    var range_style = new RenderStyle();
-    range_style.fill_color = "rgba(255,255,150, 0.2)";
-    range_style.line_width = 3;
-    range_style.line_color = "rgba(255,255,100,1)";
-
-    //draw the outline of the range
-    this.drawOutline( outline,range_style);
-}
 
 WorldRenderer.p.drawPath = function(range,destination) {
     
-    var pathfinder = new PathFinder(this.world.map);
+  var pathfinder = new PathFinder(this.world.map);
 
-    //draw the path
-    if (range.containsHex(destination)) {
+  //draw the path
+  if (range.containsHex(destination)) {
   var hex_style = new RenderStyle();
   hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
   hex_style.width = 2;
 
   this.drawHex(destination,hex_style);
         
-        //calculate points of the hexes
-        var hexes = pathfinder.destinationPathfind(range,destination);
-        var points = [];
-        for (var i = 0; i<hexes.length;i++) {
-            points.push(this.hexToPoint(hexes[i]));
-        }
+    //calculate points of the hexes
+    var hexes = pathfinder.destinationPathfind(range,destination);
+    var points = [];
+    for (var i = 0; i<hexes.length;i++) {
+      points.push(this.hexToPoint(hexes[i]));
+    }
 
-        //draw on screen
-        this.drawLines(points,3);
-        
+    //draw on screen
+    this.drawLines(points,3);
+  
     }
 }
 
@@ -463,10 +431,10 @@ WorldRenderer.p.drawPath = function(range,destination) {
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-function TileRenderer () {
-  Renderer.call(this); 
+function TileRenderer (canvas_draw, view, layout) {
+  HexRenderer.call(this,canvas_draw, view, layout); 
 }
-TileRenderer.prototype = Object.create(Renderer.prototype);
+TileRenderer.prototype = Object.create(HexRenderer.prototype);
 TileRenderer.prototype.drawTile = function(hex,value) {
 }
 TileRenderer.prototype.mapColors = function(i) {
@@ -475,18 +443,33 @@ TileRenderer.prototype.mapColors = function(i) {
 
 
 
-function TileRenderer2D() {
-  TileRenderer.call(this); 
+function TileRenderer2D(canvas_draw, view, layout) {
+  TileRenderer.call(this, canvas_draw, view, layout); 
 }
 TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
-TileRenderer2D.prototype.drawTile = function(hex,value) {
+
+TileRenderer2D.prototype.drawTile = function(hex,tile) {
   //analyze tile
-  var height = value;
-  color = this.mapColors(height);
+  var style = new RenderStyle();  
+
+  //analyze tile
+  var height = Math.floor(tile.getComponent('elevation'));
+  style.fill_color = this.mapColors(height);
 
   //draw ground
-    this.drawHex(hex,0,color);
-  }
+  this.drawHex(hex, style);
+  var position = this.hexToPoint(hex);
+
+  //wind arrows
+  var wind_direction = tile.getComponent('wind');
+  var charcode = getWindArrowCharacter( wind_direction );
+  var arrow_style = new RenderStyle();
+  arrow_style.font_size = 30;
+  arrow_style.text_color = 'white';
+  var wind_text = String.fromCharCode(charcode);
+  this.drawText(wind_text, position, arrow_style);
+
+}
 
 /*
 
@@ -560,3 +543,19 @@ function TileRendererSemi3D() {
 TileRendererSemi3D.prototype = Object.create(TileRenderer.prototype);
 
 */
+
+
+
+
+getWindArrowCharacter = function(direction) {
+
+    switch (direction) {
+        case 0: return 8594; break;
+        case 1: return 8599; break;
+        case 2: return 8598; break;
+        case 3: return 8592; break;
+        case 4: return 8601; break;
+        case 5: return 8600; break;
+        default: return 8635;
+    }
+}
