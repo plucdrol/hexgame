@@ -744,20 +744,27 @@ const orientation_flat = new Orientation(  3.0/2.0, 0.0, Math.sqrt(3.0)/2.0, Mat
           2.0/3.0, 0.0, -1.0/3.0, Math.sqrt(3.0)/3.0,
           0.0 );
 
-
+function getOrientation(string) {
+  if (string == 'orientation_flat') {
+    return orientation_flat;
+  }
+  return orientation_pointy;
+}
 
 //The HexLayout class relates hex coordinates to world coordinates
 //It positions the virtual grid points in space
 
 
-function HexLayout (orientation, size, origin) {
-  this.orientation = orientation; //orientation object, defined above
+function HexLayout (orientation_string, size, origin) {
+  
+  this.orientation = getOrientation(orientation_string);
   this.size = size;     //point object
   this.origin = origin; //point object
 
   this.fast_points = [new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0)];
   this.reusable_point = new Point(0,0);
 }
+
 
 
   //   HEX AND PIXEL RELATIONS
