@@ -24,9 +24,10 @@ Unit.prototype.tileCostFunction = function(tile) {
 
 Unit.prototype.findRange = function(map, position) {
   var costFunction = this.tileCostFunction.bind(this);
-  var pathfinder = new PathFinder(map, costFunction );
   var max_movement = this.getComponent('movement_left');
-  var range = pathfinder.getRange(position, max_movement);
+  
+  var range = PathFinder.getRange(map, position, max_movement, costFunction);
+  console.log(range);
   this.setComponent('range', range);
 };
 
@@ -47,7 +48,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.maximum_elevation = 13; 
     break;
   case 'fast-player':
-    this.setMovement(24);
+    this.setMovement(6);
     this.components.color = 'blue';
     this.components.controllable = true;
     this.components.eats_food = true;
@@ -121,10 +122,9 @@ Unit.prototype.move = function(map,current_hex,next_hex) {
   //measure the distance moved
   var costFunction = this.tileCostFunction.bind(this);
   var pathfinder = new PathFinder(map, costFunction);
-  //calculate movements remaining
-  var max_movement = this.getComponent('movement_left');
   //find the path to destination
-  var movement_cost = pathfinder.getPathCost(current_hex, next_hex, max_movement);
+  var movement_cost = PathFinder.getPathCost(map, current_hex, next_hex,
+                                             costFunction);
   //substract it from the movement remaining
   this.components.movement_left -= movement_cost;
 }
