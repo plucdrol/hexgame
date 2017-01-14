@@ -236,10 +236,10 @@ var greenscale_colors = function(i) {
 }
 
 
-function WorldRenderer (canvas_draw,view,world) {
+function WorldRenderer (canvas_draw,view,world, unit_interface) {
   HexRenderer.call(this,canvas_draw,view,world.layout); 
   this.world = world;
-
+  this.unit_interface = unit_interface;
   this.corners = [];
 
   this.ready_to_render = true;
@@ -275,7 +275,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     tile_renderer.drawTile(hex, this.getTile(hex));
     
     //draw units
-    var this_unit = this.world.units.getValue(hex);
+    var this_unit = this.unit_interface.units.getValue(hex);
     if (typeof this_unit == 'object') {
         this.drawUnit(this_unit,hex,0);
     }
