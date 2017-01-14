@@ -166,7 +166,7 @@ HexRenderer.p.drawOutline = function(edge_arrays,style) {
 HexRenderer.p.drawRange = function(range) {
   
   var outline = Hex.outline(range.getHexArray());
-
+  
   var range_style = new RenderStyle();
   range_style.fill_color = "rgba(255,255,150, 0.2)";
   range_style.line_width = 3;
@@ -374,8 +374,6 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
 WorldRenderer.p.drawPath = function(range,destination) {
     
-  var pathfinder = new PathFinder(this.world.map);
-
   //draw the path
   if (range.containsHex(destination)) {
   var hex_style = new RenderStyle();
@@ -384,17 +382,17 @@ WorldRenderer.p.drawPath = function(range,destination) {
 
   this.drawHex(destination,hex_style);
         
-    //calculate points of the hexes
-    var hexes = pathfinder.destinationPathfind(range,destination);
-    var points = [];
-    for (var i = 0; i<hexes.length;i++) {
-      points.push(this.hexToPoint(hexes[i]));
-    }
+  //calculate points of the hexes
+  var hexes = PathFinder.getPath(this.world.map, range, destination);
+  var points = [];
+  for (var i = 0; i<hexes.length;i++) {
+    points.push(this.hexToPoint(hexes[i]));
+  }
 
-    //draw on screen
-    this.drawLines(points,3);
-  
-    }
+  //draw on screen
+  this.drawLines(points,3);
+ 
+  }
 }
 
 

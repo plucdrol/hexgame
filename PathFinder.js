@@ -7,9 +7,9 @@ var PathFinder = (function() {
   var module = {};
 
   function PathFinderCell(path_cost,came_from) {
-    this.path_cost = 0;
-    this.came_from = {};
-    
+    this.path_cost = path_cost;
+    this.came_from = came_from;
+    return this; 
   }
 
 
@@ -148,10 +148,11 @@ var PathFinder = (function() {
 
     var cost_so_far = costSoFar(visited, previous_hex);
     var new_cell = makeNeighborCell(map, cost_so_far, hex, previous_hex, costFunction);
-   
-    if (pathShouldContinue(map, visited, hex, previous_hex, costFunction) ) {
-      setCell(visited, hex, new_cell);
-      frontier.put(hex);
+    if (!(new_cell.path_cost === undefined)) { 
+      if (pathShouldContinue(map, visited, hex, previous_hex, costFunction) ) {
+        setCell(visited, hex, new_cell);
+        frontier.put(hex);
+      }
     }
   }
 
@@ -159,13 +160,12 @@ var PathFinder = (function() {
   //Returns true if hex is a path worth exploring
   function pathShouldContinue(map, visited, hex, previous_hex, costFunction) {
    
-    var already_visited = hexHasBeenVisited(visited,hex);
+    var already_visited = hexHasBeenVisited(visited, hex);
 
     var cost_so_far = costSoFar(visited, previous_hex);
     var current_cell = getCell(visited, hex);
     var new_cell = makeNeighborCell(map, cost_so_far, hex, previous_hex, 
                                     costFunction);
-    
     if (new_cell.path_cost === undefined) {
       return false;
     }
@@ -189,21 +189,19 @@ var PathFinder = (function() {
 
   //Creates a PathFinder cell going from one hex to another
   function makeNeighborCell(map, cost_so_far,hex,previous_hex, costFunction) {
-
     let cost = calculatePathCost(map, cost_so_far, hex, previous_hex, costFunction);
     var new_cell = new PathFinderCell(cost, previous_hex);
-
+    
     return new_cell;
   }
 
   //Calculate current minimum cost to a cell
   function calculatePathCost(map, cost_so_far, hex, previous_hex, costFunction) {
     let step_cost = stepCost(map, previous_hex,hex, costFunction);
-    
     if (step_cost === undefined) {
       return undefined;
     }
-
+    //At this position, sstill working!
     let path_cost = cost_so_far + step_cost;
     
     return path_cost;
@@ -235,12 +233,12 @@ var PathFinder = (function() {
 
  //Returns the movement cost from first tile to second.
   //Moving downhill is a smaller value than uphill.
-  function stepCost(map, this_tile, other_tile, costFunction) {
+  function stepCost(map, this_hex, other_hex, costFunction) {
     
     //returns a positive number for uphill movement
     // negative number for downhill movement
-    var cost_this = getTileCost(map, this_tile, costFunction);
-    var cost_other = getTileCost(map, other_tile, costFunction);
+    var cost_this = getTileCost(map, this_hex, costFunction);
+    var cost_other = getTileCost(map, other_hex, costFunction);
 
     if (cost_this === undefined) {
       return undefined;

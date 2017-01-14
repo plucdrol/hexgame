@@ -381,9 +381,7 @@ Hex.outline = function(hexes) {
     }
   }
   //sort the edges
-
   var sorted_edges = Edge.sort(unsorted_edges);
-  
   return sorted_edges;
 }
 
@@ -428,9 +426,9 @@ Edge.sort = function(unsorted_edges) {
         //if the 1st point of MAYBE_EDGE is equal to the 
 	//CURRENT_EDGE's 2nd point
 
-	vertexA = maybe_edge.getVertex1();
-	vertexB = current_edge.getVertex2();
-        if ( vertexA.equals(vertexB)   ) {
+	let vertexC = maybe_edge.getVertex1();
+	let vertexD = current_edge.getVertex2();
+        if ( vertexC.equals(vertexD)   ) {
 
           //push MAYBE_EDGE to the SORTED EDGES array
           sorted_edges.push ( maybe_edge );
@@ -456,9 +454,9 @@ Edge.sort = function(unsorted_edges) {
     //if you are here, it means the loop found a circle of 
     //connecting edges. verify that the last edge in 
     //SORTED_EDGES matche the first edge in SORTED EDGES
-    vertexA = sorted_edges[0].getVertex1()
-    vertexB = sorted_edges[sorted_edges.length-1].getVertex2();
-    if (!(vertexA.equals(vertexB) ) ) {
+    let vertexE = sorted_edges[0].getVertex1()
+    let vertexF = sorted_edges[sorted_edges.length-1].getVertex2();
+    if (!(vertexE.equals(vertexF) ) ) {
       console.log('hex boundaries do not match');
     }
     //popp that SORTED_EDGES array in ARRAY OF EDGE ARRAYS

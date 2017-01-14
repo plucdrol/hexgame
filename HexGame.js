@@ -16,7 +16,7 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 //Create a map generator
-var map_radius = 50;
+var map_radius = 15;
 var hexmap_generator = new MapGenerator('perlin'); 
 hexmap_generator.makeMap(map_radius);
 var map = hexmap_generator.getMap();
@@ -49,11 +49,11 @@ canv_input.windowResize();
 //create a unit in the world
 unit_controller.createUnit(new Hex(0,0),'player');
 unit_controller.createUnit(new Hex(1,0),'tree');
-unit_controller.createUnit(new Hex(15,-15),'fast-player');
-unit_controller.createUnit(new Hex(15,0),'fast-player');
-unit_controller.createUnit(new Hex(0,-15),'fast-player');
-unit_controller.createUnit(new Hex(-15,-15),'fast-player');
-unit_controller.createUnit(new Hex(-15,15),'fast-player');
+unit_controller.createUnit(new Hex(5,-5),'fast-player');
+unit_controller.createUnit(new Hex(5,0),'fast-player');
+unit_controller.createUnit(new Hex(0,-5),'fast-player');
+unit_controller.createUnit(new Hex(-5,-5),'fast-player');
+unit_controller.createUnit(new Hex(-5,5),'fast-player');
 unit_controller.createUnit(new Hex(-15,0),'fast-player');
 unit_controller.createUnit(new Hex(1,0),'tree');
 
@@ -71,6 +71,7 @@ function drawScreen() {
   if (unit_controller.hex_selected instanceof Hex) {
     var potentialUnit = unit_controller.units.getValue(unit_controller.hex_selected);
     if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
+      console.log(potentialUnit.getComponent('range'));
       world_renderer.drawRange(potentialUnit.getComponent('range'));
       //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
     }
