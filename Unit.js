@@ -37,7 +37,7 @@ Unit.prototype.setType = function(unit_type) {
 
   switch (unit_type) {
   case 'player':
-    this.setMovement(6);
+    this.setMovement(8);
     this.components.color = 'red';
     this.components.controllable = true;
     this.components.eats_food = true;
@@ -121,7 +121,6 @@ Unit.prototype.setMovement = function(movement) {
 Unit.prototype.move = function(map,current_hex,next_hex) {
   //measure the distance moved
   var costFunction = this.tileCostFunction.bind(this);
-  var pathfinder = new PathFinder(map, costFunction);
   //find the path to destination
   var movement_cost = PathFinder.getPathCost(map, current_hex, next_hex,
                                              costFunction);

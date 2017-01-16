@@ -17,7 +17,7 @@ var canv_input = new CanvasInput(canvas);
 var map_radius = 15;
 var hexmap_generator = new MapGenerator('perlin'); 
 hexmap_generator.makeMap(map_radius);
-var map = hexmap_generator.getMap();
+var map = hexmap_generator.makeMap(map_radius);
 
 //create a world
 var world = new World(map_radius);
@@ -69,7 +69,6 @@ function drawScreen() {
   if (unit_controller.hex_selected instanceof Hex) {
     var potentialUnit = unit_controller.units.getValue(unit_controller.hex_selected);
     if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
-      console.log(potentialUnit.getComponent('range'));
       world_renderer.drawRange(potentialUnit.getComponent('range'));
       //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
     }

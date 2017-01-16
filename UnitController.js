@@ -26,7 +26,7 @@ UnitController.p.newMap = function(map) {
   this.map = map;
   
   //delete units
-  for (let hex of this.units.getArray())  {
+  for (let hex of this.units.getHexArray())  {
     var unit = this.units.getValue(hex);
     if (unit.components.hasOwnProperty('food_value')) {
       this.removeUnit(hex);
@@ -40,7 +40,7 @@ UnitController.p.fillMap = function() {
 }
 UnitController.prototype.addTreesToMap = function() {
   //add trees (this is the wrong place for world-generaion code)
-  for (let hex of this.map.getArray()) {
+  for (let hex of this.map.getHexArray()) {
     var hex_value = this.map.getValue(hex).components.elevation;
     if (hex_value >= 4 && hex_value <= 9) {
       if (Math.random() < 0.2) {
@@ -52,7 +52,7 @@ UnitController.prototype.addTreesToMap = function() {
 
 UnitController.prototype.addFishToMap = function() {
   //add fish (this is the wrong place for world-generaion code)
-  for (let hex of this.map.getArray()) {
+  for (let hex of this.map.getHexArray()) {
     var hex_value = this.map.getValue(hex).components.elevation;
     if (hex_value === 1) {
       if (Math.random() < 0.1) {
@@ -271,17 +271,12 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
 }
 
 UnitController.p.moveUnit = function(current_hex,next_hex) {
-  //measure the distance moved
-  var tile_cost_function = function(tile){
-    return tile.getComponent('elevation');
-  }
-  var pathfinder = new PathFinder(this.map,
-      tile_cost_function);
   //calculate movements remaining
   var the_unit = this.getUnit(current_hex);
   var max_movement = the_unit.getComponent('movement_left');
   //find the path to destination
-  var cost = pathfinder.getPathCost(current_hex, next_hex, max_movement);
+  var costFunction = the_unit.tileCostFunction.bind(the_unit);
+  var cost = PathFinder.getPathCost(this.map,current_hex, next_hex, costFunction);
   //substract it from the movement remaining
   the_unit.increaseComponent('movement_left', -cost);
   

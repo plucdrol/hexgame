@@ -108,6 +108,7 @@ MapGenerator.prototype.makeMap = function(radius) {
   this.flatenRange(2,3);
   this.flatenRange(3,6);
 
+  return this.map;
 }
 
 MapGenerator.prototype.roundDown = function() {

@@ -337,6 +337,7 @@ WorldRenderer.p.drawWorld = function() {
     var rectMap = this.getHexRectangleBoundaries();
 
     //get the rectangular map
+
     let hexmap = this.world.map.getRectangleSubMap(rectMap.qmin,
 						  rectMap.qmax,
                                                   rectMap.rmin, 

@@ -414,9 +414,8 @@ Edge.sort = function(unsorted_edges) {
     
     //while the edges in sorted_edges do not make a loop
     attempts = max_attempts;
-    let vertexA = current_edge.getVertex2();
-    let vertexB = sorted_edges[0].getVertex1();
-    while ( ! vertexA.equals(vertexB)  ) {
+    while ( ! current_edge.getVertex2().equals(
+              sorted_edges[0].getVertex1())  ) {
 
       //check all the unsorted edges for the matching one
       attempts -= 1;
@@ -613,6 +612,9 @@ HexMap.prototype.hexHash = function(hex) {
   //return Math.floor(q < 0 && r < 0 || q >= 0 && r >= 0 ? C : -C - 1);
 }
 
+HexMap.prototype[Symbol.iterator] = function() {
+   
+}
 
 //Following functions deal with submaps
 
@@ -620,8 +622,10 @@ HexMap.prototype.addSubmap = function(submap) {
 
   for (let key in submap.values) {
     let hex = this.getHex(key);
-    let value = submap.getValue(hex);
-    this.set(hex, value);
+    if (submap.containsHex(hex)) {
+      let value = submap.getValue(hex);
+      this.set(hex, value);
+    }
   }
 }
 HexMap.prototype.getHexagonSubMap = function(origin,radius){
