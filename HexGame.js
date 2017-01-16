@@ -1,12 +1,10 @@
 /* MAIN GAME FILE */
 //-------1----------2---------3---------4---------5---------6---------7--------8
 
-
 // Here is where all the javascript modules should be combined
 // Avoid all cross-dependencies!
 // Allow modules to be interconnected at this level
 //////////////////////////// CREATING THE WORLD //////////////////////////////
-
 //define the screen which can be drawn on
 var canvas = document.getElementById('mycanvas');
 

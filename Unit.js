@@ -48,7 +48,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.maximum_elevation = 13; 
     break;
   case 'fast-player':
-    this.setMovement(6);
+    this.setMovement(12);
     this.components.color = 'blue';
     this.components.controllable = true;
     this.components.eats_food = true;
