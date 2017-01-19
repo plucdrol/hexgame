@@ -6,115 +6,93 @@ var PathFinder = (function() {
 
   var module = {};
 
-  function PathFinderCell(hex,path_cost,came_from) {
-    this.hex = hex;
-    this.path_cost = path_cost;
-    this.came_from = came_from;
-    return this; 
+  function PathFinderCell(coord, previous_coord, path_cost) {
+    var cell = {
+      coord:coord,
+      path_cost:path_cost,
+      previous_coord:previous_coord
+    };
+    return cell; 
   }
-
 
   //Creates a new array of visited cells
   function init_visited(origin) {
-    let visited = new HexMap();
-    let first_cell = new PathFinderCell(origin, 0, undefined);
-    visited.set(origin, first_cell);
+    let visited = new Map();
+    let first_cell = PathFinderCell(origin, undefined, 0);
+    setCell(visited, origin, first_cell);
     return visited;
   }
 
-  //Creates a list of cells on the frontier
-  function init_frontier(origin) {
-    let frontier = new Queue();
-    frontier.put(origin);
-    return frontier;
-  }
-
-
-  //Returns the elevation of the terrain at position hex
-  function getTileCost(map, hex, tileCostFunction) {
-    let tile = map.getValue(hex);
-    let tile_cost = tileCostFunction(tile);
-    return tile_cost;
-  }
-  function getOriginCell() {
-    return new PathfinderCell(new Hex(0,0),0,undefined);
-  }
-  function getPreviousHex(tile) {
-    return tile.came_from;
-  }
   //Modifies the pathfinder array result to be returned
-  function getCell(visited, hex) {
-    return visited.getValue(hex);
+  function currentCell(visited, coord) {
+    return visited.get(JSON.stringify(coord));
   } 
-  function costSoFar(visited, hex) {
-    let cost = getCell(visited, hex).path_cost;
-    return cost;
-    
+  function setCell(visited, coord, value) {
+    visited.set(JSON.stringify(coord), value); //MUTABILITY OF DATA HERE
   }
-
-  //Find movement cost to all cells within range of origin
-  function rangePathfind(map, origin, max_cost, costFunction) {
-    
-    let visited = init_visited(origin);
-    let frontier = init_frontier(origin);
-
-    if (max_cost <= 0) 
-      return;
-
-    while ( !frontier.isEmpty() ) {
-      let hex = frontier.pop();
-      let neighbors_to_add = processNeighbors(visited, map, hex, 
-	                                  max_cost, costFunction);          
-
-      for (cell of neighbors_to_add) {
-	visited.set(cell.hex, cell);
-	frontier.put(cell.hex);
-      }
-    }
-    
-    return visited;
-  };
-
-
-  //returns a hexmap containing only the hexes on the path
-  //to the target
-  function targetPathfind(map, origin, target, costFunction){
-     
-    //A default value: should be high enough to cover all costs,
-    //but eventually be unnecessary using a different method
-    let max_cost = 200;
-
-    //calculate all paths within the range
-    let visited = rangePathfind(map, origin, max_cost, costFunction);
-
-    //return false if the target is out of range 
-    if (!visited.containsHex(target)) {
-      return false;
-    }
-    
-    return calculatePath(visited, origin, target);
-
-  };
-
-  //Requires a pathfinded 'visited' array, returns an array of cells
-  function calculatePath(visited,origin,target) {
-    
-    if (origin.equals(target)) {
-      return [ getOriginCell() ];
-    }
-
-    //find path to the hex before target using function
-    let current_hex = target;
-    let current_tile = getCell(visited,target);
-    let previous_hex = getPreviousHex(current_tile);
-
-    let path = getPath(visited, origin, previous_hex);
-    path.push(current_tile);
-
-    return path;
+  function hasCell(visited, coord) {
+    return visited.has(JSON.stringify(coord)); 
   }
   
 
+  //Make all cells within 1 step of cell
+  function makeNeighbors(map, cell, costFunction) {
+    let coords = map.getNeighbors(cell.coord);
+    return coords.map( makeNeighborCell(map, cell, costFunction) );
+  }
+  
+  function makeNeighborCell(map, cell, costFunction) {
+    return function(coord) {
+      let tile = map.getValue(coord);
+      let previous_tile = map.getValue(cell.coord);
+
+      let cost_so_far = cell.path_cost;
+      let step_cost = stepCost(tile, previous_tile, costFunction);
+      let cost = cost_so_far + step_cost;
+
+      let new_cell = PathFinderCell(coord, cell.coord, cost);
+      return new_cell;
+    };
+  }
+
+
+  //Requires a pathfinded 'visited' array, returns an array of cells
+  function calculatePath(visited, origin, target) {
+    
+    if (origin.equals(target)) {
+      return [ getOriginCell(origin) ];
+    }
+
+    //find path to the hex before target using function
+    let current_cell = currentCell(visited, target);
+    let previous_coord = current_cell.previous_coord;
+
+    let path = getPath(visited, origin, previous_coord);
+    path.push(current_cell);
+
+    return path;
+  }
+
+  //Creates a cell at the start of a queue
+  function getOriginCell(origin) {
+    return PathfinderCell(origin,0,undefined);
+  }
+
+  //Return the cells worth revisiting for pathfinding
+  function getCellsToRevisit(visited, cells) {
+
+    return cells.filter(function(cell) {
+        return considerNewCell(cell, visited); 
+      });
+  }
+
+  //higher order function
+  function cellIsWithinCost(max_cost) {
+    return function(cell) {
+      return !(movementCostExceeded(cell.path_cost, max_cost));
+    }
+  }
+  
   //Returns true if there is the movement is not exceeded
   function movementCostExceeded(cost, max_cost) {
     if (cost === undefined) {
@@ -128,179 +106,127 @@ var PathFinder = (function() {
     }
     return true;
   }
-
-
-  //Add neighbors to the processing list if needed
-  function processNeighbors(visited, map, previous_hex,
-                            max_cost, costFunction) {
-    let new_cells_array = [];
-    let neighbor_hexes = getNeighborArray(map, previous_hex);
-    
-
-    let previous_cell = getCell(visited, previous_hex);
-    let cell_array = makeCells(map, neighbor_hexes, previous_cell, costFunction);
-	
-    let cells_in_range = getCellsWithinCost(cell_array, max_cost);
-    for (new_cell of cells_in_range) {
-      if (considerNewCell(visited, new_cell)) {
-	new_cells_array.push(new_cell);
-      }
-    }
-
-    return new_cells_array;
-  }
-
-  function makeCells(map, hex_array, previous_cell, costFunction) {
-    let cell_array = [];
-    let previous_tile = map.getValue(previous_cell.hex);
-    let cost_so_far = previous_cell.path_cost;
-
-    for (let hex of hex_array) {
-      let tile = map.getValue(hex);
-      let step_cost = stepCost(tile, previous_tile, costFunction);
-      let cost = cost_so_far + step_cost;
-
-      let new_cell = new PathFinderCell(hex, cost, previous_cell.hex);
-
-      cell_array.push(new_cell);
-    }
-    return cell_array;
-  }
-
-  function getCellsWithinCost(cell_array, max_cost) {
-    let cells_within_cost = [];
-    for (let cell of cell_array) {
-      if (!movementCostExceeded(cell.path_cost, max_cost)) {
-        cells_within_cost.push(cell);
-      }
-    }
-    return cells_within_cost;
-  }
-
-  function getNeighborArray(map, previous_hex) {
-
-    let neighbor_array = [];
-    for (neighbor of previous_hex.getNeighbors()) {
-      if (hexIsOnTheMap(map,neighbor)) {
-        neighbor_array.push(neighbor);
-      }
-    }
-    return neighbor_array;
-  }
-
+  
   //Returns true if the new cell should be added in
-  function considerNewCell(visited, new_cell) {
+  function considerNewCell(new_cell, visited) {
 
     //new cells are always added
-    if (!hexHasBeenVisited(visited, new_cell.hex)) {
+    if (!hasBeenVisited(visited, new_cell)) {
       return true;
     }   
     //revisited cells are added if better than before
-    let current_cell = getCell(visited, new_cell.hex);
+    let current_cell = currentCell(visited, new_cell.coord);
     if (newCellIsBetter(current_cell, new_cell)) {
      return true;
     } 
     return false;
   }
 
-
-  //Returns true if hex and previous hex are explorable
-  function hexIsOnTheMap(map, hex) {
-    return map.containsHex(hex);
-
-  }
-  function hexHasBeenVisited(visited, hex) {
-    return visited.containsHex(hex);
-  }
-
-  //Calculate current minimum cost to a cell
-  function calculatePathCost(cost_so_far, tile, previous_tile, costFunction) {
-    
-    return path_cost;
+  function hasBeenVisited(visited, cell) {
+    return hasCell(visited,cell.coord);
   }
 
   //While pathfinding, returns true if new cell is better
   function newCellIsBetter(cell, new_cell) {
+    return (new_cell.path_cost < cell.path_cost);
+
+  }
     
-    best_cell = getBestCell(cell, new_cell );
-    if (best_cell === new_cell) {
-      return true;
-    }
-
-    return false;
-  };
-
-  //Returns which cell is the best path step
-  function getBestCell(cell_a, cell_b) {
-    var cost_a = cell_a.path_cost;
-    var cost_b = cell_b.path_cost;
-
-    if (cost_b < cost_a) {
-      return cell_b;
-    } 
-
-    return cell_a;    
-  
-  };  
-
   //Returns the movement cost from first tile to second.
   //Moving downhill is a smaller value than uphill.
   function stepCost(tile, previous_tile, costFunction) {
-    
-    //returns a positive number for uphill movement
-    // negative number for downhill movement
-    var cost_this = costFunction(tile);
-    var cost_previous = costFunction(previous_tile);
-
-    if (cost_this === undefined) {
-      return undefined;
-    }
-
-    if (cost_previous === undefined) {
-      cost_previous = 0;
-    }
-    var difference = cost_this - cost_previous;
-
-    //Returns values based on difference in elevation only
-    if (difference >= 4) {
-      return undefined;
-    }
-    if (difference > 0)  {
-      return 6;
-    }
-    if (difference === 0) {
-      return 4;
-    }
-    if (difference < 0) {
-      return 3;
-    }
-    if (difference < -4) {
-      return undefined;
-    }
-    
-    return undefined;
+    return costFunction(previous_tile, tile);
   };
 
-  //return the cost to move from origin to target
-  function getPathCost(map, origin, target,  costFunction) {
-    //A default value: should be high enough to cover all costs,
-    //but eventually be unnecessary using a different method
-    let max_cost = 200;
+  //Find movement cost to all cells within range of origin
+  function rangeFind(map, origin, max_cost, costFunction) {
+    
+    let visited = init_visited(origin);
 
-    //calculate all paths within the range
-    let visited = rangePathfind(map, origin, max_cost, costFunction);
+    if (max_cost <= 0) 
+      return;
 
-    //return false if the target is out of range 
-    if (!visited.containsHex(target)) {
-      return false;
+    visited = rangeFindStep(map,visited,origin,max_cost,costFunction);
+    console.log(visited);
+    //testVisited(visited);
+    return visited;
+  };
+
+  function getHex(cell) {
+    return cell.coord;
+  }
+
+  function testVisited(visited) {
+    for (let hex of visited.map( getHex )) {
+      console.log(hex);
+      let comparison_array = [];
+      for (let other_hex of visited.map( getHex ) ) {
+	if (Hex.equals(other_hex, hex)) {
+	  comparison_array.push(hex);
+	}
+      } 
+      if (comparison_array.length > 1) {
+	console.log('duplicate cells in visited array!');
+      }
+    }
+  }
+
+  function rangeFindStep(map,visited,coord,max_cost,costFunction) {
+   
+    let current_cell = currentCell(visited, coord);
+    let neighbor_cells = makeNeighbors(map, current_cell, costFunction);
+    let cells_in_range = neighbor_cells.filter(cellIsWithinCost(max_cost));
+    let new_cells_to_add = getCellsToRevisit(visited, cells_in_range); 
+  
+    for (cell of new_cells_to_add) {
+      visited.delete(cell.coord);
+      setCell(visited, cell.coord, cell); 
+      rangeFindStep(map,visited,cell.coord,max_cost,costFunction);
     }
 
-    return getCell(visited,target).path_cost;
+    return visited;
 
   }
 
-  module.getRange = rangePathfind;
-  module.getPath = targetPathfind;
+  //returns a map containing only the coordinates on the path
+  //to the target
+  function targetPathfind(map, origin, target, costFunction){
+     
+    let max_cost = 200;
+    let visited = rangeFind(map, origin, max_cost, costFunction);
+
+    if (!hasCell(visited,target)) {
+      console.log('target is out of range');
+      return false;
+    } else {
+      return visited;
+    }
+    
+  };
+  
+  function getPath(map,origin,target,costFunction) {
+    let visited = targetPathfind(map,origin,target,costFunction);
+    return calculatePath(visited,origin,target);
+  }
+  
+  //return the cost to move from origin to target
+  function getPathCost(map, origin, target,  costFunction) {
+    let visited = targetPathfind(map,origin,target,costFunction);
+    return currentCell(visited, target).path_cost;
+  }
+
+  function getRangeHexes(map, origin, max_cost, costFunction) {
+    visited = rangeFind(map, origin, max_cost, costFunction);
+    var hex_array = [];
+    for (cell of visited.values()) {
+      hex_array.push(getHex(cell)); 
+    }
+    console.log(hex_array);
+    return hex_array;
+  }
+
+  module.getRange = getRangeHexes;
+  module.getPath = getPath;
   module.getPathCost = getPathCost;
   return module;
 })();

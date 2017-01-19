@@ -21,9 +21,43 @@ Unit.prototype.tileCostFunction = function(tile) {
   }
   return cost;
 }
+Unit.prototype.stepCostFunction = function(previous_tile, tile) {
 
+    //returns a positive number for uphill movement
+    // negative number for downhill movement
+    var cost_this = this.tileCostFunction(tile);
+    var cost_previous = this.tileCostFunction(previous_tile);
+
+    if (cost_this === undefined) {
+      return undefined;
+    }
+
+    if (cost_previous === undefined) {
+      cost_previous = 0;
+    }
+    var difference = cost_this - cost_previous;
+
+    //Returns values based on difference in elevation only
+    if (difference >= 4) {
+      return undefined;
+    }
+    if (difference > 0)  {
+      return 6;
+    }
+    if (difference === 0) {
+      return 4;
+    }
+    if (difference < 0) {
+      return 3;
+    }
+    if (difference < -4) {
+      return undefined;
+    }
+    
+    return undefined;
+}
 Unit.prototype.findRange = function(map, position) {
-  var costFunction = this.tileCostFunction.bind(this);
+  var costFunction = this.stepCostFunction.bind(this);
   var max_movement = this.getComponent('movement_left');
   
   var range = PathFinder.getRange(map, position, max_movement, costFunction);
@@ -120,7 +154,7 @@ Unit.prototype.setMovement = function(movement) {
 
 Unit.prototype.move = function(map,current_hex,next_hex) {
   //measure the distance moved
-  var costFunction = this.tileCostFunction.bind(this);
+  var costFunction = this.stepCostFunction.bind(this);
   //find the path to destination
   var movement_cost = PathFinder.getPathCost(map, current_hex, next_hex,
                                              costFunction);

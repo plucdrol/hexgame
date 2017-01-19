@@ -42,7 +42,6 @@ var view = new View(view_in,view_out);
 var world_interface = new WorldInterface(world,view,unit_controller);
 var world_renderer = new WorldRenderer(canv_draw,view,world,unit_controller);
 
-canv_input.windowResize();
 
 //create a unit in the world
 unit_controller.createUnit(new Hex(0,0),'player');
@@ -55,9 +54,18 @@ unit_controller.createUnit(new Hex(-5,5),'fast-player');
 unit_controller.createUnit(new Hex(-15,0),'fast-player');
 unit_controller.createUnit(new Hex(1,0),'tree');
 
+//create test hex outline
+var test_outline = [];
+
+test_outline.push(new Hex(2,2));
+test_outline.push(new Hex(3,2));
+test_outline.push(new Hex(2,3));
+test_outline.push(new Hex(3,3));
+test_outline.push(new Hex(3,4));
+test_outline.push(new Hex(3,5));
 
 
-
+canv_input.windowResize();
 ////////////////////////// DRAWING TO THE CANVAS //////////////////
 
 function drawScreen() {
@@ -65,12 +73,13 @@ function drawScreen() {
   //draw the world
   world_renderer.drawWorld();    
 
+  world_renderer.drawHexes(test_outline);
   //draw range of selected unit
   if (unit_controller.hex_selected instanceof Hex) {
     var potentialUnit = unit_controller.units.getValue(unit_controller.hex_selected);
     if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
-      world_renderer.drawRange(potentialUnit.getComponent('range'));
       //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
+      world_renderer.drawHexes(potentialUnit.getComponent('range'));
     }
 
     //draw selection hex

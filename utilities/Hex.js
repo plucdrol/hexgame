@@ -40,6 +40,25 @@ Hex.prototype.getS = function() {
 
 // BASIC HEX FUNCTIONS
 
+//Hexmap hexHash: turns the coordinates of a hex into 
+//a unique number, starting from (0,0) => 0
+//uses Szudzik's function turns 2 numbers into a 
+//unique number, increasing away from the origin
+
+Hex.prototype.toString = function() {
+  return "Hex ("+this.getQ()+","+this.getR()+")";
+}
+
+Hex.getKey = function(hex) {
+  var q = hex.getQ();
+  var r = hex.getR();
+
+  var A = (q >= 0 ? 2 * q : -2 * q - 1);
+  var B = (r >= 0 ? 2 * r : -2 * r - 1);
+  var C = ((A >= B ? A * A + A + B : A + B * B) / 2);
+  return Math.floor(2*C);
+}
+
 Hex.equals = function(hex_a,hex_b) {
   return hex_a.getQ()==hex_b.getQ() 
       && hex_a.getR()==hex_b.getR();
@@ -500,7 +519,7 @@ function HexMap() {
 }
 
 HexMap.prototype.set = function(hex,value) {
-  let key = this.hexHash(hex);
+  let key = Hex.getKey(hex);
   this.values[key] = value;
 }
 HexMap.prototype.remove = function(hex) {
@@ -509,7 +528,7 @@ HexMap.prototype.remove = function(hex) {
   }
 }
 HexMap.prototype.getValue = function(hex) {
-  var key = this.hexHash(hex);
+  var key = Hex.getKey(hex);
   return this.values[key];
 }
 HexMap.prototype.getHex = function(key) {
@@ -532,7 +551,16 @@ HexMap.prototype.getHex = function(key) {
 HexMap.prototype.size = function() {
   return this.values.length;
 }
-
+HexMap.prototype.getNeighbors = function(hex) {
+  let all_neighbors = hex.getNeighbors();
+  let neighbors_on_map = [];
+  for (let neighbor of all_neighbors) {
+    if (this.containsHex(neighbor)) {
+      neighbors_on_map.push(neighbor);
+    }
+  }
+  return neighbors_on_map;
+}
 //returns a simple array of each hex contained in this map
 HexMap.prototype.getHexArray = function() {
   var hexarray = [];
@@ -597,20 +625,6 @@ HexMap.prototype.flip = function(hex,values) {
   return false;
 }
 
-//Hexmap hexHash: turns the coordinates of a hex into 
-//a unique number, starting from (0,0) => 0
-//uses Szudzik's function turns 2 numbers into a 
-//unique number, increasing away from the origin
-HexMap.prototype.hexHash = function(hex) {
-  var q = hex.getQ();
-  var r = hex.getR();
-
-  var A = (q >= 0 ? 2 * q : -2 * q - 1);
-  var B = (r >= 0 ? 2 * r : -2 * r - 1);
-  var C = ((A >= B ? A * A + A + B : A + B * B) / 2);
-  return Math.floor(2*C);
-  //return Math.floor(q < 0 && r < 0 || q >= 0 && r >= 0 ? C : -C - 1);
-}
 
 HexMap.prototype[Symbol.iterator] = function() {
    

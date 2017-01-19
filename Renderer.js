@@ -164,9 +164,20 @@ HexRenderer.p.drawOutline = function(edge_arrays,style) {
 };
 
 HexRenderer.p.drawRange = function(range) {
+
+  let hex_array = [];
+  console.log(range.values());
+  for (let hex of range.values().map(function(cell){return cell.coord;})) {
+    hex_array.push(hex);
+  }
+
+  this.drawHexes(hex_array);
+}
+
+HexRenderer.p.drawHexes = function(hex_array) {
   
-  var outline = Hex.outline(range.getHexArray());
-  
+  var outline = Hex.outline(hex_array);
+
   var range_style = new RenderStyle();
   range_style.fill_color = "rgba(255,255,150, 0.2)";
   range_style.line_width = 3;
