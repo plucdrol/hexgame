@@ -395,7 +395,8 @@ WorldRenderer.p.drawPath = function(range,destination) {
   this.drawHex(destination,hex_style);
         
   //calculate points of the hexes
-  var hexes = PathFinder.getPath(this.world.map, range, destination);
+  var pathFind = PathFinder.getPathFinder(costFunction, neighborFunction);
+  var hexes = pathFind( this.world.map, range, destination );
   var points = [];
   for (var i = 0; i<hexes.length;i++) {
     points.push(this.hexToPoint(hexes[i]));

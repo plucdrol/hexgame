@@ -264,11 +264,11 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
   if (active_unit.hasComponent('self_action_become_unit')) {
     this.removeUnit(unit_hex);
     var type = active_unit.getComponent('self_action_become_unit');
-    this.createUnit(unit_hex,type);
+    this.createUnit(unit_hex, type);
     
     new_unit = this.getUnit(unit_hex);
     if (new_unit.hasComponent('range')) {
-      new_unit.findRange(this.map,unit_hex);
+      new_unit.findRange(this.map, unit_hex);
     }  
   } else {
     this.selectHex('none');
@@ -280,9 +280,13 @@ UnitController.p.moveUnit = function(current_hex,next_hex) {
   //calculate movements remaining
   var the_unit = this.getUnit(current_hex);
   var max_movement = the_unit.getComponent('movement_left');
+  
   //find the path to destination
-  var costFunction = the_unit.tileCostFunction.bind(the_unit);
-  var cost = PathFinder.getPathCost(this.map,current_hex, next_hex, costFunction);
+  var costFunction = the_unit.stepCostFunction.bind(the_unit);
+  var neighborFunction = the_unit.getNeighborsFunction.bind(the_unit);
+  var costFinder = PathFinder.getCostFinder(costFunction,neighborFunction);
+  var cost = costFinder(this.map, current_hex, next_hex, max_movement);
+  
   //substract it from the movement remaining
   the_unit.increaseComponent('movement_left', -cost);
   

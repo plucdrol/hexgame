@@ -8,63 +8,8 @@ function Unit(unit_type) {
   
   this.components = {};
   this.setType(unit_type);
+
 };
-
-Unit.prototype.tileCostFunction = function(tile) {
-
-  var cost = tile.getComponent('elevation');
-  if (cost > this.getComponent('maximum_elevation')) {
-    cost = undefined;
-  }
-  if (cost < this.getComponent('minimum_elevation')) {
-    cost = undefined;
-  }
-  return cost;
-}
-Unit.prototype.stepCostFunction = function(previous_tile, tile) {
-
-    //returns a positive number for uphill movement
-    // negative number for downhill movement
-    var cost_this = this.tileCostFunction(tile);
-    var cost_previous = this.tileCostFunction(previous_tile);
-
-    if (cost_this === undefined) {
-      return undefined;
-    }
-
-    if (cost_previous === undefined) {
-      cost_previous = 0;
-    }
-    var difference = cost_this - cost_previous;
-
-    //Returns values based on difference in elevation only
-    if (difference >= 4) {
-      return undefined;
-    }
-    if (difference > 0)  {
-      return 6;
-    }
-    if (difference === 0) {
-      return 4;
-    }
-    if (difference < 0) {
-      return 3;
-    }
-    if (difference < -4) {
-      return undefined;
-    }
-    
-    return undefined;
-}
-Unit.prototype.findRange = function(map, position) {
-  var costFunction = this.stepCostFunction.bind(this);
-  var max_movement = this.getComponent('movement_left');
-  
-  var range = PathFinder.getRange(map, position, max_movement, costFunction);
-  console.log(range);
-  this.setComponent('range', range);
-};
-
 
 Unit.prototype.setType = function(unit_type) {
   this.components = {};
@@ -105,7 +50,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.food_value = 5;
     break;
   case 'hut':
-    this.setMovement(2);
+    this.setMovement(4);
     this.components.color = 'brown';
     this.components.population = 1;
     this.components.size = 4;
@@ -147,17 +92,111 @@ Unit.prototype.increaseComponent = function(label, value) {
     this.components[label] += value;
   }
 }
+
+
+/*
+ * example of click system
+ *
+ *   function isMoveableUnit(unit) {
+ *     return unit.hasComponent('movement');
+ *   }
+ *
+ *   unit = array_of_units.filter(isOnHex(hex))
+ *                        .filter(isMoveableUnit);
+ *                 
+ */
+
+//////////////////////////////////////////////
+//
+//              MOVEMENT COMPONENT
+//
+////////////////////////////////////////////////
+
 Unit.prototype.setMovement = function(movement) {
   this.setComponent('movement', movement);
   this.setComponent('movement_left', movement);
-}
 
-Unit.prototype.move = function(map,current_hex,next_hex) {
-  //measure the distance moved
+  
+  if (this.move === undefined) {
+    this.move = function(map,current_hex,next_hex) {
+      
+      var movement_cost = this.costFind(map, current_hex, next_hex);
+      this.components.movement_left -= movement_cost;
+    }
+  }
+
+  if (this.getNeighborsFunction === undefined) {
+    this.getNeighborsFunction = function(map,hex) {
+      return map.getNeighbors(hex);
+      
+    }
+  }
+
+  if (this.tileCostFunction === undefined) {
+    this.tileCostFunction = function(tile) {
+
+      var cost = tile.getComponent('elevation');
+      if (cost > this.getComponent('maximum_elevation')) {
+	cost = undefined;
+      }
+      if (cost < this.getComponent('minimum_elevation')) {
+	cost = undefined;
+      }
+      return cost;
+    }
+  }
+
+  if (this.stepCostFunction === undefined) {
+    this.stepCostFunction = function(previous_tile, tile) {
+
+	//returns a positive number for uphill movement
+	// negative number for downhill movement
+	var cost_this = this.tileCostFunction(tile);
+	var cost_previous = this.tileCostFunction(previous_tile);
+
+	if (cost_this === undefined) {
+	  return undefined;
+	}
+
+	if (cost_previous === undefined) {
+	  cost_previous = 0;
+	}
+	var difference = cost_this - cost_previous;
+
+	//Returns values based on difference in elevation only
+	if (difference >= 4) {
+	  return undefined;
+	}
+	if (difference > 0)  {
+	  return 6;
+	}
+	if (difference === 0) {
+	  return 4;
+	}
+	if (difference < 0) {
+	  return 3;
+	}
+	if (difference < -4) {
+	  return undefined;
+	}
+	
+	return undefined;
+    }
+  }
+
+  //find the available movement of the unit and place it in the
+  // range component. This code should not be in the bare unit class
+  if (this.findRange === undefined) {
+    this.findRange = function(map, position) {
+      let max_movement = this.getComponent('movement_left');
+      var range = this.rangeFind(map, position, max_movement);
+      this.setComponent('range', range);
+    };
+  }
+
+
   var costFunction = this.stepCostFunction.bind(this);
-  //find the path to destination
-  var movement_cost = PathFinder.getPathCost(map, current_hex, next_hex,
-                                             costFunction);
-  //substract it from the movement remaining
-  this.components.movement_left -= movement_cost;
+  var neighborFunction = this.getNeighborsFunction.bind(this);
+  this.rangeFind = PathFinder.getRangeFinder(costFunction,neighborFunction);
+  this.costFind = PathFinder.getCostFinder(costFunction,neighborFunction);
 }
