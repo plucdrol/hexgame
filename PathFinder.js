@@ -100,10 +100,22 @@ var PathFinder = (function() {
       return !(movementCostExceeded(cell.path_cost, max_cost));
     }
   }
+
+  function cellIsPassable(map, cost_function) {
+    return function(cell) {
+      let coord = getCoord(cell);
+      let tile = getTile(map, coord);
+      let previous_tile = getTile(map, cell.previous_coord);
+      return ( cost_function( previous_tile, tile ) != undefined );
+    }
+  }
   
   //Returns true if there is the movement is not exceeded
   function movementCostExceeded(cost, max_cost) {
-    if (cost === undefined) {
+    if (cost === undefined ) {
+      return true;
+    }
+    if (cost == 'NaN') {
       return true;
     }
     if (max_cost < 0 ) {
@@ -149,8 +161,13 @@ var PathFinder = (function() {
                            makeNeighborCell(map, current_cell, costFunction) 
                          );
     
-    let cells_in_range = neighbor_cells.filter(cellIsWithinCost(max_cost));
+    let passable_cells = neighbor_cells.filter(
+                           cellIsPassable(map, costFunction)
+                         );
+			  
+    let cells_in_range = passable_cells.filter(cellIsWithinCost(max_cost));
     let new_cells_to_add = getCellsToRevisit(visited, cells_in_range); 
+
 
     return new_cells_to_add;
   }

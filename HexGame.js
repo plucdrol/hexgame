@@ -54,16 +54,6 @@ unit_controller.createUnit(new Hex(-5,5),'fast-player');
 unit_controller.createUnit(new Hex(-15,0),'fast-player');
 unit_controller.createUnit(new Hex(1,0),'tree');
 
-//create test hex outline
-var test_outline = [];
-
-test_outline.push(new Hex(2,2));
-test_outline.push(new Hex(3,2));
-test_outline.push(new Hex(2,3));
-test_outline.push(new Hex(3,3));
-test_outline.push(new Hex(3,4));
-test_outline.push(new Hex(3,5));
-
 
 canv_input.windowResize();
 ////////////////////////// DRAWING TO THE CANVAS //////////////////
@@ -73,7 +63,6 @@ function drawScreen() {
   //draw the world
   world_renderer.drawWorld();    
 
-  world_renderer.drawHexes(test_outline);
   //draw range of selected unit
   if (unit_controller.hex_selected instanceof Hex) {
     var potentialUnit = unit_controller.units.getValue(unit_controller.hex_selected);
