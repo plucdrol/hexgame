@@ -45,6 +45,7 @@ UnitController.prototype.addTreesToMap = function() {
     if (hex_value >= 4 && hex_value <= 9) {
       if (Math.random() < 0.2) {
         this.createUnit(hex,'tree');
+	console.log('create tree');
       }
     }
   }

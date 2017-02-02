@@ -25,6 +25,7 @@ world.setMap(map);
 
 //populate the world
 var unit_controller = new UnitController(map);
+  unit_controller.fillMap();
 
 //create a default view, which can be edited
 var view_ratio = canvas.width/canvas.height;
