@@ -54,6 +54,21 @@ MapGenerator = function(map_type) {
 
     
   }
+    this.setVariable = function(hex,variable,new_value) {
+    
+    var current_tile = this.map.getValue(hex);
+    if (current_tile instanceof Unit) {
+      current_tile.components[variable] = new_value;  
+    } else {
+      //get value
+      var new_tile = new Unit('terrain');
+      new_tile.components[variable] = new_value;
+      this.map.set(hex,new_tile)
+
+    }
+
+    
+  }
 
 }
 

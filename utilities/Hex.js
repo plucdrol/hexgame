@@ -647,9 +647,13 @@ HexMap.prototype.getHexagonSubMap = function(origin,radius){
     
   return submap;
 }
+
+//Returns a subset of hexes within the boundaries of the input
 HexMap.prototype.getRectangleSubMap = function(qmin,qmax,rmin,rmax) {
   var submap = new HexMap();
-  for (let r = rmin; r<rmax; r++) {
+
+
+  for (let r = rmin; r<=rmax; r++) {
     let currentr = r;
     if (!isEven(r)) currentr += 1;
 

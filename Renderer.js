@@ -347,7 +347,7 @@ WorldRenderer.p.drawWorld = function() {
     this.canvas_draw.clear();
     var rectMap = this.getHexRectangleBoundaries();
 
-    //get the rectangular map
+    //get the rectangular array of hex tiles
 
     let hexmap = this.world.map.getRectangleSubMap(rectMap.qmin,
 						  rectMap.qmax,
@@ -472,7 +472,7 @@ TileRenderer2D.prototype.drawTile = function(hex,tile) {
   arrow_style.font_size = 30;
   arrow_style.text_color = 'white';
   var wind_text = String.fromCharCode(charcode);
-  this.drawText(wind_text, position, arrow_style);
+  //this.drawText(wind_text, position, arrow_style);
 
 }
 

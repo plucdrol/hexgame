@@ -104,7 +104,7 @@ UnitController.p.selectHex = function(hex) {
       if (potential_unit instanceof Unit) { 
         //if the unit exists, find its range
         if (potential_unit.hasComponent('range')) {
-	  console.log(potential_unit);
+	        console.log(potential_unit);
           potential_unit.findRange(this.map,hex);
         }
       }
@@ -156,8 +156,16 @@ UnitController.p.rangeContains = function(hex_array,target_hex) {
 }
 
 UnitController.p.clickWithUnitSelected = function(hex) {
+  
   var unit_selected = this.getUnitSelected();
+  if (!unit_selected.hasComponent('range') ) {
+    this.clickOutsideUnitRange(hex);
+    console.log('outside range');
+    return 0;
+  }
+
   var unit_range = unit_selected.getComponent('range');
+
   //if you are clicking inside the unit's range
   if (this.rangeContains(unit_range,hex) ) {
     this.clickInsideUnitRange(hex);
