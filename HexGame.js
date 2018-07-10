@@ -14,7 +14,7 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 //Create a map generator
-var map_radius = 15;
+var map_radius = 35;
 var hexmap_generator = new MapGenerator('perlin'); 
 hexmap_generator.makeMap(map_radius);
 var map = hexmap_generator.makeMap(map_radius);
