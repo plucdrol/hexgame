@@ -221,6 +221,18 @@ UnitController.p.clickOutsideUnitRange = function(hex) {
   this.clickHex(hex);
 }
 
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////
+                  // UNIT COMMAND //
+/////////////////////////////////////////////////////////
+
 UnitController.p.commandUnit = function(hex) {
   var unit_there = this.getUnit(hex);
 
