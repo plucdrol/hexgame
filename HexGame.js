@@ -30,11 +30,15 @@ var unit_controller = new UnitController(map);
 //create a default view, which can be edited
 var view_ratio = canvas.width/canvas.height;
 var initial_zoom = 1/4;
-var view_out = new Rect(new Point(0,0), new Point(canvas.width,canvas.height));
+var view_out = new Rect(new Point(0,0), 
+                        new Point(canvas.width,canvas.height));
+
 var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
                                    -initial_zoom*canvas.height),
-                        new Point(canvas.width*initial_zoom*view_ratio,
-			          initial_zoom*canvas.height*view_ratio));
+
+                      new Point(canvas.width*initial_zoom*view_ratio,
+      			          initial_zoom*canvas.height*view_ratio));
+
 var view = new View(view_in,view_out);
 
 
