@@ -106,6 +106,28 @@ Unit.prototype.increaseComponent = function(label, value) {
  *                 
  */
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //////////////////////////////////////////////
 //
 //              MOVEMENT COMPONENT
@@ -197,6 +219,6 @@ Unit.prototype.setMovement = function(movement) {
 
   var costFunction = this.stepCostFunction.bind(this);
   var neighborFunction = this.getNeighborsFunction.bind(this);
-  this.rangeFind = PathFinder.getRangeFinder(costFunction,neighborFunction);
-  this.costFind = PathFinder.getCostFinder(costFunction,neighborFunction);
+  this.rangeFind = PathFinder.getRangeFinder(costFunction, neighborFunction);
+  this.costFind = PathFinder.getCostFinder(costFunction, neighborFunction);
 }
