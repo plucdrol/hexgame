@@ -173,7 +173,7 @@ var PathFinder = (function() {
   }
 
   //recursive step of exploring the map
-  function rangeFindStep(map, visited, coord, max_cost,
+  function rangeFindRecursive(map, visited, coord, max_cost,
                          costFunction, neighborFunction) {
     let new_cells_to_add = getGoodNeighbors(map, visited, coord, max_cost,
                            neighborFunction, costFunction);
@@ -184,7 +184,7 @@ var PathFinder = (function() {
     }
 
     for (cell of new_cells_to_add) {
-      visited = rangeFindStep(map,visited,getCoord(cell),max_cost,
+      visited = rangeFindRecursive(map,visited,getCoord(cell),max_cost,
 	            costFunction,neighborFunction);
     }
 
@@ -222,9 +222,12 @@ var PathFinder = (function() {
   function getVisitedFinder(costFunction, neighborFunction) {
     return function(map, origin, max_cost) {
       let visited = initVisited(origin);
+      
+      //return a map of origin only if movement is 0
       if (max_cost <= 0)
-	return;
-      visited = rangeFindStep(map, visited, origin, max_cost,
+	     return visited;
+      
+      visited = rangeFindRecursive(map, visited, origin, max_cost,
 	                      costFunction, neighborFunction);
       return visited;
     }
@@ -243,9 +246,12 @@ var PathFinder = (function() {
 
   //Returns a function which can be used many times to find range 
   function getRangeFinder(costFunction, neighborFunction) {
+    console.log(costFunction);
+    console.log(neighborFunction);
     let pathfinder = getVisitedFinder(costFunction, neighborFunction);
     return function(map, origin, max_cost) {
       let visited = pathfinder(map, origin, max_cost);
+      console.log(visited);
       return getRangeCoordinates(visited);
     };
   }
