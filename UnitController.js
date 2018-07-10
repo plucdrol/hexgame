@@ -63,7 +63,6 @@ UnitController.prototype.addTreesToMap = function() {
     if (hex_value >= 4 && hex_value <= 9) {
       if (Math.random() < 0.2) {
         this.createUnit(hex,'tree');
-	console.log('create tree');
       }
     }
   }
@@ -337,8 +336,12 @@ UnitController.p.moveUnit = function(current_hex,next_hex) {
   var costFinder = PathFinder.getCostFinder(costFunction,neighborFunction);
   var cost = costFinder(this.map, current_hex, next_hex, max_movement);
   
+  //OPTION A: movement reduces
   //substract it from the movement remaining
-  the_unit.increaseComponent('movement_left', -cost);
+  //the_unit.increaseComponent('movement_left', -cost);
+
+  //OPTION B: movement never runs out
+  the_unit.setComponent('movement_left', max_movement);
   
   //update the map
   this.units.set(next_hex,the_unit);

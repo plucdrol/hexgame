@@ -112,7 +112,6 @@ function PerlinTileGenerator() {
   TileGenerator.call(this); 
   var config = new PerlinConfiguration('continents');
   var simplex = new SimplexNoise();  
-  console.log('new perlin tile generator');
 
   var tile_x;
   var tile_y;
