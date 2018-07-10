@@ -45,6 +45,17 @@ Hex.prototype.getS = function() {
 //uses Szudzik's function turns 2 numbers into a 
 //unique number, increasing away from the origin
 
+function listContainsHex(hex, list) {
+    var i;
+    for (i = 0; i < list.length; i++) {
+        if (Hex.equals(list[i],hex)) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 Hex.prototype.toString = function() {
   return "Hex ("+this.getQ()+","+this.getR()+")";
 }

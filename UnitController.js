@@ -34,6 +34,24 @@ UnitController.p.newMap = function(map) {
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////
+                  // UNIT CREATION //
+/////////////////////////////////////////////////////////
+
 UnitController.p.fillMap = function() {
   this.addTreesToMap();
   this.addFishToMap();
@@ -73,6 +91,20 @@ UnitController.p.createUnit = function(hex,unit_type) {
 UnitController.p.removeUnit = function(hex) {
   this.units.remove(hex);
 }
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////
+                  // UNIT SELECTION //
+/////////////////////////////////////////////////////////
 
 //returns the Unit at position Hex. only a single unit can be on each hex
 UnitController.p.unitAtPosition = function(hex) {
@@ -147,13 +179,6 @@ UnitController.p.getUnitSelected = function() {
 UnitController.p.clickWithNoSelection = function(hex) {
   this.selectHex(hex);
 }
-UnitController.p.rangeContains = function(hex_array,target_hex) {
-  for ( let hex of hex_array)
-    if (Hex.equals(hex, target_hex))
-      return true;
-
-  return false;
-}
 
 UnitController.p.clickWithUnitSelected = function(hex) {
   
@@ -167,7 +192,7 @@ UnitController.p.clickWithUnitSelected = function(hex) {
   var unit_range = unit_selected.getComponent('range');
 
   //if you are clicking inside the unit's range
-  if (this.rangeContains(unit_range,hex) ) {
+  if (listContainsHex(hex, unit_range) ) {
     this.clickInsideUnitRange(hex);
 
   //if you are clicking outside the unit's range
