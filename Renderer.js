@@ -171,7 +171,9 @@ HexRenderer.p.drawRange = function(range) {
 
   let hex_array = [];
   console.log(range.values());
-  for (let hex of range.values().map(function(cell){return cell.coord;})) {
+  for (let hex of range.values().map(
+    function(cell){return cell.coord;}
+    )) {
     hex_array.push(hex);
   }
 
