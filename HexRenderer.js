@@ -109,3 +109,4 @@ HexRenderer.p.drawHexMap = function(hexmap) {
     //tile_renderer.drawTile(hex);
   }
 }*/
+
