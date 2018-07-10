@@ -84,7 +84,7 @@ Renderer.prototype.drawPolygon = function(points,style) {
 };
 
 //Transform coordinatess and draw text using CanvasDraw
-Renderer.prototype.drawText=function(text,position,style) {
+Renderer.prototype.drawText = function(text,position,style) {
   var coord = this.worldToScreen(position);
   var newfontsize = this.worldToScreen1D(style.text_size);
   var color = style.text_color;
@@ -107,6 +107,10 @@ Renderer.prototype.drawLines = function(points,style) {
 /////////////////////////////////////////
 /////////////////////////////////////////
 /////////////////////////////////////////
+// CanvasDraw
+// View
+// Hex
+
 function HexRenderer(canvas_draw, view, hexlayout) {
   Renderer.call(this,canvas_draw,view); 
   this.hexlayout = hexlayout;
@@ -215,16 +219,23 @@ WorldRenderer.prototype = Object.create(Renderer.prototype);
 
 
 
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-                                                                               
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+                                                                
            //WORLD RENDERER
 
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////
+//Dependencies:
+//  CanvasDraw
+//  World
+//  Unit
+//  UnitController
+//  View
+//  Hex
+//  HexRenderer
 
 var greenscale_colors = function(i) {
   var greenscale = ['#005','#00D','#AA3','#080','#062',
@@ -247,10 +258,13 @@ var greenscale_colors = function(i) {
 }
 
 
-function WorldRenderer (canvas_draw,view,world, unit_interface) {
+
+function WorldRenderer (canvas_draw,view,world,unit_controller) {
   HexRenderer.call(this,canvas_draw,view,world.layout); 
   this.world = world;
-  this.unit_interface = unit_interface;
+
+  this.unit_controller = unit_controller;
+
   this.corners = [];
 
   this.ready_to_render = true;
@@ -286,7 +300,8 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     tile_renderer.drawTile(hex, this.getTile(hex));
     
     //draw units
-    var this_unit = this.unit_interface.units.getValue(hex);
+    var this_unit = this.unit_controller.units.getValue(hex);
+
     if (typeof this_unit == 'object') {
         this.drawUnit(this_unit,hex,0);
     }
@@ -388,23 +403,22 @@ WorldRenderer.p.drawPath = function(range,destination) {
     
   //draw the path
   if (range.containsHex(destination)) {
-  var hex_style = new RenderStyle();
-  hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
-  hex_style.width = 2;
+    var hex_style = new RenderStyle();
+    hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
+    hex_style.width = 2;
 
-  this.drawHex(destination,hex_style);
+    this.drawHex(destination,hex_style);
         
-  //calculate points of the hexes
-  var pathFind = PathFinder.getPathFinder(costFunction, neighborFunction);
-  var hexes = pathFind( this.world.map, range, destination );
-  var points = [];
-  for (var i = 0; i<hexes.length;i++) {
-    points.push(this.hexToPoint(hexes[i]));
-  }
 
-  //draw on screen
-  this.drawLines(points,3);
- 
+    //calculate points of the hexes
+    var hexes = pathfinder.destinationPathfind(range, destination);
+    var points = [];
+    for (var i = 0; i<hexes.length;i++) {
+      points.push(this.hexToPoint(hexes[i]));
+    }
+
+    //draw on screen
+    this.drawLines(points,3);
   }
 }
 
@@ -454,7 +468,7 @@ function TileRenderer2D(canvas_draw, view, layout) {
 TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
 
 TileRenderer2D.prototype.drawTile = function(hex,tile) {
-  //analyze tile
+  
   var style = new RenderStyle();  
 
   //analyze tile
