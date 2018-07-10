@@ -246,12 +246,9 @@ var PathFinder = (function() {
 
   //Returns a function which can be used many times to find range 
   function getRangeFinder(costFunction, neighborFunction) {
-    console.log(costFunction);
-    console.log(neighborFunction);
     let pathfinder = getVisitedFinder(costFunction, neighborFunction);
     return function(map, origin, max_cost) {
       let visited = pathfinder(map, origin, max_cost);
-      console.log(visited);
       return getRangeCoordinates(visited);
     };
   }
