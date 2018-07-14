@@ -13,6 +13,7 @@
 		<script src="Unit.js"></script>
 		<script src="World.js"></script>
 		<script src="UnitController.js"></script>
+		<script src="ButtonOrganiser.js"></script>
 		<script src="PathFinder.js"></script>
 		<script src="MapGenerator.js"></script>
 		<script src="TileGenerator.js"></script>
@@ -55,9 +56,9 @@
 			</canvas>
 		</div>
 		
-		<div style="position:absolute; bottom: 1em; left: 1em;";>
-			<button type="button" onclick="newWorld();">New World</button>
-		</div>
+		<form class='action-buttons' style="position:absolute; bottom: 1em; left: 1em;";>
+			<input name='actions' type="radio" value='action-1'><label for='action-1'>Do Action</label>
+		</form>
 
 		<!-- Javascript after this line -->
 
