@@ -14,11 +14,11 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 //Create a map generator
-var world_radius = 5;
+var world_radius = 1;
 var hexmap_generator = new MapGenerator('perlin'); 
 var map = hexmap_generator.makeMap(world_radius);
 //and create a space map generator
-var space_radius = 10;
+var space_radius = 1;
 var space_hexmap_generator = new MapGenerator('perlin'); 
 var space_map = space_hexmap_generator.makeMap(space_radius);
 
@@ -87,6 +87,7 @@ canv_input.windowResize();
 
 function drawScreen() {
 
+  world_renderer.clear();
   //draw the space
   space_renderer.drawWorld(); 
   //draw the world

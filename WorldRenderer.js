@@ -53,6 +53,10 @@ function WorldRenderer (canvas_draw,view,world,unit_controller,color_scheme) {
 WorldRenderer.prototype = Object.create(HexRenderer.prototype);
 WorldRenderer.p = WorldRenderer.prototype;
 
+WorldRenderer.p.clear = function() {
+    this.canvas_draw.clear();
+}
+
 WorldRenderer.p.drawOutline = function(edge_arrays,style) {
     
   var number_of_loops = edge_arrays.length;
@@ -139,7 +143,6 @@ WorldRenderer.p.drawRedRenderingRectangle = function() {
 WorldRenderer.p.drawWorld = function() {
 
   if (this.ready_to_render) {
-    //this.canvas_draw.clear();
     var rectMap = this.getHexRectangleBoundaries();
 
     //get the rectangular array of hex tiles
