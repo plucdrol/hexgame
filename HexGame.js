@@ -14,7 +14,7 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 //Create a map generator
-var map_radius = 35;
+var map_radius = 95;
 var hexmap_generator = new MapGenerator('perlin'); 
 hexmap_generator.makeMap(map_radius);
 var map = hexmap_generator.makeMap(map_radius);
@@ -51,11 +51,11 @@ var world_renderer = new WorldRenderer(canv_draw,view,world,unit_controller);
 //create a unit in the world
 unit_controller.createUnit(new Hex(0,0),'player');
 unit_controller.createUnit(new Hex(1,0),'tree');
-unit_controller.createUnit(new Hex(5,-5),'fast-player');
-unit_controller.createUnit(new Hex(5,0),'fast-player');
-unit_controller.createUnit(new Hex(0,-5),'fast-player');
-unit_controller.createUnit(new Hex(-5,-5),'fast-player');
-unit_controller.createUnit(new Hex(-5,5),'fast-player');
+unit_controller.createUnit(new Hex(25,-25),'fast-player');
+unit_controller.createUnit(new Hex(25,0),'fast-player');
+unit_controller.createUnit(new Hex(0,-25),'fast-player');
+unit_controller.createUnit(new Hex(-25,-25),'fast-player');
+unit_controller.createUnit(new Hex(-25,25),'fast-player');
 unit_controller.createUnit(new Hex(-15,0),'fast-player');
 unit_controller.createUnit(new Hex(1,0),'tree');
 
