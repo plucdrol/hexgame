@@ -30,9 +30,10 @@ var space_world = new World(space_radius);
 space_world.setMap(space_map);
 
 
-//populate the world
+//create a unit controller
 var unit_controller = new UnitController(map);
   unit_controller.fillMap();
+
 
 //create a default view for the space map
 var space_view = create_view(1/8);
@@ -46,7 +47,6 @@ var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller);
 //create a controller and renderer for the space
 var space_interface = new WorldInterface(space_world, space_view, false);
 var space_renderer = new WorldRenderer(canv_draw, space_view, space_world, unit_controller,'space');
-console.log(space_renderer);
 
 
 //create a unit in the world

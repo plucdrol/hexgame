@@ -181,7 +181,7 @@ WorldInterface.prototype.dragEvent = function(mouse,previous_mouse) {
 
 WorldInterface.prototype.resizeEvent = function(width,height) {
 
-  view.resizeOutput(width,height);
+  this.view.resizeOutput(width,height);
 
   //redraw the screen after resizing
   drawScreen();

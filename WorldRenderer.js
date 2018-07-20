@@ -149,7 +149,6 @@ WorldRenderer.p.drawRedRenderingRectangle = function() {
     corners.push(object.topright);
     corners.push(object.bottomright);
     corners.push(object.bottomleft);
-    console.log(corners);
 
     var rect_style = new RenderStyle();
     rect_style.fill_color = 'transparent';
@@ -171,9 +170,9 @@ WorldRenderer.p.drawWorld = function() {
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
 
-    //this.drawHexMap(this.world.map);
+    //this.drawRedRenderingRectangle();
     this.drawHexMap(hexmap);
-    this.drawRedRenderingRectangle();
+    
   }
 }
 
