@@ -11,9 +11,10 @@
 // View
 // Hex
 
-function HexRenderer(canvas_draw, view, hexlayout) {
+function HexRenderer(canvas_draw, view, hexlayout, color_scheme) {
   Renderer.call(this, canvas_draw, view); 
   this.hexlayout = hexlayout;
+  this.color_scheme = color_scheme;
 }
 
 HexRenderer.prototype = Object.create(Renderer.prototype);
@@ -35,7 +36,7 @@ HexRenderer.p.pointToHex = function(point) {
 }
 
 HexRenderer.p.mapColors = function(i) {
-  return greenscale_colors(i);  
+  return greenscale_colors(i,this.color_scheme);  
 } 
 
 

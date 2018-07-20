@@ -11,20 +11,16 @@
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 
-function TileRenderer (canvas_draw, view, layout) {
-  HexRenderer.call(this,canvas_draw, view, layout); 
+function TileRenderer (canvas_draw, view, layout, color_scheme) {
+  HexRenderer.call(this,canvas_draw, view, layout, color_scheme); 
 }
 TileRenderer.prototype = Object.create(HexRenderer.prototype);
 TileRenderer.prototype.drawTile = function(hex,value) {
 }
-TileRenderer.prototype.mapColors = function(i) {
-  return greenscale_colors(i);  
-} 
 
 
-
-function TileRenderer2D(canvas_draw, view, layout) {
-  TileRenderer.call(this, canvas_draw, view, layout); 
+function TileRenderer2D(canvas_draw, view, layout, color_scheme) {
+  TileRenderer.call(this, canvas_draw, view, layout, color_scheme); 
 }
 TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
 

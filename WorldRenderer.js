@@ -17,8 +17,21 @@
 //  Hex
 //  HexRenderer
 
-var greenscale_colors = function(i) {
-  var greenscale = ['#005','#00D','#AA3','#080','#062',
+var greenscale_colors = function (i, color_scheme) {
+
+
+  if (color_scheme == 'space') {
+    var spacescale = ['#000','#000','#ccc','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000',];
+     return spacescale[i];
+   }
+  else {
+      var greenscale = ['#005','#00D','#AA3','#080','#062',
                     '#052','#042','#032','#020','#010',
                     '#110','#210','#410','#420','#777',
                     '#777','#777','#888','#888','#888',
@@ -33,14 +46,17 @@ var greenscale_colors = function(i) {
                     '#FFF','#FFF','#FFF','#FFF','#FFF',
                     '#FFF','#FFF','#FFF','#FFF','#FFF',
                     '#FFF','#FFF'];
-  return greenscale[i];
+    return greenscale[i];
+  }
+
+
     
 }
 
 
 
 function WorldRenderer (canvas_draw,view,world,unit_controller,color_scheme) {
-  HexRenderer.call(this,canvas_draw,view,world.layout); 
+  HexRenderer.call(this,canvas_draw,view,world.layout,color_scheme); 
   this.world = world;
 
   this.unit_controller = unit_controller;
@@ -76,7 +92,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 
   //make a tile renderer
   var tile_renderer = new TileRenderer2D(this.canvas_draw,
-                       this.view,this.world.layout);
+                       this.view,this.world.layout,this.color_scheme);
   //draw the tiles of the array
   for (hex of hexarray) {
     
