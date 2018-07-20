@@ -122,14 +122,14 @@ WorldRenderer.p.getHexRectangleBoundaries = function() {
     var bottomrighthex = Hex.round(this.pointToHex(corners.bottomright));
 
     //define the limits of the iteration
-    var qmin = Math.min(toplefthex.getQ(),bottomrighthex.getQ(),
-            toprighthex.getQ(),bottomlefthex.getQ());
-    var qmax = Math.max(toplefthex.getQ(),bottomrighthex.getQ(),
-            bottomlefthex.getQ(),toprighthex.getQ());
-    var rmin = Math.min(toplefthex.getR(),bottomrighthex.getR(),
-            toprighthex.getR(),bottomlefthex.getR());
-    var rmax = Math.max(toplefthex.getR(),bottomrighthex.getR(),
-            toprighthex.getR(),bottomlefthex.getR());
+    var qmin = Math.min( toplefthex.getQ(),    bottomrighthex.getQ(),
+                         toprighthex.getQ(),   bottomlefthex.getQ());
+    var qmax = Math.max( toplefthex.getQ(),    bottomrighthex.getQ(),
+                         bottomlefthex.getQ(), toprighthex.getQ());
+    var rmin = Math.min( toplefthex.getR(),    bottomrighthex.getR(),
+                         toprighthex.getR(),   bottomlefthex.getR());
+    var rmax = Math.max( toplefthex.getR(),    bottomrighthex.getR(),
+                         toprighthex.getR(),   bottomlefthex.getR());
   
     var hex_rect = {
       qmin:qmin,
@@ -143,15 +143,18 @@ WorldRenderer.p.getHexRectangleBoundaries = function() {
 
 WorldRenderer.p.drawRedRenderingRectangle = function() {
     var object = this.view.getCorners();
+    
     var corners = [];
-    for (corner in object) {
-      corners.push(corner);
-    }
+    corners.push(object.topleft);
+    corners.push(object.topright);
+    corners.push(object.bottomright);
+    corners.push(object.bottomleft);
+    console.log(corners);
+
     var rect_style = new RenderStyle();
     rect_style.fill_color = 'transparent';
     rect_style.line_color = 'red';
     rect_style.line_width = 20;
-
 
     this.drawPolygon(corners,rect_style);
 }    
@@ -167,8 +170,10 @@ WorldRenderer.p.drawWorld = function() {
 						  rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
-    this.drawRedRenderingRectangle();
+
+    //this.drawHexMap(this.world.map);
     this.drawHexMap(hexmap);
+    this.drawRedRenderingRectangle();
   }
 }
 

@@ -10,6 +10,20 @@ function Rect(position,size) {
 //input:  world coordinates
 //output: screen coordinates
 
+function create_view(initial_zoom_level) {
+  var view_ratio = canvas.width/canvas.height;
+  var initial_zoom = initial_zoom_level;
+  var view_out = new Rect(new Point(0,0), 
+                          new Point(canvas.width,canvas.height));
+
+  var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
+                                     -canvas.height*initial_zoom),
+
+                            new Point(canvas.width*initial_zoom*view_ratio,
+                                     canvas.height*initial_zoom*view_ratio));
+  return new View(view_in,view_out);
+}
+
 function View (input_rect,output_rect) {
 
   //PRIVATE MMEMBERS
@@ -118,8 +132,7 @@ function View (input_rect,output_rect) {
   };
 
   this.getCorners = function() {
-    var corners = {};
-    
+
     //find the screen position and width
     var x = input.position.x;
     var y = input.position.y;
@@ -133,6 +146,7 @@ function View (input_rect,output_rect) {
     var bottom = y+height;
 
     //find the corner points
+    var corners = {};
     corners.topleft = new Point(left,top);
     corners.topright = new Point(right,top);
     corners.bottomleft = new Point(left,bottom);

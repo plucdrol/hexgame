@@ -18,7 +18,7 @@ var world_radius = 3;
 var hexmap_generator = new MapGenerator('perlin'); 
 var map = hexmap_generator.makeMap(world_radius);
 //and create a space map generator
-var space_radius = 8;
+var space_radius = 25;
 var space_hexmap_generator = new MapGenerator('perlin'); 
 var space_map = space_hexmap_generator.makeMap(space_radius);
 
@@ -35,32 +35,9 @@ var unit_controller = new UnitController(map);
   unit_controller.fillMap();
 
 //create a default view for the space map
-var view_ratio = canvas.width/canvas.height;
-var initial_zoom = 1/8;
-var view_out = new Rect(new Point(0,0), 
-                        new Point(canvas.width,canvas.height));
-
-var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
-                                   -initial_zoom*canvas.height),
-
-                      new Point(canvas.width*initial_zoom*view_ratio,
-      			          initial_zoom*canvas.height*view_ratio));
-
-var space_view = new View(view_in,view_out);
-
+var space_view = create_view(1/8);
 //create a view for the world map
-var view_ratio = canvas.width/canvas.height;
-var initial_zoom = 8/8;
-var view_out = new Rect(new Point(0,0), 
-                        new Point(canvas.width,canvas.height));
-
-var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
-                                   -initial_zoom*canvas.height),
-
-                      new Point(canvas.width*initial_zoom*view_ratio,
-                      initial_zoom*canvas.height*view_ratio));
-
-var view = new View(view_in,view_out);
+var view = create_view(1);
 
 
 //create a controller and renderer for the world
