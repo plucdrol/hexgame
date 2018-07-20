@@ -50,7 +50,7 @@ var space_renderer = new WorldRenderer(canv_draw, space_view, space_world, unit_
 
 
 //create a unit in the world
-unit_controller.createUnit(new Hex(0,0),'player');
+unit_controller.createUnit(new Hex(0,0),'planet');
 unit_controller.createUnit(new Hex(1,0),'tree');
 unit_controller.createUnit(new Hex(25,-25),'water-player');
 unit_controller.createUnit(new Hex(25,0),'water-player');
@@ -70,7 +70,9 @@ function drawScreen() {
   //draw the space
   space_renderer.drawWorld(); 
   //draw the world
-  world_renderer.drawWorld();    
+  if (world_renderer.view.getZoom() > 0.2) {
+    world_renderer.drawWorld();    
+  }
 
 
   //draw range of selected unit

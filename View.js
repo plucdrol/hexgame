@@ -111,7 +111,9 @@ function View (input_rect,output_rect) {
       input.position = point; 
   };
 
-
+  this.getZoom = function() {
+    return output.size.x/input.size.x;
+  }
 
   this.zoom = function(n) {
 

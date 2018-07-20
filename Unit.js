@@ -15,16 +15,11 @@ Unit.prototype.setType = function(unit_type) {
   this.components = {};
 
   switch (unit_type) {
-  case 'player':
+  case 'planet':
     this.setMovement(8);
-    this.components.color = 'red';
-    this.components.controllable = true;
-    this.components.eats_food = true;
-    this.components.self_action_become_unit = 'hut';
+    this.components.color = 'darkblue';
     this.components.range = {};
-    this.components.size = 2;
-    this.components.minimum_elevation = 2;
-    this.components.maximum_elevation = 13; 
+    this.components.size = 3;
     break;
   case 'land-player':
     this.setMovement(12);
