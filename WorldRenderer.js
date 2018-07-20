@@ -39,7 +39,7 @@ var greenscale_colors = function(i) {
 
 
 
-function WorldRenderer (canvas_draw,view,world,unit_controller) {
+function WorldRenderer (canvas_draw,view,world,unit_controller,color_scheme) {
   HexRenderer.call(this,canvas_draw,view,world.layout); 
   this.world = world;
 
@@ -139,7 +139,7 @@ WorldRenderer.p.drawRedRenderingRectangle = function() {
 WorldRenderer.p.drawWorld = function() {
 
   if (this.ready_to_render) {
-    this.canvas_draw.clear();
+    //this.canvas_draw.clear();
     var rectMap = this.getHexRectangleBoundaries();
 
     //get the rectangular array of hex tiles

@@ -14,22 +14,29 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 //Create a map generator
-var map_radius = 95;
+var world_radius = 5;
 var hexmap_generator = new MapGenerator('perlin'); 
-hexmap_generator.makeMap(map_radius);
-var map = hexmap_generator.makeMap(map_radius);
+var map = hexmap_generator.makeMap(world_radius);
+//and create a space map generator
+var space_radius = 10;
+var space_hexmap_generator = new MapGenerator('perlin'); 
+var space_map = space_hexmap_generator.makeMap(space_radius);
 
 //create a world
-var world = new World(map_radius);
+var world = new World(world_radius);
 world.setMap(map);
+//create a space
+var space_world = new World(space_radius);
+space_world.setMap(space_map);
+
 
 //populate the world
 var unit_controller = new UnitController(map);
   unit_controller.fillMap();
 
-//create a default view, which can be edited
+//create a default view for the space map
 var view_ratio = canvas.width/canvas.height;
-var initial_zoom = 1/4;
+var initial_zoom = 1/8;
 var view_out = new Rect(new Point(0,0), 
                         new Point(canvas.width,canvas.height));
 
@@ -39,14 +46,29 @@ var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
                       new Point(canvas.width*initial_zoom*view_ratio,
       			          initial_zoom*canvas.height*view_ratio));
 
+var space_view = new View(view_in,view_out);
+
+//create a view for the world map
+var view_ratio = canvas.width/canvas.height;
+var initial_zoom = 8/8;
+var view_out = new Rect(new Point(0,0), 
+                        new Point(canvas.width,canvas.height));
+
+var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
+                                   -initial_zoom*canvas.height),
+
+                      new Point(canvas.width*initial_zoom*view_ratio,
+                      initial_zoom*canvas.height*view_ratio));
+
 var view = new View(view_in,view_out);
 
 
-
 //create a controller and renderer for the world
-var world_interface = new WorldInterface(world,view,unit_controller);
-var world_renderer = new WorldRenderer(canv_draw,view,world,unit_controller);
-
+var world_interface = new WorldInterface(world, view, unit_controller);
+var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller);
+//create a controller and renderer for the space
+var space_interface = new WorldInterface(space_world, space_view, unit_controller);
+var space_renderer = new WorldRenderer(canv_draw, space_view, space_world, unit_controller);
 
 //create a unit in the world
 unit_controller.createUnit(new Hex(0,0),'player');
@@ -65,8 +87,11 @@ canv_input.windowResize();
 
 function drawScreen() {
 
+  //draw the space
+  space_renderer.drawWorld(); 
   //draw the world
   world_renderer.drawWorld();    
+
 
   //draw range of selected unit
   if (unit_controller.hex_selected instanceof Hex) {
