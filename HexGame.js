@@ -14,11 +14,11 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 //Create a map generator
-var world_radius = 3;
+var world_radius = 15;
 var hexmap_generator = new MapGenerator('perlin'); 
 var map = hexmap_generator.makeMap(world_radius);
 //and create a space map generator
-var space_radius = 25;
+var space_radius = 10;
 var space_hexmap_generator = new MapGenerator('perlin'); 
 var space_map = space_hexmap_generator.makeMap(space_radius);
 
@@ -36,9 +36,9 @@ var unit_controller = new UnitController(map);
 
 
 //create a default view for the space map
-var space_view = create_view(1/8);
+var space_view = create_view(1/16);
 //create a view for the world map
-var view = create_view(1);
+var view = create_view(3);
 
 
 //create a controller and renderer for the world
