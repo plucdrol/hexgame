@@ -18,9 +18,13 @@ var world_radius = 15;
 var hexmap_generator = new MapGenerator('perlin'); 
 var map = hexmap_generator.makeMap(world_radius);
 //and create a space map generator
-var space_radius = 10;
+var space_radius = 25;
 var space_hexmap_generator = new MapGenerator('perlin'); 
 var space_map = space_hexmap_generator.makeMap(space_radius);
+//and create a galaxy map generator
+var galaxy_radius = 10;
+var galaxy_hexmap_generator = new MapGenerator('perlin'); 
+var galaxy_map = galaxy_hexmap_generator.makeMap(galaxy_radius);
 
 //create a world
 var world = new World(world_radius);
@@ -28,13 +32,16 @@ world.setMap(map);
 //create a space
 var space_world = new World(space_radius);
 space_world.setMap(space_map);
-
+//create a galaxy
+var galaxy_world = new World(galaxy_radius);
+galaxy_world.setMap(galaxy_map);
 
 //create a unit controller
 var unit_controller = new UnitController(map);
   unit_controller.fillMap();
 
-
+//create a view for the galaxy map
+var galaxy_view = create_view(1/900);
 //create a default view for the space map
 var space_view = create_view(1/16);
 //create a view for the world map
@@ -47,7 +54,9 @@ var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller);
 //create a controller and renderer for the space
 var space_interface = new WorldInterface(space_world, space_view, false);
 var space_renderer = new WorldRenderer(canv_draw, space_view, space_world, unit_controller,'space');
-
+//create a controller and renderer for the space
+var galaxy_interface = new WorldInterface(galaxy_world, galaxy_view, false);
+var galaxy_renderer = new WorldRenderer(canv_draw, galaxy_view, galaxy_world, unit_controller,'space');
 
 //create a unit in the world
 unit_controller.createUnit(new Hex(0,0),'planet');
@@ -67,10 +76,14 @@ canv_input.windowResize();
 function drawScreen() {
 
   world_renderer.clear();
+  //draw the galaxy
+  galaxy_renderer.drawWorld();
   //draw the space
-  space_renderer.drawWorld(); 
+  if (space_renderer.view.getZoom() > 0.06) {
+    space_renderer.drawWorld(); 
+  }
   //draw the world
-  if (world_renderer.view.getZoom() > 0.2) {
+  if (world_renderer.view.getZoom() > 0.06) {
     world_renderer.drawWorld();    
   }
 
