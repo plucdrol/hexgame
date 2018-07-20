@@ -37,7 +37,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
     break;
-  case 'fast-player':
+  case 'water-player':
     this.setMovement(12);
     this.components.color = 'white';
     this.components.controllable = true;

@@ -51,12 +51,12 @@ var world_renderer = new WorldRenderer(canv_draw,view,world,unit_controller);
 //create a unit in the world
 unit_controller.createUnit(new Hex(0,0),'player');
 unit_controller.createUnit(new Hex(1,0),'tree');
-unit_controller.createUnit(new Hex(25,-25),'fast-player');
-unit_controller.createUnit(new Hex(25,0),'fast-player');
-unit_controller.createUnit(new Hex(0,-25),'fast-player');
-unit_controller.createUnit(new Hex(-25,-25),'fast-player');
-unit_controller.createUnit(new Hex(-25,25),'fast-player');
-unit_controller.createUnit(new Hex(-15,0),'fast-player');
+unit_controller.createUnit(new Hex(25,-25),'water-player');
+unit_controller.createUnit(new Hex(25,0),'water-player');
+unit_controller.createUnit(new Hex(0,-25),'water-player');
+unit_controller.createUnit(new Hex(-25,-25),'water-player');
+unit_controller.createUnit(new Hex(-25,25),'water-player');
+unit_controller.createUnit(new Hex(-15,0),'water-player');
 unit_controller.createUnit(new Hex(1,0),'tree');
 
 
