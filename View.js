@@ -43,8 +43,7 @@ function View (input_rect,output_rect) {
       var x = input.position.x + input.size.x/2;
       var y = input.position.y + input.size.y/2;
 
-      return new Point(0,0);
-      //return new Point(x,y);
+      return new Point(x,y);
   }
   this.setCenter = function(point) {
       input.position.x = point.x-input.size.x/2;
@@ -116,7 +115,7 @@ function View (input_rect,output_rect) {
 
   this.zoom = function(n) {
 
-      //var center_point = this.getCenter();
+      var center_point = this.getCenter();
 
       //scales the view by n but keeps the screen centered 
       //on the same location
@@ -124,7 +123,7 @@ function View (input_rect,output_rect) {
       var h = input.size.y;
 
       input.size = new Point( w*n , h*n );
-      //this.setCenter(center_point);
+      this.setCenter(center_point);
   };
 
   this.getScale = function() { 
