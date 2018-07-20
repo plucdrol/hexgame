@@ -79,26 +79,29 @@ function WorldInterface(world,view,unit_controller) {
 
 WorldInterface.prototype.init = function() {
   var wif = this;
-  
-  listenForEvent('hexgame_click', function(e){
-    wif.clickScreenEvent(e.detail.click_pos);
-  } );
-  
-  listenForEvent('hexgame_zoom', function(e){
-    wif.zoomViewEvent(e.detail.amount);
-  } );
-  
-  listenForEvent('hexgame_hover', function(e){
-    wif.hoverEvent(e.detail.mousepos);
-  } );
-  
-  listenForEvent('hexgame_drag', function(e){
-    wif.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
-  } );
-  
-  listenForEvent('hexgame_resize', function(e){
-    wif.resizeEvent(e.detail.width, e.detail.height);
-  } );
+
+  if (unit_controller != false) {
+    
+    listenForEvent('hexgame_click', function(e){
+      wif.clickScreenEvent(e.detail.click_pos);
+    } );
+    
+    listenForEvent('hexgame_zoom', function(e){
+      wif.zoomViewEvent(e.detail.amount);
+    } );
+    
+    listenForEvent('hexgame_hover', function(e){
+      wif.hoverEvent(e.detail.mousepos);
+    } );
+    
+    listenForEvent('hexgame_drag', function(e){
+      wif.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
+    } );
+    
+    listenForEvent('hexgame_resize', function(e){
+      wif.resizeEvent(e.detail.width, e.detail.height);
+    } );
+  }
 
 }
 

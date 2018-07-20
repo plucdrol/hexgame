@@ -67,7 +67,7 @@ var view = new View(view_in,view_out);
 var world_interface = new WorldInterface(world, view, unit_controller);
 var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller);
 //create a controller and renderer for the space
-var space_interface = new WorldInterface(space_world, space_view, unit_controller);
+var space_interface = new WorldInterface(space_world, space_view, false);
 var space_renderer = new WorldRenderer(canv_draw, space_view, space_world, unit_controller);
 
 //create a unit in the world
