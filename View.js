@@ -28,6 +28,8 @@ function View (input_rect,output_rect) {
   this.getCenter = function() {
       var x = input.position.x + input.size.x/2;
       var y = input.position.y + input.size.y/2;
+
+      return new Point(0,0);
       return new Point(x,y);
   }
   this.setCenter = function(point) {
