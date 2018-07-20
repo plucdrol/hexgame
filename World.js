@@ -80,11 +80,13 @@ function WorldInterface(world,view,unit_controller) {
 WorldInterface.prototype.init = function() {
   var wif = this;
 
-  if (unit_controller != false) {
+  if (this.unit_controller != false) {
     
     listenForEvent('hexgame_click', function(e){
       wif.clickScreenEvent(e.detail.click_pos);
     } );
+
+  }
     
     listenForEvent('hexgame_zoom', function(e){
       wif.zoomViewEvent(e.detail.amount);
@@ -101,7 +103,7 @@ WorldInterface.prototype.init = function() {
     listenForEvent('hexgame_resize', function(e){
       wif.resizeEvent(e.detail.width, e.detail.height);
     } );
-  }
+
 
 }
 
