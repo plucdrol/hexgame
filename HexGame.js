@@ -66,19 +66,19 @@ function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
 }
 
 var world_layer_interface = createWorldLayer(20, new Hex(0,0), 1, 'earth'); 
-var space_layer_interface = createWorldLayer(20, new Hex(-10,-10), 1/64, 'space', world_layer_interface);
-var galaxy_layer_interface = createWorldLayer(20, new Hex(0,0), 1/4096, 'galaxy', space_layer_interface);
-var hyperspace_layer_interface = createWorldLayer(20, new Hex(0,0), 1/426144, 'earth', galaxy_layer_interface);
+var space_layer_interface = createWorldLayer(20, new Hex(-3,-3), 1/64, 'space', world_layer_interface);
+var galaxy_layer_interface = createWorldLayer(20, new Hex(5,5), 1/4096, 'galaxy', space_layer_interface);
+var hyperspace_layer_interface = createWorldLayer(20, new Hex(0,0), 1/262144, 'earth', galaxy_layer_interface);
 
 
 function get_layer_offset(current_layer_scale, previous_layer_scale, previous_layer_center_hex_offset, previous_layer_offset, layout) {
   var scale_difference = current_layer_scale / previous_layer_scale;
   var test_hex = new Hex( -previous_layer_center_hex_offset.getQ()*scale_difference, 
                           -previous_layer_center_hex_offset.getR()*scale_difference );
-  console.log(layout);
+  //console.log(layout);
   var layer_offset = layout.hexToPoint( test_hex );
-  layer_offset.x += previous_layer_offset.x;
-  layer_offset.y += previous_layer_offset.y;
+  layer_offset.x -= previous_layer_offset.x;
+  layer_offset.y -= previous_layer_offset.y;
 
   return layer_offset;
 }
@@ -95,10 +95,14 @@ world_layer_interface.unit_controller.createUnit(new Hex(-25,25),'water-player')
 world_layer_interface.unit_controller.createUnit(new Hex(-15,0),'water-player');
 world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
 
-space_layer_interface.unit_controller.createUnit(new Hex(10,10),'sun');
+//level below is always at 0,0 even if the map is shifted to the side
 space_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
+space_layer_interface.unit_controller.createUnit(new Hex(3,3),'sun');
 
+//Level below is always at 0,0  even if the map is shifted to the side
 galaxy_layer_interface.unit_controller.createUnit(new Hex(0,0),'sun');
+galaxy_layer_interface.unit_controller.createUnit(new Hex(-5,-5),'planet');
+
 
 
 canv_input.windowResize();
