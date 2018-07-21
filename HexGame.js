@@ -15,13 +15,13 @@ var canv_input = new CanvasInput(canvas);
 
 //This function creates a world and attaches all the necessary controllers
 //This doesn't seem like a very efficient way to do this
-function createWorldLayer(radius, center_hex, scale, color_scheme) {
+function createWorldLayer(radius, center_hex, offset, scale, color_scheme) {
 
   var hexmap_generator = new MapGenerator('perlin'); 
   var map = hexmap_generator.makeMap(radius, center_hex);
 
   //create a world
-  var world = new World();
+  var world = new World(offset);
   world.setMap(map);
 
   //create a unit controller
@@ -49,9 +49,10 @@ function createWorldLayer(radius, center_hex, scale, color_scheme) {
 
   return layer_interface;
 }
-var galaxy_layer_interface = createWorldLayer(20, new Hex(-10,-10), 1/8064,'galaxy');
-var space_layer_interface = createWorldLayer(20, new Hex(10,10), 1/128,'space');
-var world_layer_interface = createWorldLayer(20, new Hex(0,0), 1/2);
+var galaxy_layer_interface = createWorldLayer(20, new Hex(10,10), new Point(-14.5,-8), 1/8192,'galaxy');
+var space_layer_interface = createWorldLayer(20, new Hex(10,10), new Point(0,0), 1/128,'space');
+var world_layer_interface = createWorldLayer(20, new Hex(0,0), new Point(0,0), 1/2); 
+//function()(14.5, 8)
 
 //create units in the world
 world_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
