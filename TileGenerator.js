@@ -52,6 +52,13 @@ PerlinConfiguration = function(config_name) {
 
 
       break;
+    case 'fractal':
+      this.scales = [0.1,  0.8];//,  0.2 ];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
+      this.weights = [8,   4];//,    2   ];//,   8,    12,   4,     3,     2,     1,     1,   ];
+      this.base = 5;
+
+
+      break;
     default:
       this.scales = [0.02,0.1,0.2,0.5,1.0,2.0];
       this.weights = [16,8,4,2,1,0.5];
@@ -110,7 +117,7 @@ RandomTileGenerator.prototype = Object.create(TileGenerator.prototype);
 
 function PerlinTileGenerator() {
   TileGenerator.call(this); 
-  var config = new PerlinConfiguration('continents');
+  var config = new PerlinConfiguration('fractal');
   var simplex = new SimplexNoise();  
 
   var tile_x;

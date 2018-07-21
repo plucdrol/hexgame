@@ -125,9 +125,9 @@ MapGenerator.prototype.makeMap = function(radius, center) {
   }
 
   //fine tune the map
-  //this.addWaterRim(0.1);
-  //this.roundDown();
-  //this.addShallowWater();
+  this.addWaterRim(0.1);
+  this.roundDown();
+  this.addShallowWater();
   //this.flatenRange(2,3);
   //this.flatenRange(3,6);
 
