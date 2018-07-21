@@ -15,10 +15,22 @@ var canv_input = new CanvasInput(canvas);
 
 //This function creates a world and attaches all the necessary controllers
 //This doesn't seem like a very efficient way to do this
-function createWorldLayer(radius, center_hex, offset, scale, color_scheme) {
+function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
 
   var hexmap_generator = new MapGenerator('perlin'); 
   var map = hexmap_generator.makeMap(radius, center_hex);
+
+
+  var offset = new Point(0,0);
+  //calculate offset due to sublayer
+  if (sublayer != undefined) {
+    offset = get_layer_offset(scale, 
+                              sublayer.scale,     
+                              sublayer.hex_center_offset, 
+                              sublayer.offset,
+                              sublayer.world_interface.world.layout
+                              ); 
+  }
 
   //create a world
   var world = new World(offset);
@@ -44,15 +56,33 @@ function createWorldLayer(radius, center_hex, offset, scale, color_scheme) {
   var layer_interface = {
     world_interface: world_interface,
     unit_controller: unit_controller,
-    world_renderer: world_renderer
+    world_renderer: world_renderer,
+    scale: scale,
+    hex_center_offset: center_hex,
+    offset: offset
   }
 
   return layer_interface;
 }
-var galaxy_layer_interface = createWorldLayer(20, new Hex(10,10), new Point(-14.5,-8), 1/8192,'galaxy');
-var space_layer_interface = createWorldLayer(20, new Hex(10,10), new Point(0,0), 1/128,'space');
-var world_layer_interface = createWorldLayer(20, new Hex(0,0), new Point(0,0), 1/2); 
-//function()(14.5, 8)
+
+var world_layer_interface = createWorldLayer(20, new Hex(0,0), 1, 'earth'); 
+var space_layer_interface = createWorldLayer(20, new Hex(-10,-10), 1/64, 'space', world_layer_interface);
+var galaxy_layer_interface = createWorldLayer(20, new Hex(0,0), 1/4096, 'galaxy', space_layer_interface);
+var hyperspace_layer_interface = createWorldLayer(20, new Hex(0,0), 1/426144, 'earth', galaxy_layer_interface);
+
+
+function get_layer_offset(current_layer_scale, previous_layer_scale, previous_layer_center_hex_offset, previous_layer_offset, layout) {
+  var scale_difference = current_layer_scale / previous_layer_scale;
+  var test_hex = new Hex( -previous_layer_center_hex_offset.getQ()*scale_difference, 
+                          -previous_layer_center_hex_offset.getR()*scale_difference );
+  console.log(layout);
+  var layer_offset = layout.hexToPoint( test_hex );
+  layer_offset.x += previous_layer_offset.x;
+  layer_offset.y += previous_layer_offset.y;
+
+  return layer_offset;
+}
+
 
 //create units in the world
 world_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
@@ -65,7 +95,7 @@ world_layer_interface.unit_controller.createUnit(new Hex(-25,25),'water-player')
 world_layer_interface.unit_controller.createUnit(new Hex(-15,0),'water-player');
 world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
 
-space_layer_interface.unit_controller.createUnit(new Hex(-10,-10),'sun');
+space_layer_interface.unit_controller.createUnit(new Hex(10,10),'sun');
 space_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
 
 galaxy_layer_interface.unit_controller.createUnit(new Hex(0,0),'sun');
@@ -78,8 +108,12 @@ canv_input.windowResize();
 function drawScreen() {
 
   world_layer_interface.world_renderer.clear();
+  //draw the universe
+  hyperspace_layer_interface.world_renderer.drawWorld();
   //draw the galaxy
-  galaxy_layer_interface.world_renderer.drawWorld();
+  if (galaxy_layer_interface.world_renderer.view.getZoom() > 0.06) {
+    galaxy_layer_interface.world_renderer.drawWorld();
+  }
   //draw the space
   if (space_layer_interface.world_renderer.view.getZoom() > 0.06) {
     space_layer_interface.world_renderer.drawWorld(); 

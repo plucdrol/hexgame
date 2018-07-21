@@ -106,7 +106,6 @@ MapGenerator.prototype.makeMap = function(radius, center) {
   var value = {}; 
   var tile_gen = this.makeTileGenerator(type);
 
-  console.log(center);
 
   // Iterates over the giant hexagon
   var qmin = -center.getQ()-radius;
@@ -131,8 +130,6 @@ MapGenerator.prototype.makeMap = function(radius, center) {
   //this.addShallowWater();
   //this.flatenRange(2,3);
   //this.flatenRange(3,6);
-
-  console.log(this.map);
 
   return this.map;
 }

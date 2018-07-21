@@ -42,6 +42,17 @@ var greenscale_colors = function (i, color_scheme) {
      return galaxyscale[i];
    }
 
+     if (color_scheme == 'earth') {
+      var greenscale = ['#005','#00D','#AA3','#080','#062',
+                    '#052','#042','#032','#020','#010',
+                    '#110','#210','#410','#420','#777',
+                    '#777','#777','#888','#888','#888',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF'];
+     return greenscale[i];
+   }
+
       var greenscale = ['#005','#00D','#AA3','#080','#062',
                     '#052','#042','#032','#020','#010',
                     '#110','#210','#410','#420','#777',
