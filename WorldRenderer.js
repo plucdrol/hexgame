@@ -21,7 +21,7 @@ var greenscale_colors = function (i, color_scheme) {
 
 
   if (color_scheme == 'space') {
-    var spacescale = ['#000','#000','#ccc','#000','#000',
+    var spacescale = ['#000','#000','#ccc','#222','#222',
                       '#000','#000','#000','#000','#000',
                       '#000','#000','#000','#000','#000',
                       '#000','#000','#000','#000','#000',
@@ -30,7 +30,18 @@ var greenscale_colors = function (i, color_scheme) {
                       '#000','#000',];
      return spacescale[i];
    }
-  else {
+
+  if (color_scheme == 'galaxy') {
+    var galaxyscale = ['#000','#000','#dd0','#222','#222',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000',];
+     return galaxyscale[i];
+   }
+
       var greenscale = ['#005','#00D','#AA3','#080','#062',
                     '#052','#042','#032','#020','#010',
                     '#110','#210','#410','#420','#777',
@@ -47,7 +58,6 @@ var greenscale_colors = function (i, color_scheme) {
                     '#FFF','#FFF','#FFF','#FFF','#FFF',
                     '#FFF','#FFF'];
     return greenscale[i];
-  }
 
 
     

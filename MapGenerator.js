@@ -90,10 +90,15 @@ MapGenerator.prototype.makeTileGenerator = function(type) {
 
 
 
-MapGenerator.prototype.makeMap = function(radius) {
+MapGenerator.prototype.makeMap = function(radius, center) {
   
   this.map = new HexMap();
   this.radius = radius;
+  this.center = center;
+
+  if (center == undefined) {
+    var center = new Hex(0,0);
+  }
 
   var type = this.map_type;
   var hex = new Hex(0,0);
@@ -101,10 +106,14 @@ MapGenerator.prototype.makeMap = function(radius) {
   var value = {}; 
   var tile_gen = this.makeTileGenerator(type);
 
+  console.log(center);
+
   // Iterates over the giant hexagon
-  for (var q = -radius; q <= radius; q++) {
-    var rmin = Math.max(-radius, -q - radius);
-    var rmax = Math.min(radius, -q + radius);
+  var qmin = -center.getQ()-radius;
+  var qmax = -center.getQ()+radius;
+  for (var q = qmin; q <= qmax; q++) {
+    var rmin = Math.max(-center.getR()-radius, -center.getR()-center.getQ()-q - radius);
+    var rmax = Math.min(-center.getR()+radius, -center.getR()-center.getQ()-q + radius);
 
     for (var r = rmin; r <= rmax; r++) {
       
@@ -117,11 +126,13 @@ MapGenerator.prototype.makeMap = function(radius) {
   }
 
   //fine tune the map
-  this.addWaterRim(0.1);
-  this.roundDown();
-  this.addShallowWater();
-  this.flatenRange(2,3);
-  this.flatenRange(3,6);
+  //this.addWaterRim(0.1);
+  //this.roundDown();
+  //this.addShallowWater();
+  //this.flatenRange(2,3);
+  //this.flatenRange(3,6);
+
+  console.log(this.map);
 
   return this.map;
 }
@@ -173,11 +184,14 @@ MapGenerator.prototype.addWaterRim = function(rim_size) {
 MapGenerator.prototype.flatenRange = function(min,max) {
   
   var size = this.radius;
+  var center = this.center;
 
   //for each cell
-  for (var q = -size; q <= size; q++) {
-      var r1 = Math.max(-size, -q - size);
-      var r2 = Math.min(size, -q + size);
+  var qmin = -center.getQ()-radius;
+  var qmax = -center.getQ()+radius;
+  for (var q = qmin; q <= qmax; q++) {
+      var r1 = Math.max(-center.getR()-size, -center.getR()-q - size);
+      var r2 = Math.min(-center.getR()+size, -center.getR()-q + size);
 
       for (var r = r1; r <= r2; r++) {
         var this_hex = new Hex(q,r);

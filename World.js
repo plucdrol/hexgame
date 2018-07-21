@@ -13,12 +13,11 @@
 //Dependencies
 //  Hex.js
 
-function World(map) {
+function World() {
   var tile_size = new Point(35,35);
   var origin = new Point(0,0);
   this.layout = new HexLayout('pointy', tile_size, origin);
- 
-  this.map = map;
+
 }
 
 World.prototype.setMap = function(map) {
