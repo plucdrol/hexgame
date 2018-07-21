@@ -53,7 +53,7 @@ var galaxy_layer_interface = createWorldLayer(40, 1/8064, 'space');
 var space_layer_interface = createWorldLayer(25, 1/128, 'space');
 var world_layer_interface = createWorldLayer(35, 1/2);
 
-//create a unit in the world
+//create units in the world
 world_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
 world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
 world_layer_interface.unit_controller.createUnit(new Hex(25,-25),'water-player');
@@ -66,46 +66,8 @@ world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
 
 
 canv_input.windowResize();
+
 ////////////////////////// DRAWING TO THE CANVAS //////////////////
-
-//world_interface, world_renderer, unit_controller, 
-
-function drawScreenBeforeInterfaces() {
-
-  world_renderer.clear();
-  //draw the galaxy
-  galaxy_renderer.drawWorld();
-  //draw the space
-  if (space_renderer.view.getZoom() > 0.06) {
-    space_renderer.drawWorld(); 
-  }
-  //draw the world
-  if (world_renderer.view.getZoom() > 0.06) {
-    world_renderer.drawWorld();    
-  }
-
-
-  //draw range of selected unit
-  if (unit_controller.hex_selected instanceof Hex) {
-    var potentialUnit = unit_controller.units.getValue(unit_controller.hex_selected);
-    if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
-      //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
-      world_renderer.drawHexes(potentialUnit.getComponent('range'));
-    }
-
-    //draw selection hex
-    var select_style = new RenderStyle();
-    select_style.fill_color = "rgba(200,200,0,0.5)";
-    select_style.line_width = 2;
-    world_renderer.drawHex(unit_controller.hex_selected, select_style);
-  }
-
-  //draw hovered hex
-  var hover_style = new RenderStyle();
-  hover_style.fill_color = "rgba(200,200,200,0.4)";
-  hover_style.line_width = 0;
-  world_renderer.drawHex(world_interface.hex_hovered, hover_style );
-}
 
 function drawScreen() {
 
@@ -122,7 +84,7 @@ function drawScreen() {
   }
 
 
-  //draw range of selected unit
+  //draw range of selected unit (this should be somewhere else)
   if (world_layer_interface.unit_controller.hex_selected instanceof Hex) {
     var potentialUnit = world_layer_interface.unit_controller.units.getValue(world_layer_interface.unit_controller.hex_selected);
     if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
