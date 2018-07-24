@@ -7,7 +7,7 @@ function Rect(position,size) {
 }
 
 //The View is a coordinate transformation tool
-//input:  world coordinates
+//input:  universe coordinates
 //output: screen coordinates
 
 function create_view(initial_zoom_level) {

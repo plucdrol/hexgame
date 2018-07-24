@@ -94,6 +94,27 @@ WorldRenderer.p.clear = function() {
     this.hex_renderer.renderer.canvas_draw.clear();
 }
 
+WorldRenderer.p.calculateHexesToRender = function() {
+  var rectMap = this.hex_renderer.getHexRectangleBoundaries();
+  //get the rectangular array of hex tiles
+  let hexmap = this.world.map.getRectangleSubMap( rectMap.qmin,
+                                                  rectMap.qmax,
+                                                  rectMap.rmin, 
+                                                  rectMap.rmax);
+   return hexmap;
+}
+    
+
+WorldRenderer.p.drawWorld = function() {
+
+  if (this.ready_to_render) {
+    var hexmap = this.calculateHexesToRender();
+    //this.hex_renderer.renderer.drawRedRenderingRectangle();
+    this.drawHexMap(hexmap);
+    
+  }
+}
+
 WorldRenderer.p.drawHexMap = function(hexmap) {
   //get the array
   var hexarray = hexmap.getHexArray();
@@ -118,30 +139,6 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     }
   }
 }
-
-
-
-    
-
-WorldRenderer.p.drawWorld = function() {
-
-  if (this.ready_to_render) {
-    var rectMap = this.hex_renderer.getHexRectangleBoundaries();
-
-    //get the rectangular array of hex tiles
-
-    let hexmap = this.world.map.getRectangleSubMap(rectMap.qmin,
-						  rectMap.qmax,
-                                                  rectMap.rmin, 
-                                                  rectMap.rmax);
-
-    //this.hex_renderer.renderer.drawRedRenderingRectangle();
-    this.drawHexMap(hexmap);
-    
-  }
-}
-
-
 
 WorldRenderer.p.getTile = function(hex) {
     return this.world.map.getValue(hex);
