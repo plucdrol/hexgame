@@ -120,37 +120,6 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 }
 
 
-// CALCULATING RECTANGLE FUNCTIONS!?
-WorldRenderer.p.getHexRectangleBoundaries = function() {
-   
-
-    var corners = this.hex_renderer.renderer.view.getCorners();
-
-    //find the corner hexes
-    var toplefthex = Hex.round(this.hex_renderer.pointToHex(corners.topleft));
-    var toprighthex = Hex.round(this.hex_renderer.pointToHex(corners.topright));
-    var bottomlefthex = Hex.round(this.hex_renderer.pointToHex(corners.bottomleft));
-    var bottomrighthex = Hex.round(this.hex_renderer.pointToHex(corners.bottomright));
-
-    //define the limits of the iteration
-    var qmin = Math.min( toplefthex.getQ(),    bottomrighthex.getQ(),
-                         toprighthex.getQ(),   bottomlefthex.getQ());
-    var qmax = Math.max( toplefthex.getQ(),    bottomrighthex.getQ(),
-                         bottomlefthex.getQ(), toprighthex.getQ());
-    var rmin = Math.min( toplefthex.getR(),    bottomrighthex.getR(),
-                           toprighthex.getR(),   bottomlefthex.getR());
-    var rmax = Math.max( toplefthex.getR(),    bottomrighthex.getR(),
-                         toprighthex.getR(),   bottomlefthex.getR());
-  
-    var hex_rect = {
-      qmin:qmin,
-      qmax:qmax,
-      rmin:rmin, 
-      rmax:rmax
-    };
-    
-    return hex_rect;
-}
 
 WorldRenderer.p.drawRedRenderingRectangle = function() {
     var object = this.hex_renderer.renderer.view.getCorners();
@@ -172,7 +141,7 @@ WorldRenderer.p.drawRedRenderingRectangle = function() {
 WorldRenderer.p.drawWorld = function() {
 
   if (this.ready_to_render) {
-    var rectMap = this.getHexRectangleBoundaries();
+    var rectMap = this.hex_renderer.getHexRectangleBoundaries();
 
     //get the rectangular array of hex tiles
 
