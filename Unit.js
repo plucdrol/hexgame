@@ -33,14 +33,14 @@ Unit.prototype.setType = function(unit_type) {
     this.components.maximum_elevation = 13; 
     break;
   case 'water-player':
-    this.setMovement(12);
+    this.setMovement(16);
     this.components.color = 'white';
     this.components.controllable = true;
     this.components.eats_food = true;
     this.components.self_action_become_unit = 'hut';
     this.components.range = {};
     this.components.size = 2;
-    this.components.minimum_elevation = 0;
+    this.components.minimum_elevation = 1;
     this.components.maximum_elevation = 1; 
     break;
   case 'tree':
