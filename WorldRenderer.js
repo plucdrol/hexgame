@@ -121,22 +121,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 
 
 
-WorldRenderer.p.drawRedRenderingRectangle = function() {
-    var object = this.hex_renderer.renderer.view.getCorners();
     
-    var corners = [];
-    corners.push(object.topleft);
-    corners.push(object.topright);
-    corners.push(object.bottomright);
-    corners.push(object.bottomleft);
-
-    var rect_style = new RenderStyle();
-    rect_style.fill_color = 'transparent';
-    rect_style.line_color = 'red';
-    rect_style.line_width = 20;
-
-    this.hex_renderer.renderer.drawPolygon(corners,rect_style);
-}    
 
 WorldRenderer.p.drawWorld = function() {
 
@@ -150,7 +135,7 @@ WorldRenderer.p.drawWorld = function() {
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
 
-    //this.drawRedRenderingRectangle();
+    //this.hex_renderer.renderer.drawRedRenderingRectangle();
     this.drawHexMap(hexmap);
     
   }

@@ -98,6 +98,23 @@ Renderer.prototype.drawLines = function(points,style) {
   }
 };
 
+Renderer.p.drawRedRenderingRectangle = function() {
+    var object = this.view.getCorners();
+    
+    var corners = [];
+    corners.push(object.topleft);
+    corners.push(object.topright);
+    corners.push(object.bottomright);
+    corners.push(object.bottomleft);
+
+    var rect_style = new RenderStyle();
+    rect_style.fill_color = 'transparent';
+    rect_style.line_color = 'red';
+    rect_style.line_width = 20;
+
+    this.drawPolygon(corners,rect_style);
+}
+
 
 
 
