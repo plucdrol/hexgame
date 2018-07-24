@@ -149,5 +149,28 @@ function drawScreen() {
   hover_style.line_width = 0;
   world_layer_interface.world_renderer.drawHex(world_layer_interface.world_interface.hex_hovered, hover_style );
 }
+
+function clickingOnTheScreen() {
+    //draw range of selected unit (this should be somewhere else)
+  if (world_layer_interface.unit_controller.hex_selected instanceof Hex) {
+    var potentialUnit = world_layer_interface.unit_controller.units.getValue(world_layer_interface.unit_controller.hex_selected);
+    if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
+      //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
+      world_layer_interface.world_renderer.drawHexes(potentialUnit.getComponent('range'));
+    }
+
+    //draw selection hex
+    var select_style = new RenderStyle();
+    select_style.fill_color = "rgba(200,200,0,0.5)";
+    select_style.line_width = 2;
+    world_layer_interface.world_renderer.drawHex(world_layer_interface.unit_controller.hex_selected, select_style);
+  }
+
+  //draw hovered hex
+  var hover_style = new RenderStyle();
+  hover_style.fill_color = "rgba(200,200,200,0.4)";
+  hover_style.line_width = 0;
+  world_layer_interface.world_renderer.drawHex(world_layer_interface.world_interface.hex_hovered, hover_style );
+}
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
 canv_input.registerEvents();
