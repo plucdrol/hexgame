@@ -53,7 +53,7 @@ function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
     var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller);
   }
 
-  var layer_interface = {
+  var layer = {
     world_interface: world_interface,
     unit_controller: unit_controller,
     world_renderer: world_renderer,
@@ -62,20 +62,20 @@ function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
     offset: offset
   }
 
-  return layer_interface;
+  return layer;
 }
 
-var world_layer_interface = createWorldLayer(20, new Hex(0,0), 1, 'earth'); 
-var space_layer_interface = createWorldLayer(20, new Hex(-3,-3), 1/64, 'space', world_layer_interface);
-var galaxy_layer_interface = createWorldLayer(20, new Hex(5,5), 1/4096, 'galaxy', space_layer_interface);
-var hyperspace_layer_interface = createWorldLayer(20, new Hex(0,0), 1/262144, 'earth', galaxy_layer_interface);
+var world_layer = createWorldLayer(20, new Hex(0,0), 1, 'earth'); 
+var space_layer = createWorldLayer(20, new Hex(-3,-3), 1/64, 'space', world_layer);
+var galaxy_layer = createWorldLayer(20, new Hex(5,5), 1/4096, 'galaxy', space_layer);
+var hyperspace_layer = createWorldLayer(20, new Hex(0,0), 1/262144, 'earth', galaxy_layer);
 
 
 function get_layer_offset(current_layer_scale, previous_layer_scale, previous_layer_center_hex_offset, previous_layer_offset, layout) {
   var scale_difference = current_layer_scale / previous_layer_scale;
   var test_hex = new Hex( -previous_layer_center_hex_offset.getQ()*scale_difference, 
                           -previous_layer_center_hex_offset.getR()*scale_difference );
-  //console.log(layout);
+  
   var layer_offset = layout.hexToPoint( test_hex );
   layer_offset.x -= previous_layer_offset.x;
   layer_offset.y -= previous_layer_offset.y;
@@ -85,23 +85,23 @@ function get_layer_offset(current_layer_scale, previous_layer_scale, previous_la
 
 
 //create units in the world
-world_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
-world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
-world_layer_interface.unit_controller.createUnit(new Hex(15,-15),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(15,0),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(0,-15),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(-15,-15),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(-15,15),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(-15,0),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
+world_layer.unit_controller.createUnit(new Hex(0,0),'planet');
+world_layer.unit_controller.createUnit(new Hex(1,0),'tree');
+world_layer.unit_controller.createUnit(new Hex(15,-15),'water-player');
+world_layer.unit_controller.createUnit(new Hex(15,0),'water-player');
+world_layer.unit_controller.createUnit(new Hex(0,-15),'water-player');
+world_layer.unit_controller.createUnit(new Hex(-15,-15),'water-player');
+world_layer.unit_controller.createUnit(new Hex(-15,15),'water-player');
+world_layer.unit_controller.createUnit(new Hex(-15,0),'water-player');
+world_layer.unit_controller.createUnit(new Hex(1,0),'tree');
 
 //level below is always at 0,0 even if the map is shifted to the side
-space_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
-space_layer_interface.unit_controller.createUnit(new Hex(3,3),'sun');
+space_layer.unit_controller.createUnit(new Hex(0,0),'planet');
+space_layer.unit_controller.createUnit(new Hex(3,3),'sun');
 
 //Level below is always at 0,0  even if the map is shifted to the side
-galaxy_layer_interface.unit_controller.createUnit(new Hex(0,0),'sun');
-galaxy_layer_interface.unit_controller.createUnit(new Hex(-5,-5),'galactic-center');
+galaxy_layer.unit_controller.createUnit(new Hex(0,0),'sun');
+galaxy_layer.unit_controller.createUnit(new Hex(-5,-5),'galactic-center');
 
 
 
@@ -111,68 +111,65 @@ canv_input.windowResize();
 
 function drawScreen() {
 
-  world_layer_interface.world_renderer.clear();
+  world_layer.world_renderer.clear();
+  var layer_to_control = hyperspace_layer;
+
   //draw the universe
-  hyperspace_layer_interface.world_renderer.drawWorld();
+  hyperspace_layer.world_renderer.drawWorld();
+
   //draw the galaxy
-  if (galaxy_layer_interface.world_renderer.view.getZoom() > 0.06) {
-    galaxy_layer_interface.world_renderer.drawWorld();
+  if (galaxy_layer.world_renderer.view.getZoom() > 0.06) {
+    galaxy_layer.world_renderer.drawWorld();
+    layer_to_control = galaxy_layer;
   }
   //draw the space
-  if (space_layer_interface.world_renderer.view.getZoom() > 0.06) {
-    space_layer_interface.world_renderer.drawWorld(); 
+  if (space_layer.world_renderer.view.getZoom() > 0.06) {
+    space_layer.world_renderer.drawWorld(); 
+    layer_to_control = space_layer;
   }
   //draw the world
-  if (world_layer_interface.world_renderer.view.getZoom() > 0.06) {
-    world_layer_interface.world_renderer.drawWorld();    
+  if (world_layer.world_renderer.view.getZoom() > 0.06) {
+    world_layer.world_renderer.drawWorld();    
+    layer_to_control = world_layer;
+    
   }
 
 
 
+  //draw mouse interactions
+  mouseActionsScreen(layer_to_control);
+}
+
+function mouseActionsScreen(current_layer) {
+
+  var world_interface = current_layer.world_interface;
+  var renderer = current_layer.world_renderer;
+  var controller = current_layer.unit_controller;
+  var hex_selected = controller.hex_selected;
 
   //draw range of selected unit (this should be somewhere else)
-  if (world_layer_interface.unit_controller.hex_selected instanceof Hex) {
-    var potentialUnit = world_layer_interface.unit_controller.units.getValue(world_layer_interface.unit_controller.hex_selected);
-    if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
-      //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
-      world_layer_interface.world_renderer.drawHexes(potentialUnit.getComponent('range'));
+  if (hex_selected instanceof Hex) {
+    
+    var potential_unit = controller.units.getValue(hex_selected);
+
+    if (potential_unit instanceof Unit && potential_unit.hasComponent('range')) {
+      renderer.drawHexes(potential_unit.getComponent('range'));
     }
 
     //draw selection hex
     var select_style = new RenderStyle();
     select_style.fill_color = "rgba(200,200,0,0.5)";
     select_style.line_width = 2;
-    world_layer_interface.world_renderer.drawHex(world_layer_interface.unit_controller.hex_selected, select_style);
+    renderer.drawHex(hex_selected, select_style);
   }
 
   //draw hovered hex
   var hover_style = new RenderStyle();
+  var hex_hovered = world_interface.hex_hovered;
   hover_style.fill_color = "rgba(200,200,200,0.4)";
   hover_style.line_width = 0;
-  world_layer_interface.world_renderer.drawHex(world_layer_interface.world_interface.hex_hovered, hover_style );
+  renderer.drawHex( hex_hovered, hover_style );
 }
 
-function clickingOnTheScreen() {
-    //draw range of selected unit (this should be somewhere else)
-  if (world_layer_interface.unit_controller.hex_selected instanceof Hex) {
-    var potentialUnit = world_layer_interface.unit_controller.units.getValue(world_layer_interface.unit_controller.hex_selected);
-    if (potentialUnit instanceof Unit && potentialUnit.hasComponent('range')) {
-      //world_renderer.drawPath(potentialUnit.components.range,world_interface.hex_hovered);
-      world_layer_interface.world_renderer.drawHexes(potentialUnit.getComponent('range'));
-    }
-
-    //draw selection hex
-    var select_style = new RenderStyle();
-    select_style.fill_color = "rgba(200,200,0,0.5)";
-    select_style.line_width = 2;
-    world_layer_interface.world_renderer.drawHex(world_layer_interface.unit_controller.hex_selected, select_style);
-  }
-
-  //draw hovered hex
-  var hover_style = new RenderStyle();
-  hover_style.fill_color = "rgba(200,200,200,0.4)";
-  hover_style.line_width = 0;
-  world_layer_interface.world_renderer.drawHex(world_layer_interface.world_interface.hex_hovered, hover_style );
-}
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
 canv_input.registerEvents();
