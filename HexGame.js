@@ -66,6 +66,7 @@ function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
 }
 
 var world_layer = createWorldLayer(20, new Hex(0,0), 1, 'earth'); 
+var mars_layer = createWorldLayer(20, new Hex(20,20), 1, 'mars'); 
 var space_layer = createWorldLayer(20, new Hex(-3,-3), 1/64, 'space', world_layer);
 var galaxy_layer = createWorldLayer(20, new Hex(5,5), 1/4096, 'galaxy', space_layer);
 var hyperspace_layer = createWorldLayer(20, new Hex(0,0), 1/262144, 'earth', galaxy_layer);
@@ -132,6 +133,11 @@ function drawScreen() {
     world_layer.world_renderer.drawWorld();    
     layer_to_control = world_layer;
     
+  }
+  //draw the world
+  if (mars_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06) {
+    mars_layer.world_renderer.drawWorld();    
+    layer_to_control = mars_layer;  
   }
 
 
