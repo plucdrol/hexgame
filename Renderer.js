@@ -98,7 +98,7 @@ Renderer.prototype.drawLines = function(points,style) {
   }
 };
 
-Renderer.p.drawRedRenderingRectangle = function() {
+Renderer.prototype.drawRedRenderingRectangle = function() {
     var object = this.view.getCorners();
     
     var corners = [];
