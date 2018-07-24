@@ -158,10 +158,16 @@ WorldInterface.prototype.hoverEvent = function(screen_position) {
 
 WorldInterface.prototype.clickScreenEvent = function(screen_position) {
 
+  
+  if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
+    return;
+  }
+  console.log('click');
+
   let hex_clicked = this.getHex(screen_position);
 
   //Only reference to unit controller
-  unit_controller.clickHex(hex_clicked);
+  this.unit_controller.clickHex(hex_clicked);
   
   drawScreen();
 
