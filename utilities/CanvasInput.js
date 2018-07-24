@@ -110,6 +110,10 @@ CanvasInput.prototype.mouseMove = function(event) {
   this.mouse_pos_previous[0] = this.mouse_pos[0];
 }
 
+function point_average(point1, point2) {
+  return new Point((point1.x+point2.x)/2, (point1.y+point2.y)/2);
+}
+
 //react to touch events across the screen
 CanvasInput.prototype.touchMove = function(ev) {
     ev.preventDefault();
@@ -141,7 +145,24 @@ CanvasInput.prototype.touchMove = function(ev) {
 
     //this is what happens for double touches
     if (ev.touches.length == 2) {
-            
+
+        if (this.mouse_pos[id[0]] != undefined &&
+            this.mouse_pos[id[1]] != undefined &&
+            this.mouse_pos_previous[id[0]] != undefined &&
+            this.mouse_pos_previous[id[1]] != undefined    ) {
+       var average_pos = point_average(this.mouse_pos[id[0]], this.mouse_pos[id[1]]);
+       var average_pos_previous = point_average(this.mouse_pos_previous[id[0]], this.mouse_pos_previous[id[1]]);
+     }
+
+        //move screen for both finders
+        if (average_pos != undefined) {
+            this.is_dragging = true; //prevents clicks at the end of a drag
+            var drag = { mousepos: average_pos,
+                   mouseposprevious: average_pos_previous};
+        emitEvent('hexgame_drag', drag);
+        }
+
+        //zoom screen      
         if (this.mouse_pos_previous[id[0]] != undefined && 
 	    this.mouse_pos_previous[id[1]] != undefined) {
             var previous_distance = distance(this.mouse_pos_previous[id[0]],
@@ -150,7 +171,7 @@ CanvasInput.prototype.touchMove = function(ev) {
 	                                    this.mouse_pos[id[1]] );
             var difference = current_distance-previous_distance;
 
-            emitEvent('hexgame_zoom', {amount: 1-difference/100} );
+            emitEvent('hexgame_zoom', {amount: 1-difference/200} );
         }
     }
 
