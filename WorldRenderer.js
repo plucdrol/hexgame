@@ -77,7 +77,8 @@ var greenscale_colors = function (i, color_scheme) {
 
 
 function WorldRenderer (canvas_draw,view,world,unit_controller,color_scheme) {
-  HexRenderer.call(this,canvas_draw,view,world.layout,color_scheme); 
+  
+  this.hex_renderer = new HexRenderer(canvas_draw,view,world.layout,color_scheme);
   this.world = world;
 
   this.unit_controller = unit_controller;
@@ -87,33 +88,22 @@ function WorldRenderer (canvas_draw,view,world,unit_controller,color_scheme) {
   this.ready_to_render = true;
 }
 
-WorldRenderer.prototype = Object.create(HexRenderer.prototype);
 WorldRenderer.p = WorldRenderer.prototype;
 
 WorldRenderer.p.clear = function() {
-    this.canvas_draw.clear();
+    this.hex_renderer.renderer.canvas_draw.clear();
 }
-
-WorldRenderer.p.drawOutline = function(edge_arrays,style) {
-    
-  var number_of_loops = edge_arrays.length;
-  for (let outline = 0; outline<number_of_loops; outline++){
-    var corners = [];
-    var edges = edge_arrays[outline];    
-    for (var i=0;i<edges.length;i++){
-      corners.push( this.hexToPoint(edges[i].getPoint1() ));
-    }
-    this.drawPolygon(corners,style);
-  }
-};
 
 WorldRenderer.p.drawHexMap = function(hexmap) {
   //get the array
   var hexarray = hexmap.getHexArray();
 
   //make a tile renderer
-  var tile_renderer = new TileRenderer2D(this.canvas_draw,
-                       this.view,this.world.layout,this.color_scheme);
+  var tile_renderer = new TileRenderer2D(
+                       this.hex_renderer.renderer.canvas_draw,
+                       this.hex_renderer.renderer.view,
+                       this.world.layout,
+                       this.color_scheme);
   //draw the tiles of the array
   for (hex of hexarray) {
     
@@ -134,13 +124,13 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 WorldRenderer.p.getHexRectangleBoundaries = function() {
    
 
-    var corners = this.view.getCorners();
+    var corners = this.hex_renderer.renderer.view.getCorners();
 
     //find the corner hexes
-    var toplefthex = Hex.round(this.pointToHex(corners.topleft));
-    var toprighthex = Hex.round(this.pointToHex(corners.topright));
-    var bottomlefthex = Hex.round(this.pointToHex(corners.bottomleft));
-    var bottomrighthex = Hex.round(this.pointToHex(corners.bottomright));
+    var toplefthex = Hex.round(this.hex_renderer.pointToHex(corners.topleft));
+    var toprighthex = Hex.round(this.hex_renderer.pointToHex(corners.topright));
+    var bottomlefthex = Hex.round(this.hex_renderer.pointToHex(corners.bottomleft));
+    var bottomrighthex = Hex.round(this.hex_renderer.pointToHex(corners.bottomright));
 
     //define the limits of the iteration
     var qmin = Math.min( toplefthex.getQ(),    bottomrighthex.getQ(),
@@ -148,7 +138,7 @@ WorldRenderer.p.getHexRectangleBoundaries = function() {
     var qmax = Math.max( toplefthex.getQ(),    bottomrighthex.getQ(),
                          bottomlefthex.getQ(), toprighthex.getQ());
     var rmin = Math.min( toplefthex.getR(),    bottomrighthex.getR(),
-                         toprighthex.getR(),   bottomlefthex.getR());
+                           toprighthex.getR(),   bottomlefthex.getR());
     var rmax = Math.max( toplefthex.getR(),    bottomrighthex.getR(),
                          toprighthex.getR(),   bottomlefthex.getR());
   
@@ -163,7 +153,7 @@ WorldRenderer.p.getHexRectangleBoundaries = function() {
 }
 
 WorldRenderer.p.drawRedRenderingRectangle = function() {
-    var object = this.view.getCorners();
+    var object = this.hex_renderer.renderer.view.getCorners();
     
     var corners = [];
     corners.push(object.topleft);
@@ -176,7 +166,7 @@ WorldRenderer.p.drawRedRenderingRectangle = function() {
     rect_style.line_color = 'red';
     rect_style.line_width = 20;
 
-    this.drawPolygon(corners,rect_style);
+    this.hex_renderer.renderer.drawPolygon(corners,rect_style);
 }    
 
 WorldRenderer.p.drawWorld = function() {
@@ -206,19 +196,19 @@ WorldRenderer.p.getTile = function(hex) {
 
 WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
-  var position = this.hexToPoint(hex);
+  var position = this.hex_renderer.hexToPoint(hex);
   position = position.offset(0,-height);
  
   var unit_style = new RenderStyle();
   unit_style.fill_color = unit.getComponent('color');
   let size = 10*unit.getComponent('size');
-  this.drawDot(position, size, unit_style);
+  this.hex_renderer.renderer.drawDot(position, size, unit_style);
   
   if (unit.components.population != undefined) {
     let text_style = new RenderStyle();
     text_style.font_size = 25;
     let text = unit.components.population;      
-    this.drawText(text, position, text_style);
+    this.hex_renderer.renderer.drawText(text, position, text_style);
   }
 };
 
@@ -231,18 +221,18 @@ WorldRenderer.p.drawPath = function(range,destination) {
     hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
     hex_style.width = 2;
 
-    this.drawHex(destination,hex_style);
+    this.hex_renderer.drawHex(destination,hex_style);
         
 
     //calculate points of the hexes
     var hexes = pathfinder.destinationPathfind(range, destination);
     var points = [];
     for (var i = 0; i<hexes.length;i++) {
-      points.push(this.hexToPoint(hexes[i]));
+      points.push(this.hex_renderer.hexToPoint(hexes[i]));
     }
 
     //draw on screen
-    this.drawLines(points,3);
+    this.hex_renderer.renderer.drawLines(points,3);
   }
 }
 

@@ -118,17 +118,17 @@ function drawScreen() {
   hyperspace_layer.world_renderer.drawWorld();
 
   //draw the galaxy
-  if (galaxy_layer.world_renderer.view.getZoom() > 0.06) {
+  if (galaxy_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06) {
     galaxy_layer.world_renderer.drawWorld();
     layer_to_control = galaxy_layer;
   }
   //draw the space
-  if (space_layer.world_renderer.view.getZoom() > 0.06) {
+  if (space_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06) {
     space_layer.world_renderer.drawWorld(); 
     layer_to_control = space_layer;
   }
   //draw the world
-  if (world_layer.world_renderer.view.getZoom() > 0.06) {
+  if (world_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06) {
     world_layer.world_renderer.drawWorld();    
     layer_to_control = world_layer;
     
@@ -153,14 +153,14 @@ function mouseActionsScreen(current_layer) {
     var potential_unit = controller.units.getValue(hex_selected);
 
     if (potential_unit instanceof Unit && potential_unit.hasComponent('range')) {
-      renderer.drawHexes(potential_unit.getComponent('range'));
+      renderer.hex_renderer.drawHexes(potential_unit.getComponent('range'));
     }
 
     //draw selection hex
     var select_style = new RenderStyle();
     select_style.fill_color = "rgba(200,200,0,0.5)";
     select_style.line_width = 2;
-    renderer.drawHex(hex_selected, select_style);
+    renderer.hex_renderer.drawHex(hex_selected, select_style);
   }
 
   //draw hovered hex
@@ -168,7 +168,7 @@ function mouseActionsScreen(current_layer) {
   var hex_hovered = world_interface.hex_hovered;
   hover_style.fill_color = "rgba(200,200,200,0.4)";
   hover_style.line_width = 0;
-  renderer.drawHex( hex_hovered, hover_style );
+  renderer.hex_renderer.drawHex( hex_hovered, hover_style );
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////

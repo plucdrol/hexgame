@@ -12,12 +12,11 @@
 // Hex
 
 function HexRenderer(canvas_draw, view, hexlayout, color_scheme) {
-  Renderer.call(this, canvas_draw, view); 
+  this.renderer = new Renderer(canvas_draw, view); 
   this.hexlayout = hexlayout;
   this.color_scheme = color_scheme;
 }
 
-HexRenderer.prototype = Object.create(Renderer.prototype);
 HexRenderer.p = HexRenderer.prototype;
 
 // HEX AND POINT CONVERSION
@@ -44,20 +43,20 @@ HexRenderer.p.mapColors = function(i) {
 HexRenderer.p.drawHex = function(hex, style) {
 
   //if zoomed out enough, just draw a dot
-  if (this.view.getScale() < 1) {
+  if (this.renderer.view.getScale() < 1) {
 
       var point = this.hexToPoint(hex);
-      this.drawDot(point, 60, style);
+      this.renderer.drawDot(point, 60, style);
   } else {
       //otherwise, draw the actual hex
       var corners = this.hexesToPoints(Hex.corners(hex));
-      this.drawPolygon(corners,style);
+      this.renderer.drawPolygon(corners,style);
   }
 
 };
 
 //Draw a series of short lines
-HexRenderer.p.drawOutline = function(edge_arrays,style) {
+HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
     
   var number_of_loops = edge_arrays.length;
   for (let outline = 0; outline<number_of_loops; outline++){
@@ -66,7 +65,7 @@ HexRenderer.p.drawOutline = function(edge_arrays,style) {
     for (var i=0;i<edges.length;i++){
       corners.push( this.hexToPoint(edges[i].getPoint1() ));
     }
-    this.drawPolygon(corners,style);
+    this.renderer.drawPolygon(corners,style);
   }
 };
 
@@ -94,20 +93,8 @@ HexRenderer.p.drawHexes = function(hex_array) {
   range_style.line_color = "rgba(255,255,100,1)";
 
   //draw the outline of the range
-  this.drawOutline( outline,range_style);
+  this.drawHexOutline( outline,range_style);
 }
 
-/*
-HexRenderer.p.drawHexMap = function(hexmap) {
-  //get the array
-  var hexarray = hexmap.getHexArray();
 
-  //make a tile renderer
-  //var tile_renderer = new TileRenderer2D();
-  //draw the tiles of the array
-  for (hex of hexarray) {
-    this.drawTile2D(hex);
-    //tile_renderer.drawTile(hex);
-  }
-}*/
 

@@ -24,7 +24,7 @@ function RenderStyle() {
 }
 
 //this is a basic Renderer, it doesn't know about hexes!
-function Renderer(canvas_draw,view) {
+function Renderer(canvas_draw, view) {
     this.canvas_draw = canvas_draw;
     this.view = view;
 
