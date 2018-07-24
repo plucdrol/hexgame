@@ -87,11 +87,11 @@ function get_layer_offset(current_layer_scale, previous_layer_scale, previous_la
 //create units in the world
 world_layer_interface.unit_controller.createUnit(new Hex(0,0),'planet');
 world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
-world_layer_interface.unit_controller.createUnit(new Hex(25,-25),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(25,0),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(0,-25),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(-25,-25),'water-player');
-world_layer_interface.unit_controller.createUnit(new Hex(-25,25),'water-player');
+world_layer_interface.unit_controller.createUnit(new Hex(15,-15),'water-player');
+world_layer_interface.unit_controller.createUnit(new Hex(15,0),'water-player');
+world_layer_interface.unit_controller.createUnit(new Hex(0,-15),'water-player');
+world_layer_interface.unit_controller.createUnit(new Hex(-15,-15),'water-player');
+world_layer_interface.unit_controller.createUnit(new Hex(-15,15),'water-player');
 world_layer_interface.unit_controller.createUnit(new Hex(-15,0),'water-player');
 world_layer_interface.unit_controller.createUnit(new Hex(1,0),'tree');
 
@@ -101,7 +101,7 @@ space_layer_interface.unit_controller.createUnit(new Hex(3,3),'sun');
 
 //Level below is always at 0,0  even if the map is shifted to the side
 galaxy_layer_interface.unit_controller.createUnit(new Hex(0,0),'sun');
-galaxy_layer_interface.unit_controller.createUnit(new Hex(-5,-5),'planet');
+galaxy_layer_interface.unit_controller.createUnit(new Hex(-5,-5),'galactic-center');
 
 
 
@@ -126,6 +126,8 @@ function drawScreen() {
   if (world_layer_interface.world_renderer.view.getZoom() > 0.06) {
     world_layer_interface.world_renderer.drawWorld();    
   }
+
+
 
 
   //draw range of selected unit (this should be somewhere else)
