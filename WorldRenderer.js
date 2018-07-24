@@ -17,71 +17,11 @@
 //  Hex
 //  HexRenderer
 
-var greenscale_colors = function (i, color_scheme) {
-
-
-  if (color_scheme == 'space') {
-    var spacescale = ['#000','#000','#ccc','#222','#222',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000',];
-     return spacescale[i];
-   }
-
-  if (color_scheme == 'galaxy') {
-    var galaxyscale = ['#000','#000','#dd0','#222','#222',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000',
-                      '#000','#000',];
-     return galaxyscale[i];
-   }
-
-     if (color_scheme == 'earth') {
-      var greenscale = ['#005','#00D','#AA3','#080','#062',
-                    '#052','#042','#032','#020','#010',
-                    '#110','#210','#410','#420','#777',
-                    '#777','#777','#888','#888','#888',
-                    '#FFF','#FFF','#FFF','#FFF','#FFF',
-                    '#FFF','#FFF','#FFF','#FFF','#FFF',
-                    '#FFF','#FFF'];
-     return greenscale[i];
-   }
-
-      var greenscale = ['#005','#00D','#AA3','#080','#062',
-                    '#052','#042','#032','#020','#010',
-                    '#110','#210','#410','#420','#777',
-                    '#777','#777','#888','#888','#888',
-                    '#FFF','#FFF','#FFF','#FFF','#FFF',
-                    '#FFF','#FFF','#FFF','#FFF','#FFF',
-                    '#FFF','#FFF'];
-
-  var fadedscale = ['#335','#66D','#AA7','#686','#575',
-                    '#464','#353','#242','#232','#232',
-                    '#110','#321','#421','#432','#777',
-                    '#777','#777','#888','#888','#888',
-                    '#FFF','#FFF','#FFF','#FFF','#FFF',
-                    '#FFF','#FFF','#FFF','#FFF','#FFF',
-                    '#FFF','#FFF'];
-    return greenscale[i];
-
-
-    
-}
-
-
-
-function WorldRenderer (canvas_draw,view,world,unit_controller,color_scheme) {
+function WorldRenderer (canvas_draw, world_interface, color_scheme) {
   
-  this.hex_renderer = new HexRenderer(canvas_draw,view,world.layout,color_scheme);
-  this.world = world;
-
-  this.unit_controller = unit_controller;
+  this.hex_renderer = new HexRenderer(canvas_draw, world_interface.view, world_interface.world.layout, color_scheme);
+  this.color_scheme = color_scheme;
+  this.world_interface = world_interface;
 
   this.corners = [];
 
@@ -97,7 +37,7 @@ WorldRenderer.p.clear = function() {
 WorldRenderer.p.calculateHexesToRender = function() {
   var rectMap = this.hex_renderer.getHexRectangleBoundaries();
   //get the rectangular array of hex tiles
-  let hexmap = this.world.map.getRectangleSubMap( rectMap.qmin,
+  let hexmap = this.world_interface.world.map.getRectangleSubMap( rectMap.qmin,
                                                   rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
@@ -123,7 +63,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   var tile_renderer = new TileRenderer2D(
                        this.hex_renderer.renderer.canvas_draw,
                        this.hex_renderer.renderer.view,
-                       this.world.layout,
+                       this.world_interface.world.layout,
                        this.color_scheme);
   //draw the tiles of the array
   for (hex of hexarray) {
@@ -132,7 +72,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     tile_renderer.drawTile(hex, this.getTile(hex));
     
     //draw units
-    var this_unit = this.unit_controller.units.getValue(hex);
+    var this_unit = this.world_interface.unit_controller.units.getValue(hex);
 
     if (typeof this_unit == 'object') {
         this.drawUnit(this_unit,hex,0);
@@ -141,7 +81,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 }
 
 WorldRenderer.p.getTile = function(hex) {
-    return this.world.map.getValue(hex);
+    return this.world_interface.world.map.getValue(hex);
 }
 
 

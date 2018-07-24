@@ -7,6 +7,12 @@
 /////////////////////////////////////////
 /////////////////////////////////////////
 /////////////////////////////////////////
+
+
+
+// Sole responsibility: drawing hexagons using the canvas-draw tools
+
+
 // CanvasDraw
 // View
 // Hex
@@ -35,7 +41,7 @@ HexRenderer.p.pointToHex = function(point) {
 }
 
 HexRenderer.p.mapColors = function(i) {
-  return greenscale_colors(i,this.color_scheme);  
+  return greenscale_colors(i, this.color_scheme);  
 } 
 
 
@@ -129,4 +135,72 @@ HexRenderer.p.getHexRectangleBoundaries = function() {
     return hex_rect;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+var greenscale_colors = function (i, color_scheme) {
+
+
+  if (color_scheme == 'space') {
+    var spacescale = ['#000','#000','#ccc','#222','#222',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000',];
+     return spacescale[i];
+   }
+
+  if (color_scheme == 'galaxy') {
+    var galaxyscale = ['#000','#000','#dd0','#222','#222',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000','#000','#000','#000',
+                      '#000','#000',];
+     return galaxyscale[i];
+   }
+
+     if (color_scheme == 'earth') {
+      var greenscale = ['#005','#00D','#AA3','#080','#062',
+                    '#052','#042','#032','#020','#010',
+                    '#110','#210','#410','#420','#777',
+                    '#777','#777','#888','#888','#888',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF'];
+     return greenscale[i];
+   }
+
+      var greenscale = ['#005','#00D','#AA3','#080','#062',
+                    '#052','#042','#032','#020','#010',
+                    '#110','#210','#410','#420','#777',
+                    '#777','#777','#888','#888','#888',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF'];
+
+  var fadedscale = ['#335','#66D','#AA7','#686','#575',
+                    '#464','#353','#242','#232','#232',
+                    '#110','#321','#421','#432','#777',
+                    '#777','#777','#888','#888','#888',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF','#FFF','#FFF','#FFF',
+                    '#FFF','#FFF'];
+    return greenscale[i];
+
+
+    
+}
 

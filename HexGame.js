@@ -48,9 +48,10 @@ function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
   //create a controller and renderer for the world
   var world_interface = new WorldInterface(world, view, unit_controller);
   if (color_scheme != undefined) {
-    var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller, color_scheme);  
+    console.log('creating color world');
+    var world_renderer = new WorldRenderer(canv_draw, world_interface, color_scheme);  
   } else {
-    var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller);
+    var world_renderer = new WorldRenderer(canv_draw, world_interface);
   }
 
   var layer = {
@@ -66,7 +67,7 @@ function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
 }
 
 var world_layer = createWorldLayer(20, new Hex(0,0), 1, 'earth'); 
-var mars_layer = createWorldLayer(20, new Hex(20,20), 1, 'mars'); 
+var mars_layer = createWorldLayer(20, new Hex(80,80), 1, 'mars'); 
 var space_layer = createWorldLayer(20, new Hex(-3,-3), 1/64, 'space', world_layer);
 var galaxy_layer = createWorldLayer(20, new Hex(5,5), 1/4096, 'galaxy', space_layer);
 var hyperspace_layer = createWorldLayer(20, new Hex(0,0), 1/262144, 'earth', galaxy_layer);

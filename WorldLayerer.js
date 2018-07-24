@@ -65,9 +65,9 @@ function LayerManager() {
 	  //create a controller and renderer for the world
 	  var world_interface = new WorldInterface(world, view, unit_controller);
 	  if (color_scheme != undefined) {
-	    var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller, color_scheme);  
+	    var world_renderer = new WorldRenderer(canv_draw, world_interface, color_scheme);  
 	  } else {
-	    var world_renderer = new WorldRenderer(canv_draw, view, world, unit_controller);
+	    var world_renderer = new WorldRenderer(canv_draw, world_interface);
 	  }
 
 	  //Create the layer object to be returned
