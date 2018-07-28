@@ -241,7 +241,10 @@ var PathFinder = (function() {
   //
 
 
-
+  //Input values:
+  // costFunction: a function which, given the beginning tile and ending tile of a step, returns a number value
+  //               of the cost to make that step. The cost will then be compared with the max_cost input.
+  // neighborFunction: input is a map and a coordinate. The function returns an array of all neighbor coordinates.             
 
 
   //Returns a function which can be used many times to find range 
