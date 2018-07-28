@@ -67,7 +67,6 @@ function createWorldLayer(radius, center_hex, scale, color_scheme, sublayer) {
 }
 
 var world_layer = createWorldLayer(20, new Hex(0,0), 1, 'earth'); 
-var mars_layer = createWorldLayer(20, new Hex(80,80), 1, 'mars'); 
 var space_layer = createWorldLayer(20, new Hex(-3,-3), 1/64, 'space', world_layer);
 var galaxy_layer = createWorldLayer(20, new Hex(5,5), 1/4096, 'galaxy', space_layer);
 var hyperspace_layer = createWorldLayer(20, new Hex(0,0), 1/262144, 'earth', galaxy_layer);
@@ -135,47 +134,12 @@ function drawScreen() {
     layer_to_control = world_layer;
     
   }
-  //draw the world
-  if (mars_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06) {
-    mars_layer.world_renderer.drawWorld();    
-    layer_to_control = mars_layer;  
-  }
 
 
 
   //draw mouse interactions
-  mouseActionsScreen(layer_to_control);
-}
-
-function mouseActionsScreen(current_layer) {
-
-  var world_interface = current_layer.world_interface;
-  var renderer = current_layer.world_renderer;
-  var controller = current_layer.unit_controller;
-  var hex_selected = controller.hex_selected;
-
-  //draw range of selected unit (this should be somewhere else)
-  if (hex_selected instanceof Hex) {
-    
-    var potential_unit = controller.units.getValue(hex_selected);
-
-    if (potential_unit instanceof Unit && potential_unit.hasComponent('range')) {
-      renderer.hex_renderer.drawHexes(potential_unit.getComponent('range'));
-    }
-
-    //draw selection hex
-    var select_style = new RenderStyle();
-    select_style.fill_color = "rgba(200,200,0,0.5)";
-    select_style.line_width = 2;
-    renderer.hex_renderer.drawHex(hex_selected, select_style);
-  }
-
-  //draw hovered hex
-  var hover_style = new RenderStyle();
-  var hex_hovered = world_interface.hex_hovered;
-  hover_style.fill_color = "rgba(200,200,200,0.4)";
-  hover_style.line_width = 0;
-  renderer.hex_renderer.drawHex( hex_hovered, hover_style );
+  var hud_renderer = new HUDRenderer();
+  hud_renderer.renderHUD(layer_to_control);
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
