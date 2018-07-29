@@ -35,6 +35,9 @@ UnitController.p.newMap = function(map) {
 
 }
 
+UnitController.p.getUnit = function(hex) {
+  return this.units.getValue(hex);
+}
 
 
 

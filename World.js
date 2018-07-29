@@ -14,7 +14,8 @@
 //  Hex.js
 
 function World(offset) {
-  var tile_size = new Point(35,35);
+  var tile_size = new Point(35,35)
+
   var origin = new Point(0,0);
   if (offset != undefined)
     origin = offset;
@@ -139,6 +140,26 @@ WorldInterface.prototype.setHex = function(screen_position,value) {
 WorldInterface.prototype.getMapValue = function(hex) {
   return this.world.map.getValue(hex);
 }
+
+WorldInterface.prototype.getUnit = function(hex) {
+  return this.unit_controller.getUnit(hex);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ///////// EVENTS /////////
 

@@ -30,8 +30,6 @@ function Renderer(canvas_draw, view) {
 
     this.ready_to_render = true;
     this.render_timer = {};
-    
-    this.worldToScreen;
 }
 
 //Coordinate transformation

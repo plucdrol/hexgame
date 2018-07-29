@@ -74,7 +74,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     tile_renderer.drawTile(hex, this.getTile(hex));
     
     //draw units
-    var this_unit = this.world_interface.unit_controller.units.getValue(hex);
+    var this_unit = this.world_interface.getUnit(hex);
 
     if (typeof this_unit == 'object') {
         this.drawUnit(this_unit,hex,0);
