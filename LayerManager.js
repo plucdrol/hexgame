@@ -32,38 +32,35 @@ function LayerManager() {
 
 		var layer = new Layer();
 
-	  var hexmap_generator = new MapGenerator('perlin'); 
-	  layer.map = hexmap_generator.makeMap(radius, center_hex);
-
 	  //calculate offset due to sublayer
 	  if (sublayer != undefined) {
-
 	  	layer.scale = sublayer.scale * scale_ratio;
 	    layer.offset = get_layer_offset( layer, sublayer );
 	  }
 
-	  //create a world
-	  var world = new World(layer.offset);
+	  //define the center tile
+	  layer.hex_center_offset = center_hex;
+
+	  //create a world object
+	  var world = new World(layer.offset);// <-- point at which the sublayer affects this new layer
+
+	  //create a map 
+	  var hexmap_generator = new MapGenerator('perlin'); 
+	  layer.map = hexmap_generator.makeMap(radius, center_hex);
 	  world.setMap(layer.map);
 
 	  //create a unit controller
-	  var unit_controller = new UnitController(layer.map);
-	  if (color_scheme != 'space') {
-	    unit_controller.fillMap();
-	  }
+	  layer.unit_controller = new UnitController(layer.map);
+	  layer.unit_controller.fillMap();
 
 	  //create a view for the map
-	  var view = create_view( layer.scale );
+	  layer.view = create_view( layer.scale ); // <- point at which the sublayer affects this new layer
 
-	  //create an interface and renderer for the world
-	  var world_interface = new WorldInterface(world, view, unit_controller);
-	  var world_renderer = new WorldRenderer(canv_draw, world_interface, color_scheme);  
+	  //create a world interface
+	  layer.world_interface = new WorldInterface(world, layer.view, layer.unit_controller);
 
-
-	  layer.world_interface = world_interface;
-	  layer.unit_controller = unit_controller;
-	  layer.world_renderer = world_renderer;
-	  layer.hex_center_offset = center_hex;
+	  //create a world renderer
+	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world_interface, color_scheme);  	  
 
 	  return layer;
 	}
