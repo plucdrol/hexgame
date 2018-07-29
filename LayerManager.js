@@ -55,13 +55,10 @@ function LayerManager() {
 	  //create a view for the map
 	  var view = create_view( layer.scale );
 
-	  //create a controller and renderer for the world
+	  //create an interface and renderer for the world
 	  var world_interface = new WorldInterface(world, view, unit_controller);
-	  if (color_scheme != undefined) {
-	    var world_renderer = new WorldRenderer(canv_draw, world_interface, color_scheme);  
-	  } else {
-	    var world_renderer = new WorldRenderer(canv_draw, world_interface);
-	  }
+	  var world_renderer = new WorldRenderer(canv_draw, world_interface, color_scheme);  
+
 
 	  layer.world_interface = world_interface;
 	  layer.unit_controller = unit_controller;

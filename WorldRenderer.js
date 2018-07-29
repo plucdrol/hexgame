@@ -19,8 +19,10 @@
 
 function WorldRenderer (canvas_draw, world_interface, color_scheme) {
   
-  this.hex_renderer = new HexRenderer(canvas_draw, world_interface.view, world_interface.world.layout, color_scheme);
-  this.color_scheme = color_scheme;
+  this.hex_renderer = new HexRenderer(canvas_draw, world_interface.view, world_interface.world.layout);
+  if (color_scheme != undefined) {
+    this.color_scheme = color_scheme;
+  }
   this.world_interface = world_interface;
 
   this.corners = [];
