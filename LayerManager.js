@@ -39,14 +39,7 @@ function LayerManager() {
 	  if (sublayer != undefined) {
 
 	  	layer.scale = sublayer.scale * scale_ratio;
-
-	    layer.offset = get_layer_offset(
-	    	                        layer.scale, 
-	                              sublayer.scale,     
-	                              sublayer.hex_center_offset, 
-	                              sublayer.offset,
-	                              sublayer.world_interface.world.layout
-	                              ); 
+	    layer.offset = get_layer_offset( layer, sublayer );
 	  }
 
 	  //create a world
@@ -80,15 +73,14 @@ function LayerManager() {
 
 }
 
-
-function get_layer_offset(layer_scale, sublayer_scale, sublayer_center_hex_offset, sublayer_offset, sublayer_layout) {
-  var scale_difference = layer_scale / sublayer_scale;
-  var test_hex = new Hex( -sublayer_center_hex_offset.getQ()*scale_difference, 
-                          -sublayer_center_hex_offset.getR()*scale_difference );
+function get_layer_offset(layer, sublayer) {
+  var scale_difference = layer.scale / sublayer.scale;
+  var test_hex = new Hex( -sublayer.hex_center_offset.getQ()*scale_difference, 
+                          -sublayer.hex_center_offset.getR()*scale_difference );
   
-  var layer_offset = sublayer_layout.hexToPoint( test_hex );
-  layer_offset.x -= sublayer_offset.x;
-  layer_offset.y -= sublayer_offset.y;
+  var layer_offset = sublayer.world_interface.world.layout.hexToPoint( test_hex );
+  layer_offset.x -= sublayer.offset.x;
+  layer_offset.y -= sublayer.offset.y;
 
   return layer_offset;
 }
