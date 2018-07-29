@@ -82,14 +82,14 @@ function LayerManager() {
 }
 
 
-function get_layer_offset(current_layer_scale, previous_layer_scale, previous_layer_center_hex_offset, previous_layer_offset, layout) {
-  var scale_difference = current_layer_scale / previous_layer_scale;
-  var test_hex = new Hex( -previous_layer_center_hex_offset.getQ()*scale_difference, 
-                          -previous_layer_center_hex_offset.getR()*scale_difference );
+function get_layer_offset(layer_scale, sublayer_scale, sublayer_center_hex_offset, sublayer_offset, sublayer_layout) {
+  var scale_difference = layer_scale / sublayer_scale;
+  var test_hex = new Hex( -sublayer_center_hex_offset.getQ()*scale_difference, 
+                          -sublayer_center_hex_offset.getR()*scale_difference );
   
-  var layer_offset = layout.hexToPoint( test_hex );
-  layer_offset.x -= previous_layer_offset.x;
-  layer_offset.y -= previous_layer_offset.y;
+  var layer_offset = sublayer_layout.hexToPoint( test_hex );
+  layer_offset.x -= sublayer_offset.x;
+  layer_offset.y -= sublayer_offset.y;
 
   return layer_offset;
 }
