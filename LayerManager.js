@@ -28,7 +28,7 @@ function LayerManager() {
 
 	//This function creates a world and attaches all the necessary controllers
 	//This doesn't seem like a very efficient way to do this
-	this.createWorldLayer = function(radius, center_hex, scale, color_scheme, sublayer) {
+	this.createWorldLayer = function(radius, center_hex, color_scheme, sublayer) {
 
 		var layer = new Layer();
 
@@ -37,7 +37,11 @@ function LayerManager() {
 
 	  //calculate offset due to sublayer
 	  if (sublayer != undefined) {
-	    layer.offset = get_layer_offset(scale, 
+
+	  	layer.scale = sublayer.scale * scale_ratio;
+
+	    layer.offset = get_layer_offset(
+	    	                        layer.scale, 
 	                              sublayer.scale,     
 	                              sublayer.hex_center_offset, 
 	                              sublayer.offset,
@@ -56,7 +60,7 @@ function LayerManager() {
 	  }
 
 	  //create a view for the map
-	  var view = create_view( scale );
+	  var view = create_view( layer.scale );
 
 	  //create a controller and renderer for the world
 	  var world_interface = new WorldInterface(world, view, unit_controller);
@@ -69,7 +73,6 @@ function LayerManager() {
 	  layer.world_interface = world_interface;
 	  layer.unit_controller = unit_controller;
 	  layer.world_renderer = world_renderer;
-	  layer.scale = scale;
 	  layer.hex_center_offset = center_hex;
 
 	  return layer;
