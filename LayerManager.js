@@ -26,4 +26,57 @@ function LayerManager() {
 	}
 
 
+	//This function creates a world and attaches all the necessary controllers
+	//This doesn't seem like a very efficient way to do this
+	this.createWorldLayer = function(radius, center_hex, scale, color_scheme, sublayer) {
+
+		var layer = new Layer();
+
+	  var hexmap_generator = new MapGenerator('perlin'); 
+	  var map = hexmap_generator.makeMap(radius, center_hex);
+
+
+	  var offset = new Point(0,0);
+	  //calculate offset due to sublayer
+	  if (sublayer != undefined) {
+	    offset = get_layer_offset(scale, 
+	                              sublayer.scale,     
+	                              sublayer.hex_center_offset, 
+	                              sublayer.offset,
+	                              sublayer.world_interface.world.layout
+	                              ); 
+	  }
+
+	  //create a world
+	  var world = new World(offset);
+	  world.setMap(map);
+
+	  //create a unit controller
+	  var unit_controller = new UnitController(map);
+	  if (color_scheme != 'space') {
+	    unit_controller.fillMap();
+	  }
+
+	  //create a view for the galaxy map
+	  var view = create_view( scale );
+
+	  //create a controller and renderer for the world
+	  var world_interface = new WorldInterface(world, view, unit_controller);
+	  if (color_scheme != undefined) {
+	    console.log('creating color world');
+	    var world_renderer = new WorldRenderer(canv_draw, world_interface, color_scheme);  
+	  } else {
+	    var world_renderer = new WorldRenderer(canv_draw, world_interface);
+	  }
+
+	  layer.world_interface = world_interface;
+	  layer.unit_controller = unit_controller;
+	  layer.world_renderer = world_renderer;
+	  layer.scale = scale;
+	  layer.hex_center_offset = center_hex;
+	  layer.offset = offset;
+
+	  return layer;
+	}
+
 }
