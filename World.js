@@ -67,7 +67,7 @@ World.prototype.setTile = function(hex, value) {
 //  World.js
 //  Events.js
 
-function WorldInterface(world,view,unit_controller) {
+function WorldInterface(world, view, unit_controller) {
   
   this.world = world;
   this.hex_hovered = new Hex(0,0);
