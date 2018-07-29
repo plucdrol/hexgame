@@ -110,17 +110,6 @@ WorldInterface.prototype.init = function() {
 
 }
 
-WorldInterface.prototype.setView = function(view) {
-  this.view = view;
-}
-WorldInterface.prototype.getView = function() {
-  return this.view;
-}
-WorldInterface.prototype.moveView = function(direction) {
-
-  this.view.move(direction,0.2);
-}
-
 WorldInterface.prototype.zoomViewEvent = function(zoom) {
   this.view.zoom(zoom);
   drawScreen();
