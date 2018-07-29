@@ -21,7 +21,7 @@ function LayerManager() {
 		  layer.view = new_zoom;
 		}
 
-		this.setPosition = function(toplayer, sublayer_hex_location) {
+		this.setPosition = function() {
 			}
 	}
 
@@ -79,4 +79,17 @@ function LayerManager() {
 	  return layer;
 	}
 
+}
+
+
+function get_layer_offset(current_layer_scale, previous_layer_scale, previous_layer_center_hex_offset, previous_layer_offset, layout) {
+  var scale_difference = current_layer_scale / previous_layer_scale;
+  var test_hex = new Hex( -previous_layer_center_hex_offset.getQ()*scale_difference, 
+                          -previous_layer_center_hex_offset.getR()*scale_difference );
+  
+  var layer_offset = layout.hexToPoint( test_hex );
+  layer_offset.x -= previous_layer_offset.x;
+  layer_offset.y -= previous_layer_offset.y;
+
+  return layer_offset;
 }

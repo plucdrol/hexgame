@@ -21,17 +21,7 @@ var galaxy_layer = layer_manager.createWorldLayer(20, new Hex(5,5), 1/4096, 'gal
 var hyperspace_layer = layer_manager.createWorldLayer(20, new Hex(0,0), 1/262144, 'earth', galaxy_layer);
 
 
-function get_layer_offset(current_layer_scale, previous_layer_scale, previous_layer_center_hex_offset, previous_layer_offset, layout) {
-  var scale_difference = current_layer_scale / previous_layer_scale;
-  var test_hex = new Hex( -previous_layer_center_hex_offset.getQ()*scale_difference, 
-                          -previous_layer_center_hex_offset.getR()*scale_difference );
-  
-  var layer_offset = layout.hexToPoint( test_hex );
-  layer_offset.x -= previous_layer_offset.x;
-  layer_offset.y -= previous_layer_offset.y;
 
-  return layer_offset;
-}
 
 
 //create units in the world
