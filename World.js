@@ -33,6 +33,9 @@ World.prototype.hexToPoint = function(hex) {
 World.prototype.pointToHex = function(point) {
   return this.layout.pointToHex(point);
 }
+World.prototype.getTile = function(hex) {
+  return this.map.getValue(hex);
+}
 World.prototype.setTile = function(hex, value) {
   this.map.set(hex, value);
 }
@@ -80,6 +83,42 @@ function WorldInterface(world, view, unit_controller) {
   this.init();
 }
 
+WorldInterface.prototype.getHex = function(screen_position) {
+  var world_position = this.view.screenToWorld(screen_position);
+  var hex = Hex.round(this.world.pointToHex(world_position));
+  return hex;
+}
+
+WorldInterface.prototype.setHex = function(screen_position,value) {
+  var hex = this.getHex(screen_position);
+  this.world.setTile(hex,value);
+}
+
+WorldInterface.prototype.getMapValue = function(hex) {
+  return this.world.getTile(hex);
+}
+
+WorldInterface.prototype.getUnit = function(hex) {
+  return this.unit_controller.getUnit(hex);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////// EVENTS /////////
 WorldInterface.prototype.init = function() {
   var wif = this;
 
@@ -114,43 +153,6 @@ WorldInterface.prototype.zoomViewEvent = function(zoom) {
   this.view.zoom(zoom);
   drawScreen();
 }
-
-WorldInterface.prototype.getHex = function(screen_position) {
-  var world_position = this.view.screenToWorld(screen_position);
-  var hex = Hex.round(this.world.pointToHex(world_position));
-  return hex;
-}
-
-WorldInterface.prototype.setHex = function(screen_position,value) {
-  var hex = this.getHex(screen_position);
-  this.world.map.set(hex,value);
-}
-
-WorldInterface.prototype.getMapValue = function(hex) {
-  return this.world.map.getValue(hex);
-}
-
-WorldInterface.prototype.getUnit = function(hex) {
-  return this.unit_controller.getUnit(hex);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////// EVENTS /////////
 
 WorldInterface.prototype.hoverEvent = function(screen_position) {
   
