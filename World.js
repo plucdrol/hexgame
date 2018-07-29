@@ -122,13 +122,11 @@ WorldInterface.prototype.getUnit = function(hex) {
 WorldInterface.prototype.init = function() {
   var wif = this;
 
-  if (this.unit_controller != false) {
-    
-    listenForEvent('hexgame_click', function(e){
-      wif.clickScreenEvent(e.detail.click_pos);
-    } );
-
-  }
+    if (this.unit_controller != false) {
+      listenForEvent('hexgame_click', function(e){
+        wif.clickScreenEvent(e.detail.click_pos);
+      } 
+    }
     
     listenForEvent('hexgame_zoom', function(e){
       wif.zoomViewEvent(e.detail.amount);

@@ -31,7 +31,7 @@ function CanvasInput(canvas) {
 
 //Registers all default functions to methods of CanvasInput
 CanvasInput.prototype.registerEvents = function() {
-  
+  //            HTML5 event --> Reaction below which sends my own events
   this.registerEvent('click', 'clickCanvas');
   this.registerEvent('mousemove', 'mouseMove');
   this.registerEvent('touchmove', 'touchMove');
