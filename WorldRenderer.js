@@ -23,6 +23,9 @@ function WorldRenderer (canvas_draw, world_interface, color_scheme) {
   if (color_scheme != undefined) {
     this.color_scheme = color_scheme;
   }
+
+  this.view = world_interface.view;
+
   this.world_interface = world_interface;
 
   this.corners = [];
@@ -37,7 +40,7 @@ WorldRenderer.p.clear = function() {
 }
 
 WorldRenderer.p.calculateHexesToRender = function() {
-  var rectMap = this.hex_renderer.getHexRectangleBoundaries();
+  var rectMap = this.hex_renderer.getHexRectangleBoundaries( this.hex_renderer.renderer.view.getCorners() );
   //get the rectangular array of hex tiles
   let hexmap = this.world_interface.world.map.getRectangleSubMap( rectMap.qmin,
                                                   rectMap.qmax,

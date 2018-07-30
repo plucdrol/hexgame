@@ -98,11 +98,8 @@ HexRenderer.p.drawHexes = function(hex_array) {
 
 //move this function down to hex renderer
 // CALCULATING RECTANGLE FUNCTIONS!?
-HexRenderer.p.getHexRectangleBoundaries = function() {
+HexRenderer.p.getHexRectangleBoundaries = function(corners) {
    
-
-    var corners = this.renderer.view.getCorners();
-
     //find the corner hexes
     var toplefthex = Hex.round(this.pointToHex(corners.topleft));
     var toprighthex = Hex.round(this.pointToHex(corners.topright));
