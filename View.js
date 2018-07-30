@@ -11,6 +11,9 @@ function Rect(position,size) {
 //output: screen coordinates
 
 function create_view(initial_zoom_level) {
+  if (initial_zoom_level == undefined) {
+    var initial_zoom_level = 1;
+  }
   var view_ratio = canvas.width/canvas.height;
   var initial_zoom = initial_zoom_level;
   var view_out = new Rect(new Point(0,0), 

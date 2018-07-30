@@ -50,17 +50,17 @@ function drawScreen() {
   //hyperspace_layer.world_renderer.drawWorld();
 
   //draw the galaxy
-  if (galaxy_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06/64/64) {
+  if (layer_manager.view.getZoom() > 0.06/64/64) {
     galaxy_layer.world_renderer.drawWorld();
     layer_to_control = galaxy_layer;
   }
   //draw the space
-  if (space_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06/64) {
+  if (layer_manager.view.getZoom() > 0.06/64) {
     space_layer.world_renderer.drawWorld(); 
     layer_to_control = space_layer;
   }
   //draw the world
-  if (world_layer.world_renderer.hex_renderer.renderer.view.getZoom() > 0.06) {
+  if (layer_manager.view.getZoom() > 0.06) {
     world_layer.world_renderer.drawWorld();    
     layer_to_control = world_layer;
     

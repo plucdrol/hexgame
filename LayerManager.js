@@ -4,6 +4,45 @@
 function LayerManager() {
 
 	var scale_ratio = 1/64;
+	this.view = create_view();
+
+
+	//Event handling
+  var layer_manager = this;
+	listenForEvent('hexgame_zoom', function(e){
+    layer_manager.zoomViewEvent(e.detail.amount);
+  } );
+  listenForEvent('hexgame_drag', function(e){
+    layer_manager.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
+  } );
+  listenForEvent('hexgame_resize', function(e){
+    layer_manager.resizeEvent(e.detail.width, e.detail.height);
+  } );
+
+  this.zoomViewEvent = function(zoom) {
+	  this.view.zoom(zoom);
+	  drawScreen();
+	}
+	this.dragEvent = function(mouse,previous_mouse) {
+	  //get the movement the mouse has moved since last tick
+	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
+	  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
+	  var drag_move = new Point(x_move, y_move);
+	  
+	  //shift the view by that movement
+	  this.view.shiftPosition(drag_move);
+	  
+	  //redraw the screen after moving
+	  drawScreen();
+	}
+	this.resizeEvent = function(width,height) {
+	  this.view.resizeOutput(width,height);
+
+	  //redraw the screen after resizing
+	  drawScreen();
+	}
+
+
 
 	//single responsibility: hold the meta-data about a layer, and a link to the world
 	function Layer() {
@@ -12,17 +51,7 @@ function LayerManager() {
 
 		this.world_interface = {};
 		this.world_renderer = {};
-		this.view = {};
 
-		this.setScale = function(scale) {
-			var new_zoom = create_view(scale);
-			this.world_interface.view = new_zoom;
-		  layer.world_renderer.view = new_zoom;
-		  layer.view = new_zoom;
-		}
-
-		this.setPosition = function() {
-			}
 	}
 
 
@@ -50,12 +79,8 @@ function LayerManager() {
 	  layer.unit_controller = new UnitController(world.map);
 	  layer.unit_controller.fillMap();
 
-	  //create a view for the map
-	  //layer.view = create_view( layer.scale ); // <- point at which the sublayer affects this new layer
-	  layer.view = create_view(1);
-
 	  //create a world interface
-	  layer.world_interface = new WorldInterface(world, layer.view, layer.unit_controller);
+	  layer.world_interface = new WorldInterface(world, this.view, layer.unit_controller);
 
 	  //create a world renderer
 	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world_interface, color_scheme);  	  

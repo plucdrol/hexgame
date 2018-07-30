@@ -135,29 +135,14 @@ WorldInterface.prototype.init = function() {
         wif.clickScreenEvent(e.detail.click_pos);
       }); 
     }
-    
-    listenForEvent('hexgame_zoom', function(e){
-      wif.zoomViewEvent(e.detail.amount);
-    } );
-    
+        
     listenForEvent('hexgame_hover', function(e){
       wif.hoverEvent(e.detail.mousepos);
     } );
     
-    listenForEvent('hexgame_drag', function(e){
-      wif.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
-    } );
-    
-    listenForEvent('hexgame_resize', function(e){
-      wif.resizeEvent(e.detail.width, e.detail.height);
-    } );
 
 
-}
 
-WorldInterface.prototype.zoomViewEvent = function(zoom) {
-  this.view.zoom(zoom);
-  drawScreen();
 }
 
 WorldInterface.prototype.hoverEvent = function(screen_position) {
@@ -175,7 +160,6 @@ WorldInterface.prototype.hoverEvent = function(screen_position) {
 }
 
 WorldInterface.prototype.clickScreenEvent = function(screen_position) {
-
   
   if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
     return;
@@ -191,25 +175,3 @@ WorldInterface.prototype.clickScreenEvent = function(screen_position) {
 
 }
 
-WorldInterface.prototype.dragEvent = function(mouse,previous_mouse) {
-  
-  //get the movement the mouse has moved since last tick
-  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
-  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
-  var drag_move = new Point(x_move, y_move);
-  
-  //shift the view by that movement
-  this.view.shiftPosition(drag_move);
-  
-  //redraw the screen after moving
-  drawScreen();
-}
-
-WorldInterface.prototype.resizeEvent = function(width,height) {
-
-  this.view.resizeOutput(width,height);
-
-  //redraw the screen after resizing
-  drawScreen();
-
-}
