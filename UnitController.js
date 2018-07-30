@@ -50,7 +50,8 @@ UnitController.p.getUnit = function(hex) {
 
 
 
-
+//These should be functions of the World itself
+//It can call the unit controller for the 
 /////////////////////////////////////////////////////////
                   // UNIT CREATION //
 /////////////////////////////////////////////////////////
@@ -103,7 +104,7 @@ UnitController.p.removeUnit = function(hex) {
 
 
 
-
+//Unit selection should be moved into UnitSelection class
 /////////////////////////////////////////////////////////
                   // UNIT SELECTION //
 /////////////////////////////////////////////////////////
@@ -234,7 +235,7 @@ UnitController.p.clickOutsideUnitRange = function(hex) {
 
 
 
-
+//Unit commands should be moved into UnitCommand class
 /////////////////////////////////////////////////////////
                   // UNIT COMMAND //
 /////////////////////////////////////////////////////////
