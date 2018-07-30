@@ -112,20 +112,6 @@ WorldInterface.prototype.getUnit = function(hex) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ///////// EVENTS /////////
 WorldInterface.prototype.init = function() {
   var wif = this;
@@ -139,11 +125,7 @@ WorldInterface.prototype.init = function() {
     listenForEvent('hexgame_hover', function(e){
       wif.hoverEvent(e.detail.mousepos);
     } );
-    
-
-
-
-}
+  }
 
 WorldInterface.prototype.hoverEvent = function(screen_position) {
   
