@@ -38,7 +38,7 @@ WorldRenderer.p.clear = function() {
 }
 
 WorldRenderer.p.calculateHexesToRender = function() {
-  var rectMap = this.hex_renderer.getHexRectangleBoundaries( this.hex_renderer.renderer.view.getCorners() );
+  var rectMap = this.hex_renderer.getHexRectangleBoundaries();
   //get the rectangular array of hex tiles
   let hexmap = this.world.map.getRectangleSubMap( rectMap.qmin,
                                                   rectMap.qmax,
@@ -48,7 +48,7 @@ WorldRenderer.p.calculateHexesToRender = function() {
 }
     
 
-WorldRenderer.p.drawWorld = function() {
+WorldRenderer.p.drawWorld = function(world, unit_controller) {
 
   if (this.ready_to_render) {
     var hexmap = this.calculateHexesToRender();
@@ -65,7 +65,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   //make a tile renderer
   var tile_renderer = new TileRenderer2D(
                        this.hex_renderer.renderer.canvas_draw,
-                       this.hex_renderer.renderer.view,
+                       this.view,
                        this.world.layout,
                        this.color_scheme);
   //draw the tiles of the array

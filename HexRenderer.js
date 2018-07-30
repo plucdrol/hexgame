@@ -20,6 +20,7 @@
 function HexRenderer(canvas_draw, view, hexlayout) {
   this.renderer = new Renderer(canvas_draw, view); 
   this.hexlayout = hexlayout;
+  this.view = view;
 }
 
 HexRenderer.p = HexRenderer.prototype;
@@ -89,7 +90,9 @@ HexRenderer.p.drawHexes = function(hex_array) {
 
 //move this function down to hex renderer
 // CALCULATING RECTANGLE FUNCTIONS!?
-HexRenderer.p.getHexRectangleBoundaries = function(corners) {
+HexRenderer.p.getHexRectangleBoundaries = function() {
+
+    var corners = this.renderer.view.getCorners();
    
     //find the corner hexes
     var toplefthex = Hex.round(this.pointToHex(corners.topleft));
