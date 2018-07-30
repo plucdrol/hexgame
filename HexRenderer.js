@@ -41,18 +41,9 @@ HexRenderer.p.pointToHex = function(point) {
 
 // RENDERING FUNCTIONS
 HexRenderer.p.drawHex = function(hex, style) {
-
-  //if zoomed out enough, just draw a dot
-  if (this.renderer.view.getScale() < 1) {
-
-      var point = this.hexToPoint(hex);
-      this.renderer.drawDot(point, 60, style);
-  } else {
-      //otherwise, draw the actual hex
-      var corners = this.hexesToPoints(Hex.corners(hex));
-      this.renderer.drawPolygon(corners,style);
-  }
-
+  
+  var corners = this.hexesToPoints(Hex.corners(hex));
+  this.renderer.drawPolygon(corners,style);
 };
 
 //Draw a series of short lines

@@ -15,7 +15,7 @@
 //  MapGenerator.js
 
 function World(offset) {
-  var tile_size = new Point(135,135)
+  var tile_size = new Point(35,35)
 
   var origin = new Point(0,0);
   if (offset != undefined)

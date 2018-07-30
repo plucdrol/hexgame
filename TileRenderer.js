@@ -15,6 +15,8 @@
 function TileRenderer (canvas_draw, view, layout, color_scheme) {
   this.hex_renderer = new HexRenderer(canvas_draw, view, layout);
   this.color_scheme = color_scheme;
+
+
 }
 TileRenderer.prototype.drawTile = function(hex,value) {
 }
@@ -28,9 +30,20 @@ TileRenderer.prototype.mapColors = function(i) {
 
 function TileRenderer2D(canvas_draw, view, layout, color_scheme) {
   TileRenderer.call(this, canvas_draw, view, layout, color_scheme); 
+  this.tilesize = layout.size.x;
+  this.actuallyDrawHexes = this.areHexesBigEnough(view.getScale(), this.tilesize);
 }
 TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
 
+TileRenderer2D.prototype.areHexesBigEnough = function(zoomScale, hex_size) {
+
+  if (zoomScale > hex_size/350) {
+    return true;
+  } else {
+    return false;
+  }
+
+}
 TileRenderer2D.prototype.drawTile = function(hex,tile) {
   
   var style = new RenderStyle();  
@@ -40,7 +53,12 @@ TileRenderer2D.prototype.drawTile = function(hex,tile) {
   style.fill_color = this.mapColors(height);
 
   //draw ground
-  this.hex_renderer.drawHex(hex, style);
+  if (this.actuallyDrawHexes) {
+    this.hex_renderer.drawHex(hex, style);
+  } else {
+    var point = this.hex_renderer.hexToPoint(hex);
+    this.hex_renderer.renderer.drawDot(point, this.tilesize*1.73, style);
+  }
   var position = this.hex_renderer.hexToPoint(hex);
 
   //wind arrows
