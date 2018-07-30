@@ -14,12 +14,13 @@
 //  Hex.js
 //  MapGenerator.js
 
-function World(offset) {
-  var tile_size = new Point(35,35)
+function World(origin, tile_size) {
 
-  var origin = new Point(0,0);
-  if (offset != undefined)
-    origin = offset;
+  if (tile_size == undefined) 
+    var tile_size = new Point(35,35);  
+  
+  if (origin == undefined)
+    var origin = new Point(0,0);
     
   this.layout = new HexLayout('pointy', tile_size, origin);
 

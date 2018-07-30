@@ -42,7 +42,8 @@ function LayerManager() {
 	  layer.hex_center_offset = center_hex;
 
 	  //create a world object
-	  var world = new World(layer.offset);// <-- point at which the sublayer affects this new layer
+	  console.log('creating world');
+	  var world = new World(layer.offset, new Point(35/layer.scale, 35/layer.scale) );// <-- point at which the sublayer affects this new layer
 	  world.createMap(radius, center_hex);
 
 	  //create a unit controller
@@ -50,7 +51,8 @@ function LayerManager() {
 	  layer.unit_controller.fillMap();
 
 	  //create a view for the map
-	  layer.view = create_view( layer.scale ); // <- point at which the sublayer affects this new layer
+	  //layer.view = create_view( layer.scale ); // <- point at which the sublayer affects this new layer
+	  layer.view = create_view(1);
 
 	  //create a world interface
 	  layer.world_interface = new WorldInterface(world, layer.view, layer.unit_controller);
