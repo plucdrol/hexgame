@@ -112,6 +112,12 @@ WorldInterface.prototype.getUnit = function(hex) {
 
 
 
+
+
+
+
+
+
 ///////// EVENTS /////////
 WorldInterface.prototype.init = function() {
   var wif = this;
@@ -146,14 +152,16 @@ WorldInterface.prototype.clickScreenEvent = function(screen_position) {
   if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
     return;
   }
-  console.log('click');
+  if (this.unit_controller != undefined) {
+    console.log('click');
 
-  let hex_clicked = this.getHex(screen_position);
+    let hex_clicked = this.getHex(screen_position);
 
-  //Only reference to unit controller
-  this.unit_controller.clickHex(hex_clicked);
-  
-  drawScreen();
+    //Only reference to unit controller in WorldInterface
+    this.unit_controller.clickHex(hex_clicked);
+    
+    drawScreen();
+  }
 
 }
 
