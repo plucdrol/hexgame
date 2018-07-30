@@ -17,18 +17,16 @@
 //  Hex
 //  HexRenderer
 
-function WorldRenderer (canvas_draw, world_interface, color_scheme) {
+function WorldRenderer (canvas_draw, world, unit_controller, view, color_scheme) {
   
-  this.hex_renderer = new HexRenderer(canvas_draw, world_interface.view, world_interface.world.layout);
+  this.hex_renderer = new HexRenderer(canvas_draw, view, world.layout);
   if (color_scheme != undefined) {
     this.color_scheme = color_scheme;
   }
 
-  this.view = world_interface.view;
-
-  this.world_interface = world_interface;
-
-  this.corners = [];
+  this.view = view;
+  this.world = world;
+  this.unit_controller = unit_controller;
 
   this.ready_to_render = true;
 }
@@ -42,7 +40,7 @@ WorldRenderer.p.clear = function() {
 WorldRenderer.p.calculateHexesToRender = function() {
   var rectMap = this.hex_renderer.getHexRectangleBoundaries( this.hex_renderer.renderer.view.getCorners() );
   //get the rectangular array of hex tiles
-  let hexmap = this.world_interface.world.map.getRectangleSubMap( rectMap.qmin,
+  let hexmap = this.world.map.getRectangleSubMap( rectMap.qmin,
                                                   rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
@@ -68,7 +66,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   var tile_renderer = new TileRenderer2D(
                        this.hex_renderer.renderer.canvas_draw,
                        this.hex_renderer.renderer.view,
-                       this.world_interface.world.layout,
+                       this.world.layout,
                        this.color_scheme);
   //draw the tiles of the array
   for (hex of hexarray) {
@@ -77,7 +75,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     tile_renderer.drawTile(hex, this.getTile(hex));
     
     //draw units
-    var this_unit = this.world_interface.getUnit(hex);
+    var this_unit = this.unit_controller.getUnit(hex);
 
     if (typeof this_unit == 'object') {
         this.drawUnit(this_unit,hex,0);
@@ -86,7 +84,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 }
 
 WorldRenderer.p.getTile = function(hex) {
-    return this.world_interface.world.map.getValue(hex);
+    return this.world.map.getValue(hex);
 }
 
 

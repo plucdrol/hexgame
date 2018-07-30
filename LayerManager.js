@@ -83,7 +83,7 @@ function LayerManager() {
 	  layer.world_interface = new WorldInterface(world, this.view, layer.unit_controller);
 
 	  //create a world renderer
-	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world_interface, color_scheme);  	  
+	  layer.world_renderer = new WorldRenderer(canv_draw, world, layer.unit_controller, this.view, color_scheme);  	  
 
 	  return layer;
 	}
