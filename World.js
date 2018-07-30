@@ -12,9 +12,10 @@
 
 //Dependencies
 //  Hex.js
+//  MapGenerator.js
 
 function World(offset) {
-  var tile_size = new Point(35,35)
+  var tile_size = new Point(135,135)
 
   var origin = new Point(0,0);
   if (offset != undefined)
@@ -24,6 +25,12 @@ function World(offset) {
 
 }
 
+World.prototype.createMap = function(radius, center_hex) {
+  //create a map 
+  var hexmap_generator = new MapGenerator('perlin'); 
+  var map = hexmap_generator.makeMap(radius, center_hex);
+  this.setMap(map);
+}
 World.prototype.setMap = function(map) {
   this.map = map;
 }
@@ -125,7 +132,7 @@ WorldInterface.prototype.init = function() {
     if (this.unit_controller != false) {
       listenForEvent('hexgame_click', function(e){
         wif.clickScreenEvent(e.detail.click_pos);
-      } 
+      }); 
     }
     
     listenForEvent('hexgame_zoom', function(e){

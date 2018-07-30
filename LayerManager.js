@@ -43,14 +43,10 @@ function LayerManager() {
 
 	  //create a world object
 	  var world = new World(layer.offset);// <-- point at which the sublayer affects this new layer
-
-	  //create a map 
-	  var hexmap_generator = new MapGenerator('perlin'); 
-	  layer.map = hexmap_generator.makeMap(radius, center_hex);
-	  world.setMap(layer.map);
+	  world.createMap(radius, center_hex);
 
 	  //create a unit controller
-	  layer.unit_controller = new UnitController(layer.map);
+	  layer.unit_controller = new UnitController(world.map);
 	  layer.unit_controller.fillMap();
 
 	  //create a view for the map
