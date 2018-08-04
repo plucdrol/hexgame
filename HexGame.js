@@ -41,7 +41,13 @@ canv_input.windowResize();
 
 ////////////////////////// DRAWING TO THE CANVAS //////////////////
 
+var current_time = Date.now();
+
 function drawScreen() {
+  requestAnimationFrame(drawScreenTimed);
+}
+
+function drawScreenTimed() {
 
   world_layer.world_renderer.clear();
   var layer_to_control = hyperspace_layer;
@@ -65,8 +71,6 @@ function drawScreen() {
     layer_to_control = world_layer;
     
   }
-
-
 
   //draw mouse interactions
   var hud_renderer = new HUDRenderer();
