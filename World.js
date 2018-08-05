@@ -82,8 +82,6 @@ World.prototype.setTile = function(hex, value) {
 function WorldInterface(world, view, unit_controller) {
   
   this.world = world;
-  this.hex_hovered = new Hex(0,0);
-  this.hex_hovered_previous = new Hex(0,0);
   this.view = view;
 
   this.unit_controller = unit_controller;
@@ -116,10 +114,15 @@ WorldInterface.prototype.getUnit = function(hex) {
 
 
 
+/* Pretending this is a separate class */
 
 
 ///////// EVENTS /////////
 WorldInterface.prototype.init = function() {
+
+  this.hex_hovered = new Hex(0,0);
+  this.hex_hovered_previous = new Hex(0,0);
+
   var wif = this;
 
     if (this.unit_controller != false) {
