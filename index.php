@@ -1,34 +1,32 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
+		<?php 
 
-		<script src="utilities/Hex.js"></script>
+			// LOAD ALL SCRIPTS IN DIRECTORY AND SUBDIRECTORIES
+		  //get local directory
+      $directory = new RecursiveDirectoryIterator('.');
 
-		<script src="Renderer.js"></script>
-		<script src="HexRenderer.js"></script>
-		<script src="WorldRenderer.js"></script>
-		<script src="TileRenderer.js"></script>
-		<script src="HudRenderer.js"></script>
+			foreach (new RecursiveIteratorIterator($directory) as $filename => $file) {
+				if (filter_filename($filename))
+    		  include_script($filename);
+			}
 
+			function filter_filename($filename) {
+				return (
+					$filename != '.\.' && 
+					$filename != '.\..' && 
+					substr($filename,0,7) != ".\.git\\" && 
+					substr($filename,-2) != '\.' && 
+					substr($filename,-3) != '\..' &&
+					$filename != '.\HexGame.js');
+			}
 
-		<script src="Unit.js"></script>
-		<script src="World.js"></script>
-		<script src="UnitController.js"></script>
-		<script src="ButtonOrganiser.js"></script>
-		<script src="PathFinder.js"></script>
-		<script src="MapGenerator.js"></script>
-		<script src="TileGenerator.js"></script>
-		<script src="LayerManager.js"></script>
+			function include_script($filename) {
+				echo "<script src='".$filename."'></script>";
+			}
 
-		<script src="View.js"></script>
-
-		<script src="utilities/Events.js"></script>
-		<script src="utilities/Noise.js"></script>
-		<script src="utilities/Tools.js"></script>
-		<script src="utilities/Queue.js"></script>
-		
-		<script src="utilities/CanvasDraw.js"></script>
-		<script src="utilities/CanvasInput.js"></script>
+		?>
 
 
 
