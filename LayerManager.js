@@ -72,17 +72,17 @@ function LayerManager() {
 
 	  //create a world object
 	  console.log('creating world');
-	  var world = new World(layer.offset, new Point(35/layer.scale, 35/layer.scale), radius, center_hex );// <-- point at which the sublayer affects this new layer
+	  layer.world = new World(layer.offset, new Point(35/layer.scale, 35/layer.scale), radius, center_hex );// <-- point at which the sublayer affects this new layer
 
 	  //create a unit controller
-	  layer.unit_controller = world.getUnitController();
+	  layer.unit_controller = layer.world.getUnitController();
 	  layer.unit_controller.fillMap();
 
 	  //create a world interface
-	  layer.world_input = new WorldInput(world, this.view);
+	  layer.world_input = new WorldInput(layer.world, this.view);
 
 	  //create a world renderer
-	  layer.world_renderer = new WorldRenderer(canv_draw, world.world_map, layer.unit_controller, this.view, color_scheme);  	  
+	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world.world_map, layer.unit_controller, this.view, color_scheme);  	  
 
 	  return layer;
 	}
