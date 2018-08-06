@@ -152,11 +152,10 @@ function WorldInput(world, view) {
   this.world = world;
   this.view = view;
 
-  this.init();
-
+  this.listenForEvents();
 }
 
-WorldInput.prototype.init = function() {
+WorldInput.prototype.listenForEvents = function() {
 
   this.hex_hovered = new Hex(0,0);
   this.hex_hovered_previous = new Hex(0,0);
