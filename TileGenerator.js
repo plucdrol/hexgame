@@ -46,15 +46,15 @@ PerlinConfiguration = function(config_name) {
   this.setConfig = function(config_name) {
     switch (config_name) {
     case 'continents':
-      this.scales = [0.008,  0.014,0.025,0.083,0.151,0.272,0.489,0.881];
-      this.weights = [16,    11.2,  7.84,  5.48,  3.84,  2.69,  1.88, 1.32];
+      this.scales = [0.00001, 0.001, 0.008,  0.014,0.025,0.083,0.151,0.272,0.489,0.881];
+      this.weights = [16, 16, 16,    11.2,  7.84,  5.48,  3.84,  2.69,  1.88, 1.32];
       this.base = 4;
 
 
       break;
     case 'fractal':
-      this.scales = [0.1,  0.8];//,  0.2 ];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
-      this.weights = [8,   4];//,    2   ];//,   8,    12,   4,     3,     2,     1,     1,   ];
+      this.scales = [0.001, 0.01, 0.1,  1];//,  0.2 ];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
+      this.weights = [32, 16, 8,   4];//,    2   ];//,   8,    12,   4,     3,     2,     1,     1,   ];
       this.base = 5;
 
 

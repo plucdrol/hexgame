@@ -15,7 +15,7 @@ var canv_input = new CanvasInput(canvas);
 
 
 var layer_manager = new LayerManager();
-var world_layer = layer_manager.createWorldLayer(20, new Hex(0,0), 'earth'); 
+var world_layer = layer_manager.createWorldLayer(200, new Hex(0,0), 'earth'); 
 var space_layer = layer_manager.createWorldLayer(20, new Hex(-3,-3), 'space', world_layer);
 var galaxy_layer = layer_manager.createWorldLayer(20, new Hex(5,5), 'galaxy', space_layer);
 var hyperspace_layer = layer_manager.createWorldLayer(20, new Hex(0,0), 'earth', galaxy_layer);
