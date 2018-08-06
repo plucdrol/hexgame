@@ -33,7 +33,6 @@ function UnitMap() {
   this.create = function(hex, unit_type) {
     var newUnit = new Unit(unit_type);
     units.set(hex, newUnit);
-    console.log(newUnit);
   }
 
   this.set = function(hex, unit) {
@@ -191,7 +190,6 @@ UnitController.p.selectHex = function(hex) {
       if (potential_unit instanceof Unit) { 
         //if the unit exists, find its range
         if (potential_unit.hasComponent('range')) {
-          console.log(this.map);
           potential_unit.findRange(this.map, hex);
         }
       }
