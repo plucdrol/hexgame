@@ -77,13 +77,22 @@ WorldMap.prototype.setTile = function(hex, value) {
 //  WorldMap
 //  Unitcontroller.js
 
-function World(world_map, unit_controller) {
+function World(origin, tile_size, radius, center_hex) {
   
-  this.world_map = world_map;
+  console.log('creating world');
+  this.world_map = new WorldMap(origin, tile_size);// <-- point at which the sublayer affects this new layer
+  this.world_map.createMap(radius, center_hex);
 
-  this.unit_controller = unit_controller;
+  this.unit_controller = new UnitController(this.world_map.map);
   
-  this.init();
+}
+
+World.prototype.getLayout = function() {
+  return this.world_map.layout;
+}
+
+World.prototype.getUnitController = function() {
+  return this.unit_controller;
 }
 
 World.prototype.getHex = function(world_position) {
@@ -144,7 +153,10 @@ function WorldInput(world, view) {
   this.world = world;
   this.view = view;
 
-  }
+  this.init();
+
+}
+
 WorldInput.prototype.init = function() {
 
   this.hex_hovered = new Hex(0,0);

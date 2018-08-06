@@ -2,12 +2,12 @@ function HUDRenderer() {
 
   this.renderHUD = function(current_layer) {
 
-    var world_interface = current_layer.world_interface;
+    var world_input = current_layer.world_input;
     var world_renderer = current_layer.world_renderer;
     var controller = current_layer.unit_controller;
     var hex_selected = controller.hex_selected;
-    var view = world_interface.view;
-    var layout = world_interface.world.layout;
+    var view = world_input.view;
+    var layout = world_input.world.getLayout();
     var hex_renderer = world_renderer.hex_renderer;
 
     //selection draw
@@ -29,7 +29,7 @@ function HUDRenderer() {
 
     //draw hovered hex
     var hover_style = new RenderStyle();
-    var hex_hovered = world_interface.hex_hovered;
+    var hex_hovered = world_input.hex_hovered;
 
     hover_style.fill_color = "rgba(200,200,200,0.4)";
     hover_style.line_width = 0;
