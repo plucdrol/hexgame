@@ -4,7 +4,7 @@
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 //////                                  
-//////   WORLD DATA REPRESENTATION
+//////   WORLD MAP DATA REPRESENTATION
 //////
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -14,7 +14,7 @@
 //  Hex.js
 //  MapGenerator.js
 
-function World(origin, tile_size) {
+function WorldMap(origin, tile_size) {
 
   if (tile_size == undefined) 
     var tile_size = new Point(35,35);  
@@ -26,25 +26,25 @@ function World(origin, tile_size) {
 
 }
 
-World.prototype.createMap = function(radius, center_hex) {
+WorldMap.prototype.createMap = function(radius, center_hex) {
   //create a map 
   var hexmap_generator = new MapGenerator('perlin'); 
   var map = hexmap_generator.makeMap(radius, center_hex);
   this.setMap(map);
 }
-World.prototype.setMap = function(map) {
+WorldMap.prototype.setMap = function(map) {
   this.map = map;
 }
-World.prototype.hexToPoint = function(hex) {
+WorldMap.prototype.hexToPoint = function(hex) {
   return this.layout.hexToPoint(hex);
 }
-World.prototype.pointToHex = function(point) {
+WorldMap.prototype.pointToHex = function(point) {
   return this.layout.pointToHex(point);
 }
-World.prototype.getTile = function(hex) {
+WorldMap.prototype.getTile = function(hex) {
   return this.map.getValue(hex);
 }
-World.prototype.setTile = function(hex, value) {
+WorldMap.prototype.setTile = function(hex, value) {
   this.map.set(hex, value);
 }
 
@@ -66,7 +66,7 @@ World.prototype.setTile = function(hex, value) {
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 //////                                          
-//////              WORLD INTERFACE
+//////              WORLD CONTAINER
 //////
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
@@ -74,37 +74,32 @@ World.prototype.setTile = function(hex, value) {
 
 //Dependencies
 //  Hex.js
+//  WorldMap
 //  Unitcontroller.js
-//  View.js
-//  World.js
-//  Events.js
 
-function WorldInterface(world, view, unit_controller) {
+function World(world_map, unit_controller) {
   
-  this.world = world;
-  this.view = view;
+  this.world_map = world_map;
 
   this.unit_controller = unit_controller;
   
   this.init();
 }
 
-WorldInterface.prototype.getHex = function(screen_position) {
-  var world_position = this.view.screenToWorld(screen_position);
-  var hex = Hex.round(this.world.pointToHex(world_position));
+World.prototype.getHex = function(world_position) {
+  var hex = Hex.round(this.world_map.pointToHex(world_position));
   return hex;
 }
 
-WorldInterface.prototype.setHex = function(screen_position,value) {
-  var hex = this.getHex(screen_position);
-  this.world.setTile(hex,value);
+World.prototype.setHex = function(world_position,value) {
+  this.world_map.setTile(hex, value);
 }
 
-WorldInterface.prototype.getMapValue = function(hex) {
-  return this.world.getTile(hex);
+World.prototype.getMapValue = function(hex) {
+  return this.world_map.getTile(hex);
 }
 
-WorldInterface.prototype.getUnit = function(hex) {
+World.prototype.getUnit = function(hex) {
   return this.unit_controller.getUnit(hex);
 }
 
@@ -138,20 +133,26 @@ WorldInterface.prototype.getUnit = function(hex) {
 ////////////////////////////////////////////////
 
 
-
-
-/* Pretending this is a separate class */
-
+// -- Dependencies: --
+// World
+// View
+// Hex
+// Events
 
 ///////// EVENTS /////////
-WorldInterface.prototype.init = function() {
+function WorldInput(world, view) {
+  this.world = world;
+  this.view = view;
+
+  }
+WorldInput.prototype.init = function() {
 
   this.hex_hovered = new Hex(0,0);
   this.hex_hovered_previous = new Hex(0,0);
 
   var wif = this;
 
-    if (this.unit_controller != false) {
+    if (this.world.unit_controller != false) {
       listenForEvent('hexgame_click', function(e){
         wif.clickScreenEvent(e.detail.click_pos);
       }); 
@@ -162,10 +163,12 @@ WorldInterface.prototype.init = function() {
     } );
   }
 
-WorldInterface.prototype.hoverEvent = function(screen_position) {
+WorldInput.prototype.hoverEvent = function(screen_position) {
   
   //get the hex being hovered
-  this.hex_hovered = this.getHex(screen_position);
+
+  var world_position = this.view.screenToWorld(screen_position);
+  this.hex_hovered = this.world.getHex(world_position);
 
   //if the mouse moved to a new hex, redraw the screen
   if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
@@ -176,18 +179,20 @@ WorldInterface.prototype.hoverEvent = function(screen_position) {
   this.hex_hovered_previous = this.hex_hovered;
 }
 
-WorldInterface.prototype.clickScreenEvent = function(screen_position) {
+WorldInput.prototype.clickScreenEvent = function(screen_position) {
   
   if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
     return;
   }
-  if (this.unit_controller != undefined) {
+  if (this.world.unit_controller != undefined) {
     console.log('click');
 
-    let hex_clicked = this.getHex(screen_position);
+
+    var world_position = this.view.screenToWorld(screen_position);
+    let hex_clicked = this.world.getHex(world_position);
 
     //Only reference to unit controller in WorldInterface
-    this.unit_controller.clickHex(hex_clicked);
+    this.world.unit_controller.clickHex(hex_clicked);
     
     drawScreen();
   }
