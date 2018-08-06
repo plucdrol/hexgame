@@ -75,23 +75,19 @@ WorldMap.prototype.setTile = function(hex, value) {
 //Dependencies
 //  Hex.js
 //  WorldMap
-//  Unitcontroller.js
+//  UnitMap
 
 function World(origin, tile_size, radius, center_hex) {
   
   this.world_map = new WorldMap(origin, tile_size);// <-- point at which the sublayer affects this new layer
   this.world_map.createMap(radius, center_hex);
 
-  this.unit_controller = new UnitController(this.world_map.map);
+  this.units = new UnitMap();
   
 }
 
 World.prototype.getLayout = function() {
   return this.world_map.layout;
-}
-
-World.prototype.getUnitController = function() {
-  return this.unit_controller;
 }
 
 World.prototype.getHex = function(world_position) {
@@ -108,7 +104,7 @@ World.prototype.getMapValue = function(hex) {
 }
 
 World.prototype.getUnit = function(hex) {
-  return this.unit_controller.getUnit(hex);
+  return this.units.get(hex);
 }
 
 
@@ -151,9 +147,16 @@ World.prototype.getUnit = function(hex) {
 function WorldInput(world, view) {
   this.world = world;
   this.view = view;
+  this.unit_controller = new UnitController(world.world_map.map, world.units);
+  this.unit_controller.fillMap();
 
   this.listenForEvents();
 }
+
+WorldInput.prototype.getUnitController = function() {
+  return this.unit_controller;
+}
+
 
 WorldInput.prototype.listenForEvents = function() {
 
@@ -194,7 +197,7 @@ WorldInput.prototype.clickScreenEvent = function(screen_position) {
   if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
     return;
   }
-  if (this.world.unit_controller != undefined) {
+  if (this.unit_controller != undefined) {
     console.log('click');
 
 
@@ -202,7 +205,7 @@ WorldInput.prototype.clickScreenEvent = function(screen_position) {
     let hex_clicked = this.world.getHex(world_position);
 
     //Only reference to unit controller in WorldInterface
-    this.world.unit_controller.clickHex(hex_clicked);
+    this.unit_controller.clickHex(hex_clicked);
     
     drawScreen();
   }

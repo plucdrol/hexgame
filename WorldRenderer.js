@@ -17,16 +17,15 @@
 //  Hex
 //  HexRenderer
 
-function WorldRenderer (canvas_draw, world, unit_controller, view, color_scheme) {
+function WorldRenderer (canvas_draw, world, view, color_scheme) {
   
-  this.hex_renderer = new HexRenderer(canvas_draw, view, world.layout);
+  this.hex_renderer = new HexRenderer(canvas_draw, view, world.getLayout() );
   if (color_scheme != undefined) {
     this.color_scheme = color_scheme;
   }
 
   this.view = view;
   this.world = world;
-  this.unit_controller = unit_controller;
 
   this.ready_to_render = true;
 }
@@ -35,20 +34,22 @@ WorldRenderer.p = WorldRenderer.prototype;
 
 WorldRenderer.p.clear = function() {
     this.hex_renderer.renderer.canvas_draw.clear();
+    //console.log(this.units.getHexList());
 }
 
 WorldRenderer.p.calculateHexesToRender = function() {
   var rectMap = this.hex_renderer.getHexRectangleBoundaries();
   //get the rectangular array of hex tiles
-  let hexmap = this.world.map.getRectangleSubMap( rectMap.qmin,
+  let hexmap = this.world.world_map.map.getRectangleSubMap( rectMap.qmin,
                                                   rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
+
    return hexmap;
 }
     
 
-WorldRenderer.p.drawWorld = function(world, unit_controller) {
+WorldRenderer.p.drawWorld = function(world) {
 
   if (this.ready_to_render) {
     var hexmap = this.calculateHexesToRender();
@@ -66,8 +67,10 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   var tile_renderer = new TileRenderer2D(
                        this.hex_renderer.renderer.canvas_draw,
                        this.view,
-                       this.world.layout,
+                       this.world.getLayout(),
                        this.color_scheme);
+
+
   //draw the tiles of the array
   for (hex of hexarray) {
     
@@ -75,16 +78,16 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     tile_renderer.drawTile(hex, this.getTile(hex));
     
     //draw units
-    var this_unit = this.unit_controller.getUnit(hex);
+    var this_unit = this.world.getUnit(hex);
 
-    if (typeof this_unit == 'object') {
+    if (this_unit != undefined) {
         this.drawUnit(this_unit,hex,0);
     }
   }
 }
 
 WorldRenderer.p.getTile = function(hex) {
-    return this.world.map.getValue(hex);
+    return this.world.world_map.map.getValue(hex);
 }
 
 

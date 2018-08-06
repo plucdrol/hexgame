@@ -33,6 +33,7 @@ function UnitMap() {
   this.create = function(hex, unit_type) {
     var newUnit = new Unit(unit_type);
     units.set(hex, newUnit);
+    console.log(newUnit);
   }
 
   this.set = function(hex, unit) {
@@ -79,10 +80,10 @@ function UnitMap() {
 //  Hex.js
 //  PathFinder.js 
 
-function UnitController(map) {
+function UnitController(map, units) {
   this.map = map;
   this.hex_selected = undefined;
-  this.units = new UnitMap();
+  this.units = units;
 
 }
 //-------1---------2---------3---------4---------5---------6--------
@@ -182,6 +183,7 @@ UnitController.p.clickHex = function(hex) {
 UnitController.p.selectHex = function(hex) {
   if (hex instanceof Hex) {
     if (this.unitAtPosition(hex)) {
+
       this.hex_selected = hex;
       //look if there is a unit
       var potential_unit = this.unitAtPosition(hex);
@@ -189,6 +191,7 @@ UnitController.p.selectHex = function(hex) {
       if (potential_unit instanceof Unit) { 
         //if the unit exists, find its range
         if (potential_unit.hasComponent('range')) {
+          console.log(this.map);
           potential_unit.findRange(this.map, hex);
         }
       }

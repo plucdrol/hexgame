@@ -25,15 +25,15 @@ var hyperspace_layer = layer_manager.createWorldLayer(20, new Hex(0,0), 'earth',
 
 
 //create units in the world
-world_layer.unit_controller.units.create(new Hex(0,0),'water-player');
+world_layer.world.units.create(new Hex(0,0),'water-player');
 
 //level below is always at 0,0 even if the map is shifted to the side
-space_layer.unit_controller.units.create(new Hex(0,0),'planet');
-space_layer.unit_controller.units.create(new Hex(3,3),'sun');
+space_layer.world.units.create(new Hex(0,0),'planet');
+space_layer.world.units.create(new Hex(3,3),'sun');
 
 //Level below is always at 0,0  even if the map is shifted to the side
-galaxy_layer.unit_controller.units.create(new Hex(0,0),'sun');
-galaxy_layer.unit_controller.units.create(new Hex(-5,-5),'galactic-center');
+galaxy_layer.world.units.create(new Hex(0,0),'sun');
+galaxy_layer.world.units.create(new Hex(-5,-5),'galactic-center');
 
 
 

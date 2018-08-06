@@ -4,7 +4,7 @@ function HUDRenderer() {
 
     var world_input = current_layer.world_input;
     var world_renderer = current_layer.world_renderer;
-    var controller = current_layer.unit_controller;
+    var controller = world_input.unit_controller;
     var hex_selected = controller.hex_selected;
     var view = world_input.view;
     var layout = world_input.world.getLayout();
