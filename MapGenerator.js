@@ -20,6 +20,7 @@ MapGenerator = function(map_type) {
   this.map = new HexMap();
   this.simplex = new SimplexNoise();
   this.radius = 0;
+  this.map_type = map_type;
 
   this.getMap = function(){
     return this.map;
@@ -73,7 +74,6 @@ MapGenerator = function(map_type) {
 }
 
 MapGenerator.prototype.makeTileGenerator = function(type) {
-
   switch (type){
     case 'perlin':
       tile_generator = new PerlinTileGenerator();  
