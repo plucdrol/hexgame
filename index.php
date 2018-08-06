@@ -1,6 +1,8 @@
+
 <!DOCTYPE HTML>
 <html>
 	<head>
+
 		<?php 
 
 			// LOAD ALL SCRIPTS IN DIRECTORY AND SUBDIRECTORIES
