@@ -14,7 +14,7 @@ function HUDRenderer() {
     if (hex_selected instanceof Hex) {
     
       //draw range of selected unit  
-      var potential_unit = controller.units.getValue(hex_selected);
+      var potential_unit = controller.unitAtPosition(hex_selected);
 
       if (potential_unit instanceof Unit && potential_unit.hasComponent('range')) {
         hex_renderer.drawHexes(potential_unit.getComponent('range'));
