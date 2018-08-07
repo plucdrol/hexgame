@@ -71,7 +71,7 @@ function LayerManager() {
 	  layer.hex_center_offset = center_hex;
 
 	  //create a world object
-	  layer.world = new World(layer.offset, new Point(35/layer.scale, 35/layer.scale), radius, center_hex );// <-- point at which the sublayer affects this new layer
+	  layer.world = new World(layer.offset, layer.scale, radius, center_hex );// <-- point at which the sublayer affects this new layer
 
 	  //create a world interface
 	  layer.world_input = new WorldInput(layer.world, this.view);

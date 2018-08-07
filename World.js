@@ -77,9 +77,11 @@ WorldMap.prototype.setTile = function(hex, value) {
 //  WorldMap
 //  UnitMap
 
-function World(origin, tile_size, radius, center_hex) {
+function World(origin, scale, radius, center_hex) {
+
+  var tile_size = new Point(35/scale, 35/scale);
   
-  this.world_map = new WorldMap(origin, tile_size);// <-- point at which the sublayer affects this new layer
+  this.world_map = new WorldMap(origin, tile_size);
   this.world_map.createMap(radius, center_hex);
 
   this.units = new UnitMap();
