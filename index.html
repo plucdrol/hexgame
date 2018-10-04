@@ -1,0 +1,102 @@
+
+<!DOCTYPE HTML>
+<html>
+	<head>
+
+		<script type="text/javascript" src="ButtonOrganiser.js" ></script>
+		<script type="text/javascript" src="CacheRenderer.js" ></script>
+		<script type="text/javascript" src="HexGame.js" ></script>
+		<script type="text/javascript" src="HexRenderer.js" ></script>
+		<script type="text/javascript" src="HudRenderer.js" ></script>
+		<script type="text/javascript" src="LayerManager.js" ></script>
+		<script type="text/javascript" src="MapGenerator.js" ></script>
+		<script type="text/javascript" src="PathFinder.js" ></script>
+		<script type="text/javascript" src="Renderer.js" ></script>
+		<script type="text/javascript" src="TileGenerator.js" ></script>
+		<script type="text/javascript" src="TileRenderer.js" ></script>
+		<script type="text/javascript" src="Unit.js" ></script>
+		<script type="text/javascript" src="UnitController.js" ></script>
+		<script type="text/javascript" src="View.js" ></script>
+		<script type="text/javascript" src="World.js" ></script>
+		<script type="text/javascript" src="WorldRenderer.js" ></script>
+		
+		<script type="text/javascript" src="utilities/CanvasDraw.js" ></script>
+		<script type="text/javascript" src="utilities/CanvasInput.js" ></script>
+		<script type="text/javascript" src="utilities/Events.js" ></script>
+		<script type="text/javascript" src="utilities/Hex.js" ></script>
+		<script type="text/javascript" src="utilities/Noise.js" ></script>
+		<script type="text/javascript" src="utilities/Queue.js" ></script>
+		<script type="text/javascript" src="utilities/Tools.js" ></script>
+		
+
+
+
+		<style>
+			html,body {
+				height: 100%;
+				width: 100%;
+				margin:0;
+				overflow:hidden;
+			}
+			body,p {
+				background: black;
+				color: white;
+			}
+			#mycanvas{
+				background: black;
+				clear: both;
+				/*margin-top: 30px;*/
+			}
+
+			.action-button {
+				background: grey;
+		    color: black;
+		    padding: 0.2em 0.5em;
+		    border: 2px solid darkgrey;
+		    border-bottom-color: black;
+		    border-right-color: black;
+		    font-size: 1.5em;	
+			}
+			input [type="radio" i] {
+				display: none;
+			}
+			input[type="radio"]:checked + .action-button {
+			    background: #4a4949;
+			    border-bottom-color: darkgrey;
+			    border-right-color: darkgrey;
+			    border-top-color: black;
+			    border-left-color: black;
+			    color: lightgrey;
+			}
+
+			input[type="radio"] {
+			    display: none;
+			}
+		</style>
+	</head>
+	<body>
+		
+		<div style="float:left;">
+			<canvas id="mycanvas" width="600" height="400">
+				Your system does not support Canvas.
+			</canvas>
+		</div>
+		
+		<form class='action-buttons' style="position:absolute; bottom: 1em; left: 1em;";>
+			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
+			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
+			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
+			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
+		</form>	
+
+		<!-- Javascript after this line -->
+
+	</body>
+
+
+	<script src="HexGame.js">
+		
+	</script>
+
+	
+</html>
