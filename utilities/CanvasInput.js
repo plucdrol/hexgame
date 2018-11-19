@@ -27,6 +27,8 @@ function CanvasInput(canvas) {
     this.mouse_pos_previous = new Object();
 
     this.is_dragging = false;
+
+    this.mouse_down = [];
 }
 
 //Registers all default functions to methods of CanvasInput
@@ -39,6 +41,8 @@ CanvasInput.prototype.registerEvents = function() {
   this.registerEvent('touchstart', 'touchStart');
   this.registerEvent('mousewheel', 'mouseWheel');
   this.registerEvent('DOMMouseScroll', 'mouseWheel');
+  this.registerEvent('mousedown', 'mouseDown');
+  this.registerEvent('mouseup', 'mouseUp');
 
   var window_resize_function = this.windowResize.bind(this);
   window.addEventListener('resize', window_resize_function, false);
@@ -62,9 +66,17 @@ CanvasInput.prototype.clickCanvas = function(event) {
     }
     //remember that the mouse is done dragging
     this.is_dragging = false;
-    this.mouse_pos_previous[0] = undefined;
+    //this.mouse_pos_previous[0] = undefined;
     
 }   
+
+CanvasInput.prototype.mouseDown = function(event) {
+  this.mouse_down[event.which] = true;
+}
+
+CanvasInput.prototype.mouseUp = function(event) {
+  this.mouse_down[event.which] = false;
+}
 
 //React to scrolling the mouse wheel
 CanvasInput.prototype.mouseWheel = function(event) {
@@ -84,6 +96,8 @@ CanvasInput.prototype.mouseWheel = function(event) {
 //react to the mouse moving, hovering and dragging
 CanvasInput.prototype.mouseMove = function(event) {
 
+  event = event || window.event;
+
   var drag_treshold = 2;
   //find the hovered position
   this.mouse_pos[0] = this.getCursorPosition(event);
@@ -92,7 +106,7 @@ CanvasInput.prototype.mouseMove = function(event) {
   emitEvent('hexgame_hover', {mousepos: this.mouse_pos[0]} )
 
   //check if the mouse button is down, triggering a drag
-  if (this.mouseButtonDown(event,'left')) {
+  if (this.mouse_down[1]) {
     var mouse_pos = this.mouse_pos[0];
     var mouse_pos_previous = this.mouse_pos_previous[0];
     var distance_moved = distance(mouse_pos,mouse_pos_previous);
@@ -117,7 +131,7 @@ function point_average(point1, point2) {
 //react to touch events across the screen
 CanvasInput.prototype.touchMove = function(ev) {
     ev.preventDefault();
-
+    ev = ev || window.event;
     var id = new Object();
 
 
@@ -236,35 +250,6 @@ CanvasInput.prototype.getCursorPosition = function(event) {
     return new Point(coords.x,coords.y);
 }
 
-
-
-CanvasInput.prototype.mouseButtonDown = function(ev,button) {
-    if (typeof ev.which != undefined) {
-        if(ev.which==1 && button=='left') {
-            return true;
-        }
-        if (ev.which==2 && button=='middle'){
-            return true;
-        } 
-        if(ev.which==3 && button=='right')  {
-            return true;
-        } 
-    }
-    if (typeof ev.which != undefined) {
-        if(ev.button==1 && button=='left') {
-            return true;
-        }
-        if (ev.button==2 && button=='middle'){
-            return true;
-        } 
-        if(ev.button==3 && button=='right')  {
-            return true;
-        } 
-    }
-
-    return false;
-    
-}
 
 //returns the cartesian distance between two points
 function distance(point1,point2) {
