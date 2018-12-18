@@ -306,7 +306,7 @@ UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
     //get the unit which is moving
     var unit = this.unitAtPosition(current_hex);
 
-    //Create player if unit is a hut
+    //if the unit has an action to create more units
     if (unit.hasComponent('ground_action_create_unit')) {
       var new_unit_type = unit.components.ground_action_create_unit.type;
       this.units.create(new_hex, new_unit_type);
@@ -318,6 +318,25 @@ UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
         this.units.remove(current_hex);
         this.selectHex(new_hex);
       }
+
+    //if the unit has an action to change the terrain
+    } else if (unit.hasComponent('ground_action_change_terrain')) {
+      var current_terrain_value = this.map.getValue(new_hex).components.elevation;
+      var new_terrain_value = unit.components.ground_action_change_terrain.new_value;
+      var affectable_terrain_value = unit.components.ground_action_change_terrain.affectable_value;
+
+      console.log(current_terrain_value);
+      console.log(affectable_terrain_value);
+      if (current_terrain_value == affectable_terrain_value) {
+        let tile = this.map.getValue(new_hex);
+        tile.components.elevation = new_terrain_value;
+      } else {
+
+        //move unit to the new position
+        this.moveUnit(current_hex,new_hex);
+        this.selectHex(new_hex);
+      }
+
 
 
     //Move player if unit is a player

@@ -41,7 +41,10 @@ Unit.prototype.setType = function(unit_type) {
     this.components.range = {};
     this.components.size = 2;
     this.components.minimum_elevation = 1;
-    this.components.maximum_elevation = 1; 
+    this.components.maximum_elevation = 2; 
+    this.components.ground_action_change_terrain = {};
+    this.components.ground_action_change_terrain.affectable_value = 2;
+    this.components.ground_action_change_terrain.new_value = 1;
     break;
   case 'tree':
     this.setMovement(0);
