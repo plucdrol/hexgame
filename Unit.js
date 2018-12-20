@@ -147,7 +147,7 @@ Unit.prototype.setMovement = function(movement) {
   this.setComponent('movement', movement);
   this.setComponent('movement_left', movement);
 
-  
+  //MOVE FUNCTION
   if (this.move === undefined) {
     this.move = function(map,current_hex,next_hex) {
       
@@ -156,6 +156,7 @@ Unit.prototype.setMovement = function(movement) {
     }
   }
 
+  //GET NEIGHBORS FUNCTION
   if (this.getNeighborsFunction === undefined) {
     this.getNeighborsFunction = function(map,hex) {
       return map.getNeighbors(hex);
@@ -163,6 +164,7 @@ Unit.prototype.setMovement = function(movement) {
     }
   }
 
+  //TILE COST FUNCTION
   if (this.tileCostFunction === undefined) {
     this.tileCostFunction = function(tile) {
 
@@ -177,6 +179,8 @@ Unit.prototype.setMovement = function(movement) {
     }
   }
 
+
+  //STEP COST FUNCTION
   if (this.stepCostFunction === undefined) {
     this.stepCostFunction = function(previous_tile, tile) {
 
@@ -185,6 +189,10 @@ Unit.prototype.setMovement = function(movement) {
 	var cost_this = this.tileCostFunction(tile);
 	var cost_previous = this.tileCostFunction(previous_tile);
 
+
+
+
+
 	if (cost_this === undefined) {
 	  return undefined;
 	}
@@ -192,20 +200,34 @@ Unit.prototype.setMovement = function(movement) {
 	if (cost_previous === undefined) {
 	  cost_previous = 0;
 	}
-	var difference = cost_this - cost_previous;
+
+  //cannot walk from sand to water
+  if (cost_previous == 2 && cost_this == 1) {
+    console.log('stepping from sand into water');
+    //return undefined;
+  }
+
+  //cannot walk from sand to sand
+  if (cost_previous > 1 && cost_this > 1) {
+    console.log('stepping from sand into sand');
+    return undefined;
+  }
+
+	
+  var difference = cost_this - cost_previous;
 
 	//Returns values based on difference in elevation only
 	if (difference >= 4) {
 	  return undefined;
 	}
 	if (difference > 0)  {
-	  return 6;
+	  return 4;
 	}
 	if (difference === 0) {
 	  return 4;
 	}
 	if (difference < 0) {
-	  return 3;
+	  return 4;
 	}
 	if (difference < -4) {
 	  return undefined;
@@ -215,6 +237,7 @@ Unit.prototype.setMovement = function(movement) {
     }
   }
 
+  //FIND RANGE FUNCTION
   //find the available movement of the unit and place it in the
   // range component. This code should not be in the bare unit class
   if (this.findRange === undefined) {
@@ -226,6 +249,7 @@ Unit.prototype.setMovement = function(movement) {
   }
 
 
+  //EXTERNAL FUNCTIONS
   var costFunction = this.stepCostFunction.bind(this);
   var neighborFunction = this.getNeighborsFunction.bind(this);
   this.rangeFind = PathFinder.getRangeFinder(costFunction, neighborFunction);

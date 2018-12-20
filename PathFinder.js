@@ -101,6 +101,7 @@ var PathFinder = (function() {
     }
   }
 
+
   function cellIsPassable(map, cost_function) {
     return function(cell) {
       let coord = getCoord(cell);
@@ -152,9 +153,9 @@ var PathFinder = (function() {
 
   }
  
-  function getGoodNeighbors(map, visited, coord, max_cost,
-                            neighborFunction, costFunction) {
-    
+  function getGoodNeighbors(map, visited, coord, max_cost, neighborFunction, costFunction) {
+
+   
     let current_cell = currentCell(visited, coord);
     let neighbor_coords = neighborFunction(map, getCoord(current_cell));
     let neighbor_cells = neighbor_coords.map( 
@@ -173,8 +174,7 @@ var PathFinder = (function() {
   }
 
   //recursive step of exploring the map
-  function rangeFindRecursive(map, visited, coord, max_cost,
-                         costFunction, neighborFunction) {
+  function rangeFindRecursive(map, visited, coord, max_cost, costFunction, neighborFunction) {
     let new_cells_to_add = getGoodNeighbors(map, visited, coord, max_cost,
                            neighborFunction, costFunction);
   
