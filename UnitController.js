@@ -324,6 +324,6 @@ UnitController.p.moveUnit = function(current_hex,next_hex) {
   the_unit.setComponent('movement_left', max_movement);
   
   //update the map
-  this.units.place(next_hex, the_unit);
+  this.units.set(next_hex, the_unit);
   this.units.remove(current_hex);
 }

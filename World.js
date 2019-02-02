@@ -1,70 +1,5 @@
 //-------1---------2---------3---------4---------5---------6---------7---------8
 
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-//////                                                
-//////              WORLD DATA REPRESENTATION
-//////
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-///////////////////////////////////////////////////////
-
-//Dependencies
-//  Hex.js
-//  MapGenerator.js
-
-function WorldMap(origin, tile_size) {
-
-  if (tile_size == undefined) 
-    var tile_size = new Point(35,35);  
-  
-  if (origin == undefined)
-    var origin = new Point(0,0);
-    
-  this.layout = new HexLayout('pointy', tile_size, origin);
-
-}
-
-WorldMap.prototype.getHexArray = function() {
-  return this.map.getHexArray();
-}
-
-WorldMap.prototype.createMap = function(radius, center_hex) {
-  //create a map 
-  var hexmap_generator = new MapGenerator('perlin'); 
-  var map = hexmap_generator.makeMap(radius, center_hex);
-  this.setMap(map);
-}
-WorldMap.prototype.setMap = function(map) {
-  this.map = map;
-}
-WorldMap.prototype.hexToPoint = function(hex) {
-  return this.layout.hexToPoint(hex);
-}
-WorldMap.prototype.pointToHex = function(point) {
-  return this.layout.pointToHex(point);
-}
-WorldMap.prototype.getTile = function(hex) {
-  return this.map.getValue(hex);
-}
-WorldMap.prototype.setTile = function(hex, value) {
-  this.map.set(hex, value);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
@@ -84,8 +19,13 @@ function World(origin, scale, radius, center_hex) {
 
   var tile_size = new Point(35/scale, 35/scale);
   
-  this.world_map = new WorldMap(origin, tile_size);
-  this.world_map.createMap(radius, center_hex);
+  if (origin == undefined)
+    var origin = new Point(0,0);
+
+  this.layout = new HexLayout('pointy', tile_size, origin);
+  
+  this.world_map = new HexMap();
+  this.createMap(radius, center_hex);
 
   this.units = new HexMap();
 
@@ -94,21 +34,36 @@ function World(origin, scale, radius, center_hex) {
   
 }
 
+World.prototype.setMap = function(map) {
+  this.world_map = map;
+}
+
+World.prototype.createMap = function(radius, center_hex) {
+  //create a map 
+  var hexmap_generator = new MapGenerator('perlin'); 
+  var map = hexmap_generator.makeMap(radius, center_hex);
+  this.setMap(map);
+}
+
 World.prototype.getLayout = function() {
-  return this.world_map.layout;
+  return this.layout;
 }
 
 World.prototype.getHex = function(world_position) {
-  var hex = Hex.round(this.world_map.pointToHex(world_position));
+  var hex = Hex.round(this.layout.pointToHex(world_position));
   return hex;
 }
 
+World.prototype.getPoint = function(hex) {
+  return this.layout.hexToPoint(hex);
+}
+
 World.prototype.setHex = function(world_position,value) {
-  this.world_map.setTile(hex, value);
+  this.world_map.set(hex, value);
 }
 
 World.prototype.getMapValue = function(hex) {
-  return this.world_map.getTile(hex);
+  return this.world_map.getValue(hex);
 }
 
 World.prototype.getUnit = function(hex) {
@@ -122,7 +77,7 @@ World.prototype.getResource = function(hex) {
 World.prototype.generateResources = function(world_map) {
   var resources = new HexMap();
   for (let hex of world_map.getHexArray() )  {
-    let terrain = world_map.getTile(hex);
+    let terrain = world_map.getValue(hex);
 
     //only 30% of the land gets resources
     if (Math.random() < 0.8) {
@@ -193,7 +148,7 @@ World.prototype.generateResources = function(world_map) {
 function WorldInput(world, view) {
   this.world = world;
   this.view = view;
-  this.unit_controller = new UnitController(world.world_map.map, world.units);
+  this.unit_controller = new UnitController(world.world_map, world.units);
 
   this.listenForEvents();
 }

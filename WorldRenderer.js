@@ -39,7 +39,7 @@ WorldRenderer.p.clear = function() {
 WorldRenderer.p.calculateHexesToRender = function() {
   var rectMap = this.hex_renderer.getHexRectangleBoundaries();
   //get the rectangular array of hex tiles
-  let hexmap = this.world.world_map.map.getRectangleSubMap( rectMap.qmin,
+  let hexmap = this.world.world_map.getRectangleSubMap( rectMap.qmin,
                                                   rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
@@ -92,7 +92,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 }
 
 WorldRenderer.p.getTile = function(hex) {
-    return this.world.world_map.map.getValue(hex);
+    return this.world.world_map.getValue(hex);
 }
 
 
