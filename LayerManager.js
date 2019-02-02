@@ -23,6 +23,7 @@ function LayerManager() {
 	  this.view.zoom(zoom);
 	  drawScreen();
 	}
+	
 	this.dragEvent = function(mouse,previous_mouse) {
 	  //get the movement the mouse has moved since last tick
 	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
@@ -35,6 +36,7 @@ function LayerManager() {
 	  //redraw the screen after moving
 	  drawScreen();
 	}
+
 	this.resizeEvent = function(width,height) {
 	  this.view.resizeOutput(width,height);
 
@@ -57,41 +59,20 @@ function LayerManager() {
 
 	//This function creates a world and attaches all the necessary controllers
 	//This doesn't seem like a very efficient way to do this
-	this.createWorldLayer = function(radius, center_hex, color_scheme, sublayer) {
+	this.createWorldLayer = function(radius) {
 
 		var layer = new Layer();
 
-	  //calculate offset due to sublayer
-	  if (sublayer != undefined) {
-	  	layer.scale = sublayer.scale * scale_ratio;
-	    layer.offset = get_layer_offset( layer, sublayer );
-	  }
-
-	  //define the center tile
-	  layer.hex_center_offset = center_hex;
-
 	  //create a world object
-	  layer.world = new World(layer.offset, layer.scale, radius, center_hex );// <-- point at which the sublayer affects this new layer
+	  layer.world = new World(layer.offset, layer.scale, radius);// <-- point at which the sublayer affects this new layer
 
 	  //create a world interface
 	  layer.world_input = new WorldInput(layer.world, this.view);
 
 	  //create a world renderer
-	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world, this.view, color_scheme);  	  
+	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world, this.view);  	  
 
 	  return layer;
 	}
 
-}
-
-function get_layer_offset(layer, sublayer) {
-  var scale_difference = layer.scale / sublayer.scale;
-  var test_hex = new Hex( -sublayer.hex_center_offset.getQ()*scale_difference, 
-                          -sublayer.hex_center_offset.getR()*scale_difference );
-  
-  var layer_offset = sublayer.world_input.world.getLayout().hexToPoint( test_hex );
-  layer_offset.x -= sublayer.offset.x;
-  layer_offset.y -= sublayer.offset.y;
-
-  return layer_offset;
 }

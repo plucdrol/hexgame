@@ -17,12 +17,9 @@
 //  Hex
 //  HexRenderer
 
-function WorldRenderer (canvas_draw, world, view, color_scheme) {
+function WorldRenderer (canvas_draw, world, view) {
   
   this.hex_renderer = new HexRenderer(canvas_draw, view, world.getLayout() );
-  if (color_scheme != undefined) {
-    this.color_scheme = color_scheme;
-  }
 
   this.view = view;
   this.world = world;
@@ -66,8 +63,8 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   var tile_renderer = new TileRenderer2D(
                        this.hex_renderer.renderer.canvas_draw,
                        this.view,
-                       this.world.getLayout(),
-                       this.color_scheme);
+                       this.world.getLayout()
+                       );
 
 
   //draw the tiles of the array

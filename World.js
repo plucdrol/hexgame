@@ -15,7 +15,7 @@
 //  WorldMap
 //  UnitMap
 
-function World(origin, scale, radius, center_hex) {
+function World(origin, scale, radius) {
 
   var tile_size = new Point(35/scale, 35/scale);
   
@@ -25,7 +25,7 @@ function World(origin, scale, radius, center_hex) {
   this.layout = new HexLayout('pointy', tile_size, origin);
   
   this.world_map = new HexMap();
-  this.createMap(radius, center_hex);
+  this.createMap(radius);
 
   this.units = new HexMap();
 
@@ -38,10 +38,10 @@ World.prototype.setMap = function(map) {
   this.world_map = map;
 }
 
-World.prototype.createMap = function(radius, center_hex) {
+World.prototype.createMap = function(radius) {
   //create a map 
   var hexmap_generator = new MapGenerator('perlin'); 
-  var map = hexmap_generator.makeMap(radius, center_hex);
+  var map = hexmap_generator.makeMap(radius);
   this.setMap(map);
 }
 

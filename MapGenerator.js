@@ -94,15 +94,10 @@ MapGenerator.prototype.makeTileGenerator = function(type) {
 
 
 
-MapGenerator.prototype.makeMap = function(radius, center) {
+MapGenerator.prototype.makeMap = function(radius) {
   
   this.map = new HexMap();
   this.radius = radius;
-  this.center = center;
-
-  if (center == undefined) {
-    var center = new Hex(0,0);
-  }
 
   var type = this.map_type;
   var hex = new Hex(0,0);
@@ -112,11 +107,11 @@ MapGenerator.prototype.makeMap = function(radius, center) {
 
 
   // Iterates over the giant hexagon
-  var qmin = -center.getQ()-radius;
-  var qmax = -center.getQ()+radius;
+  var qmin = -radius;
+  var qmax = radius;
   for (var q = qmin; q <= qmax; q++) {
-    var rmin = Math.max(-center.getR()-radius, -center.getR()-center.getQ()-q - radius);
-    var rmax = Math.min(-center.getR()+radius, -center.getR()-center.getQ()-q + radius);
+    var rmin = Math.max(-radius, -q - radius);
+    var rmax = Math.min(+radius, -q + radius);
 
     for (var r = rmin; r <= rmax; r++) {
       
@@ -250,14 +245,13 @@ MapGenerator.prototype.addWaterRim = function(rim_size) {
 MapGenerator.prototype.flatenRange = function(min,max) {
   
   var size = this.radius;
-  var center = this.center;
 
   //for each cell
-  var qmin = -center.getQ()-radius;
-  var qmax = -center.getQ()+radius;
+  var qmin = -radius;
+  var qmax = radius;
   for (var q = qmin; q <= qmax; q++) {
-      var r1 = Math.max(-center.getR()-size, -center.getR()-q - size);
-      var r2 = Math.min(-center.getR()+size, -center.getR()-q + size);
+      var r1 = Math.max(-size, -q - size);
+      var r2 = Math.min(+size, -q + size);
 
       for (var r = r1; r <= r2; r++) {
         var this_hex = new Hex(q,r);

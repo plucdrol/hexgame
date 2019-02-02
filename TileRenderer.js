@@ -12,24 +12,23 @@
 /////////////////////////////////////////////////////////
 
 /*This is actually an interface and thsu can be inherited*/
-function TileRenderer (canvas_draw, view, layout, color_scheme) {
+function TileRenderer (canvas_draw, view, layout) {
   this.hex_renderer = new HexRenderer(canvas_draw, view, layout);
-  this.color_scheme = color_scheme;
 
 
 }
 TileRenderer.prototype.drawTile = function(hex,value) {
 }
 TileRenderer.prototype.mapColors = function(i) {
-  return greenscale_colors(i, this.color_scheme);  
+  return greenscale_colors(i);  
 } 
 
 
 
 
 
-function TileRenderer2D(canvas_draw, view, layout, color_scheme) {
-  TileRenderer.call(this, canvas_draw, view, layout, color_scheme); 
+function TileRenderer2D(canvas_draw, view, layout) {
+  TileRenderer.call(this, canvas_draw, view, layout); 
   this.tilesize = layout.size.x;
   this.actuallyDrawHexes = this.areHexesBigEnough(view.getScale(), this.tilesize);
 }
@@ -91,8 +90,9 @@ getWindArrowCharacter = function(direction) {
 
 
 //colors of different tiles depending on height
-var greenscale_colors = function (i, color_scheme) {
+var greenscale_colors = function (i) {
 
+  let color_scheme = 'deprecated';
 
   if (color_scheme == 'space') {
     var spacescale = ['#000','#000','#ccc','#222','#222', '#000','#000','#000','#000','#000',
