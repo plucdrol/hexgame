@@ -26,7 +26,6 @@ MapGenerator = function(map_type) {
     return this.map;
   }
   this.getElevation = function(hex) {
-    console.log(hex);
     if (this.map.containsHex(hex)) {
       return this.map.getValue(hex).components.elevation;
     } else {
@@ -129,7 +128,7 @@ MapGenerator.prototype.makeMap = function(radius, center) {
     }
   }
 
-  //fine tune the map
+  //fine tune the m ap
   this.addWaterRim(0.1);
   this.roundDown();
   this.addShallowWater();
@@ -145,6 +144,25 @@ MapGenerator.prototype.makeMap = function(radius, center) {
 
   return this.map;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 MapGenerator.prototype.roundDown = function() {
   
@@ -290,3 +308,5 @@ MapGenerator.prototype.addShallowWater = function() {
       }
   }
 }
+
+

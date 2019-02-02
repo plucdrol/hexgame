@@ -46,29 +46,29 @@ Unit.prototype.setType = function(unit_type) {
     this.components.ground_action_change_terrain.affectable_value = 2;
     this.components.ground_action_change_terrain.new_value = 1;
     break;
-  case 'tree':
-    this.setMovement(0);
-    this.components.color = 'red';
-    this.components.size = 1;
-    this.components.food_value = 1;
-    break;
+
+
   case 'fish':
     this.setMovement(0);
     this.components.color = 'lightblue';
     this.components.size = 1;
-    this.components.food_value = 5;
     break;
-  case 'hut':
-    this.setMovement(4);
+  case 'food':
+    this.setMovement(0);
+    this.components.color = 'yellow';
+    this.components.size = 1;
+    break;
+  case 'wood':
+    this.setMovement(0);
     this.components.color = 'brown';
-    this.components.population = 1;
-    this.components.size = 4;
-    this.components.controllable = true;
-    this.components.collects_ressources = true;
-    let creation = {range:0, type:'fast-player'};
-    this.components.ground_action_create_unit = creation;
-    this.components.range = {};
+    this.components.size = 1;
     break;
+  case 'stone':
+    this.setMovement(0);
+    this.components.color = 'grey';
+    this.components.size = 1;
+    break;
+
   case 'terrain':
     this.components.elevation = 0;
     this.components.wind = 0;

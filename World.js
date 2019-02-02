@@ -25,6 +25,10 @@ function WorldMap(origin, tile_size) {
 
 }
 
+WorldMap.prototype.getHexArray = function() {
+  return this.map.getHexArray();
+}
+
 WorldMap.prototype.createMap = function(radius, center_hex) {
   //create a map 
   var hexmap_generator = new MapGenerator('perlin'); 
@@ -84,6 +88,9 @@ function World(origin, scale, radius, center_hex) {
   this.world_map.createMap(radius, center_hex);
 
   this.units = new UnitMap();
+
+  this.resources = new UnitMap();
+  this.resources.generateResources(this.world_map);
   
 }
 
@@ -106,6 +113,10 @@ World.prototype.getMapValue = function(hex) {
 
 World.prototype.getUnit = function(hex) {
   return this.units.get(hex);
+}
+
+World.prototype.getResource = function(hex) {
+  return this.resources.get(hex);
 }
 
 

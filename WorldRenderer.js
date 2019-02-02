@@ -77,12 +77,19 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     //draw tile
     tile_renderer.drawTile(hex, this.getTile(hex));
     
+    //draw resources
+    var this_resource = this.world.getResource(hex);
+    if (this_resource != undefined) {
+      console.log(this_resource);
+        this.drawUnit(this_resource,hex,0);
+    }
+
     //draw units
     var this_unit = this.world.getUnit(hex);
-
     if (this_unit != undefined) {
         this.drawUnit(this_unit,hex,0);
     }
+
   }
 }
 

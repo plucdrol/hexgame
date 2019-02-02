@@ -49,7 +49,43 @@ function UnitMap() {
     return units.containsHex(hex);
   }
 
+  this.generateResources = function(world_map) {
+    for (let hex of world_map.getHexArray() )  {
+      let terrain = world_map.getTile(hex);
+
+      //only 30% of the land gets resources
+      if (Math.random() < 0.8) {
+
+        continue;
+      }
+
+      switch (terrain.components.elevation) {
+        case 1: //coasts
+          this.create(hex, 'fish');
+          break;
+        case 3: //grass
+        case 4: 
+          this.create(hex, 'food');
+          break;
+        case 5: //forest
+        case 6: 
+        case 7: 
+        case 8: 
+          this.create(hex, 'wood');
+          break;
+        case 9: //forest
+        case 10: 
+        case 11: 
+          this.create(hex, 'stone');
+          break;
+      }
+    }
+  }
+
+
 }
+
+
 
 
 
