@@ -16,26 +16,9 @@ var canv_input = new CanvasInput(canvas);
 
 var layer_manager = new LayerManager();
 var world_layer = layer_manager.createWorldLayer(30, new Hex(0,0), 'earth'); 
-var space_layer = layer_manager.createWorldLayer(20, new Hex(-3,-3), 'space', world_layer);
-var galaxy_layer = layer_manager.createWorldLayer(20, new Hex(5,5), 'galaxy', space_layer);
-var hyperspace_layer = layer_manager.createWorldLayer(20, new Hex(0,0), 'earth', galaxy_layer);
-
-
-
-
 
 //create units in the world
 world_layer.world.units.create(new Hex(0,0),'water-player');
-
-//level below is always at 0,0 even if the map is shifted to the side
-space_layer.world.units.create(new Hex(0,0),'planet');
-space_layer.world.units.create(new Hex(3,3),'sun');
-
-//Level below is always at 0,0  even if the map is shifted to the side
-galaxy_layer.world.units.create(new Hex(0,0),'sun');
-galaxy_layer.world.units.create(new Hex(-5,-5),'galactic-center');
-
-
 
 canv_input.windowResize();
 
@@ -50,21 +33,7 @@ function drawScreen() {
 function drawScreenTimed() {
 
   world_layer.world_renderer.clear();
-  var layer_to_control = hyperspace_layer;
 
-  //draw the universe
-  //hyperspace_layer.world_renderer.drawWorld();
-
-  //draw the galaxy
-  if (layer_manager.view.getZoom() > 0.06/64/64) {
-    galaxy_layer.world_renderer.drawWorld();
-    layer_to_control = galaxy_layer;
-  }
-  //draw the space
-  if (layer_manager.view.getZoom() > 0.06/64) {
-    space_layer.world_renderer.drawWorld(); 
-    layer_to_control = space_layer;
-  }
   //draw the world
   if (layer_manager.view.getZoom() > 0.06) {
     world_layer.world_renderer.drawWorld();    
