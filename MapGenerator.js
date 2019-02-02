@@ -26,7 +26,12 @@ MapGenerator = function(map_type) {
     return this.map;
   }
   this.getElevation = function(hex) {
-    return this.map.getValue(hex).components.elevation;
+    console.log(hex);
+    if (this.map.containsHex(hex)) {
+      return this.map.getValue(hex).components.elevation;
+    } else {
+      return 0;
+    }
   }
   this.setWind = function(hex,new_value) {
 
@@ -128,6 +133,13 @@ MapGenerator.prototype.makeMap = function(radius, center) {
   this.addWaterRim(0.1);
   this.roundDown();
   this.addShallowWater();
+
+  //trip coasts
+  this.trimPoints(1, [1,2,3,4,5,6,7], 2, 0 );
+
+  //trip oceans
+  this.trimPoints(0, [0], 2, 1 );
+
   //this.flatenRange(2,3);
   //this.flatenRange(3,6);
 
@@ -143,6 +155,45 @@ MapGenerator.prototype.roundDown = function() {
     value = Math.floor(this.getElevation(thishex));
 
     this.setElevation(thishex,value);
+  }
+}
+
+MapGenerator.prototype.trimPoints = function(land_type, required_neighbor_array, required_neighbor_count, new_land_type) {
+  
+  //initialize counter: tiles modified this run
+  let tiles_modified = 6;
+
+  while (tiles_modified > 5) {
+
+    tiles_modified = 0;
+
+    //run this code on each hex
+    for (let thishex of this.map.getHexArray()) {
+
+      //if the tile is of land_type
+      if (this.getElevation(thishex) == land_type) {
+        
+        //get its neighbors
+        let neighbors = thishex.getNeighbors();
+        let count = 0;
+        
+        //count the neighbors of type required_neighbor
+        for (let neighbor of neighbors) {
+
+          if (required_neighbor_array.includes(this.getElevation(neighbor))) {
+            count++;
+          }
+        }
+
+        //if the count is not at least required_neighbor_count
+        if (count < required_neighbor_count) {
+          //convert tile to new_land_type
+          this.setElevation(thishex, new_land_type);
+          tiles_modified++;
+        }
+      }
+    }
+
   }
 }
 
