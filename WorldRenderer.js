@@ -34,7 +34,6 @@ WorldRenderer.p = WorldRenderer.prototype;
 
 WorldRenderer.p.clear = function() {
     this.hex_renderer.renderer.canvas_draw.clear();
-    //console.log(this.units.getHexList());
 }
 
 WorldRenderer.p.calculateHexesToRender = function() {
@@ -80,7 +79,6 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     //draw resources
     var this_resource = this.world.getResource(hex);
     if (this_resource != undefined) {
-      console.log(this_resource);
         this.drawUnit(this_resource,hex,0);
     }
 

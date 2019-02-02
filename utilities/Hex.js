@@ -538,6 +538,10 @@ HexMap.prototype.remove = function(hex) {
     this.set(hex,undefined);
   }
 }
+HexMap.prototype.removeAll = function() {
+  this.values = {};
+}
+
 HexMap.prototype.getValue = function(hex) {
   var key = Hex.getKey(hex);
   return this.values[key];
@@ -635,6 +639,7 @@ HexMap.prototype.flip = function(hex,values) {
   }
   return false;
 }
+
 
 
 HexMap.prototype[Symbol.iterator] = function() {

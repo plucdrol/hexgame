@@ -2,109 +2,6 @@
 //////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
                               
- //             UNIT MAP
-
-//////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////
-
-function UnitMap() {
-  var units = new HexMap();
-
-  this.get = function(hex) {            //This function is only calling the lower layer
-    return units.getValue(hex);
-  }
-
-  this.getHexList = function() {        //this function is only calling the lower layer
-    return units.getHexArray();
-  }
-
-  this.deleteAll = function() {         //this function could be incorporated into the lower layer
-    //delete units
-    for (let hex of this.getHexList() )  {
-      var unit = this.getUnit(hex);
-      if (unit.components.hasOwnProperty('food_value')) {
-        this.removeUnit(hex);
-      }
-    }
-  }
-
-  //create a new Unit at position Hex
-  this.create = function(hex, unit_type) {    //this function DOES do something different
-    var newUnit = new Unit(unit_type);
-    units.set(hex, newUnit);
-  }
-
-  this.set = function(hex, unit) {            //this function only references the lower layer
-    units.set(hex, unit);
-  }
-  this.place = this.set;
-
-  //delete the new Unit at position Hex
-  this.remove = function(hex) {               //this function only references the lower layer
-    units.remove(hex);  
-  }
-
-  this.hasUnitAt = function(hex) {
-    return units.containsHex(hex);            //this function only references the lower layer
-  }
-
-  this.generateResources = function(world_map) {    //this function actually does something but should be in the World-something
-    for (let hex of world_map.getHexArray() )  {
-      let terrain = world_map.getTile(hex);
-
-      //only 30% of the land gets resources
-      if (Math.random() < 0.8) {
-
-        continue;
-      }
-
-      switch (terrain.components.elevation) {
-        case 1: //coasts
-          this.create(hex, 'fish');
-          break;
-        case 3: //grass
-        case 4: 
-          this.create(hex, 'food');
-          break;
-        case 5: //forest
-        case 6: 
-        case 7: 
-        case 8: 
-          this.create(hex, 'wood');
-          break;
-        case 9: //forest
-        case 10: 
-        case 11: 
-          this.create(hex, 'stone');
-          break;
-      }
-    }
-  }
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////
-                              
  //             UNIT CONTROLLER
 
 //////////////////////////////////////////////////////////
@@ -127,9 +24,13 @@ UnitController.p = UnitController.prototype;
 UnitController.p.newMap = function(map) {
   
   this.map = map;
-  this.units.deleteAll();
+  this.units.removeAll();
 }
 
+UnitController.p.createUnit = function(hex, unit_type) {
+    var newUnit = new Unit(unit_type);
+    this.units.set(hex, newUnit);
+  }
 
 
 
@@ -152,8 +53,8 @@ UnitController.p.newMap = function(map) {
 
 //returns the Unit at position Hex. only a single unit can be on each hex
 UnitController.p.unitAtPosition = function(hex) {
-  if (this.units.hasUnitAt(hex)) {
-    return this.units.get(hex);
+  if (this.units.containsHex(hex)) {
+    return this.units.getValue(hex);
   } else {
     return false;
   }

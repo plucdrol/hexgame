@@ -87,10 +87,10 @@ function World(origin, scale, radius, center_hex) {
   this.world_map = new WorldMap(origin, tile_size);
   this.world_map.createMap(radius, center_hex);
 
-  this.units = new UnitMap();
+  this.units = new HexMap();
 
-  this.resources = new UnitMap();
-  this.resources.generateResources(this.world_map);
+  this.resources = new HexMap();
+  this.resources = this.generateResources(this.world_map);
   
 }
 
@@ -112,13 +112,47 @@ World.prototype.getMapValue = function(hex) {
 }
 
 World.prototype.getUnit = function(hex) {
-  return this.units.get(hex);
+  return this.units.getValue(hex);
 }
 
 World.prototype.getResource = function(hex) {
-  return this.resources.get(hex);
+  return this.resources.getValue(hex);
 }
 
+World.prototype.generateResources = function(world_map) {
+  var resources = new HexMap();
+  for (let hex of world_map.getHexArray() )  {
+    let terrain = world_map.getTile(hex);
+
+    //only 30% of the land gets resources
+    if (Math.random() < 0.8) {
+
+      continue;
+    }
+
+    switch (terrain.components.elevation) {
+      case 1: //coasts
+        resources.set(hex, new Unit('fish') );
+        break;
+      case 3: //grass
+      case 4: 
+        resources.set(hex, new Unit('food'));
+        break;
+      case 5: //forest
+      case 6: 
+      case 7: 
+      case 8: 
+        resources.set(hex, new Unit('wood'));
+        break;
+      case 9: //forest
+      case 10: 
+      case 11: 
+        resources.set(hex, new Unit('stone'));
+        break;
+    }
+  }
+  return resources;
+}
 
 
 
@@ -160,7 +194,6 @@ function WorldInput(world, view) {
   this.world = world;
   this.view = view;
   this.unit_controller = new UnitController(world.world_map.map, world.units);
-  this.unit_controller.fillMap();
 
   this.listenForEvents();
 }
