@@ -11,15 +11,15 @@
 function UnitMap() {
   var units = new HexMap();
 
-  this.get = function(hex) {
+  this.get = function(hex) {            //This function is only calling the lower layer
     return units.getValue(hex);
   }
 
-  this.getHexList = function() {
+  this.getHexList = function() {        //this function is only calling the lower layer
     return units.getHexArray();
   }
 
-  this.deleteAll = function() {
+  this.deleteAll = function() {         //this function could be incorporated into the lower layer
     //delete units
     for (let hex of this.getHexList() )  {
       var unit = this.getUnit(hex);
@@ -30,26 +30,26 @@ function UnitMap() {
   }
 
   //create a new Unit at position Hex
-  this.create = function(hex, unit_type) {
+  this.create = function(hex, unit_type) {    //this function DOES do something different
     var newUnit = new Unit(unit_type);
     units.set(hex, newUnit);
   }
 
-  this.set = function(hex, unit) {
+  this.set = function(hex, unit) {            //this function only references the lower layer
     units.set(hex, unit);
   }
   this.place = this.set;
 
   //delete the new Unit at position Hex
-  this.remove = function(hex) {
-    units.remove(hex);
+  this.remove = function(hex) {               //this function only references the lower layer
+    units.remove(hex);  
   }
 
   this.hasUnitAt = function(hex) {
-    return units.containsHex(hex);
+    return units.containsHex(hex);            //this function only references the lower layer
   }
 
-  this.generateResources = function(world_map) {
+  this.generateResources = function(world_map) {    //this function actually does something but should be in the World-something
     for (let hex of world_map.getHexArray() )  {
       let terrain = world_map.getTile(hex);
 
@@ -149,34 +149,6 @@ UnitController.p.newMap = function(map) {
                   // UNIT CREATION //
 /////////////////////////////////////////////////////////
 
-UnitController.p.fillMap = function() {
-  this.addTreesToMap();
-  this.addFishToMap();
-}
-
-UnitController.prototype.addTreesToMap = function() {
-  //add trees (this is the wrong place for world-generaion code)
-  for (let hex of this.units.getHexList()) {
-    var hex_value = this.map.getValue(hex).components.elevation;
-    if (hex_value >= 4 && hex_value <= 9) {
-      if (Math.random() < 0.2) {
-        this.units.create(hex,'tree');
-      }
-    }
-  }
-}
-
-UnitController.prototype.addFishToMap = function() {
-  //add fish (this is the wrong place for world-generaion code)
-  for (let hex of this.units.getHexList()) {
-    var hex_value = this.map.getValue(hex).components.elevation;
-    if (hex_value === 1) {
-      if (Math.random() < 0.1) {
-        this.units.create(hex,'fish');
-      }
-    }
-  }
-}
 
 //returns the Unit at position Hex. only a single unit can be on each hex
 UnitController.p.unitAtPosition = function(hex) {
