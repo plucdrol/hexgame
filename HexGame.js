@@ -15,10 +15,11 @@ var canv_input = new CanvasInput(canvas);
 
 
 var layer_manager = new LayerManager();
-var world_layer = layer_manager.createWorldLayer(30, new Hex(0,0)); 
+var layer = layer_manager.createWorldLayer(30, new Hex(0,0)); 
 
 //create units in the world
-world_layer.world.units.set(new Hex(0,0), new Unit('water-player'));
+layer.world.units.set(new Hex(0,0), new Unit('water-player'));
+layer.world.units.set(new Hex(-1,-1), new Unit('land-player'));
 
 canv_input.windowResize();
 
@@ -32,18 +33,16 @@ function drawScreen() {
 
 function drawScreenTimed() {
 
-  world_layer.world_renderer.clear();
+  layer.world_renderer.clear();
 
   //draw the world
   if (layer_manager.view.getZoom() > 0.06) {
-    world_layer.world_renderer.drawWorld();    
-    layer_to_control = world_layer;
-    
+    layer.world_renderer.drawWorld();  
   }
 
   //draw mouse interactions
   var hud_renderer = new HUDRenderer();
-  hud_renderer.renderHUD(layer_to_control);
+  hud_renderer.renderHUD(layer);
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////

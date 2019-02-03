@@ -1,6 +1,6 @@
 
 
-/* SINGLE RESPONSIBILITY: maintain relationship between layers of worlds */
+/* SINGLE RESPONSIBILITY: maintain relationship between world model, input, and output */
 function LayerManager() {
 
 	var scale_ratio = 1/64;
@@ -49,28 +49,24 @@ function LayerManager() {
 	//single responsibility: hold the meta-data about a layer, and a link to the world
 	function Layer() {
 		this.scale = 1;
-		this.offset = new Point(0,0);
-
 		this.world_input = {};
 		this.world_renderer = {};
-
 	}
 
 
-	//This function creates a world and attaches all the necessary controllers
-	//This doesn't seem like a very efficient way to do this
+	//This function creates a world and joins the view and controller to it
 	this.createWorldLayer = function(radius) {
 
 		var layer = new Layer();
 
 	  //create a world object
-	  layer.world = new World(layer.offset, layer.scale, radius);// <-- point at which the sublayer affects this new layer
+	  layer.world = new World(layer.scale, radius);// <-- model
 
 	  //create a world interface
-	  layer.world_input = new WorldInput(layer.world, this.view);
+	  layer.world_input = new WorldInput(layer.world, this.view);	//<-- controller
 
 	  //create a world renderer
-	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world, this.view);  	  
+	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world, this.view);  	//<---view  
 
 	  return layer;
 	}
