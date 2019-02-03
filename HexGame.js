@@ -18,8 +18,12 @@ var layer_manager = new LayerManager();
 var layer = layer_manager.createWorldLayer(30, new Hex(0,0)); 
 
 //create units in the world
-layer.world.units.set(new Hex(0,0), new Unit('water-player'));
-layer.world.units.set(new Hex(-1,-1), new Unit('land-player'));
+layer.world.units.set(new Hex(-1,-1), new Unit('water-player'));
+layer.world.units.set(new Hex(0,0), new Unit('land-player'));
+
+let land_tile = new Unit('terrain');
+land_tile.components.elevation = 2;
+layer.world.setHex(new Hex(0,0), land_tile);
 
 canv_input.windowResize();
 
