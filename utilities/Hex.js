@@ -108,7 +108,6 @@ Hex.distance = function(hex_a,hex_b) {
   return Hex.distanceToCenter(Hex.substract(hex_a,hex_b));
 }
 
-
 //gives the 6 hex neighbor direction in layout-independent hex coordinates
 var hex_direction = [new Hex(1,0),new Hex(1,-1),new Hex(0,-1),
       new Hex(-1,0),new Hex(-1,1),new Hex(0,1)] ;
@@ -207,6 +206,13 @@ Hex.line = function(hex_a,hex_b) {
   return results;
 }
 
+Hex.circle = function(center, N) {
+  var hex_array = [];
+  for (q=-N; q<=N; q++)
+    for (r=Math.max(-N, -q-N); r<=Math.min(N, -q+N); r++)
+      hex_array.push(center.add( new Hex(q, r)));
+  return hex_array;
+}
 
 
 
