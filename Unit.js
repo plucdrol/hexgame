@@ -16,11 +16,16 @@ Unit.prototype.setType = function(unit_type) {
   this.type = unit_type;
 
   switch (unit_type) {
-  case 'planet':
-    this.setMovement(8);
-    this.components.color = 'darkblue';
+
+  case 'camp':
+    this.setMovement(0);
+    this.components.color = 'white';
+    this.components.controllable = true;
     this.components.range = {};
-    this.components.size = 3;
+    this.components.size = 2;
+    this.components.cityRadius = 1;
+    this.components.minimum_elevation = 0;
+    this.components.maximum_elevation = 2; 
     break;
 
   case 'land-player':
@@ -31,6 +36,8 @@ Unit.prototype.setType = function(unit_type) {
     this.components.size = 2;
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
+    this.components.ground_action_create_unit = {};
+    this.components.ground_action_create_unit.type = 'camp';
     break;
   
   case 'water-player':
