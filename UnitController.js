@@ -289,9 +289,10 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
 
   //Become a hut if unit is a player
   if (active_unit.hasComponent('self_action_become_unit')) {
-    this.units.remove(unit_hex);
     var type = active_unit.getComponent('self_action_become_unit');
-    this.units.create(unit_hex, type);
+    this.units.remove(unit_hex);
+    this.units.set(unit_hex, new Unit(type) );
+
     
     new_unit = this.unitAtPosition(unit_hex);
     if (new_unit.hasComponent('range')) {

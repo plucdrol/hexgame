@@ -75,14 +75,19 @@ HexRenderer.p.drawRange = function(range) {
 }
 
 //Render an array of hexes on the screen
-HexRenderer.p.drawHexes = function(hex_array) {
+HexRenderer.p.drawHexes = function(hex_array, range_style) {
   
   var outline = Hex.outline(hex_array);
 
-  var range_style = new RenderStyle();
-  range_style.fill_color = "rgba(255,255,150, 0.2)";
-  range_style.line_width = 3;
-  range_style.line_color = "rgba(255,255,100,1)";
+
+
+  if (range_style === undefined) {
+    var range_style = new RenderStyle();
+    range_style.fill_color = "rgba(255,255,150, 0.2)";
+    range_style.line_color = "rgba(255,255,100,1)";
+  }
+
+    range_style.line_width = 3;
 
   //draw the outline of the range
   this.drawHexOutline( outline,range_style);

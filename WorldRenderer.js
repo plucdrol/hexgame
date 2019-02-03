@@ -79,12 +79,15 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
         this.drawUnit(this_resource,hex,0);
     }
 
+  }
+
+  //draw the units and their associated zones
+  for (hex of hexarray) {
     //draw units
     var this_unit = this.world.getUnit(hex);
     if (this_unit != undefined) {
         this.drawUnit(this_unit,hex,0);
     }
-
   }
 }
 
@@ -109,7 +112,22 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
     let text = unit.components.population;      
     this.hex_renderer.renderer.drawText(text, position, text_style);
   }
+
+  if (unit.components.cityRadius != undefined) {
+    this.drawCityRadius(hex, unit);
+  }
 };
+
+WorldRenderer.p.drawCityRadius = function(hex, unit) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = unit.getComponent('cityRadiusColor');
+  radius_style.line_color = unit.getComponent('cityRadiusLineColor');
+
+  let neighbors_array = hex.getNeighbors();
+  neighbors_array.push(hex);
+  this.hex_renderer.drawHexes(neighbors_array, radius_style);
+}
 
 
 WorldRenderer.p.drawPath = function(range,destination) {

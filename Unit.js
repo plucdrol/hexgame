@@ -24,8 +24,11 @@ Unit.prototype.setType = function(unit_type) {
     this.components.range = {};
     this.components.size = 2;
     this.components.cityRadius = 1;
+    this.components.cityRadiusColor = "rgba(255,50,50, 0.3)";
+    this.components.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
     this.components.minimum_elevation = 0;
     this.components.maximum_elevation = 2; 
+    this.components.self_action_become_unit = 'land-player';
     break;
 
   case 'land-player':
@@ -36,8 +39,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.size = 2;
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
-    this.components.ground_action_create_unit = {};
-    this.components.ground_action_create_unit.type = 'camp';
+    this.components.self_action_become_unit = 'camp';
     break;
   
   case 'water-player':

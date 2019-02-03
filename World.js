@@ -57,7 +57,7 @@ World.prototype.getPoint = function(hex) {
   return this.layout.hexToPoint(hex);
 }
 
-World.prototype.setHex = function(world_position,value) {
+World.prototype.setHex = function(hex,value) {
   this.world_map.set(hex, value);
 }
 
