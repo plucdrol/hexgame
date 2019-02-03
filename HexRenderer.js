@@ -47,7 +47,7 @@ HexRenderer.p.drawHex = function(hex, style) {
 };
 
 //Draw a series of short lines
-HexRenderer.p.drawComplexPolygon = function(edge_arrays,style) {
+HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
     
   var number_of_loops = edge_arrays.length;
   var corners = [];
@@ -57,10 +57,12 @@ HexRenderer.p.drawComplexPolygon = function(edge_arrays,style) {
     var edges = edge_arrays[outline];
 
     for (var i=0;i<edges.length;i++){
-      corners.push( this.hexToPoint(edges[i].getPoint1() ));
+      let corner = this.hexToPoint(edges[i].getPoint1() );
+      corners.push( corner );
     }
-    corners.push( this.hexToPoint(edges[0].getPoint1() )); //add the first point again to close the loop
-    corners.push( 'break' );
+    let corner = this.hexToPoint(edges[0].getPoint1() );
+    corner.breakLine = true; //used in complex polygons to know when to break the drawing loops
+    corners.push( corner ); //add the first point again to close the loop
   }
   this.renderer.drawPolygon(corners,style);
 };
@@ -94,7 +96,7 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
     range_style.line_width = 3;
 
   //draw the outline of the range
-  this.drawComplexPolygon( outline,range_style);
+  this.drawHexOutline( outline,range_style);
 }
 
 //move this function down to hex renderer

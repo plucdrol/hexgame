@@ -71,12 +71,9 @@ Renderer.prototype.drawPolygon = function(points,style) {
   
   //otherwise actually draw a polygon
   for (let point of points) {
-    if (point == 'break') {
-      coords.push('break');
-      continue;
-    }
-
     let coord = this.worldToScreen(point);
+    if (point.breakLine != undefined) 
+      coord.breakLine = point.breakLine;
     coords.push(coord);
   }
 

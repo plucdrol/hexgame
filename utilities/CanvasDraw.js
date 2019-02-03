@@ -65,18 +65,21 @@ function CanvasDraw (canvas) {
     line.moveTo(points[0].x,points[0].y);
     for (i=1; i<points.length; i++) {
 
-      if (points[i] == 'break') { //for complex polygon this breaks the cycle
-        line.closePath();
-        next = "move";
-        continue;
-      } 
       if (next == "move") {
         line.moveTo(points[i].x,points[i].y);
         next = "";
       } else {
         line.lineTo(points[i].x,points[i].y);
       }
+
+      //for complex polygon this breaks the cycle into smaller cycles
+      if (points[i].breakLine != undefined) { 
+        console.log('break line');
+        line.closePath();
+        next = "move";
+      } 
     }
+    
     //close polygons of at least 3 sides
     if (points.length > 2) {
       //line.lineTo(points[0].x,points[0].y);
