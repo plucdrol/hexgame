@@ -124,9 +124,8 @@ WorldRenderer.p.drawCityRadius = function(hex, unit) {
   radius_style.fill_color = unit.getComponent('cityRadiusColor');
   radius_style.line_color = unit.getComponent('cityRadiusLineColor');
 
-  let neighbors_array = hex.getNeighbors();
-  neighbors_array.push(hex);
-  this.hex_renderer.drawHexes(neighbors_array, radius_style);
+  let radius_array = Hex.circle(hex, unit.components.cityRadius);
+  this.hex_renderer.drawHexes(radius_array, radius_style);
 }
 
 
