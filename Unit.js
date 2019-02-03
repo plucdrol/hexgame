@@ -23,8 +23,8 @@ Unit.prototype.setType = function(unit_type) {
     this.components.controllable = true;
     this.components.range = {};
     this.components.size = 2;
-    this.components.cityRadius = 3;
-    this.components.cityRadiusColor = "rgba(255,50,50, 0.7)";
+    this.components.cityRadius = 1;
+    this.components.cityRadiusColor = "rgba(255,50,50, 0.4)";
     this.components.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
     this.components.minimum_elevation = 0;
     this.components.maximum_elevation = 2; 
@@ -53,6 +53,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.ground_action_change_terrain = {};
     this.components.ground_action_change_terrain.affectable_value = 2;
     this.components.ground_action_change_terrain.new_value = 1;
+    this.components.self_action_become_unit = 'camp';
     break;
 
 
