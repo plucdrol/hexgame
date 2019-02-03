@@ -472,10 +472,10 @@ Edge.sort = function(unsorted_edges) {
       for (i=0; i<unsorted_edges.length; i++) {
         maybe_edge = unsorted_edges[i];
         //if the 1st point of MAYBE_EDGE is equal to the 
-	//CURRENT_EDGE's 2nd point
+	       //CURRENT_EDGE's 2nd point
 
-	let vertexC = maybe_edge.getVertex1();
-	let vertexD = current_edge.getVertex2();
+	       let vertexC = maybe_edge.getVertex1();
+	       let vertexD = current_edge.getVertex2();
         if ( vertexC.equals(vertexD)   ) {
 
           //push MAYBE_EDGE to the SORTED EDGES array
@@ -508,6 +508,9 @@ Edge.sort = function(unsorted_edges) {
       console.log('hex boundaries do not match');
     }
     //popp that SORTED_EDGES array in ARRAY OF EDGE ARRAYS
+    if (edge_arrays.length & 1) {
+      //sorted_edges = sorted_edges.reverse(); //reverse every other array so they will render correctly
+    } 
     edge_arrays.push(sorted_edges);
   }
   

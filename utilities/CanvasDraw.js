@@ -37,15 +37,11 @@ function CanvasDraw (canvas) {
     return this.canvas.height;
   }
 
-  CanvasDraw.prototype.reDrawPolygon = function(new_position) {
-
-
-  }
-
   //draw a canvas polygon touching each points, with optional line width, line color and polygon fill color
   CanvasDraw.prototype.drawPolygon = function(points,width,fill_color,line_color) {
     
     var line = this.canvas.getContext('2d');
+    let next = "";
     
     //default line color
     if (typeof line_color === 'undefined') {
@@ -68,12 +64,22 @@ function CanvasDraw (canvas) {
     line.beginPath();
     line.moveTo(points[0].x,points[0].y);
     for (i=1; i<points.length; i++) {
-      line.lineTo(points[i].x,points[i].y);
-      //this.drawText(i,points[i],'black',24); //add the index of each corner
+
+      if (points[i] == 'break') { //for complex polygon this breaks the cycle
+        line.closePath();
+        next = "move";
+        continue;
+      } 
+      if (next == "move") {
+        line.moveTo(points[i].x,points[i].y);
+        next = "";
+      } else {
+        line.lineTo(points[i].x,points[i].y);
+      }
     }
     //close polygons of at least 3 sides
     if (points.length > 2) {
-      line.lineTo(points[0].x,points[0].y);
+      //line.lineTo(points[0].x,points[0].y);
       line.closePath();
     }
     
@@ -89,7 +95,7 @@ function CanvasDraw (canvas) {
     if (typeof fill_color != 'undefined' && fill_color != 'transparent') {
 
       line.fillStyle = fill_color;
-      line.fill(); 
+      line.fill('evenodd'); 
     }
     
   };

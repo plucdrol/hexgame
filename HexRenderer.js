@@ -10,8 +10,7 @@
 
 
 
-// Sole responsibility: drawing hexagons using the canvas-draw tools
-
+// Sole responsibility: drawing hexagons using the Renderer 
 
 // CanvasDraw
 // View
@@ -48,17 +47,22 @@ HexRenderer.p.drawHex = function(hex, style) {
 };
 
 //Draw a series of short lines
-HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
+HexRenderer.p.drawComplexPolygon = function(edge_arrays,style) {
     
   var number_of_loops = edge_arrays.length;
+  var corners = [];
+
   for (let outline = 0; outline<number_of_loops; outline++){
-    var corners = [];
-    var edges = edge_arrays[outline];    
+
+    var edges = edge_arrays[outline];
+
     for (var i=0;i<edges.length;i++){
       corners.push( this.hexToPoint(edges[i].getPoint1() ));
     }
-    this.renderer.drawPolygon(corners,style);
+    corners.push( this.hexToPoint(edges[0].getPoint1() )); //add the first point again to close the loop
+    corners.push( 'break' );
   }
+  this.renderer.drawPolygon(corners,style);
 };
 
 HexRenderer.p.drawRange = function(range) {
@@ -90,7 +94,7 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
     range_style.line_width = 3;
 
   //draw the outline of the range
-  this.drawHexOutline( outline,range_style);
+  this.drawComplexPolygon( outline,range_style);
 }
 
 //move this function down to hex renderer
