@@ -39,10 +39,18 @@
 				background: black;
 				color: white;
 			}
+			#city-bar {
+				position:absolute;
+				left:0;
+				top:0;
+				right:0;
+				height: 2em;
+			}
 			#mycanvas{
 				background: black;
 				clear: both;
 				/*margin-top: 30px;*/
+				z-index: 1;
 			}
 
 			.action-button {
@@ -73,6 +81,10 @@
 	</head>
 	<body>
 		
+		<div id='city-bar'>
+			City Food:3 Wood:5 Stone:0
+		</div>
+
 		<div style="float:left;">
 			<canvas id="mycanvas" width="600" height="400">
 				Your system does not support Canvas.

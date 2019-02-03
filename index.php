@@ -40,6 +40,18 @@
 			body,p {
 				background: black;
 				color: white;
+			}			
+			#city-bar {
+				position: absolute;
+				left: 0;
+				top: 0;
+				right: 0;
+				padding: 5px;
+				background: grey;
+				font-size: 2em;
+			}
+			#city-name {
+				color: darkgreen;
 			}
 			#mycanvas{
 				background: black;
@@ -74,7 +86,10 @@
 		</style>
 	</head>
 	<body>
-		
+			<div id='city-bar'>
+			<span id='city-name'>City</span>
+			<span id='city-resources'> Food:3 Wood:5 Stone:0</span>
+		</div>
 		<div style="float:left;">
 			<canvas id="mycanvas" width="600" height="400">
 				Your system does not support Canvas.
