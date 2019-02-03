@@ -13,6 +13,7 @@ function Unit(unit_type) {
 
 Unit.prototype.setType = function(unit_type) {
   this.components = {};
+  this.type = unit_type;
 
   switch (unit_type) {
   case 'planet':
@@ -21,26 +22,24 @@ Unit.prototype.setType = function(unit_type) {
     this.components.range = {};
     this.components.size = 3;
     break;
+
   case 'land-player':
     this.setMovement(12);
     this.components.color = 'blue';
     this.components.controllable = true;
-    this.components.eats_food = true;
-    this.components.self_action_become_unit = 'hut';
     this.components.range = {};
     this.components.size = 2;
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
     break;
+  
   case 'water-player':
     this.setMovement(16);
     this.components.color = 'white';
     this.components.controllable = true;
-    this.components.eats_food = true;
-    this.components.self_action_become_unit = 'hut';
     this.components.range = {};
     this.components.size = 2;
-    this.components.minimum_elevation = 1;
+    this.components.minimum_elevation = 0;
     this.components.maximum_elevation = 2; 
     this.components.ground_action_change_terrain = {};
     this.components.ground_action_change_terrain.affectable_value = 2;
@@ -200,19 +199,6 @@ Unit.prototype.setMovement = function(movement) {
 	if (cost_previous === undefined) {
 	  cost_previous = 0;
 	}
-
-  //cannot walk from sand to water
-  if (cost_previous == 2 && cost_this == 1) {
-    console.log('stepping from sand into water');
-    //return undefined;
-  }
-
-  //cannot walk from sand to sand
-  if (cost_previous > 1 && cost_this > 1) {
-    console.log('stepping from sand into sand');
-    return undefined;
-  }
-
 	
   var difference = cost_this - cost_previous;
 

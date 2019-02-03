@@ -15,12 +15,11 @@
 //  WorldMap
 //  UnitMap
 
-function World(origin, scale, radius) {
+function World(scale, radius) {
 
   var tile_size = new Point(35/scale, 35/scale);
   
-  if (origin == undefined)
-    var origin = new Point(0,0);
+  var origin = new Point(0,0);
 
   this.layout = new HexLayout('pointy', tile_size, origin);
   
@@ -198,7 +197,6 @@ WorldInput.prototype.clickScreenEvent = function(screen_position) {
     return;
   }
   if (this.unit_controller != undefined) {
-    console.log('click');
 
 
     var world_position = this.view.screenToWorld(screen_position);

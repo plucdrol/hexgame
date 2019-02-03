@@ -1,4 +1,3 @@
-# hexgame
 A 4X game with no waiting. Closer to CivClicker than Civilization.
 
 Initially intended as a learning experiment for both HTML5 Canvas and Javascript.

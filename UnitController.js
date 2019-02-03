@@ -234,8 +234,6 @@ UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
       var new_terrain_value = unit.components.ground_action_change_terrain.new_value;
       var affectable_terrain_value = unit.components.ground_action_change_terrain.affectable_value;
 
-      console.log(current_terrain_value);
-      console.log(affectable_terrain_value);
       if (current_terrain_value == affectable_terrain_value) {
         let tile = this.map.getValue(new_hex);
         tile.components.elevation = new_terrain_value;
