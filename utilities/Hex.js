@@ -214,6 +214,19 @@ Hex.circle = function(center, N) {
   return hex_array;
 }
 
+Hex.ring = function(center, radius) {
+  var hex_array = [];
+   
+  var hex = Hex.add(center, Hex.multiply(hex_direction[4], radius));
+  for (let i=0; i<6; i++) {
+    for (let j=0; j<radius; j++) {
+      hex_array.push(hex);
+      hex = hex.getNeighbor(i);
+    }
+  }
+  
+  return hex_array;
+}
 
 
 
