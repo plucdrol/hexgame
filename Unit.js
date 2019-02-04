@@ -27,10 +27,10 @@ Unit.prototype.setType = function(unit_type) {
     this.components.minimum_elevation = 0;
     this.components.maximum_elevation = 2; 
     this.components.self_action_become_unit = 'land-player';
+    this.components.ground_action_create_unit = 'land-player';
     this.setCitySize(1);
     this.setCityColor();
     this.setResources(0,0,0);
-    this.startGathering();
     break;
 
   case 'land-player':
@@ -63,21 +63,29 @@ Unit.prototype.setType = function(unit_type) {
     this.setMovement(0);
     this.components.color = 'lightblue';
     this.components.size = 1;
+    this.components.resource_type = 'food';
+    this.components.resource_value = 2;
     break;
   case 'food':
     this.setMovement(0);
     this.components.color = 'yellow';
     this.components.size = 1;
+    this.components.resource_type = 'food';
+    this.components.resource_value = 1;
     break;
   case 'wood':
     this.setMovement(0);
     this.components.color = 'brown';
     this.components.size = 1;
+    this.components.resource_type = 'wood';
+    this.components.resource_value = 1;
     break;
   case 'stone':
     this.setMovement(0);
     this.components.color = 'grey';
     this.components.size = 1;
+    this.components.resource_type = 'stone';
+    this.components.resource_value = 1;
     break;
 
   case 'terrain':
@@ -164,20 +172,13 @@ Unit.prototype.setCitySize = function(size) {
 }
 
 Unit.prototype.setResources = function(food,wood,stone) {
+  /*if (this.components.resources != undefined) {
+    food = this.components.resources.food;
+    wood = this.components.resources.wood;
+    stone = this.components.resources.stone;
+  }*/
   this.components.resources = {'food':food, 'wood':wood, 'stone':stone};
 }
-
-Unit.prototype.startGathering = function() {
-  var self = this; 
-  setInterval( this.gatherResources(self), 1000 );
-}
-
-Unit.prototype.gatherResources = function(unit) {
-  return function()
-    {unit.components.resources.food++};
-}
-
-
 
 
 

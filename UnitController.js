@@ -322,20 +322,32 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
   //get the unit
   var active_unit = this.unitAtPosition(unit_hex);
 
-  //Become a hut if unit is a player
+  //Become another unit if the action is defined
   if (active_unit.hasComponent('self_action_become_unit')) {
     var type = active_unit.getComponent('self_action_become_unit');
+    
+    //keep resources component
+    if (active_unit.components.resources != undefined) {
+      var resources = active_unit.components.resources;
+    }
     this.units.remove(unit_hex);
     this.units.set(unit_hex, new Unit(type) );
 
-    
     new_unit = this.unitAtPosition(unit_hex);
+
+
     if (new_unit.hasComponent('range')) {
       new_unit.findRange(this.map, unit_hex);
     }  
     if (new_unit.hasComponent('resources')) {
       this.selectCity(new_unit); 
     }  
+    if (resources != undefined) {
+      new_unit.components.resources = resources;
+      console.log(resources.wood);
+    }
+
+
   } else {
     this.selectHex('none');
   }

@@ -30,6 +30,14 @@ function World(scale, radius) {
 
   this.resources = new HexMap();
   this.resources = this.generateResources(this.world_map);
+
+  this.startGathering = function() {
+    var self = this; 
+    setInterval( self.gatherCityResources(self), 1000 );
+  }
+
+  this.startGathering();
+
   
 }
 
@@ -109,7 +117,34 @@ World.prototype.generateResources = function(world_map) {
 }
 
 
+//This function is created in WORLD for now, because we need access to the map
+//Move it somewhere else where it belongs
+World.prototype.gatherCityResources = function(world) {
+  
+  return function(){
 
+
+
+    //For all units
+    for (let unit_hex of world.units.getHexArray() )  {
+      //if they are a city
+      let unit = world.units.getValue(unit_hex);
+      if (unit.hasComponent('resources') && unit.hasComponent('cityRadius')) {
+        //get the tiles in its radius
+        let collection_hexes = Hex.circle(unit_hex,unit.components.cityRadius);
+        //for each tile in that array
+
+        for (let collection_hex of collection_hexes) {
+          //add the resources to the city
+          if (world.resources.containsHex(collection_hex)) {
+            let resource = world.resources.getValue(collection_hex);
+            unit.components.resources[resource.components.resource_type] += resource.components.resource_value;
+          }
+        }
+      }
+    }
+  }
+}
 
 
 
