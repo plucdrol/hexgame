@@ -4,10 +4,11 @@
 //
 //           GENERIC UNIT --------------------//
 
-function Unit(unit_type) {
+function Unit(unit_type, world=null) {
   
   this.components = {};
   this.setType(unit_type);
+  this.world = world;
 
 };
 
@@ -23,12 +24,13 @@ Unit.prototype.setType = function(unit_type) {
     this.components.controllable = true;
     this.components.range = {};
     this.components.size = 2;
-    this.components.cityRadius = 1;
-    this.components.cityRadiusColor = "rgba(255,50,50, 0.4)";
-    this.components.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
     this.components.minimum_elevation = 0;
     this.components.maximum_elevation = 2; 
     this.components.self_action_become_unit = 'land-player';
+    this.setCitySize(1);
+    this.setCityColor();
+    this.setResources(0,0,0);
+    this.startGathering();
     break;
 
   case 'land-player':
@@ -132,11 +134,48 @@ Unit.prototype.increaseComponent = function(label, value) {
 
 
 
+///////////////////////////////////////////
+//
+//            CITY DISPLAY COMPONENT
+//
+////////////////////////////////////
+
+
+Unit.prototype.setCityColor = function() {
+  this.components.cityRadiusColor = "rgba(255,50,50, 0.4)";
+  this.components.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
+}
 
 
 
 
 
+
+
+/////////////////////////////////////////
+//
+//               RESOURCE GATHERING COMPONENT
+//
+/////////////////////////////////////////////
+
+
+Unit.prototype.setCitySize = function(size) {
+    this.components.cityRadius = size;
+}
+
+Unit.prototype.setResources = function(food,wood,stone) {
+  this.components.resources = {'food':food, 'wood':wood, 'stone':stone};
+}
+
+Unit.prototype.startGathering = function() {
+  var self = this; 
+  setInterval( this.gatherResources(self), 1000 );
+}
+
+Unit.prototype.gatherResources = function(unit) {
+  return function()
+    {unit.components.resources.food++};
+}
 
 
 
