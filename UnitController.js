@@ -90,22 +90,28 @@ UnitController.p.clickHex = function(hex) {
   }
 }
 
-writeResources = function(message) {
+writeMessage = function(message) {
   document.getElementById('city-resources').innerHTML = message;
+}
+writeResources = function(city) {
+  var message = "Food:".concat(city.components.resources.food)
+                 .concat(" Wood:").concat(city.components.resources.wood)
+                 .concat(" Stone:").concat(city.components.resources.stone);
+  writeMessage(message);
 }
 
 UnitController.p.unselectCity = function() {
   this.city_selected = undefined;
   clearInterval(this.stop_city_interval_number);
-  writeResources("");
+  writeMessage("");
 }
 
 UnitController.p.selectCity = function(city) {
   clearInterval(this.stop_city_interval_number);
   this.city_selected = city;
-  writeResources("Food:".concat(city.components.resources.food).concat(" Wood:1 Stone:0")); 
+  writeResources(city); 
   function update_function() { 
-    writeResources("Food:".concat(city.components.resources.food).concat(" Wood:1 Stone:0")); 
+    writeResources(city); 
   };
   this.stop_city_interval_number = setInterval(update_function, 1000);
 }
