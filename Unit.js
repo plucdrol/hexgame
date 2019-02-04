@@ -19,14 +19,13 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.setMovement(0);
+    this.setMovement(4);
     this.components.color = 'white';
     this.components.controllable = true;
     this.components.range = {};
     this.components.size = 2;
-    this.components.minimum_elevation = 0;
-    this.components.maximum_elevation = 2; 
-    this.components.self_action_become_unit = 'land-player';
+    this.components.minimum_elevation = 2;
+    this.components.maximum_elevation = 13; 
     this.components.ground_action_create_unit = 'land-player';
     this.setCitySize(1);
     this.setCityColor();
@@ -41,7 +40,10 @@ Unit.prototype.setType = function(unit_type) {
     this.components.size = 2;
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
-    this.components.self_action_become_unit = 'camp';
+    this.components.self_action_become_unit = {type:'camp', resource:'wood', cost:10};
+    this.setResources(0,0,0);
+    this.setCitySize(0);
+    this.setCityColor();
     break;
   
   case 'water-player':
@@ -55,7 +57,9 @@ Unit.prototype.setType = function(unit_type) {
     this.components.ground_action_change_terrain = {};
     this.components.ground_action_change_terrain.affectable_value = 2;
     this.components.ground_action_change_terrain.new_value = 1;
-    this.components.self_action_become_unit = 'camp';
+    this.setResources(0,0,0);
+    this.setCitySize(0);
+    this.setCityColor();
     break;
 
 

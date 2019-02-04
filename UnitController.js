@@ -246,20 +246,17 @@ UnitController.p.commandUnit = function(hex) {
 
 //Move the unit from one hex to another hex
 UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
+  console.log('command unit to ground');
     //get the unit which is moving
     var unit = this.unitAtPosition(current_hex);
 
     //if the unit has an action to create more units
     if (unit.hasComponent('ground_action_create_unit')) {
-      var new_unit_type = unit.components.ground_action_create_unit.type;
-      this.units.create(new_hex, new_unit_type);
-      
-      //reduce the population of the unit by one
-      if (unit.components.population > 1) {  
-        unit.components.population -= 1;
-      } else {
-        this.units.remove(current_hex);
-        this.selectHex(new_hex);
+      console.log('create units');
+      var new_unit_type = unit.components.ground_action_create_unit;
+      if (unit.hasComponent('resources') && unit.components.resources.food >= 30) {
+        unit.components.resources.food -= 30;
+        this.units.set(new_hex, new Unit(new_unit_type));
       }
 
     //if the unit has an action to change the terrain
@@ -323,26 +320,33 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
 
   //Become another unit if the action is defined
   if (active_unit.hasComponent('self_action_become_unit')) {
-    var type = active_unit.getComponent('self_action_become_unit');
+    var type = active_unit.getComponent('self_action_become_unit').type;
+    var cost = active_unit.getComponent('self_action_become_unit').cost;
+    var cost_resource = active_unit.getComponent('self_action_become_unit').resource;
+
+    if (active_unit.components.resources[cost_resource] > cost) {
+      active_unit.components.resources[cost_resource] -= cost;
+
     
-    //keep resources component
-    if (active_unit.components.resources != undefined) {
-      var resources = active_unit.components.resources;
-    }
-    this.units.remove(unit_hex);
-    this.units.set(unit_hex, new Unit(type) );
+      //keep resources component
+      if (active_unit.components.resources != undefined) {
+        var resources = active_unit.components.resources;
+      }
+      this.units.remove(unit_hex);
+      this.units.set(unit_hex, new Unit(type) );
 
-    new_unit = this.unitAtPosition(unit_hex);
+      new_unit = this.unitAtPosition(unit_hex);
 
 
-    if (new_unit.hasComponent('range')) {
-      new_unit.findRange(this.map, unit_hex);
-    }  
-    if (new_unit.hasComponent('resources')) {
-      this.selectCity(new_unit); 
-    }  
-    if (resources != undefined) {
-      new_unit.components.resources = resources;
+      if (new_unit.hasComponent('range')) {
+        new_unit.findRange(this.map, unit_hex);
+      }  
+      if (new_unit.hasComponent('resources')) {
+        this.selectCity(new_unit); 
+      }  
+      if (resources != undefined) {
+        new_unit.components.resources = resources;
+      }
     }
 
 
