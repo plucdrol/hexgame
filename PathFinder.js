@@ -206,12 +206,9 @@ var PathFinder = (function() {
   function targetPathfind(map, origin, target, pathfinder){
      
     let max_cost = 200;
-    console.log(rangeFinder);
     let visited = pathfinder(map, origin, max_cost);
 
-    console.log(visited);
     if (!hasCell(visited,target)) {
-      console.log('target is out of range');
       return false;
     } else {
       return visited;

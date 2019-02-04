@@ -70,7 +70,6 @@ HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
 HexRenderer.p.drawRange = function(range) {
 
   let hex_array = [];
-  console.log(range.values());
   for (let hex of range.values().map(
     function(cell){return cell.coord;}
     )) {

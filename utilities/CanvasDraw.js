@@ -74,7 +74,6 @@ function CanvasDraw (canvas) {
 
       //for complex polygon this breaks the cycle into smaller cycles
       if (points[i].breakLine != undefined) { 
-        console.log('break line');
         line.closePath();
         next = "move";
       } 

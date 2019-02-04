@@ -179,7 +179,6 @@ UnitController.p.clickWithUnitSelected = function(hex) {
   var unit_selected = this.getUnitSelected();
   if (!unit_selected.hasComponent('range') ) {
     this.clickOutsideUnitRange(hex);
-    console.log('outside range');
     return 0;
   }
 
@@ -344,7 +343,6 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
     }  
     if (resources != undefined) {
       new_unit.components.resources = resources;
-      console.log(resources.wood);
     }
 
 

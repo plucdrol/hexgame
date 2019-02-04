@@ -101,7 +101,6 @@ TileGenerator.prototype.generateTile = function(x,y) {
 function RandomTileGenerator() {
   TileGenerator.call(this);
   var range = 10;
-  console.log('new random tile generator');
 
   this.generateTile = function(x,y) {
     var value = 1+1*Math.floor((range+2)*Math.random());
