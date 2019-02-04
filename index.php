@@ -88,7 +88,7 @@
 	<body>
 			<div id='city-bar'>
 			<span id='city-name'>City</span>
-			<span id='city-resources'> Food:3 Wood:5 Stone:0</span>
+			<span id='city-resources'></span>
 		</div>
 		<div style="float:left;">
 			<canvas id="mycanvas" width="600" height="400">
