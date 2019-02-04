@@ -27,6 +27,7 @@ Unit.prototype.setType = function(unit_type) {
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
     this.components.ground_action_create_unit = 'land-player';
+    this.components.self_action_grow = 5;
     this.setCitySize(1);
     this.setCityColor();
     this.setResources(0,0,0);

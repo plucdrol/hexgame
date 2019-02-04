@@ -318,6 +318,16 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
   //get the unit
   var active_unit = this.unitAtPosition(unit_hex);
 
+  if (active_unit.hasComponent('self_action_grow')) {
+
+    //this little pieces of code shows how the components are getting unwieldly
+    if (active_unit.components.resources.wood >= active_unit.components.cityRadius*active_unit.components.self_action_grow) {
+      active_unit.components.resources.wood -= active_unit.components.cityRadius*active_unit.components.self_action_grow;
+      active_unit.components.cityRadius++;
+    }
+
+  }
+
   //Become another unit if the action is defined
   if (active_unit.hasComponent('self_action_become_unit')) {
     var type = active_unit.getComponent('self_action_become_unit').type;
