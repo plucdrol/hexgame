@@ -15,7 +15,9 @@
 function UnitController(map, units) {
   this.map = map;
   this.hex_selected = undefined;
+  this.city_selected = undefined;
   this.units = units;
+  this.stop_city_interval_number = 0;
 
 }
 //-------1---------2---------3---------4---------5---------6--------
@@ -88,9 +90,32 @@ UnitController.p.clickHex = function(hex) {
   }
 }
 
+writeResources = function(message) {
+  document.getElementById('city-resources').innerHTML = message;
+}
+
+UnitController.p.unselectCity = function() {
+  this.city_selected = undefined;
+  clearInterval(this.stop_city_interval_number);
+  writeResources("");
+}
+
+UnitController.p.selectCity = function(city) {
+  clearInterval(this.stop_city_interval_number);
+  this.city_selected = city;
+  writeResources("Food:".concat(city.components.resources.food).concat(" Wood:1 Stone:0")); 
+  function update_function() { 
+    writeResources("Food:".concat(city.components.resources.food).concat(" Wood:1 Stone:0")); 
+  };
+  this.stop_city_interval_number = setInterval(update_function, 1000);
+}
+
 UnitController.p.selectHex = function(hex) {
+
+
   if (hex instanceof Hex) {
     if (this.unitAtPosition(hex)) {
+
 
       this.hex_selected = hex;
       //look if there is a unit
@@ -101,10 +126,14 @@ UnitController.p.selectHex = function(hex) {
         if (potential_unit.hasComponent('range')) {
           potential_unit.findRange(this.map, hex);
         }
+        if (potential_unit.hasComponent('resources')) {
+          this.selectCity(potential_unit);
+        }
       }
     } 
   } else {
     this.hex_selected = undefined;
+      this.unselectCity();
   }
 }
 
@@ -297,6 +326,9 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
     new_unit = this.unitAtPosition(unit_hex);
     if (new_unit.hasComponent('range')) {
       new_unit.findRange(this.map, unit_hex);
+    }  
+    if (new_unit.hasComponent('resources')) {
+      this.selectCity(new_unit); 
     }  
   } else {
     this.selectHex('none');
