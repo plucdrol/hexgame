@@ -48,7 +48,7 @@ TileRenderer2D.prototype.drawTile = function(hex,tile) {
   var style = new RenderStyle();  
 
   //analyze tile
-  var height = Math.floor(tile.getComponent('elevation'));
+  var height = Math.floor(tile.elevation);
   style.fill_color = this.mapColors(height);
 
   //draw ground
@@ -61,7 +61,7 @@ TileRenderer2D.prototype.drawTile = function(hex,tile) {
   var position = this.hex_renderer.hexToPoint(hex);
 
   //wind arrows
-  var wind_direction = tile.getComponent('wind');
+  var wind_direction = tile.wind;
   var charcode = getWindArrowCharacter( wind_direction );
   var arrow_style = new RenderStyle();
   arrow_style.font_size = 30;

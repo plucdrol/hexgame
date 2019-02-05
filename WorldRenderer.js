@@ -102,8 +102,8 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   position = position.offset(0,-height);
  
   var unit_style = new RenderStyle();
-  unit_style.fill_color = unit.getComponent('color');
-  let size = 10*unit.getComponent('size');
+  unit_style.fill_color = unit.color;
+  let size = 10*unit.size;
   this.hex_renderer.renderer.drawDot(position, size, unit_style);
   
   if (unit.population != undefined) {
@@ -121,8 +121,8 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 WorldRenderer.p.drawCityRadius = function(hex, unit) {
   
   var radius_style = new RenderStyle();
-  radius_style.fill_color = unit.getComponent('cityRadiusColor');
-  radius_style.line_color = unit.getComponent('cityRadiusLineColor');
+  radius_style.fill_color = unit.cityRadiusColor;
+  radius_style.line_color = unit.cityRadiusLineColor;
 
   let radius_array = Hex.circle(hex, unit.cityRadius);
   this.hex_renderer.drawHexes(radius_array, radius_style);
