@@ -92,7 +92,7 @@ World.prototype.generateResources = function(world_map) {
       continue;
     }
 
-    switch (terrain.components.elevation) {
+    switch (terrain.elevation) {
       case 1: //coasts
         resources.set(hex, new Unit('fish') );
         break;
@@ -131,16 +131,16 @@ World.prototype.gatherCityResources = function(world) {
       let unit = world.units.getValue(unit_hex);
       if (unit.hasComponent('resources') && unit.hasComponent('cityRadius')) {
         //get the tiles in its radius
-        let collection_hexes = Hex.circle(unit_hex,unit.components.cityRadius);
+        let collection_hexes = Hex.circle(unit_hex,unit.cityRadius);
         //for each tile in that array
 
         for (let collection_hex of collection_hexes) {
           //add the resources to the city
           if (world.resources.containsHex(collection_hex)) {
             let resource = world.resources.getValue(collection_hex);
-            let resource_type = resource.components.resource_type;
-            if (unit.components.resources[resource_type] < unit.components.capacity[resource_type]) {
-              unit.components.resources[resource_type] += resource.components.resource_value;
+            let resource_type = resource.resource_type;
+            if (unit.resources[resource_type] < unit.capacity[resource_type]) {
+              unit.resources[resource_type] += resource.resource_value;
             }
           }
         }

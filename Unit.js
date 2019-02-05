@@ -6,28 +6,26 @@
 
 function Unit(unit_type, world=null) {
   
-  this.components = {};
   this.setType(unit_type);
   this.world = world;
 
 };
 
 Unit.prototype.setType = function(unit_type) {
-  this.components = {};
   this.type = unit_type;
 
   switch (unit_type) {
 
   case 'camp':
     this.setMovement(4);
-    this.components.color = 'white';
-    this.components.controllable = true;
-    this.components.range = {};
-    this.components.size = 2;
-    this.components.minimum_elevation = 2;
-    this.components.maximum_elevation = 13; 
-    this.components.ground_action_create_unit = 'land-player';
-    this.components.self_action_grow = 5;
+    this.color = 'white';
+    this.controllable = true;
+    this.range = {};
+    this.size = 2;
+    this.minimum_elevation = 2;
+    this.maximum_elevation = 13; 
+    this.ground_action_create_unit = 'land-player';
+    this.self_action_grow = 5;
     this.setCitySize(1);
     this.setCityColor();
     this.setResources(0,0,0);
@@ -36,13 +34,13 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'land-player':
     this.setMovement(12);
-    this.components.color = 'blue';
-    this.components.controllable = true;
-    this.components.range = {};
-    this.components.size = 2;
-    this.components.minimum_elevation = 2;
-    this.components.maximum_elevation = 13; 
-    this.components.self_action_become_unit = {type:'camp', resource:'wood', cost:10};
+    this.color = 'blue';
+    this.controllable = true;
+    this.range = {};
+    this.size = 2;
+    this.minimum_elevation = 2;
+    this.maximum_elevation = 13; 
+    this.self_action_become_unit = {type:'camp', resource:'wood', cost:10};
     this.setResources(5,0,0);
     this.setCapacity(5,10,5);
     this.setCitySize(0);
@@ -52,15 +50,15 @@ Unit.prototype.setType = function(unit_type) {
   
   case 'water-player':
     this.setMovement(16);
-    this.components.color = 'white';
-    this.components.controllable = true;
-    this.components.range = {};
-    this.components.size = 2;
-    this.components.minimum_elevation = 0;
-    this.components.maximum_elevation = 2; 
-    this.components.ground_action_change_terrain = {};
-    this.components.ground_action_change_terrain.affectable_value = 2;
-    this.components.ground_action_change_terrain.new_value = 1;
+    this.color = 'white';
+    this.controllable = true;
+    this.range = {};
+    this.size = 2;
+    this.minimum_elevation = 0;
+    this.maximum_elevation = 2; 
+    this.ground_action_change_terrain = {};
+    this.ground_action_change_terrain.affectable_value = 2;
+    this.ground_action_change_terrain.new_value = 1;
     this.setResources(0,0,0);
     this.setCitySize(0);
     this.setCityColor();
@@ -69,63 +67,65 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'fish':
     this.setMovement(0);
-    this.components.color = 'lightblue';
-    this.components.size = 1;
-    this.components.resource_type = 'food';
-    this.components.resource_value = 2;
+    this.color = 'lightblue';
+    this.size = 1;
+    this.resource_type = 'food';
+    this.resource_value = 2;
     break;
   case 'food':
     this.setMovement(0);
-    this.components.color = 'yellow';
-    this.components.size = 1;
-    this.components.resource_type = 'food';
-    this.components.resource_value = 1;
+    this.color = 'yellow';
+    this.size = 1;
+    this.resource_type = 'food';
+    this.resource_value = 1;
     break;
   case 'wood':
     this.setMovement(0);
-    this.components.color = 'brown';
-    this.components.size = 1;
-    this.components.resource_type = 'wood';
-    this.components.resource_value = 1;
+    this.color = 'brown';
+    this.size = 1;
+    this.resource_type = 'wood';
+    this.resource_value = 1;
     break;
   case 'stone':
     this.setMovement(0);
-    this.components.color = 'grey';
-    this.components.size = 1;
-    this.components.resource_type = 'stone';
-    this.components.resource_value = 1;
+    this.color = 'grey';
+    this.size = 1;
+    this.resource_type = 'stone';
+    this.resource_value = 1;
     break;
 
   case 'terrain':
-    this.components.elevation = 0;
-    this.components.wind = 0;
+    this.elevation = 0;
+    this.wind = 0;
     break;
   default:
-    this.components.size = 2;
+    this.size = 2;
     this.setMovement(0);
-    this.components.color = 'yellow';
+    this.color = 'yellow';
     break;
 }
 }
 
 Unit.prototype.hasComponent = function(component_name) {
-  if (this.components.hasOwnProperty(component_name)) {
+  if (this.hasOwnProperty(component_name)) {
     return true;
   }
   return false;
 }
 Unit.prototype.getComponent = function(component_name) {
   if (this.hasComponent(component_name)) {
-    return this.components[component_name];
+    return this[component_name];
+  } else {
+    return false;
   }
 }
 
 Unit.prototype.setComponent = function(label, value) {
-  this.components[label] = value;  
+  this[label] = value;  
 }
 Unit.prototype.increaseComponent = function(label, value) {
   if (this.hasComponent(label)){
-    this.components[label] += value;
+    this[label] += value;
   }
 }
 
@@ -158,8 +158,8 @@ Unit.prototype.increaseComponent = function(label, value) {
 
 
 Unit.prototype.setCityColor = function() {
-  this.components.cityRadiusColor = "rgba(255,50,50, 0.4)";
-  this.components.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
+  this.cityRadiusColor = "rgba(255,50,50, 0.4)";
+  this.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
 }
 
 
@@ -176,14 +176,14 @@ Unit.prototype.setCityColor = function() {
 
 
 Unit.prototype.setCitySize = function(size) {
-    this.components.cityRadius = size;
+    this.cityRadius = size;
 }
 
 Unit.prototype.setResources = function(food,wood,stone) {
-  this.components.resources = {'food':food, 'wood':wood, 'stone':stone};
+  this.resources = {'food':food, 'wood':wood, 'stone':stone};
 }
 Unit.prototype.setCapacity = function(food,wood,stone) {
-  this.components.capacity = {'food':food, 'wood':wood, 'stone':stone};
+  this.capacity = {'food':food, 'wood':wood, 'stone':stone};
 }
 
 
@@ -206,7 +206,7 @@ Unit.prototype.setMovement = function(movement) {
     this.move = function(map,current_hex,next_hex) {
       
       var movement_cost = this.costFind(map, current_hex, next_hex);
-      this.components.movement_left -= movement_cost;
+      this.movement_left -= movement_cost;
     }
   }
 

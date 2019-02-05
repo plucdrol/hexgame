@@ -106,14 +106,14 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   let size = 10*unit.getComponent('size');
   this.hex_renderer.renderer.drawDot(position, size, unit_style);
   
-  if (unit.components.population != undefined) {
+  if (unit.population != undefined) {
     let text_style = new RenderStyle();
     text_style.font_size = 25;
-    let text = unit.components.population;      
+    let text = unit.population;      
     this.hex_renderer.renderer.drawText(text, position, text_style);
   }
 
-  if (unit.components.cityRadius != undefined) {
+  if (unit.cityRadius != undefined) {
     this.drawCityRadius(hex, unit);
   }
 };
@@ -124,7 +124,7 @@ WorldRenderer.p.drawCityRadius = function(hex, unit) {
   radius_style.fill_color = unit.getComponent('cityRadiusColor');
   radius_style.line_color = unit.getComponent('cityRadiusLineColor');
 
-  let radius_array = Hex.circle(hex, unit.components.cityRadius);
+  let radius_array = Hex.circle(hex, unit.cityRadius);
   this.hex_renderer.drawHexes(radius_array, radius_style);
 }
 

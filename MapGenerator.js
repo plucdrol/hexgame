@@ -27,7 +27,7 @@ MapGenerator = function(map_type) {
   }
   this.getElevation = function(hex) {
     if (this.map.containsHex(hex)) {
-      return this.map.getValue(hex).components.elevation;
+      return this.map.getValue(hex).elevation;
     } else {
       return 0;
     }
@@ -36,11 +36,11 @@ MapGenerator = function(map_type) {
 
     var current_tile = this.map.getValue(hex);
     if (current_tile instanceof Unit) {
-      current_tile.components.wind = new_value;  
+      current_tile.wind = new_value;  
     } else {
       //get value
       var new_tile = new Unit('terrain');
-      new_tile.components.wind = new_value;
+      new_tile.wind = new_value;
       this.map.set(hex,new_tile)
     }
   }
@@ -48,11 +48,11 @@ MapGenerator = function(map_type) {
     
     var current_tile = this.map.getValue(hex);
     if (current_tile instanceof Unit) {
-      current_tile.components.elevation = new_value;  
+      current_tile.elevation = new_value;  
     } else {
       //get value
       var new_tile = new Unit('terrain');
-      new_tile.components.elevation = new_value;
+      new_tile.elevation = new_value;
       this.map.set(hex,new_tile)
 
     }
@@ -63,11 +63,11 @@ MapGenerator = function(map_type) {
     
     var current_tile = this.map.getValue(hex);
     if (current_tile instanceof Unit) {
-      current_tile.components[variable] = new_value;  
+      current_tile[variable] = new_value;  
     } else {
       //get value
       var new_tile = new Unit('terrain');
-      new_tile.components[variable] = new_value;
+      new_tile[variable] = new_value;
       this.map.set(hex,new_tile)
 
     }

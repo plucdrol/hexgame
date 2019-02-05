@@ -104,9 +104,9 @@ writeMessage = function(message) {
   document.getElementById('city-resources').innerHTML = message;
 }
 writeResources = function(city) {
-  var message = "Food:".concat(city.components.resources.food).concat("/").concat(city.components.capacity.food)
-                 .concat(" Wood:").concat(city.components.resources.wood).concat("/").concat(city.components.capacity.wood)
-                 .concat(" Stone:").concat(city.components.resources.stone).concat("/").concat(city.components.capacity.stone);
+  var message = "Food:".concat(city.resources.food).concat("/").concat(city.capacity.food)
+                 .concat(" Wood:").concat(city.resources.wood).concat("/").concat(city.capacity.wood)
+                 .concat(" Stone:").concat(city.resources.stone).concat("/").concat(city.capacity.stone);
   writeMessage(message);
 }
 
@@ -275,22 +275,22 @@ UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
   //if the unit has an action to create more units
   if (unit.hasComponent('ground_action_create_unit')) {
     console.log('create units');
-    var new_unit_type = unit.components.ground_action_create_unit;
-    if (unit.hasComponent('resources') && unit.components.resources.food >= 30) {
-      unit.components.resources.food -= 30;
+    var new_unit_type = unit.ground_action_create_unit;
+    if (unit.hasComponent('resources') && unit.resources.food >= 30) {
+      unit.resources.food -= 30;
       this.units.set(new_hex, new Unit(new_unit_type));
       this.selectHex(new_hex);
     }
 
   //if the unit has an action to change the terrain
   } else if (unit.hasComponent('ground_action_change_terrain')) {
-    var current_terrain_value = this.map.getValue(new_hex).components.elevation;
-    var new_terrain_value = unit.components.ground_action_change_terrain.new_value;
-    var affectable_terrain_value = unit.components.ground_action_change_terrain.affectable_value;
+    var current_terrain_value = this.map.getValue(new_hex).elevation;
+    var new_terrain_value = unit.ground_action_change_terrain.new_value;
+    var affectable_terrain_value = unit.ground_action_change_terrain.affectable_value;
 
     if (current_terrain_value == affectable_terrain_value) {
       let tile = this.map.getValue(new_hex);
-      tile.components.elevation = new_terrain_value;
+      tile.elevation = new_terrain_value;
     } else {
 
       //move unit to the new position
@@ -304,8 +304,8 @@ UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
   } else {
     //move unit to the new position if you have enough food
     if (unit.hasComponent('resources') ) {
-      if (unit.components.resources.food >= 1) { 
-        unit.components.resources.food -= 1;
+      if (unit.resources.food >= 1) { 
+        unit.resources.food -= 1;
         this.moveUnit(current_hex,new_hex);
         this.selectHex(new_hex);
       } else {
@@ -351,12 +351,12 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
   if (active_unit.hasComponent('self_action_grow')) {
 
     //this little pieces of code shows how the components are getting unwieldly
-    if (active_unit.components.resources.wood >= 6*active_unit.components.cityRadius*active_unit.components.self_action_grow) {
-      active_unit.components.resources.wood -= 6*active_unit.components.cityRadius*active_unit.components.self_action_grow;
-      active_unit.components.cityRadius++;
-      active_unit.components.capacity.food *= 2;
-      active_unit.components.capacity.wood *= 2;
-      active_unit.components.capacity.stone *= 2;
+    if (active_unit.resources.wood >= 6*active_unit.cityRadius*active_unit.self_action_grow) {
+      active_unit.resources.wood -= 6*active_unit.cityRadius*active_unit.self_action_grow;
+      active_unit.cityRadius++;
+      active_unit.capacity.food *= 2;
+      active_unit.capacity.wood *= 2;
+      active_unit.capacity.stone *= 2;
     }
 
   } 
@@ -367,13 +367,13 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
     var cost = active_unit.getComponent('self_action_become_unit').cost;
     var cost_resource = active_unit.getComponent('self_action_become_unit').resource;
 
-    if (active_unit.components.resources[cost_resource] >= cost) {
-      active_unit.components.resources[cost_resource] -= cost;
+    if (active_unit.resources[cost_resource] >= cost) {
+      active_unit.resources[cost_resource] -= cost;
 
     
       //keep resources component
-      if (active_unit.components.resources != undefined) {
-        var resources = active_unit.components.resources;
+      if (active_unit.resources != undefined) {
+        var resources = active_unit.resources;
       }
       this.units.remove(unit_hex);
       this.units.set(unit_hex, new Unit(type) );
@@ -388,7 +388,7 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
         this.selectCity(new_unit); 
       }  
       if (resources != undefined) {
-        new_unit.components.resources = resources;
+        new_unit.resources = resources;
       }
     }
 
