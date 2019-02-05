@@ -55,11 +55,8 @@ UnitController.p.createUnit = function(hex, unit_type) {
 
 //returns the Unit at position Hex. only a single unit can be on each hex
 UnitController.p.unitAtPosition = function(hex) {
-  if (this.units.containsHex(hex)) {
-    return this.units.getValue(hex);
-  } else {
-    return false;
-  }
+  //This function returns false if there is no unit there
+  return this.units.get(hex);
 }
 
 UnitController.p.getUnit = UnitController.p.unitAtPosition;
@@ -131,12 +128,12 @@ UnitController.p.selectHex = function(hex) {
 
 
   if (hex instanceof Hex) {
-    if (this.unitAtPosition(hex)) {
+    if (this.units.get(hex)) {
 
 
       this.hex_selected = hex;
       //look if there is a unit
-      var potential_unit = this.unitAtPosition(hex);
+      var potential_unit = this.units.get(hex);
 
       if (potential_unit instanceof Unit) { 
         //if the unit exists, find its range
@@ -169,7 +166,7 @@ UnitController.p.aUnitIsSelected = function() {
   if (!this.aHexIsSelected()) 
     return false;
 
-  var maybe_unit = this.unitAtPosition(this.getHexSelected());
+  var maybe_unit = this.units.get(this.getHexSelected());
   if (maybe_unit) {
     return (maybe_unit instanceof Unit);
   } else {
@@ -178,7 +175,7 @@ UnitController.p.aUnitIsSelected = function() {
 }
 UnitController.p.getUnitSelected = function() {
   if (this.aUnitIsSelected()) {
-    return this.unitAtPosition(this.getHexSelected());
+    return this.units.get(this.getHexSelected());
   }
 }
 UnitController.p.clickWithNoSelection = function(hex) {
@@ -208,16 +205,20 @@ UnitController.p.clickWithUnitSelected = function(hex) {
 UnitController.p.clickInsideUnitRange = function(hex) {
   //if you are reclicking the unit
   if ( Hex.equals(this.getHexSelected(), hex)) {
-    this.reClickUnit();
+    this.reClickUnit(this.getUnitSelected());
+    this.selectHex(hex);
   
   //if you are clicking somewhere else
   } else {
-    this.commandUnit(hex);
+    var command = new UnitCommand(this.map, this.units);
+    command.commandUnit(this.getUnitSelected(), this.getHexSelected(), hex);
+    this.selectHex(hex);
   }
 }
 
 UnitController.p.reClickUnit = function() {
-  this.commandUnitToSelf(this.getHexSelected());
+  var command = new UnitCommand(this.map, this.units);
+  command.commandUnitToSelf(this.getUnitSelected(),this.getHexSelected());
 }
 
 UnitController.p.clickOutsideUnitRange = function(hex) {
@@ -248,144 +249,132 @@ UnitController.p.clickOutsideUnitRange = function(hex) {
 
 
 
-//Unit commands should be moved into UnitCommand class
+//Unit commands should be moved into UnitController class
 /////////////////////////////////////////////////////////
                   // UNIT COMMAND //
 /////////////////////////////////////////////////////////
 
-UnitController.p.commandUnit = function(hex) {
-  var unit_there = this.unitAtPosition(hex);
+
+function UnitCommand(map, units) {
+  this.map = map;
+  this.units = units;
+
+}
+UnitCommand.p = UnitCommand.prototype;
+
+UnitCommand.p.commandUnit = function(unit, hex, new_hex) {
+  var unit_there = this.units.get(new_hex);
 
   //Do the unit's action if there is something there
   if (unit_there) {
-    this.commandUnitToOtherUnit(this.getHexSelected(),hex);
+    this.commandUnitToOtherUnit(unit, hex, new_hex);
   
   //Move the unit there if there is nothing
   } else {  
-    this.commandUnitToGround(this.getHexSelected(),hex);
+
+    this.commandUnitToGround(unit, hex, new_hex);
+
   }
 }
 
 //Move the unit from one hex to another hex
-UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
-  console.log('command unit to ground');
-  //get the unit which is moving
-  var unit = this.unitAtPosition(current_hex);
+UnitCommand.p.commandUnitToGround = function(unit, hex, new_hex) {
 
   //if the unit has an action to create more units
   if (unit.hasComponent('ground_action_create_unit')) {
-    console.log('create units');
-    var new_unit_type = unit.ground_action_create_unit;
-    if (unit.hasComponent('resources') && unit.resources.food >= 30) {
-      unit.resources.food -= 30;
-      this.units.set(new_hex, new Unit(new_unit_type));
-      this.selectHex(new_hex);
-    }
+    this.groundActionCreateUnit(unit, new_hex);
 
   //if the unit has an action to change the terrain
   } else if (unit.hasComponent('ground_action_change_terrain')) {
-    var current_terrain_value = this.map.getValue(new_hex).elevation;
-    var new_terrain_value = unit.ground_action_change_terrain.new_value;
-    var affectable_terrain_value = unit.ground_action_change_terrain.affectable_value;
-
-    if (current_terrain_value == affectable_terrain_value) {
-      let tile = this.map.getValue(new_hex);
-      tile.elevation = new_terrain_value;
-    } else {
-
-      //move unit to the new position
-      this.moveUnit(current_hex,new_hex);
-      this.selectHex(new_hex);
-    }
-
-
+    this.groundActionChangeTerrain(unit, new_hex);
 
   //Move player if unit is a player
   } else {
-    //move unit to the new position if you have enough food
-    if (unit.hasComponent('resources') ) {
-      if (unit.resources.food >= 1) { 
-        unit.resources.food -= 1;
-        this.moveUnit(current_hex,new_hex);
-        this.selectHex(new_hex);
-      } else {
-        this.selectNothing();
-        this.units.remove(current_hex);
-      }
+    this.groundActionMoveUnit(unit, hex, new_hex);
+  }
+}
+
+UnitCommand.p.groundActionCreateUnit = function(unit, new_hex) {
+  var new_unit_type = unit.ground_action_create_unit;
+  if (unit.hasComponent('resources') && unit.resources.food >= 30) {
+    unit.resources.food -= 30;
+    this.units.set(new_hex, new Unit(new_unit_type));
+  }
+}
+
+UnitCommand.p.groundActionChangeTerrain = function(unit, new_hex) {
+  var current_terrain_value = this.map.getValue(new_hex).elevation;
+  var new_terrain_value = unit.ground_action_change_terrain.new_value;
+  var affectable_terrain_value = unit.ground_action_change_terrain.affectable_value;
+
+  if (current_terrain_value == affectable_terrain_value) {
+    let tile = this.map.getValue(new_hex);
+    tile.elevation = new_terrain_value;
+  } else {
+
+    //move unit to the new position
+    this.moveUnit(current_hex,new_hex);
+  }
+}
+
+UnitCommand.p.groundActionMoveUnit = function(unit, current_hex, new_hex) {
+  //move unit to the new position if you have enough food
+  if (unit.hasComponent('resources') ) {
+    if (unit.resources.food >= 1) { 
+      unit.resources.food -= 1;
+      this.moveUnit(current_hex,new_hex);
+    } else {
+      this.units.remove(current_hex);
     }
   }
 }
 
 //Does the current_hex unit's action unto the new_hex unit
-UnitController.p.commandUnitToOtherUnit = function(current_hex,target_hex) {
+UnitCommand.p.commandUnitToOtherUnit = function(unit, current_hex,target_hex) {
 
   //get both units
-  var active_unit = this.unitAtPosition(current_hex);
-  var target_unit = this.unitAtPosition(target_hex);
+  var active_unit = this.units.get(current_hex);
+  var target_unit = this.units.get(target_hex);
 
-  //Eat the tree if it is a tree
-  if (active_unit.hasComponent('eats_food')) { 
-    if (target_unit.hasComponent('food_value')) {
-      this.units.remove(target_hex);
-      this.commandUnitToGround(current_hex,target_hex);
-      var full_movement = active_unit.getComponent('movement');
-      active_unit.setComponent('movement_left', full_movement);
-      active_unit.findRange(this.map,target_hex);
-      this.selectHex(target_hex);
-    }
-  }
-
-  //increase population if a hut eats a tree
-  if (active_unit.hasComponent('collects_ressources')) {
-    if (target_unit.hasComponent('food_value')) {
-      this.units.remove(target_hex);
-      active_unit.increaseComponent('population', 1);
-    }
-  }
 }
 
-UnitController.p.commandUnitToSelf = function(unit_hex) {
-  //get the unit
-  var active_unit = this.unitAtPosition(unit_hex);
+UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 
-  if (active_unit.hasComponent('self_action_grow')) {
+  if (unit.hasComponent('self_action_grow')) {
 
     //this little pieces of code shows how the components are getting unwieldly
-    if (active_unit.resources.wood >= 6*active_unit.cityRadius*active_unit.self_action_grow) {
-      active_unit.resources.wood -= 6*active_unit.cityRadius*active_unit.self_action_grow;
-      active_unit.cityRadius++;
-      active_unit.capacity.food *= 2;
-      active_unit.capacity.wood *= 2;
-      active_unit.capacity.stone *= 2;
+    if (unit.resources.wood >= 6*unit.cityRadius*unit.self_action_grow) {
+      unit.resources.wood -= 6*unit.cityRadius*unit.self_action_grow;
+      unit.cityRadius++;
+      unit.capacity.food *= 2;
+      unit.capacity.wood *= 2;
+      unit.capacity.stone *= 2;
     }
 
   } 
 
   //Become another unit if the action is defined
-  else if (active_unit.hasComponent('self_action_become_unit')) {
-    var type = active_unit.getComponent('self_action_become_unit').type;
-    var cost = active_unit.getComponent('self_action_become_unit').cost;
-    var cost_resource = active_unit.getComponent('self_action_become_unit').resource;
+  else if (unit.hasComponent('self_action_become_unit')) {
+    var type = unit.getComponent('self_action_become_unit').type;
+    var cost = unit.getComponent('self_action_become_unit').cost;
+    var cost_resource = unit.getComponent('self_action_become_unit').resource;
 
-    if (active_unit.resources[cost_resource] >= cost) {
-      active_unit.resources[cost_resource] -= cost;
+    if (unit.resources[cost_resource] >= cost) {
+      unit.resources[cost_resource] -= cost;
 
     
       //keep resources component
-      if (active_unit.resources != undefined) {
-        var resources = active_unit.resources;
+      if (unit.resources != undefined) {
+        var resources = unit.resources;
       }
-      this.units.remove(unit_hex);
-      this.units.set(unit_hex, new Unit(type) );
+      this.units.remove(hex);
+      this.units.set(hex, new Unit(type) );
 
-      new_unit = this.unitAtPosition(unit_hex);
+      new_unit = this.units.get(hex);
 
 
       if (new_unit.hasComponent('range')) {
-        new_unit.findRange(this.map, unit_hex);
-      }  
-      if (new_unit.hasComponent('resources')) {
-        this.selectCity(new_unit); 
+        new_unit.findRange(this.map, hex);
       }  
       if (resources != undefined) {
         new_unit.resources = resources;
@@ -399,9 +388,9 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
 
 }
 
-UnitController.p.moveUnit = function(current_hex,next_hex) {
+UnitCommand.p.moveUnit = function(current_hex,next_hex) {
   //calculate movements remaining
-  var the_unit = this.unitAtPosition(current_hex);
+  var the_unit = this.units.get(current_hex);
   var max_movement = the_unit.getComponent('movement_left');
   
   //find the path to destination
@@ -418,6 +407,6 @@ UnitController.p.moveUnit = function(current_hex,next_hex) {
   the_unit.setComponent('movement_left', max_movement);
   
   //update the map
-  this.units.set(next_hex, the_unit);
   this.units.remove(current_hex);
+  this.units.set(next_hex, the_unit);
 }
