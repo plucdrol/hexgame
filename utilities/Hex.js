@@ -566,8 +566,14 @@ HexMap.prototype.removeAll = function() {
 
 HexMap.prototype.getValue = function(hex) {
   var key = Hex.getKey(hex);
-  return this.values[key];
+  if (this.values[key] != undefined) {
+    return this.values[key];
+  } else {
+    return false;
+  }
 }
+HexMap.prototype.get = HexMap.prototype.getValue;
+
 HexMap.prototype.getHex = function(key) {
 
   if (key === 0) {

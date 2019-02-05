@@ -74,7 +74,7 @@ World.prototype.getMapValue = function(hex) {
 }
 
 World.prototype.getUnit = function(hex) {
-  return this.units.getValue(hex);
+  return this.units.get(hex);
 }
 
 World.prototype.getResource = function(hex) {
@@ -128,22 +128,26 @@ World.prototype.gatherCityResources = function(world) {
     //For all units
     for (let unit_hex of world.units.getHexArray() )  {
       //if they are a city
-      let unit = world.units.getValue(unit_hex);
-      if (unit.hasComponent('resources') && unit.hasComponent('cityRadius')) {
-        //get the tiles in its radius
-        let collection_hexes = Hex.circle(unit_hex,unit.cityRadius);
-        //for each tile in that array
+      let unit = world.units.get(unit_hex);
+      if (!unit) 
+        continue;
+      if (!unit.hasComponent('resources') || !unit.hasComponent('cityRadius')) 
+        continue;
+      //get the tiles in its radius
+      let collection_hexes = Hex.circle(unit_hex,unit.cityRadius);
+      //for each tile in that array
 
-        for (let collection_hex of collection_hexes) {
-          //add the resources to the city
-          if (world.resources.containsHex(collection_hex)) {
-            let resource = world.resources.getValue(collection_hex);
-            let resource_type = resource.resource_type;
-            if (unit.resources[resource_type] < unit.capacity[resource_type]) {
-              unit.resources[resource_type] += resource.resource_value;
-            }
-          }
-        }
+      for (let collection_hex of collection_hexes) {
+        //add the resources to the city
+        if (!world.resources.containsHex(collection_hex)) 
+          continue;
+        let resource = world.resources.getValue(collection_hex);
+        let resource_type = resource.resource_type;
+        if (unit.resources[resource_type] >= unit.capacity[resource_type]) 
+          continue;
+        unit.resources[resource_type] += resource.resource_value;
+
+
       }
     }
   }
