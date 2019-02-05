@@ -66,44 +66,38 @@ Unit.prototype.setType = function(unit_type) {
 
 
   case 'fish':
-    this.setMovement(0);
     this.color = 'lightblue';
     this.size = 1;
     this.resource_type = 'food';
     this.resource_value = 2;
     break;
   case 'food':
-    this.setMovement(0);
     this.color = 'yellow';
     this.size = 1;
     this.resource_type = 'food';
     this.resource_value = 1;
     break;
   case 'wood':
-    this.setMovement(0);
     this.color = 'brown';
     this.size = 1;
     this.resource_type = 'wood';
     this.resource_value = 1;
     break;
   case 'stone':
-    this.setMovement(0);
     this.color = 'grey';
     this.size = 1;
     this.resource_type = 'stone';
     this.resource_value = 1;
     break;
-
   case 'terrain':
     this.elevation = 0;
     this.wind = 0;
     break;
   default:
     this.size = 2;
-    this.setMovement(0);
     this.color = 'yellow';
     break;
-}
+  }
 }
 
 Unit.prototype.hasComponent = function(component_name) {
