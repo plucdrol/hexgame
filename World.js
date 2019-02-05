@@ -138,7 +138,10 @@ World.prototype.gatherCityResources = function(world) {
           //add the resources to the city
           if (world.resources.containsHex(collection_hex)) {
             let resource = world.resources.getValue(collection_hex);
-            unit.components.resources[resource.components.resource_type] += resource.components.resource_value;
+            let resource_type = resource.components.resource_type;
+            if (unit.components.resources[resource_type] < unit.components.capacity[resource_type]) {
+              unit.components.resources[resource_type] += resource.components.resource_value;
+            }
           }
         }
       }

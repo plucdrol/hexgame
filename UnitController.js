@@ -74,9 +74,19 @@ UnitController.p.getUnit = UnitController.p.unitAtPosition;
 
 
 
+
+
+
+
+
+
+
+
+
+
 //Unit selection should be moved into UnitSelection class
 /////////////////////////////////////////////////////////
-                  // UNIT SELECTION //
+                  // UNIT CLICKING //
 /////////////////////////////////////////////////////////
 
 UnitController.p.clickHex = function(hex) {
@@ -94,13 +104,14 @@ writeMessage = function(message) {
   document.getElementById('city-resources').innerHTML = message;
 }
 writeResources = function(city) {
-  var message = "Food:".concat(city.components.resources.food)
-                 .concat(" Wood:").concat(city.components.resources.wood)
-                 .concat(" Stone:").concat(city.components.resources.stone);
+  var message = "Food:".concat(city.components.resources.food).concat("/").concat(city.components.capacity.food)
+                 .concat(" Wood:").concat(city.components.resources.wood).concat("/").concat(city.components.capacity.wood)
+                 .concat(" Stone:").concat(city.components.resources.stone).concat("/").concat(city.components.capacity.stone);
   writeMessage(message);
 }
 
-UnitController.p.unselectCity = function() {
+UnitController.p.selectNothing = function() {
+  this.hex_selected = undefined;
   this.city_selected = undefined;
   clearInterval(this.stop_city_interval_number);
   writeMessage("");
@@ -139,7 +150,7 @@ UnitController.p.selectHex = function(hex) {
     } 
   } else {
     this.hex_selected = undefined;
-      this.unselectCity();
+      this.selectNothing();
   }
 }
 
@@ -226,6 +237,17 @@ UnitController.p.clickOutsideUnitRange = function(hex) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 //Unit commands should be moved into UnitCommand class
 /////////////////////////////////////////////////////////
                   // UNIT COMMAND //
@@ -247,43 +269,51 @@ UnitController.p.commandUnit = function(hex) {
 //Move the unit from one hex to another hex
 UnitController.p.commandUnitToGround = function(current_hex,new_hex) {
   console.log('command unit to ground');
-    //get the unit which is moving
-    var unit = this.unitAtPosition(current_hex);
+  //get the unit which is moving
+  var unit = this.unitAtPosition(current_hex);
 
-    //if the unit has an action to create more units
-    if (unit.hasComponent('ground_action_create_unit')) {
-      console.log('create units');
-      var new_unit_type = unit.components.ground_action_create_unit;
-      if (unit.hasComponent('resources') && unit.components.resources.food >= 30) {
-        unit.components.resources.food -= 30;
-        this.units.set(new_hex, new Unit(new_unit_type));
-      }
-
-    //if the unit has an action to change the terrain
-    } else if (unit.hasComponent('ground_action_change_terrain')) {
-      var current_terrain_value = this.map.getValue(new_hex).components.elevation;
-      var new_terrain_value = unit.components.ground_action_change_terrain.new_value;
-      var affectable_terrain_value = unit.components.ground_action_change_terrain.affectable_value;
-
-      if (current_terrain_value == affectable_terrain_value) {
-        let tile = this.map.getValue(new_hex);
-        tile.components.elevation = new_terrain_value;
-      } else {
-
-        //move unit to the new position
-        this.moveUnit(current_hex,new_hex);
-        this.selectHex(new_hex);
-      }
-
-
-
-    //Move player if unit is a player
-    } else {
-      //move unit to the new position
-      this.moveUnit(current_hex,new_hex);
-
+  //if the unit has an action to create more units
+  if (unit.hasComponent('ground_action_create_unit')) {
+    console.log('create units');
+    var new_unit_type = unit.components.ground_action_create_unit;
+    if (unit.hasComponent('resources') && unit.components.resources.food >= 30) {
+      unit.components.resources.food -= 30;
+      this.units.set(new_hex, new Unit(new_unit_type));
       this.selectHex(new_hex);
     }
+
+  //if the unit has an action to change the terrain
+  } else if (unit.hasComponent('ground_action_change_terrain')) {
+    var current_terrain_value = this.map.getValue(new_hex).components.elevation;
+    var new_terrain_value = unit.components.ground_action_change_terrain.new_value;
+    var affectable_terrain_value = unit.components.ground_action_change_terrain.affectable_value;
+
+    if (current_terrain_value == affectable_terrain_value) {
+      let tile = this.map.getValue(new_hex);
+      tile.components.elevation = new_terrain_value;
+    } else {
+
+      //move unit to the new position
+      this.moveUnit(current_hex,new_hex);
+      this.selectHex(new_hex);
+    }
+
+
+
+  //Move player if unit is a player
+  } else {
+    //move unit to the new position if you have enough food
+    if (unit.hasComponent('resources') ) {
+      if (unit.components.resources.food >= 1) { 
+        unit.components.resources.food -= 1;
+        this.moveUnit(current_hex,new_hex);
+        this.selectHex(new_hex);
+      } else {
+        this.selectNothing();
+        this.units.remove(current_hex);
+      }
+    }
+  }
 }
 
 //Does the current_hex unit's action unto the new_hex unit
@@ -321,20 +351,23 @@ UnitController.p.commandUnitToSelf = function(unit_hex) {
   if (active_unit.hasComponent('self_action_grow')) {
 
     //this little pieces of code shows how the components are getting unwieldly
-    if (active_unit.components.resources.wood >= active_unit.components.cityRadius*active_unit.components.self_action_grow) {
-      active_unit.components.resources.wood -= active_unit.components.cityRadius*active_unit.components.self_action_grow;
+    if (active_unit.components.resources.wood >= 6*active_unit.components.cityRadius*active_unit.components.self_action_grow) {
+      active_unit.components.resources.wood -= 6*active_unit.components.cityRadius*active_unit.components.self_action_grow;
       active_unit.components.cityRadius++;
+      active_unit.components.capacity.food *= 2;
+      active_unit.components.capacity.wood *= 2;
+      active_unit.components.capacity.stone *= 2;
     }
 
-  }
+  } 
 
   //Become another unit if the action is defined
-  if (active_unit.hasComponent('self_action_become_unit')) {
+  else if (active_unit.hasComponent('self_action_become_unit')) {
     var type = active_unit.getComponent('self_action_become_unit').type;
     var cost = active_unit.getComponent('self_action_become_unit').cost;
     var cost_resource = active_unit.getComponent('self_action_become_unit').resource;
 
-    if (active_unit.components.resources[cost_resource] > cost) {
+    if (active_unit.components.resources[cost_resource] >= cost) {
       active_unit.components.resources[cost_resource] -= cost;
 
     

@@ -31,6 +31,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setCitySize(1);
     this.setCityColor();
     this.setResources(0,0,0);
+    this.setCapacity(30,30,30);
     break;
 
   case 'land-player':
@@ -42,9 +43,11 @@ Unit.prototype.setType = function(unit_type) {
     this.components.minimum_elevation = 2;
     this.components.maximum_elevation = 13; 
     this.components.self_action_become_unit = {type:'camp', resource:'wood', cost:10};
-    this.setResources(0,0,0);
+    this.setResources(5,0,0);
+    this.setCapacity(5,10,5);
     this.setCitySize(0);
     this.setCityColor();
+
     break;
   
   case 'water-player':
@@ -177,14 +180,11 @@ Unit.prototype.setCitySize = function(size) {
 }
 
 Unit.prototype.setResources = function(food,wood,stone) {
-  /*if (this.components.resources != undefined) {
-    food = this.components.resources.food;
-    wood = this.components.resources.wood;
-    stone = this.components.resources.stone;
-  }*/
   this.components.resources = {'food':food, 'wood':wood, 'stone':stone};
 }
-
+Unit.prototype.setCapacity = function(food,wood,stone) {
+  this.components.capacity = {'food':food, 'wood':wood, 'stone':stone};
+}
 
 
 
