@@ -336,15 +336,16 @@ UnitCommand.p.commandUnitToOtherUnit = function(unit, current_hex,target_hex) {
   var active_unit = this.units.get(current_hex);
   var target_unit = this.units.get(target_hex);
 
+  //nothing happens
+
 }
 
 UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 
   if (unit.hasComponent('self_action_grow')) {
 
-    //this little pieces of code shows how the components are getting unwieldly
-    if (unit.resources.wood >= 6*unit.cityRadius*unit.self_action_grow) {
-      unit.resources.wood -= 6*unit.cityRadius*unit.self_action_grow;
+    if (unit.resources.wood >= unit.getGrowCost() ) {
+      unit.resources.wood -= unit.getGrowCost();
       unit.cityRadius++;
       unit.capacity.food *= 2;
       unit.capacity.wood *= 2;
@@ -355,9 +356,9 @@ UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 
   //Become another unit if the action is defined
   else if (unit.hasComponent('self_action_become_unit')) {
-    var type = unit.getComponent('self_action_become_unit').type;
-    var cost = unit.getComponent('self_action_become_unit').cost;
-    var cost_resource = unit.getComponent('self_action_become_unit').resource;
+    var type = unit.self_action_become_unit.type;
+    var cost = unit.self_action_become_unit.cost;
+    var cost_resource = unit.self_action_become_unit.resource;
 
     if (unit.resources[cost_resource] >= cost) {
       unit.resources[cost_resource] -= cost;
@@ -391,7 +392,7 @@ UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 UnitCommand.p.moveUnit = function(current_hex,next_hex) {
   //calculate movements remaining
   var the_unit = this.units.get(current_hex);
-  var max_movement = the_unit.getComponent('movement_left');
+  var max_movement = the_unit.movement_left;
   
   //find the path to destination
   var costFunction = the_unit.stepCostFunction.bind(the_unit);

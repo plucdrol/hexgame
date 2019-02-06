@@ -26,6 +26,7 @@ Unit.prototype.setType = function(unit_type) {
     this.maximum_elevation = 13; 
     this.ground_action_create_unit = 'land-player';
     this.self_action_grow = 5;
+    this.getGrowCost = function(){return 6*this.cityRadius*this.self_action_grow;};
     this.setCitySize(1);
     this.setCityColor();
     this.setResources(0,0,0);
@@ -122,20 +123,6 @@ Unit.prototype.increaseComponent = function(label, value) {
     this[label] += value;
   }
 }
-
-
-/*
- * example of click system
- *
- *   function isMoveableUnit(unit) {
- *     return unit.hasComponent('movement');
- *   }
- *
- *   unit = array_of_units.filter(isOnHex(hex))
- *                        .filter(isMoveableUnit);
- *                 
- */
-
 
 
 
