@@ -99,7 +99,7 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
 // CALCULATING RECTANGLE FUNCTIONS!?
 HexRenderer.p.getHexRectangleBoundaries = function() {
 
-    var corners = this.renderer.view.getCorners();
+    var corners = this.renderer.getRenderingCorners();
    
     //find the corner hexes
     var toplefthex = Hex.round(this.pointToHex(corners.topleft));

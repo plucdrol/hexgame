@@ -115,6 +115,12 @@ Renderer.prototype.drawRedRenderingRectangle = function() {
     this.drawPolygon(corners,rect_style);
 }
 
+Renderer.prototype.getRenderingCorners = function() {
+
+    return this.view.getCorners();
+
+}
+
 
 
 
