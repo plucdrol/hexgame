@@ -82,7 +82,7 @@ function LayerManager() {
 	  layer.world_input = new WorldInput(layer.world, this.view);	//<-- controller
 
 	  //create a world renderer
-	  layer.world_renderer = new WorldRenderer(this.renderer, layer.world);  	//<---view  
+	  layer.world_renderer = new WorldRenderer(layer.world, this.renderer);  	//<---view  
 
 	  return layer;
 	}
