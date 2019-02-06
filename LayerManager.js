@@ -72,3 +72,96 @@ function LayerManager() {
 	}
 
 }
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+//////                                          
+//////              WORLD INPUT
+//////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+////////////////////////////////////////////////
+
+
+// -- Dependencies: --
+// World
+// View
+// Hex
+// Events
+
+///////// EVENTS /////////
+function WorldInput(world, view) {
+  this.world = world;
+  this.view = view;
+  //this is where the unit controller is created
+  this.unit_controller = new UnitController(world.world_map, world.units); 
+
+  this.listenForEvents();
+}
+
+WorldInput.prototype.getUnitController = function() {
+  return this.unit_controller;
+}
+
+
+WorldInput.prototype.listenForEvents = function() {
+
+  this.hex_hovered = new Hex();
+  this.hex_hovered_previous = new Hex();
+
+  var wif = this;
+
+    if (this.unit_controller != false) {
+      listenForEvent('hexgame_click', function(e){
+        wif.clickScreenEvent(e.detail.click_pos);
+      }); 
+    }
+        
+    listenForEvent('hexgame_hover', function(e){
+      wif.hoverEvent(e.detail.mousepos);
+    } );
+  }
+
+WorldInput.prototype.hoverEvent = function(screen_position) {
+  
+  //get the hex being hovered
+
+  var world_position = this.view.screenToWorld(screen_position);
+  this.hex_hovered = this.world.getHex(world_position);
+
+  //if the mouse moved to a new hex, redraw the screen
+  if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
+    drawScreen();
+  }
+
+  //remember the currently hovered hex
+  this.hex_hovered_previous = this.hex_hovered;
+}
+
+WorldInput.prototype.clickScreenEvent = function(screen_position) {
+  
+  if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
+    return;
+  }
+  if (this.unit_controller != undefined) {
+
+
+    var world_position = this.view.screenToWorld(screen_position);
+    let hex_clicked = this.world.getHex(world_position);
+
+    //Only reference to unit controller in WorldInterface
+    this.unit_controller.clickHex(hex_clicked);
+    
+    drawScreen();
+  }
+
+}
+

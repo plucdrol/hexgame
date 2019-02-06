@@ -178,7 +178,8 @@ World.prototype.gatherCityResources = function(world) {
 function WorldInput(world, view) {
   this.world = world;
   this.view = view;
-  this.unit_controller = new UnitController(world.world_map, world.units);
+  //this is where the unit controller is created
+  this.unit_controller = new UnitController(world.world_map, world.units); 
 
   this.listenForEvents();
 }
