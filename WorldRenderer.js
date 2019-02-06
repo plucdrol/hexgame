@@ -49,7 +49,6 @@ WorldRenderer.p.drawWorld = function(world) {
 
   if (this.ready_to_render) {
     var hexmap = this.calculateHexesToRender();
-    //this.hex_renderer.renderer.drawRedRenderingRectangle();
     this.drawHexMap(hexmap);
     
   }
