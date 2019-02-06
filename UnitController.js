@@ -217,6 +217,7 @@ UnitController.p.clickInsideUnitRange = function(hex) {
 }
 
 UnitController.p.reClickUnit = function() {
+  console.log('reclick');
   var command = new UnitCommand(this.map, this.units);
   command.commandUnitToSelf(this.getUnitSelected(),this.getHexSelected());
 }

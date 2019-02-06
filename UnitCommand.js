@@ -63,18 +63,26 @@ UnitCommand.p.groundActionChangeTerrain = function(unit, new_hex) {
   } else {
 
     //move unit to the new position
-    this.moveUnit(current_hex,new_hex);
+    this.moveUnit(unit, current_hex,new_hex);
   }
 }
 
 UnitCommand.p.groundActionMoveUnit = function(unit, current_hex, new_hex) {
+
   //move unit to the new position if you have enough food
   if (unit.hasComponent('resources') ) {
-    if (unit.resources.food >= 1) { 
-      unit.resources.food -= 1;
-      this.moveUnit(current_hex,new_hex);
-    } else {
-      this.units.remove(current_hex);
+
+    //calculate the cost of moving
+    //this stuff should be under unit or pathfinder or something
+    var costFunction = unit.stepCostFunction.bind(unit);
+    var neighborFunction = unit.getNeighborsFunction.bind(unit);
+    var costFinder = PathFinder.getCostFinder(costFunction,neighborFunction);
+    var cost = costFinder(this.map, current_hex, new_hex, unit.movement_left);
+
+    if (unit.resources.food >= cost) { 
+
+      this.moveUnit(unit, current_hex,new_hex);
+            unit.resources.food -= cost;
     }
   }
 }
@@ -139,25 +147,23 @@ UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 
 }
 
-UnitCommand.p.moveUnit = function(current_hex,next_hex) {
+UnitCommand.p.moveUnit = function(unit, current_hex,next_hex) {
   //calculate movements remaining
-  var the_unit = this.units.get(current_hex);
-  var max_movement = the_unit.movement_left;
+  //unit.movement_left = unit.resources.food;
+  var max_movement = unit.resources.food;//unit.movement_left;
   
   //find the path to destination
-  var costFunction = the_unit.stepCostFunction.bind(the_unit);
-  var neighborFunction = the_unit.getNeighborsFunction.bind(the_unit);
+  var costFunction = unit.stepCostFunction.bind(unit);
+  var neighborFunction = unit.getNeighborsFunction.bind(unit);
   var costFinder = PathFinder.getCostFinder(costFunction,neighborFunction);
   var cost = costFinder(this.map, current_hex, next_hex, max_movement);
   
-  //OPTION A: movement reduces
-  //substract it from the movement remaining
-  //the_unit.increaseComponent('movement_left', -cost);
 
-  //OPTION B: movement never runs out
-  the_unit.setComponent('movement_left', max_movement);
   
   //update the map
   this.units.remove(current_hex);
-  this.units.set(next_hex, the_unit);
+  this.units.set(next_hex, unit);
+
+  //unit.setComponent('movement_left', max_movement);
+  unit.findRange(this.map, next_hex);
 }

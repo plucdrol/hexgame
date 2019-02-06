@@ -34,6 +34,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'land-player':
+    this.is_unit = true;
     this.setMovement(5);
     this.color = 'blue';
     this.controllable = true;
@@ -265,7 +266,7 @@ Unit.prototype.setMovement = function(movement) {
   // range component. This code should not be in the bare unit class
   if (this.findRange === undefined) {
     this.findRange = function(map, position) {
-      let max_movement = this.getComponent('movement_left');
+      let max_movement = this.movement_left;
       var range = this.rangeFind(map, position, max_movement);
       this.setComponent('range', range);
     };

@@ -123,6 +123,8 @@ World.prototype.gatherCityResources = function(world) {
         continue;
       if (!unit.hasComponent('resources') || !unit.hasComponent('cityRadius')) 
         continue;
+
+
       //get the tiles in its radius
       let collection_hexes = Hex.circle(unit_hex,unit.cityRadius);
       //for each tile in that array
@@ -138,6 +140,13 @@ World.prototype.gatherCityResources = function(world) {
         unit.resources[resource_type] += resource.resource_value;
 
 
+      }
+
+      //unit has resources
+      if (unit.hasComponent('range') && unit.is_unit) {
+        let food = unit.resources.food;
+        unit.movement_left = food;
+        unit.findRange(world.world_map, unit_hex);
       }
     }
   }
