@@ -24,7 +24,7 @@ function World(scale, radius) {
   this.layout = new HexLayout('pointy', tile_size, origin);
   
   this.world_map = new HexMap();
-  this.createMap(radius);
+  this.world_map = new MapGenerator('perlin').makeMap(radius);
 
   this.units = new HexMap();
 
@@ -39,17 +39,6 @@ function World(scale, radius) {
   this.startGathering();
 
   
-}
-
-World.prototype.setMap = function(map) {
-  this.world_map = map;
-}
-
-World.prototype.createMap = function(radius) {
-  //create a map 
-  var hexmap_generator = new MapGenerator('perlin'); 
-  var map = hexmap_generator.makeMap(radius);
-  this.setMap(map);
 }
 
 World.prototype.getLayout = function() {
@@ -201,12 +190,12 @@ WorldInput.prototype.getUnitController = function() {
 
 WorldInput.prototype.listenForEvents = function() {
 
-  this.hex_hovered = new Hex(0,0);
-  this.hex_hovered_previous = new Hex(0,0);
+  this.hex_hovered = new Hex();
+  this.hex_hovered_previous = new Hex();
 
   var wif = this;
 
-    if (this.world.unit_controller != false) {
+    if (this.unit_controller != false) {
       listenForEvent('hexgame_click', function(e){
         wif.clickScreenEvent(e.detail.click_pos);
       }); 
