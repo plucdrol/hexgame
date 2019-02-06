@@ -249,7 +249,6 @@ UnitController.p.clickOutsideUnitRange = function(hex) {
 
 
 
-//Unit commands should be moved into UnitController class
 /////////////////////////////////////////////////////////
                   // UNIT COMMAND //
 /////////////////////////////////////////////////////////
