@@ -121,6 +121,13 @@ Renderer.prototype.getRenderingCorners = function() {
 
 }
 
+Renderer.prototype.getScale = function() {
+
+    return this.view.getScale();
+
+}
+
+
 
 
 

@@ -30,7 +30,7 @@ TileRenderer.prototype.mapColors = function(i) {
 function TileRenderer2D(renderer, layout) {
   TileRenderer.call(this, renderer, layout); 
   this.tilesize = layout.size.x;
-  this.actuallyDrawHexes = this.areHexesBigEnough(renderer.view.getScale(), this.tilesize);
+  this.actuallyDrawHexes = this.areHexesBigEnough(renderer.getScale(), this.tilesize);
 }
 TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
 
