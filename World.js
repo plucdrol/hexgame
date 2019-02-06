@@ -89,7 +89,8 @@ World.prototype.generateResources = function(world_map) {
       case 4: 
         resources.set(hex, new Unit('food'));
         break;
-      case 5: //forest
+      //forest
+      case 5: 
       case 6: 
       case 7: 
       case 8: 

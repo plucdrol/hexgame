@@ -17,7 +17,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.setMovement(4);
+    this.setMovement(2);
     this.color = 'white';
     this.controllable = true;
     this.range = {};
@@ -34,7 +34,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'land-player':
-    this.setMovement(12);
+    this.setMovement(5);
     this.color = 'blue';
     this.controllable = true;
     this.range = {};
@@ -50,7 +50,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
   
   case 'water-player':
-    this.setMovement(16);
+    this.setMovement(6);
     this.color = 'white';
     this.controllable = true;
     this.range = {};
@@ -215,6 +215,7 @@ Unit.prototype.setMovement = function(movement) {
   }
 
 
+
   //STEP COST FUNCTION
   if (this.stepCostFunction === undefined) {
     this.stepCostFunction = function(previous_tile, tile) {
@@ -224,10 +225,6 @@ Unit.prototype.setMovement = function(movement) {
 	var cost_this = this.tileCostFunction(tile);
 	var cost_previous = this.tileCostFunction(previous_tile);
 
-
-
-
-
 	if (cost_this === undefined) {
 	  return undefined;
 	}
@@ -236,6 +233,9 @@ Unit.prototype.setMovement = function(movement) {
 	  cost_previous = 0;
 	}
 	
+  return 1;
+
+  /*
   var difference = cost_this - cost_previous;
 
 	//Returns values based on difference in elevation only
@@ -256,6 +256,7 @@ Unit.prototype.setMovement = function(movement) {
 	}
 	
 	return undefined;
+  */
     }
   }
 
