@@ -17,25 +17,27 @@
 
 function World(scale, radius) {
 
+  //configure world dimensions
   var tile_size = new Point(35/scale, 35/scale);
-  
   var origin = new Point(0,0);
-
   this.layout = new HexLayout('pointy', tile_size, origin);
   
+  //create land map
   this.world_map = new HexMap();
   this.world_map = new MapGenerator('perlin').makeMap(radius);
 
+  //create units map
   this.units = new HexMap();
 
+  //create resources map
   this.resources = new HexMap();
   this.resources = this.generateResources(this.world_map);
 
+  //start the 1-second counter which gathers resources for cities
   this.startGathering = function() {
     var self = this; 
     setInterval( self.gatherCityResources(self), 1000 );
   }
-
   this.startGathering();
 
   
