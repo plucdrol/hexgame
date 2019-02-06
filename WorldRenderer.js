@@ -18,6 +18,7 @@
 
 function WorldRenderer (world, renderer) {
   
+  this.renderer = renderer;
   this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
 
   this.world = world;
