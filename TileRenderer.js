@@ -12,8 +12,8 @@
 /////////////////////////////////////////////////////////
 
 /*This is actually an interface and thsu can be inherited*/
-function TileRenderer (canvas_draw, view, layout) {
-  this.hex_renderer = new HexRenderer(canvas_draw, view, layout);
+function TileRenderer (renderer, layout) {
+  this.hex_renderer = new HexRenderer(renderer, layout);
 
 
 }
@@ -27,10 +27,10 @@ TileRenderer.prototype.mapColors = function(i) {
 
 
 
-function TileRenderer2D(canvas_draw, view, layout) {
-  TileRenderer.call(this, canvas_draw, view, layout); 
+function TileRenderer2D(renderer, layout) {
+  TileRenderer.call(this, renderer, layout); 
   this.tilesize = layout.size.x;
-  this.actuallyDrawHexes = this.areHexesBigEnough(view.getScale(), this.tilesize);
+  this.actuallyDrawHexes = this.areHexesBigEnough(renderer.view.getScale(), this.tilesize);
 }
 TileRenderer2D.prototype = Object.create(TileRenderer.prototype);
 

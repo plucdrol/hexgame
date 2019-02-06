@@ -13,7 +13,6 @@ var canv_draw = new CanvasDraw(canvas);
 //Interface for receiving input from the page
 var canv_input = new CanvasInput(canvas);
 
-
 var layer_manager = new LayerManager();
 var layer = layer_manager.createWorldLayer(30, new Hex(0,0)); 
 
@@ -40,9 +39,7 @@ function drawScreenTimed() {
   layer.world_renderer.clear();
 
   //draw the world
-  if (layer_manager.view.getZoom() > 0.06) {
-    layer.world_renderer.drawWorld();  
-  }
+  layer.world_renderer.drawWorld();  
 
   //draw mouse interactions
   var hud_renderer = new HUDRenderer();

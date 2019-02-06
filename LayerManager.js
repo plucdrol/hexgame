@@ -20,6 +20,8 @@ function LayerManager() {
 	var scale_ratio = 1/64;
 	this.view = create_view();
 
+  this.renderer = new Renderer(canv_draw, this.view);
+
 
 	//Event handling
   var layer_manager = this;
@@ -80,7 +82,7 @@ function LayerManager() {
 	  layer.world_input = new WorldInput(layer.world, this.view);	//<-- controller
 
 	  //create a world renderer
-	  layer.world_renderer = new WorldRenderer(canv_draw, layer.world, this.view);  	//<---view  
+	  layer.world_renderer = new WorldRenderer(this.renderer, layer.world);  	//<---view  
 
 	  return layer;
 	}

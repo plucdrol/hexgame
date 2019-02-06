@@ -13,13 +13,11 @@
 // Sole responsibility: drawing hexagons using the Renderer 
 
 // CanvasDraw
-// View
 // Hex
 
-function HexRenderer(canvas_draw, view, hexlayout) {
-  this.renderer = new Renderer(canvas_draw, view); 
+function HexRenderer(renderer, hexlayout) {
+  this.renderer = renderer; 
   this.hexlayout = hexlayout;
-  this.view = view;
 }
 
 HexRenderer.p = HexRenderer.prototype;

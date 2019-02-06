@@ -13,15 +13,13 @@
 //  World
 //  Unit
 //  UnitController
-//  View
 //  Hex
 //  HexRenderer
 
-function WorldRenderer (canvas_draw, world, view) {
+function WorldRenderer (world, renderer) {
   
-  this.hex_renderer = new HexRenderer(canvas_draw, view, world.getLayout() );
+  this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
 
-  this.view = view;
   this.world = world;
 
   this.ready_to_render = true;
@@ -60,8 +58,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 
   //make a tile renderer
   var tile_renderer = new TileRenderer2D(
-                       this.hex_renderer.renderer.canvas_draw,
-                       this.view,
+                       this.renderer,
                        this.world.getLayout()
                        );
 
