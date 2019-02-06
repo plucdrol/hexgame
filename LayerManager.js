@@ -12,7 +12,14 @@
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
+// -- Dependencies: --
+// World
 
+// CanvasDraw
+// View
+// Renderer
+// Hex
+// Events
 
 /* SINGLE RESPONSIBILITY: maintain relationship between world model, input, and output */
 function LayerManager() {
