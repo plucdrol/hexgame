@@ -57,6 +57,7 @@ CanvasInput.prototype.registerEvent = function(event_name, callback_name) {
 //react to clicking canvas 
 CanvasInput.prototype.clickCanvas = function(event) {
   
+    event.preventDefault();
     //avoid click at the end of a drag
     if (this.is_dragging == false) {
   
@@ -66,7 +67,6 @@ CanvasInput.prototype.clickCanvas = function(event) {
     }
     //remember that the mouse is done dragging
     this.is_dragging = false;
-    //this.mouse_pos_previous[0] = undefined;
     
 }   
 
@@ -116,7 +116,7 @@ CanvasInput.prototype.mouseMove = function(event) {
       }
       //call the drag function
       emitEvent('canvas_drag', { mousepos: this.mouse_pos[0],
-                                  mouseposprevious: this.mouse_pos_previous[0] });
+                                 mouseposprevious: this.mouse_pos_previous[0] });
       
   }
 
@@ -124,11 +124,8 @@ CanvasInput.prototype.mouseMove = function(event) {
   this.mouse_pos_previous[0] = this.mouse_pos[0];
 }
 
-function point_average(point1, point2) {
-  return new Point((point1.x+point2.x)/2, (point1.y+point2.y)/2);
-}
 
-//react to touch events across the screen
+//react to touchscreen events across the screen
 CanvasInput.prototype.touchMove = function(ev) {
     ev.preventDefault();
     ev = ev || window.event;
@@ -178,11 +175,9 @@ CanvasInput.prototype.touchMove = function(ev) {
 
         //zoom screen      
         if (this.mouse_pos_previous[id[0]] != undefined && 
-	    this.mouse_pos_previous[id[1]] != undefined) {
-            var previous_distance = distance(this.mouse_pos_previous[id[0]],
-	                                     this.mouse_pos_previous[id[1]]);
-            var current_distance = distance(this.mouse_pos[id[0]],
-	                                    this.mouse_pos[id[1]] );
+	          this.mouse_pos_previous[id[1]] != undefined) {
+            var previous_distance = distance(this.mouse_pos_previous[id[0]],  this.mouse_pos_previous[id[1]]);
+            var current_distance =  distance(this.mouse_pos[id[0]],           this.mouse_pos[id[1]] );
             var difference = current_distance-previous_distance;
 
             emitEvent('canvas_zoom', {amount: 1-difference/200} );
@@ -228,12 +223,14 @@ CanvasInput.prototype.windowResize = function()  {
     //Send the resize event here
     emitEvent('canvas_resize', {width:width, height:height} );
 
-
     //size canvas to fit resized window
     this.canvas.width = width;
     this.canvas.height = height;
 
 }
+
+
+
 
 
 
@@ -250,6 +247,10 @@ CanvasInput.prototype.getCursorPosition = function(event) {
     return new Point(coords.x,coords.y);
 }
 
+function point_average(point1, point2) {
+
+  return new Point((point1.x+point2.x)/2, (point1.y+point2.y)/2);
+}
 
 //returns the cartesian distance between two points
 function distance(point1,point2) {
@@ -283,7 +284,3 @@ HTMLCanvasElement.prototype.rel_mouse_coords = rel_mouse_coords;
 
 
 
-
-function EventTarget() {
-
-}

@@ -14,7 +14,9 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 var layer_manager = new LayerManager();
-var layer = layer_manager.createWorldLayer(30, new Hex(0,0)); 
+var view = create_view();
+var renderer = new Renderer(canv_draw, view);
+var layer = new Layer(30); 
 
 //create units in the world
 //layer.world.units.set(new Hex(-1,-1), new Unit('water-player', layer.world));

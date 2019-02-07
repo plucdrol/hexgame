@@ -24,12 +24,6 @@
 /* SINGLE RESPONSIBILITY: maintain relationship between world model, input, and output */
 function LayerManager() {
 
-	var scale_ratio = 1/64;
-	this.view = create_view();
-
-  this.renderer = new Renderer(canv_draw, this.view);
-
-
 	//Event handling
   var layer_manager = this;
 	listenForEvent('canvas_zoom', function(e){
@@ -43,58 +37,50 @@ function LayerManager() {
   } );
 
   this.zoomViewEvent = function(zoom) {
-	  this.view.zoom(zoom);
+	  view.zoom(zoom);
 	  drawScreen();
 	}
 	
 	this.dragEvent = function(mouse,previous_mouse) {
 	  //get the movement the mouse has moved since last tick
-	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
-	  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
+	  var x_move = view.screenToWorld1D(previous_mouse.x-mouse.x);
+	  var y_move = view.screenToWorld1D(previous_mouse.y-mouse.y);
 	  var drag_move = new Point(x_move, y_move);
 	  
 	  //shift the view by that movement
-	  this.view.shiftPosition(drag_move);
+	  view.shiftPosition(drag_move);
 	  
 	  //redraw the screen after moving
 	  drawScreen();
 	}
 
-	this.resizeEvent = function(width,height) {
-	  this.view.resizeOutput(width,height);
+	this.resizeEvent = function(width, height) {
+	  view.resizeOutput(width, height);
 
 	  //redraw the screen after resizing
 	  drawScreen();
 	}
-
-
-
-	//single responsibility: hold the meta-data about a layer, and a link to the world
-	function Layer() {
-		this.scale = 1;
-		this.world_input = {};
-		this.world_renderer = {};
-	}
-
-
-	//This function creates a world and joins the view and controller to it
-	this.createWorldLayer = function(radius) {
-
-		var layer = new Layer();
-
-	  //create a world object
-	  layer.world = new World(layer.scale, radius);// <-- model
-
-	  //create a world interface
-	  layer.world_input = new WorldInput(layer.world, this.view);	//<-- controller
-
-	  //create a world renderer
-	  layer.world_renderer = new WorldRenderer(layer.world, this.renderer);  	//<---view  
-
-	  return layer;
-	}
-
 }
+
+
+
+
+
+
+//single responsibility: holds the Model, View and Controller for the World
+function Layer(radius) {
+	
+  //create a world object
+  this.world = new World(radius);// <-- model
+
+  //create a world interface
+  this.world_input = new WorldInput(this.world, view);	//<-- controller
+
+  //create a world renderer
+  this.world_renderer = new WorldRenderer(this.world, renderer);  	//<---view  
+}
+
+
 
 
 
@@ -129,11 +115,6 @@ function WorldInput(world, view) {
 
   this.listenForEvents();
 }
-
-WorldInput.prototype.getUnitController = function() {
-  return this.unit_controller;
-}
-
 
 WorldInput.prototype.listenForEvents = function() {
 

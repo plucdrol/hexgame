@@ -15,10 +15,10 @@
 //  WorldMap
 //  UnitMap
 
-function World(scale, radius) {
+function World(radius) {
 
   //configure world dimensions
-  var tile_size = new Point(35/scale, 35/scale);
+  var tile_size = new Point(35, 35);
   var origin = new Point(0,0);
   this.layout = new HexLayout('pointy', tile_size, origin);
   
