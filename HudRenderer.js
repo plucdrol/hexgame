@@ -1,8 +1,8 @@
-function HUDRenderer(game_input, hex_renderer) {
+function HUDRenderer(world_input, hex_renderer) {
 
   this.drawHUD = function() {
 
-    var unit_controller = game_input.unit_controller;
+    var unit_controller = world_input.unit_controller;
     var hex_selected = unit_controller.hex_selected;
 
     //selection draw
@@ -25,7 +25,7 @@ function HUDRenderer(game_input, hex_renderer) {
 
     //draw hovered hex
     var hover_style = new RenderStyle();
-    var hex_hovered = game_input.hex_hovered;
+    var hex_hovered = world_input.hex_hovered;
 
     hover_style.fill_color = "rgba(200,200,200,0.4)";
     hover_style.line_width = 0;
