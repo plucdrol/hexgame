@@ -22,7 +22,7 @@ function Game(radius) {
   this.world_renderer = new WorldRenderer(this.world, renderer);  	//<---view  
 }
 var game = new Game(30); 
-var game_input = new GameInput(game.world, view);
+var game_input = new GameInput(game, view);
 
 
 

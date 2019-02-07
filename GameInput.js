@@ -17,32 +17,32 @@
 // Hex
 // Events
 
-function GameInput(world, view) {
-  this.world = world;
+function GameInput(game, view) {
+  this.world = game.world;
   this.view = view;
-  //this is where the unit controller is created
-  this.unit_controller = new UnitController(world.world_map, world.units); 
 
+  //this is where the unit controller is created
+  this.unit_controller = new UnitController(this.world.world_map, this.world.units); 
   this.hex_hovered = new Hex();
   this.hex_hovered_previous = new Hex();
 
 
 	//Event handling
-  var game_input = this;
+  var self = this;
 	listenForEvent('canvas_zoom', function(e){
-    game_input.zoomViewEvent(e.detail.amount);
+    self.zoomViewEvent(e.detail.amount);
   } );
   listenForEvent('canvas_drag', function(e){
-    game_input.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
+    self.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
   } );
   listenForEvent('canvas_resize', function(e){
-    game_input.resizeEvent(e.detail.width, e.detail.height);
+    self.resizeEvent(e.detail.width, e.detail.height);
   } );
   listenForEvent('canvas_click', function(e){
-    game_input.clickScreenEvent(e.detail.click_pos);
+    self.clickScreenEvent(e.detail.click_pos);
   }); 
   listenForEvent('canvas_hover', function(e){
-    game_input.hoverEvent(e.detail.mousepos);
+    self.hoverEvent(e.detail.mousepos);
   });
 
   //React to either mouse scrolling or finger pinching
@@ -54,8 +54,8 @@ function GameInput(world, view) {
   //React to dragging across the screen with finger or mouse
 	this.dragEvent = function(mouse, previous_mouse) {
 	  //get the movement the mouse has moved since last tick
-	  var x_move = view.screenToWorld1D(previous_mouse.x-mouse.x);
-	  var y_move = view.screenToWorld1D(previous_mouse.y-mouse.y);
+	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
+	  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
 	  var drag_move = new Point(x_move, y_move);
 	  
 	  //shift the view by that movement
@@ -104,8 +104,9 @@ function GameInput(world, view) {
       
       drawScreen();
     }
-
   }
+
+
 
 }
 
