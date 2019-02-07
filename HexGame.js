@@ -13,9 +13,6 @@ var canv_draw = new CanvasDraw(canvas);
 //Interface for receiving input from the page
 var canv_input = new CanvasInput(canvas);
 
-
-
-
 var view = create_view();
 var renderer = new Renderer(canv_draw, view);
 
@@ -27,12 +24,9 @@ function Game(radius) {
 var game = new Game(30); 
 var game_input = new GameInput(game.world, view);
 
-//create units in the world
-game.world.units.set(new Hex(0,0), new Unit('land-player', game.world));
 
-let land_tile = new Unit('terrain');
-land_tile.elevation = 2;
-game.world.setHex(new Hex(0,0), land_tile);
+
+
 
 canv_input.windowResize();
 

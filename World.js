@@ -28,10 +28,17 @@ function World(radius) {
 
   //create units map
   this.units = new HexMap();
+  this.units.set(new Hex(0,0), new Unit('land-player'));
 
   //create resources map
   this.resources = new HexMap();
   this.resources = this.generateResources(this.world_map);
+
+  //Make the center tile into sand
+  let land_tile = new Unit('terrain');
+  land_tile.elevation = 2;
+  this.setHex(new Hex(0,0), land_tile);
+
 
   //start the 1-second counter which gathers resources for cities
   this.startGathering = function() {
@@ -39,6 +46,8 @@ function World(radius) {
     setInterval( self.gatherCityResources(self), 1000 );
   }
   this.startGathering();
+
+
 
   
 }
