@@ -44,8 +44,9 @@ function WorldInput(world, view) {
 
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
-	  this.view.zoom(zoom);
-	  drawScreen();
+
+    this.view.zoom(zoom);
+  	drawScreen();
 	}
 	
   //React to dragging across the screen with finger or mouse
