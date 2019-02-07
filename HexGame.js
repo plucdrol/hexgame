@@ -15,7 +15,7 @@ var canv_draw = new CanvasDraw(canvas);
 var canv_input = new CanvasInput(canvas);
 
 //A moveable point of view into the game world
-var view = create_view();
+var view = new View();
 var renderer = new Renderer(canv_draw, view);
 var world = new World(60);// <-- model
 var world_renderer = new WorldRenderer(world, renderer);  	//<---view  

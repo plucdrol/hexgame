@@ -10,29 +10,23 @@ function Rect(position,size) {
 //input:  universe coordinates
 //output: screen coordinates
 
-function create_view(initial_zoom_level) {
+function View (initial_zoom_level) {
+
   if (initial_zoom_level == undefined) {
     var initial_zoom_level = 1;
   }
   var view_ratio = canvas.width/canvas.height;
   var initial_zoom = initial_zoom_level;
-  var view_out = new Rect(new Point(0,0), 
+  var output = new Rect(new Point(0,0), 
                           new Point(canvas.width,canvas.height));
 
-  var view_in = new Rect(  new Point(-canvas.width*initial_zoom,
+  var input = new Rect(  new Point(-canvas.width*initial_zoom,
                                      -canvas.height*initial_zoom),
 
                             new Point(canvas.width*initial_zoom*view_ratio,
                                      canvas.height*initial_zoom*view_ratio));
-  return new View(view_in,view_out);
-}
 
-function View (input_rect,output_rect) {
 
-  //PRIVATE MMEMBERS
-
-  var input = input_rect;
-  var output = output_rect;
 
   //PRIVILEGED FUNCTIOONS
 
