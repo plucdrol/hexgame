@@ -151,5 +151,6 @@ World.prototype.gatherCityResources = function(world) {
         unit.findRange(world.world_map, unit_hex);
       }
     }
+    drawScreen();
   }
 }
