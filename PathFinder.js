@@ -37,7 +37,6 @@ function PathFinder(costFunction, neighborFunction) {
   } 
 
   this.setCell = function(coord, value) {
-    console.log(JSON.stringify(this));
    this.visited.set(JSON.stringify(coord), value); 
   }
  
