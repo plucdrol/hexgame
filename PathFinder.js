@@ -3,12 +3,13 @@
 //Tracks the previous cell and total path cost
 //on 5e path.from the origin to cell
 //it take maps as arguments as returns maps as 'visited'
-function PathFinder(costFunction, neighborFunction) {
+function PathFinder(getFunction, stepCostFunction, neighborFunction) {
 
   this.name = 'pathfinder';
   this.visited = new Map();
-  this.costFunction = costFunction;
+  this.stepCostFunction = stepCostFunction;
   this.neighborFunction = neighborFunction;
+  this.getFunction = getFunction;
 
 
   PathFinderCell = function(coord, previous_coord, path_cost) {
@@ -45,21 +46,16 @@ function PathFinder(costFunction, neighborFunction) {
     return this.visited.has(JSON.stringify(coord)); 
   }
 
-  
-  this.getTile = function(map, coord) {
-    return map.getValue(coord);
-  } 
-
   this.calculateCost = function(cost_so_far, tile, previous_tile) {
 
-    return cost_so_far + this.costFunction(tile, previous_tile);
+    return cost_so_far + this.stepCostFunction(tile, previous_tile);
   }
 
   this.makeNeighborCell = function(map, previous_cell) {
     var self = this;
     return function(coord) {
-      let tile = self.getTile(map, coord);
-      let previous_tile = self.getTile(map, self.getCoord(previous_cell));
+      let tile = self.getFunction(map, coord);
+      let previous_tile = self.getFunction(map, self.getCoord(previous_cell));
 
       let cost = self.calculateCost(previous_cell.path_cost, tile, previous_tile);
 
@@ -115,9 +111,9 @@ function PathFinder(costFunction, neighborFunction) {
     var self = this;
     return function(cell) {
       let coord = self.getCoord(cell);
-      let tile = self.getTile(map, coord);
-      let previous_tile = self.getTile(map, cell.previous_coord);
-      return ( self.costFunction( previous_tile, tile ) != undefined );
+      let tile = self.getFunction(map, coord);
+      let previous_tile = self.getFunction(map, cell.previous_coord);
+      return ( self.stepCostFunction( previous_tile, tile ) != undefined );
     }
   }
 

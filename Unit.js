@@ -187,6 +187,10 @@ Unit.prototype.setMovement = function(movement) {
     return map.getNeighbors(hex);
   }
 
+  this.getFunction = function(map, coord) {
+    return map.getValue(coord);
+  }
+
   //TILE COST FUNCTION
   this.tileCostFunction = function(tile) {
 
@@ -231,9 +235,10 @@ Unit.prototype.setMovement = function(movement) {
     var self = this;
     var costFunction = this.stepCostFunction.bind(this);
     var neighborFunction = this.getNeighborsFunction.bind(this);
+    var getFunction = this.getFunction.bind(this);
 
     //ask pathfinder for info on area
-    var pathfinder = new PathFinder(costFunction, neighborFunction);
+    var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
     pathfinder.fromUnit = true;
     var range = pathfinder.getRange(map, position, max_movement);
 
