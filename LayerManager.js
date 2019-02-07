@@ -32,13 +32,13 @@ function LayerManager() {
 
 	//Event handling
   var layer_manager = this;
-	listenForEvent('hexgame_zoom', function(e){
+	listenForEvent('canvas_zoom', function(e){
     layer_manager.zoomViewEvent(e.detail.amount);
   } );
-  listenForEvent('hexgame_drag', function(e){
+  listenForEvent('canvas_drag', function(e){
     layer_manager.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
   } );
-  listenForEvent('hexgame_resize', function(e){
+  listenForEvent('canvas_resize', function(e){
     layer_manager.resizeEvent(e.detail.width, e.detail.height);
   } );
 
@@ -143,12 +143,12 @@ WorldInput.prototype.listenForEvents = function() {
   var wif = this;
 
     if (this.unit_controller != false) {
-      listenForEvent('hexgame_click', function(e){
+      listenForEvent('canvas_click', function(e){
         wif.clickScreenEvent(e.detail.click_pos);
       }); 
     }
         
-    listenForEvent('hexgame_hover', function(e){
+    listenForEvent('canvas_hover', function(e){
       wif.hoverEvent(e.detail.mousepos);
     } );
   }
