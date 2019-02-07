@@ -5,18 +5,16 @@
 //it take maps as arguments as returns maps as 'visited'
 function PathFinder(costFunction, neighborFunction) {
 
-  this.variable = 0;
+  this.name = 'pathfinder';
   this.visited = new Map();
   this.costFunction = costFunction;
   this.neighborFunction = neighborFunction;
 
 
   PathFinderCell = function(coord, previous_coord, path_cost) {
-    let cell = {
-      coord:coord,
-      previous_coord:previous_coord,
-      path_cost:path_cost
-    };
+      this.coord = coord;
+      this.previous_coord = previous_coord;
+      this.path_cost = path_cost;
   }
 
   this.getCoord = function(cell) {
@@ -39,6 +37,7 @@ function PathFinder(costFunction, neighborFunction) {
   } 
 
   this.setCell = function(coord, value) {
+    console.log(JSON.stringify(this));
    this.visited.set(JSON.stringify(coord), value); 
   }
  
@@ -98,8 +97,9 @@ function PathFinder(costFunction, neighborFunction) {
   //Return the cells worth revisiting for pathfinding
   this.getCellsToRevisit = function(cells) {
 
+    var self = this;
     return cells.filter(function(cell) {
-        return this.considerNewCell(cell); 
+        return self.considerNewCell(cell); 
       });
   }
 
@@ -112,13 +112,13 @@ function PathFinder(costFunction, neighborFunction) {
   }
 
 
-  this.cellIsPassable = function(map, cost_function) {
+  this.cellIsPassable = function(map) {
     var self = this;
     return function(cell) {
       let coord = self.getCoord(cell);
       let tile = self.getTile(map, coord);
       let previous_tile = self.getTile(map, cell.previous_coord);
-      return ( self.cost_function( previous_tile, tile ) != undefined );
+      return ( self.costFunction( previous_tile, tile ) != undefined );
     }
   }
 
@@ -186,11 +186,11 @@ function PathFinder(costFunction, neighborFunction) {
   
     for (cell of new_cells_to_add) {
       //mutability of data in these steps!
-      this.visited = this.setCell(getCoord(cell), cell); 
+      this.setCell(this.getCoord(cell), cell); 
     }
 
     for (cell of new_cells_to_add) {
-      this.rangeFindRecursive(map, getCoord(cell), max_cost);
+      this.rangeFindRecursive(map, this.getCoord(cell), max_cost);
     }
 
 
@@ -200,7 +200,7 @@ function PathFinder(costFunction, neighborFunction) {
   this.getRangeArray = function() {
     var coord_array = [];
     for (cell of this.visited.values()) {
-      coord_array.push(getCoord(cell)); 
+      coord_array.push(this.getCoord(cell)); 
     }
     return coord_array;
   }

@@ -209,6 +209,7 @@ Unit.prototype.setMovement = function(movement) {
 
   	//returns a positive number for uphill movement
   	// negative number for downhill movement
+    console.log(JSON.stringify(this));
   	var cost_this = this.tileCostFunction(tile);
   	var cost_previous = this.tileCostFunction(previous_tile);
 
@@ -231,11 +232,12 @@ Unit.prototype.setMovement = function(movement) {
 
     //setup movement cost functions
     var self = this;
-    var costFunction = this.stepCostFunction;
-    var neighborFunction = this.getNeighborsFunction;
+    var costFunction = this.stepCostFunction.bind(this);
+    var neighborFunction = this.getNeighborsFunction.bind(this);
 
     //ask pathfinder for info on area
     var pathfinder = new PathFinder(costFunction, neighborFunction);
+    pathfinder.fromUnit = true;
     var range = pathfinder.getRange(map, position, max_movement);
 
     //set info for later
