@@ -138,7 +138,7 @@ UnitController.p.selectHex = function(hex) {
       if (potential_unit instanceof Unit) { 
         //if the unit exists, find its range
         if (potential_unit.hasComponent('range')) {
-          potential_unit.findRange(this.map, hex).bind(potential_unit);
+          potential_unit.findRange(this.map, hex);
 
         }
         if (potential_unit.hasComponent('resources')) {
@@ -218,7 +218,6 @@ UnitController.p.clickInsideUnitRange = function(hex) {
 }
 
 UnitController.p.reClickUnit = function() {
-  console.log('reclick');
   var command = new UnitCommand(this.map, this.units);
   command.commandUnitToSelf(this.getUnitSelected(),this.getHexSelected());
 }

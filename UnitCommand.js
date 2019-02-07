@@ -91,10 +91,10 @@ UnitCommand.p.groundActionMoveUnit = function(unit, current_hex, new_hex) {
 
     //update the map
     this.units.remove(current_hex);
-    this.units.set(next_hex, unit);
+    this.units.set(new_hex, unit);
 
     //unit.setComponent('movement_left', max_movement);
-    unit.findRange(this.map, next_hex);
+    unit.findRange(this.map, new_hex);
   }
 }
 

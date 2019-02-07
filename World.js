@@ -43,7 +43,7 @@ function World(radius) {
   //start the 1-second counter which gathers resources for cities
   this.startGathering = function() {
     var self = this; 
-    //setInterval( self.gatherCityResources(self), 1000 );
+    setInterval( self.gatherCityResources(self), 1000 );
   }
   this.startGathering();
 
@@ -157,7 +157,7 @@ World.prototype.gatherCityResources = function(world) {
       if (unit.hasComponent('range') && unit.is_unit) {
         let food = unit.resources.food;
         unit.movement_left = food;
-        unit.findRange(world.world_map, unit_hex).bind(unit);
+        unit.findRange(world.world_map, unit_hex);
       }
     }
     drawScreen();

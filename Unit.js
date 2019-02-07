@@ -209,7 +209,6 @@ Unit.prototype.setMovement = function(movement) {
 
   	//returns a positive number for uphill movement
   	// negative number for downhill movement
-    console.log(JSON.stringify(this));
   	var cost_this = this.tileCostFunction(tile);
   	var cost_previous = this.tileCostFunction(previous_tile);
 
