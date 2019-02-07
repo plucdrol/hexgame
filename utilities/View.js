@@ -1,7 +1,7 @@
 //-------0---------1---------2---------3---------4---------5---------6---------8
 //takes two vectors. Position is the top-left corner, 
 //size is a vector across
-function Rect(position,size) {
+function Rect(position, size) {
   this.position = position;
   this.size = size;
 }
