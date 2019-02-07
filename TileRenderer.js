@@ -12,8 +12,8 @@
 /////////////////////////////////////////////////////////
 
 /*This is actually an interface and thsu can be inherited*/
-function TileRenderer (renderer, layout) {
-  this.hex_renderer = new HexRenderer(renderer, layout);
+function TileRenderer (hex_renderer, layout) {
+  this.hex_renderer = hex_renderer;
 
 
 }
@@ -27,8 +27,8 @@ TileRenderer.prototype.mapColors = function(i) {
 
 
 
-function TileRenderer2D(renderer, layout) {
-  TileRenderer.call(this, renderer, layout); 
+function TileRenderer2D(hex_renderer, layout) {
+  TileRenderer.call(this, hex_renderer, layout); 
   this.tilesize = layout.size.x;
   this.actuallyDrawHexes = this.areHexesBigEnough(renderer.getScale(), this.tilesize);
 }

@@ -15,10 +15,9 @@
 //  Hex
 //  HexRenderer
 
-function WorldRenderer (world, renderer) {
+function WorldRenderer (world, hex_renderer) {
   
-  this.renderer = renderer;
-  this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
+  this.hex_renderer = hex_renderer;
 
   this.world = world;
 
@@ -58,7 +57,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 
   //make a tile renderer
   var tile_renderer = new TileRenderer2D(
-                       this.renderer,
+                       this.hex_renderer,
                        this.world.getLayout()
                        );
 

@@ -1,10 +1,9 @@
-function HUDRenderer() {
+function HUDRenderer(game_input, hex_renderer) {
 
-  this.renderHUD = function(game_input) {
+  this.drawHUD = function() {
 
     var unit_controller = game_input.unit_controller;
     var hex_selected = unit_controller.hex_selected;
-    var hex_renderer = new HexRenderer(renderer, game_input.world.layout);
 
     //selection draw
     if (hex_selected instanceof Hex) {
