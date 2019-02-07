@@ -25,7 +25,7 @@ var world = new World(60);// <-- model
 //Can render the world elements
 var world_renderer = new WorldRenderer(world, renderer);  	//<---view  
 //Receives input for the game
-var game_input = new GameInput(world, view);
+var world_input = new WorldInput(world, view);     //<--controller
 
 
 
@@ -50,7 +50,7 @@ function drawScreenTimed() {
 
   //draw mouse interactions
   var hud_renderer = new HUDRenderer();
-  hud_renderer.renderHUD(game_input);
+  hud_renderer.renderHUD(world_input);
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
