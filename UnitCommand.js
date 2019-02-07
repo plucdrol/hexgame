@@ -76,8 +76,9 @@ UnitCommand.p.groundActionMoveUnit = function(unit, current_hex, new_hex) {
     //this stuff should be under unit or pathfinder or something
     var costFunction = unit.stepCostFunction.bind(unit);
     var neighborFunction = unit.getNeighborsFunction.bind(unit);
-    var costFinder = PathFinder.getCostFinder(costFunction,neighborFunction);
-    var cost = costFinder(this.map, current_hex, new_hex, unit.movement_left);
+    var pathfinder = new PathFinder();
+    var costCalculator = PathFinder.getCostCalculator(costFunction,neighborFunction);
+    var cost = costCalculator(this.map, current_hex, new_hex, unit.movement_left);
 
     if (unit.resources.food >= cost) { 
 
@@ -155,8 +156,9 @@ UnitCommand.p.moveUnit = function(unit, current_hex,next_hex) {
   //find the path to destination
   var costFunction = unit.stepCostFunction.bind(unit);
   var neighborFunction = unit.getNeighborsFunction.bind(unit);
-  var costFinder = PathFinder.getCostFinder(costFunction,neighborFunction);
-  var cost = costFinder(this.map, current_hex, next_hex, max_movement);
+  var pathfinder = new PathFinder();
+  var costCalculator = pathfinder.getCostCalculator(costFunction,neighborFunction);
+  var cost = costCalculator(this.map, current_hex, next_hex, max_movement);
   
 
   

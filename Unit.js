@@ -275,6 +275,7 @@ Unit.prototype.setMovement = function(movement) {
   //EXTERNAL FUNCTIONS
   var costFunction = this.stepCostFunction.bind(this);
   var neighborFunction = this.getNeighborsFunction.bind(this);
-  this.rangeFind = PathFinder.getRangeFinder(costFunction, neighborFunction);
-  this.costFind = PathFinder.getCostFinder(costFunction, neighborFunction);
+  var pathfinder = new PathFinder();
+  this.rangeFind = pathfinder.getRangeCalculator(costFunction, neighborFunction);
+  this.costFind = pathfinder.getCostCalculator(costFunction, neighborFunction);
 }
