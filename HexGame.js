@@ -4,7 +4,8 @@
 // Here is where all the javascript modules should be combined
 // Avoid all cross-dependencies!
 // Allow modules to be interconnected at this level
-//////////////////////////// CREATING THE WORLD //////////////////////////////
+//////////////////////////// CREATING THE GAME //////////////////////////////
+
 //define the screen which can be drawn on
 var canvas = document.getElementById('mycanvas');
 
@@ -13,16 +14,12 @@ var canv_draw = new CanvasDraw(canvas);
 //Interface for receiving input from the page
 var canv_input = new CanvasInput(canvas);
 
+//A moveable point of view into the game world
 var view = create_view();
 var renderer = new Renderer(canv_draw, view);
-
-//The Game object holds together the Model and View
-function Game(radius) {
-  this.world = new World(radius);// <-- model
-  this.world_renderer = new WorldRenderer(this.world, renderer);  	//<---view  
-}
-var game = new Game(60); 
-var game_input = new GameInput(game, view);
+var world = new World(60);// <-- model
+var world_renderer = new WorldRenderer(world, renderer);  	//<---view  
+var game_input = new GameInput(world, view);
 
 
 
@@ -40,10 +37,10 @@ function drawScreen() {
 
 function drawScreenTimed() {
 
-  game.world_renderer.clear();
+  world_renderer.clear();
 
   //draw the world
-  game.world_renderer.drawWorld();  
+  world_renderer.drawWorld();  
 
   //draw mouse interactions
   var hud_renderer = new HUDRenderer();

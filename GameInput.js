@@ -10,16 +10,12 @@
 
 // -- Dependencies: --
 // World
-
-// CanvasDraw
 // View
-// Renderer
 // Hex
 // Events
 
-function GameInput(game, view) {
-  this.game = game;
-  this.world = game.world;
+function GameInput(world, view) {
+  this.world = world;
   this.view = view;
 
   //this is where the unit controller is created
