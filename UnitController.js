@@ -138,7 +138,7 @@ UnitController.p.selectHex = function(hex) {
       if (potential_unit instanceof Unit) { 
         //if the unit exists, find its range
         if (potential_unit.hasComponent('range')) {
-          potential_unit.findRange(this.map, hex);
+          //potential_unit.findRange(this.map, hex);
         }
         if (potential_unit.hasComponent('resources')) {
           this.selectCity(potential_unit);

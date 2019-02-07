@@ -182,100 +182,65 @@ Unit.prototype.setMovement = function(movement) {
   this.setComponent('movement', movement);
   this.setComponent('movement_left', movement);
 
-  //MOVE FUNCTION
-  if (this.move === undefined) {
-    this.move = function(map,current_hex,next_hex) {
-      
-      var movement_cost = this.costFind(map, current_hex, next_hex);
-      this.movement_left -= movement_cost;
-    }
-  }
 
   //GET NEIGHBORS FUNCTION
-  if (this.getNeighborsFunction === undefined) {
-    this.getNeighborsFunction = function(map,hex) {
-      return map.getNeighbors(hex);
-      
-    }
+  this.getNeighborsFunction = function(map,hex) {
+    return map.getNeighbors(hex);
+    
   }
 
   //TILE COST FUNCTION
-  if (this.tileCostFunction === undefined) {
-    this.tileCostFunction = function(tile) {
+  this.tileCostFunction = function(tile) {
 
-      var cost = tile.getComponent('elevation');
-      if (cost > this.getComponent('maximum_elevation')) {
-	cost = undefined;
-      }
-      if (cost < this.getComponent('minimum_elevation')) {
-	cost = undefined;
-      }
-      return cost;
+    var cost = tile.getComponent('elevation');
+    if (cost > this.getComponent('maximum_elevation')) {
+       cost = undefined;
     }
+    if (cost < this.getComponent('minimum_elevation')) {
+       cost = undefined;
+    }
+    return cost;
   }
 
 
 
   //STEP COST FUNCTION
-  if (this.stepCostFunction === undefined) {
-    this.stepCostFunction = function(previous_tile, tile) {
+  this.stepCostFunction = function(previous_tile, tile) {
 
-	//returns a positive number for uphill movement
-	// negative number for downhill movement
-	var cost_this = this.tileCostFunction(tile);
-	var cost_previous = this.tileCostFunction(previous_tile);
+  	//returns a positive number for uphill movement
+  	// negative number for downhill movement
+  	var cost_this = this.tileCostFunction(tile);
+  	var cost_previous = this.tileCostFunction(previous_tile);
 
-	if (cost_this === undefined) {
-	  return undefined;
-	}
+  	if (cost_this === undefined) {
+  	  return undefined;
+  	}
 
-	if (cost_previous === undefined) {
-	  cost_previous = 0;
-	}
-	
-  return 1;
-
-  /*
-  var difference = cost_this - cost_previous;
-
-	//Returns values based on difference in elevation only
-	if (difference >= 4) {
-	  return undefined;
-	}
-	if (difference > 0)  {
-	  return 4;
-	}
-	if (difference === 0) {
-	  return 4;
-	}
-	if (difference < 0) {
-	  return 4;
-	}
-	if (difference < -4) {
-	  return undefined;
-	}
-	
-	return undefined;
-  */
-    }
+  	if (cost_previous === undefined) {
+  	  cost_previous = 0;
+  	}
+  	
+    return 1;
   }
 
   //FIND RANGE FUNCTION
   //find the available movement of the unit and place it in the
   // range component. This code should not be in the bare unit class
-  if (this.findRange === undefined) {
-    this.findRange = function(map, position) {
-      let max_movement = this.movement_left;
-      var range = this.rangeFind(map, position, max_movement);
-      this.setComponent('range', range);
-    };
+  this.findRange = function(map, position) {
+    let max_movement = this.movement_left;
+
+    //setup movement cost functions
+    var self = this;
+    var costFunction = this.stepCostFunction;
+    var neighborFunction = this.getNeighborsFunction;
+
+    //ask pathfinder for info on area
+    var pathfinder = new PathFinder(costFunction, neighborFunction);
+    var range = pathfinder.getRange(map, position, max_movement);
+
+    //set info for later
+    this.setComponent('range', range);
   }
 
-
-  //EXTERNAL FUNCTIONS
-  var costFunction = this.stepCostFunction.bind(this);
-  var neighborFunction = this.getNeighborsFunction.bind(this);
-  var pathfinder = new PathFinder();
-  this.rangeFind = pathfinder.getRangeCalculator(costFunction, neighborFunction);
-  this.costFind = pathfinder.getCostCalculator(costFunction, neighborFunction);
+  
 }

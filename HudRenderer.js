@@ -13,6 +13,7 @@ function HUDRenderer(game_input, hex_renderer) {
 
       if (potential_unit instanceof Unit && potential_unit.hasComponent('range')) {
         hex_renderer.drawHexes(potential_unit.range);
+
       }
 
       //draw selection hex

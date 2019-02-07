@@ -76,15 +76,25 @@ UnitCommand.p.groundActionMoveUnit = function(unit, current_hex, new_hex) {
     //this stuff should be under unit or pathfinder or something
     var costFunction = unit.stepCostFunction.bind(unit);
     var neighborFunction = unit.getNeighborsFunction.bind(unit);
-    var pathfinder = new PathFinder();
-    var costCalculator = PathFinder.getCostCalculator(costFunction,neighborFunction);
-    var cost = costCalculator(this.map, current_hex, new_hex, unit.movement_left);
+    var pathfinder = new PathFinder(costFunction,neighborFunction);
+    var cost = pathfinder.getCost( this.map, current_hex, new_hex, unit.movement_left );
 
-    if (unit.resources.food >= cost) { 
-
-      this.moveUnit(unit, current_hex,new_hex);
-            unit.resources.food -= cost;
+    if (unit.resources.food < cost) { 
+      return;
     }
+
+    unit.resources.food -= cost;
+
+    //calculate movements remaining
+    //unit.movement_left = unit.resources.food;
+    var max_movement = unit.resources.food;//unit.movement_left; 
+
+    //update the map
+    this.units.remove(current_hex);
+    this.units.set(next_hex, unit);
+
+    //unit.setComponent('movement_left', max_movement);
+    unit.findRange(this.map, next_hex);
   }
 }
 
@@ -149,23 +159,5 @@ UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 }
 
 UnitCommand.p.moveUnit = function(unit, current_hex,next_hex) {
-  //calculate movements remaining
-  //unit.movement_left = unit.resources.food;
-  var max_movement = unit.resources.food;//unit.movement_left;
-  
-  //find the path to destination
-  var costFunction = unit.stepCostFunction.bind(unit);
-  var neighborFunction = unit.getNeighborsFunction.bind(unit);
-  var pathfinder = new PathFinder();
-  var costCalculator = pathfinder.getCostCalculator(costFunction,neighborFunction);
-  var cost = costCalculator(this.map, current_hex, next_hex, max_movement);
-  
 
-  
-  //update the map
-  this.units.remove(current_hex);
-  this.units.set(next_hex, unit);
-
-  //unit.setComponent('movement_left', max_movement);
-  unit.findRange(this.map, next_hex);
 }
