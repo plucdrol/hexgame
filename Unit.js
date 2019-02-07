@@ -182,11 +182,9 @@ Unit.prototype.setMovement = function(movement) {
   this.setComponent('movement', movement);
   this.setComponent('movement_left', movement);
 
-
   //GET NEIGHBORS FUNCTION
   this.getNeighborsFunction = function(map,hex) {
     return map.getNeighbors(hex);
-    
   }
 
   //TILE COST FUNCTION
