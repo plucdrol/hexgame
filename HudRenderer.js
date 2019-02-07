@@ -1,13 +1,10 @@
 function HUDRenderer() {
 
-  this.renderHUD = function(current_layer) {
+  this.renderHUD = function(game, game_input) {
 
-    var world_input = current_layer.world_input;
-    var world_renderer = current_layer.world_renderer;
-    var controller = world_input.unit_controller;
+    var controller = game_input.unit_controller;
     var hex_selected = controller.hex_selected;
-    var city_selected = controller.city_selected;
-    var layout = world_input.world.getLayout();
+    var world_renderer = game.world_renderer;
     var hex_renderer = world_renderer.hex_renderer;
 
     //selection draw
@@ -29,7 +26,7 @@ function HUDRenderer() {
 
     //draw hovered hex
     var hover_style = new RenderStyle();
-    var hex_hovered = world_input.hex_hovered;
+    var hex_hovered = game_input.hex_hovered;
 
     hover_style.fill_color = "rgba(200,200,200,0.4)";
     hover_style.line_width = 0;

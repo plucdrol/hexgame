@@ -1,12 +1,8 @@
-
-
-
-
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 //////                                          
-//////              LAYER MANAGER
+//////              GAME INPUT
 //////
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
@@ -21,151 +17,96 @@
 // Hex
 // Events
 
-/* SINGLE RESPONSIBILITY: maintain relationship between world model, input, and output */
-function LayerManager() {
+function GameInput(world, view) {
+  this.world = world;
+  this.view = view;
+  //this is where the unit controller is created
+  this.unit_controller = new UnitController(world.world_map, world.units); 
+
+  this.hex_hovered = new Hex();
+  this.hex_hovered_previous = new Hex();
+
 
 	//Event handling
-  var layer_manager = this;
+  var game_input = this;
 	listenForEvent('canvas_zoom', function(e){
-    layer_manager.zoomViewEvent(e.detail.amount);
+    game_input.zoomViewEvent(e.detail.amount);
   } );
   listenForEvent('canvas_drag', function(e){
-    layer_manager.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
+    game_input.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
   } );
   listenForEvent('canvas_resize', function(e){
-    layer_manager.resizeEvent(e.detail.width, e.detail.height);
+    game_input.resizeEvent(e.detail.width, e.detail.height);
   } );
+  listenForEvent('canvas_click', function(e){
+    game_input.clickScreenEvent(e.detail.click_pos);
+  }); 
+  listenForEvent('canvas_hover', function(e){
+    game_input.hoverEvent(e.detail.mousepos);
+  });
 
+  //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
-	  view.zoom(zoom);
+	  this.view.zoom(zoom);
 	  drawScreen();
 	}
 	
-	this.dragEvent = function(mouse,previous_mouse) {
+  //React to dragging across the screen with finger or mouse
+	this.dragEvent = function(mouse, previous_mouse) {
 	  //get the movement the mouse has moved since last tick
 	  var x_move = view.screenToWorld1D(previous_mouse.x-mouse.x);
 	  var y_move = view.screenToWorld1D(previous_mouse.y-mouse.y);
 	  var drag_move = new Point(x_move, y_move);
 	  
 	  //shift the view by that movement
-	  view.shiftPosition(drag_move);
+	  this.view.shiftPosition(drag_move);
 	  
 	  //redraw the screen after moving
 	  drawScreen();
 	}
 
+  //React to the window being resized
 	this.resizeEvent = function(width, height) {
-	  view.resizeOutput(width, height);
-
-	  //redraw the screen after resizing
+	  this.view.resizeOutput(width, height);
 	  drawScreen();
 	}
-}
 
-
-
-
-
-
-//single responsibility: holds the Model, View and Controller for the World
-function Layer(radius) {
-	
-  //create a world object
-  this.world = new World(radius);// <-- model
-
-  //create a world interface
-  this.world_input = new WorldInput(this.world, view);	//<-- controller
-
-  //create a world renderer
-  this.world_renderer = new WorldRenderer(this.world, renderer);  	//<---view  
-}
-
-
-
-
-
-
-
-
-
-
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-//////                                          
-//////              WORLD INPUT
-//////
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-////////////////////////////////////////////////
-
-
-// -- Dependencies: --
-// World
-// View
-// Hex
-// Events
-
-///////// EVENTS /////////
-function WorldInput(world, view) {
-  this.world = world;
-  this.view = view;
-  //this is where the unit controller is created
-  this.unit_controller = new UnitController(world.world_map, world.units); 
-
-  this.listenForEvents();
-}
-
-WorldInput.prototype.listenForEvents = function() {
-
-  this.hex_hovered = new Hex();
-  this.hex_hovered_previous = new Hex();
-
-  var wif = this;
-
-    if (this.unit_controller != false) {
-      listenForEvent('canvas_click', function(e){
-        wif.clickScreenEvent(e.detail.click_pos);
-      }); 
-    }
-        
-    listenForEvent('canvas_hover', function(e){
-      wif.hoverEvent(e.detail.mousepos);
-    } );
-  }
-
-WorldInput.prototype.hoverEvent = function(screen_position) {
+  //React to the mouse hovering at screen_position
+  this.hoverEvent = function(screen_position) {
   
-  //get the hex being hovered
-
-  var world_position = this.view.screenToWorld(screen_position);
-  this.hex_hovered = this.world.getHex(world_position);
-
-  //if the mouse moved to a new hex, redraw the screen
-  if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
-    drawScreen();
-  }
-
-  //remember the currently hovered hex
-  this.hex_hovered_previous = this.hex_hovered;
-}
-
-WorldInput.prototype.clickScreenEvent = function(screen_position) {
-  
-  if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
-    return;
-  }
-  if (this.unit_controller != undefined) {
-
-
+    //get the hex being hovered by the mouse
     var world_position = this.view.screenToWorld(screen_position);
-    let hex_clicked = this.world.getHex(world_position);
+    this.hex_hovered = this.world.getHex(world_position);
 
-    //Only reference to unit controller in WorldInterface
-    this.unit_controller.clickHex(hex_clicked);
+    //if the mouse moved to a new hex, redraw the screen
+    if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
+      drawScreen();
+    }
+
+    //remember the currently hovered hex
+    this.hex_hovered_previous = this.hex_hovered;
+  }
+
+  //React to the screen being clicked at screen_position
+  this.clickScreenEvent = function(screen_position) {
     
-    drawScreen();
+    if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
+      return;
+    }
+    if (this.unit_controller != undefined) {
+
+
+      var world_position = this.view.screenToWorld(screen_position);
+      let hex_clicked = this.world.getHex(world_position);
+
+      //Only reference to unit controller in WorldInterface
+      this.unit_controller.clickHex(hex_clicked);
+      
+      drawScreen();
+    }
+
   }
 
 }
+
 
