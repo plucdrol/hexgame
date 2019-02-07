@@ -4,10 +4,9 @@
 //
 //           GENERIC UNIT --------------------//
 
-function Unit(unit_type, world=null) {
+function Unit(unit_type) {
   
   this.setType(unit_type);
-  this.world = world;
 
 };
 
