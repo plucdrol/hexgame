@@ -16,12 +16,12 @@ var canv_input = new CanvasInput(canvas);
 var view = create_view();
 var renderer = new Renderer(canv_draw, view);
 
-//The Game object holds together the Model, View and Controller
+//The Game object holds together the Model and View
 function Game(radius) {
   this.world = new World(radius);// <-- model
   this.world_renderer = new WorldRenderer(this.world, renderer);  	//<---view  
 }
-var game = new Game(30); 
+var game = new Game(60); 
 var game_input = new GameInput(game, view);
 
 
@@ -47,7 +47,7 @@ function drawScreenTimed() {
 
   //draw mouse interactions
   var hud_renderer = new HUDRenderer();
-  hud_renderer.renderHUD(game, game_input);
+  hud_renderer.renderHUD(game_input);
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////

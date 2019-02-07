@@ -12,7 +12,6 @@
 //  CanvasDraw
 //  World
 //  Unit
-//  UnitController
 //  Hex
 //  HexRenderer
 

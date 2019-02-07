@@ -18,6 +18,7 @@
 // Events
 
 function GameInput(game, view) {
+  this.game = game;
   this.world = game.world;
   this.view = view;
 

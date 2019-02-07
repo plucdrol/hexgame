@@ -1,17 +1,16 @@
 function HUDRenderer() {
 
-  this.renderHUD = function(game, game_input) {
+  this.renderHUD = function(game_input) {
 
-    var controller = game_input.unit_controller;
-    var hex_selected = controller.hex_selected;
-    var world_renderer = game.world_renderer;
-    var hex_renderer = world_renderer.hex_renderer;
+    var unit_controller = game_input.unit_controller;
+    var hex_selected = unit_controller.hex_selected;
+    var hex_renderer = new HexRenderer(renderer, game_input.world.layout);
 
     //selection draw
     if (hex_selected instanceof Hex) {
     
       //draw range of selected unit  
-      var potential_unit = controller.unitAtPosition(hex_selected);
+      var potential_unit = unit_controller.unitAtPosition(hex_selected);
 
       if (potential_unit instanceof Unit && potential_unit.hasComponent('range')) {
         hex_renderer.drawHexes(potential_unit.range);
