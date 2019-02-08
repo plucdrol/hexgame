@@ -96,7 +96,9 @@ UnitController.p.clickHex = function(hex) {
     this.clickWithNoSelection(hex);
   }
 }
-
+clearButtons = function() {
+  document.getElementById('action-buttons').innerHTML = "";
+}
 writeMessage = function(message) {
   document.getElementById('city-resources').innerHTML = message;
 }
@@ -111,6 +113,7 @@ UnitController.p.selectNothing = function() {
   this.hex_selected = undefined;
   this.city_selected = undefined;
   clearInterval(this.stop_city_interval_number);
+  clearButtons();
   writeMessage("");
 }
 
@@ -126,29 +129,36 @@ UnitController.p.selectCity = function(city) {
 
 UnitController.p.selectHex = function(hex) {
 
-
-  if (hex instanceof Hex) {
+  if (hex) {
     if (this.units.get(hex)) {
 
-
       this.hex_selected = hex;
+
       //look if there is a unit
       var potential_unit = this.units.get(hex);
-
-      if (potential_unit instanceof Unit) { 
-        //if the unit exists, find its range
-        if (potential_unit.hasComponent('range')) {
-          potential_unit.findRange(this.map, hex);
-
-        }
-        if (potential_unit.hasComponent('resources')) {
-          this.selectCity(potential_unit);
-        }
+      if (potential_unit) { 
+        this.selectUnit(potential_unit);
       }
     } 
   } else {
     this.hex_selected = undefined;
-      this.selectNothing();
+    this.selectNothing();
+  }
+}
+
+UnitController.p.selectUnit = function(potential_unit) {
+
+  if (potential_unit.hasComponent('actions')) {
+    updateActionButtons(potential_unit);
+  }
+
+  //if the unit exists, find its range
+  if (potential_unit.hasComponent('range')) {
+    potential_unit.findRange(this.map, hex);
+
+  }
+  if (potential_unit.hasComponent('resources')) {
+    this.selectCity(potential_unit);
   }
 }
 
@@ -223,6 +233,6 @@ UnitController.p.reClickUnit = function() {
 }
 
 UnitController.p.clickOutsideUnitRange = function(hex) {
-  this.selectHex('none');
+  this.selectHex(undefined);
   this.clickHex(hex);
 }

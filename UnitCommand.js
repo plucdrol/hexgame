@@ -45,6 +45,49 @@ UnitCommand.p.commandUnitToGround = function(unit, hex, new_hex) {
   }
 }
 
+UnitCommand.p.commandUnitToSelf = function(unit, hex) {
+
+  console.log(JSON.stringify(unit.actions));
+  console.log(unit.self_action_grow);
+  if (unit.hasComponent('self_action_grow')) {
+    this.selfActionGrow(unit, hex);
+  } 
+
+  //Become another unit if the action is defined
+  else if (unit.hasComponent('self_action_become_unit')) {
+    this.selfActionBecomeUnit(unit, hex);
+  } else {
+    this.selectHex('none');
+  }
+
+}
+
+//Does the current_hex unit's action unto the new_hex unit
+UnitCommand.p.commandUnitToOtherUnit = function(unit, current_hex,target_hex) {
+
+  //get both units
+  var active_unit = this.units.get(current_hex);
+  var target_unit = this.units.get(target_hex);
+
+  //nothing happens
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//
+
+
+
 UnitCommand.p.groundActionCreateUnit = function(unit, new_hex) {
   var new_unit_type = unit.ground_action_create_unit;
   if (unit.hasComponent('resources') && unit.resources.food >= 30) {
@@ -100,67 +143,47 @@ UnitCommand.p.groundActionMoveUnit = function(unit, current_hex, new_hex) {
   }
 }
 
-//Does the current_hex unit's action unto the new_hex unit
-UnitCommand.p.commandUnitToOtherUnit = function(unit, current_hex,target_hex) {
-
-  //get both units
-  var active_unit = this.units.get(current_hex);
-  var target_unit = this.units.get(target_hex);
-
-  //nothing happens
-
-}
-
-UnitCommand.p.commandUnitToSelf = function(unit, hex) {
-
-  console.log(JSON.stringify(unit.actions));
-  if (unit.hasComponent('self_action_grow')) {
-
-    if (unit.resources.wood >= unit.getGrowCost() ) {
-      unit.resources.wood -= unit.getGrowCost();
-      unit.cityRadius++;
-      unit.capacity.food *= 2;
-      unit.capacity.wood *= 2;
-      unit.capacity.stone *= 2;
-    }
-
-  } 
-
-  //Become another unit if the action is defined
-  else if (unit.hasComponent('self_action_become_unit')) {
-    var type = unit.self_action_become_unit.type;
-    var cost = unit.self_action_become_unit.cost;
-    var cost_resource = unit.self_action_become_unit.resource;
-
-    if (unit.resources[cost_resource] >= cost) {
-      unit.resources[cost_resource] -= cost;
-
-    
-      //keep resources component
-      if (unit.resources != undefined) {
-        var resources = unit.resources;
-      }
-      this.units.remove(hex);
-      this.units.set(hex, new Unit(type) );
-
-      new_unit = this.units.get(hex);
 
 
-      if (new_unit.hasComponent('range')) {
-        new_unit.findRange(this.map, hex);
-      }  
-      if (resources != undefined) {
-        new_unit.resources = resources;
-      }
-    }
-
-
-  } else {
-    this.selectHex('none');
+UnitCommand.p.selfActionGrow = function(unit, hex) {
+  console.log('try growing');
+  if (unit.resources.wood >= unit.getGrowCost() ) {
+    unit.resources.wood -= unit.getGrowCost();
+    unit.cityRadius++;
+    unit.capacity.food *= 2;
+    unit.capacity.wood *= 2;
+    unit.capacity.stone *= 2;
   }
-
 }
 
-UnitCommand.p.moveUnit = function(unit, current_hex,next_hex) {
+UnitCommand.p.selfActionBecomeUnit = function(unit, hex) {
+  console.log('try become unit');
+  var type = unit.self_action_become_unit.type;
+  var cost = unit.self_action_become_unit.cost;
+  var cost_resource = unit.self_action_become_unit.resource;
 
+
+  if (unit.resources.wood >= 1) {
+    unit.resources.wood -= 1;
+
+  
+    //keep resources component
+    if (unit.resources != undefined) {
+      var resources = unit.resources;
+    }
+    console.log('creating house');
+    this.units.remove(hex);
+    this.units.set(hex, new Unit('camp') );
+
+    new_unit = this.units.get(hex);
+
+
+    if (new_unit.hasComponent('range')) {
+      new_unit.findRange(this.map, hex);
+    }  
+    if (resources != undefined) {
+      new_unit.resources = resources;
+    }
+  }
 }
+

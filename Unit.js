@@ -18,7 +18,7 @@ Unit.prototype.setType = function(unit_type) {
   case 'camp':
     setGroundActionCreateUnit(this,'settler');
     setSelfActionGrowCity(this,5);
-    setGraphic(this,'white',2);
+    setGraphic(this,'white',5);
     setElevationRange(this,2,13);
     setMovement(this, 2);
     setCitySize(this,1);
@@ -113,16 +113,31 @@ Unit.prototype.increaseComponent = function(label, value) {
 //
 ////////////////////////////////////
 
+function updateActionButtons(unit) {
+  var action_buttons = document.getElementById('action-buttons');
+  action_buttons.innerHTML = "";
+  for (let action of unit.actions) {
+    let button = getActionButton(action);
+    action_buttons.innerHTML += button;
+  }
+}
+
+function getActionButton(unitAction) {
+  return "<label><input name='actions' type='radio' value='".concat(unitAction.name).concat("''><div class='action-button'>").concat(unitAction.name).concat("</div></label></input>");
+}
+
 //requirements should eventually be a function that can be run on the unit
 //cost would be a function evaluated once the action is taken
-function unitAction(name, target_type, cost, requirements, properties) {
+function unitAction(name, target_type, requirements, cost, effect) {
   this.name = name;
   this.target_type = target_type;
   this.requirements = requirements;
-  this.properties = properties;
+  this.cost = cost;
+  this.effect = effect;
 }
 
 function setGroundActionChangeTerrain(unit, affectable_value, new_value) {
+  unit.actions.push(action);
   unit.ground_action_change_terrain = {};
   unit.ground_action_change_terrain.affectable_value = affectable_value;
   unit.ground_action_change_terrain.new_value = new_value;
@@ -145,8 +160,8 @@ function setSelfActionBecomeUnit(unit, type, resource, cost) {
 }
 
 function setSelfActionGrowCity(unit, base_cost) {
-  var requirement = function(unit){ unit.resources.wood >= 30; };
-  var cost = function(unit){ unit.resources.wood -= 30; };
+  var requirement = function(unit){ unit.resources.wood >= 5; };
+  var cost = function(unit){ unit.resources.wood -= 5; };
 
   var action = new unitAction('grow_city', 'self', requirement, cost);
   if (!unit.actions) {
@@ -155,14 +170,17 @@ function setSelfActionGrowCity(unit, base_cost) {
   unit.actions.push(action);
 
   unit.self_action_grow = base_cost;
-  unit.getGrowCost = function(){return 6*this.cityRadius*this.self_action_grow;};
+  unit.getGrowCost = function(){return 5};
 }
 
 function setGroundActionCreateUnit(unit, new_unit_type) {
   var requirement = function(unit){ unit.resources.food >= 30; };
   var cost = function(unit){ unit.resources.food -= 30; };
-  
-  var action = new unitAction('create_settlers', 'ground', requirement, cost, {unit_type:'settler'});
+  var effect = function(world, hex) { 
+    world.units.sex( hex, new Unit('settler') );
+  }
+
+  var action = new unitAction('create_settlers', 'ground', requirement, cost, effect);
   if (!unit.actions) {
     unit.actions = [];
   }
