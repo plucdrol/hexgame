@@ -6,12 +6,14 @@ Now also helping me learn to use Git better.
 The game will be self-explanatory later, for now you just have to know.
 
 How to play so far:
+# Settler
 * Blue and pink square is a settler.
 * Click him to select him.
 * Click inside his range to move.
 * Don't run out of food!
 * Put him on the yellow dots to get more food.
 
+# Towns
 * Click him again to turn into a town.
 * You need 10 wood to do so.
 * Put him on brown dots to get more food.
