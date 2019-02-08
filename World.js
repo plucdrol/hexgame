@@ -28,7 +28,7 @@ function World(radius) {
 
   //create units map
   this.units = new HexMap();
-  this.units.set(new Hex(0,0), new Unit('land-player'));
+  this.units.set(new Hex(0,0), new Unit('settler'));
 
   //create resources map
   this.resources = new HexMap();
@@ -78,7 +78,7 @@ World.prototype.getUnit = function(hex) {
 }
 
 World.prototype.getResource = function(hex) {
-  return this.resources.getValue(hex);
+  return this.resources.get(hex);
 }
 
 World.prototype.generateResources = function(world_map) {

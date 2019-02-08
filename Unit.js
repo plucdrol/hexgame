@@ -23,7 +23,7 @@ Unit.prototype.setType = function(unit_type) {
     this.size = 2;
     this.minimum_elevation = 2;
     this.maximum_elevation = 13; 
-    this.ground_action_create_unit = 'land-player';
+    this.ground_action_create_unit = 'settler';
     this.self_action_grow = 5;
     this.getGrowCost = function(){return 6*this.cityRadius*this.self_action_grow;};
     this.setCitySize(1);
@@ -32,7 +32,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setCapacity(30,30,30);
     break;
 
-  case 'land-player':
+  case 'settler':
     this.is_unit = true;
     this.setMovement(5);
     this.color = 'blue';

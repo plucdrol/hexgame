@@ -58,6 +58,14 @@
 				clear: both;
 				/*margin-top: 30px;*/
 			}
+			#tooltip {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				font-size: 2em;
+				background: grey;
+				padding: 5px;
+			}
 
 			.action-button {
 				background: grey;
@@ -83,6 +91,7 @@
 			input[type="radio"] {
 			    display: none;
 			}
+
 		</style>
 	</head>
 	<body>
@@ -102,6 +111,10 @@
 			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
 			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
 		</form>	
+
+		<div id='tooltip'>
+			Nothing
+		</div>
 
 		<!-- Javascript after this line -->
 
