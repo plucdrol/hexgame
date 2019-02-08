@@ -54,6 +54,14 @@
 				/*margin-top: 30px;*/
 				z-index: 1;
 			}
+						#tooltip {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				font-size: 2em;
+				background: grey;
+				padding: 5px;
+			}
 
 			.action-button {
 				background: grey;
@@ -100,6 +108,10 @@
 			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
 			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
 		</form>	
+
+		<div id='tooltip'>
+			Tooltip
+		</div>
 
 		<!-- Javascript after this line -->
 
