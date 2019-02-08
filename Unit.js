@@ -16,87 +16,60 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.setMovement(2);
-    this.color = 'white';
-    this.controllable = true;
-    this.range = {};
-    this.size = 2;
-    this.minimum_elevation = 2;
-    this.maximum_elevation = 13; 
-    this.ground_action_create_unit = 'settler';
-    this.self_action_grow = 5;
-    this.getGrowCost = function(){return 6*this.cityRadius*this.self_action_grow;};
-    this.setCitySize(1);
-    this.setCityColor();
-    this.setResources(0,0,0);
-    this.setCapacity(30,30,30);
+    setGroundActionCreateUnit(this,'settler');
+    setSelfActionGrowCity(this,5);
+    setGraphic(this,'white',2);
+    setElevationRange(this,2,13);
+    setMovement(this, 2);
+    setCitySize(this,1);
+    setCityColor(this);
+    setResourceStores(this,0,0,0);
+    setResourceCapacity(this,30,30,30);
     break;
 
   case 'settler':
-    this.is_unit = true;
-    this.setMovement(5);
-    this.color = 'blue';
-    this.controllable = true;
-    this.range = {};
-    this.size = 2;
-    this.minimum_elevation = 2;
-    this.maximum_elevation = 13; 
-    this.self_action_become_unit = {type:'camp', resource:'wood', cost:10};
-    this.setResources(5,0,0);
-    this.setCapacity(5,10,5);
-    this.setCitySize(0);
-    this.setCityColor();
+    this.food_is_range = true;
+    setSelfActionBecomeUnit(this,'camp', 'wood', 10);
+    setGraphic(this,'blue',2);
+    setElevationRange(this,2,13);
+    setMovement(this,5);
+    setResourceStores(this,5,0,0)
+    setResourceCapacity(this,5,10,5);
+    setCitySize(this,0);
+    setCityColor(this);
 
     break;
   
   case 'water-player':
-    this.setMovement(6);
-    this.color = 'white';
-    this.controllable = true;
-    this.range = {};
-    this.size = 2;
-    this.minimum_elevation = 0;
-    this.maximum_elevation = 2; 
-    this.ground_action_change_terrain = {};
-    this.ground_action_change_terrain.affectable_value = 2;
-    this.ground_action_change_terrain.new_value = 1;
-    this.setResources(0,0,0);
-    this.setCitySize(0);
-    this.setCityColor();
+    setGroundActionChangeTerrain(unit, 2, 1);
+    setGraphic(this,'white',2);
+    setElevationRange(this,0,2);
+    setMovement(this,6);
     break;
 
 
   case 'fish':
-    this.color = 'lightblue';
-    this.size = 1;
-    this.resource_type = 'food';
-    this.resource_value = 2;
+    setGraphic(this,'lightblue',1);
+    setResource('food',1);
     break;
   case 'food':
-    this.color = 'yellow';
-    this.size = 1;
-    this.resource_type = 'food';
-    this.resource_value = 1;
+    setGraphic(this,'yellow',2);
+    setResource(this,'food',1);
     break;
   case 'wood':
-    this.color = 'brown';
-    this.size = 1;
-    this.resource_type = 'wood';
-    this.resource_value = 1;
+    setGraphic(this,'brown',2);
+    setResource(this,'wood',1);
     break;
   case 'stone':
-    this.color = 'grey';
-    this.size = 1;
-    this.resource_type = 'stone';
-    this.resource_value = 1;
+    setGraphic(this,'grey',2);
+    setResource(this,'stone',1);
     break;
   case 'terrain':
     this.elevation = 0;
     this.wind = 0;
     break;
   default:
-    this.size = 2;
-    this.color = 'yellow';
+    setGraphic(this,'yellow',2);
     break;
   }
 }
@@ -131,16 +104,51 @@ Unit.prototype.increaseComponent = function(label, value) {
 
 
 
+
+
+
+///////////////////////////////////////////
+//
+//            ACTION COMPONENT
+//
+////////////////////////////////////
+
+function setGroundActionChangeTerrain(unit, affectable_value, new_value) {
+  unit.ground_action_change_terrain = {};
+  unit.ground_action_change_terrain.affectable_value = affectable_value;
+  unit.ground_action_change_terrain.new_value = new_value;
+}
+
+function setSelfActionBecomeUnit(unit, type, resource, cost) {
+  unit.self_action_become_unit = {};
+  unit.self_action_become_unit.type = type;
+  unit.self_action_become_unit.resource = resource;
+  unit.self_action_become_unit.cost = cost;
+}
+
+function setSelfActionGrowCity(unit, base_cost) {
+  unit.self_action_grow = base_cost;
+  unit.getGrowCost = function(){return 6*this.cityRadius*this.self_action_grow;};
+}
+
+function setGroundActionCreateUnit(unit, new_unit_type) {
+  unit.ground_action_create_unit = new_unit_type;
+}
+
 ///////////////////////////////////////////
 //
 //            CITY DISPLAY COMPONENT
 //
 ////////////////////////////////////
 
+function setGraphic(unit,color,size) {
+  unit.color = color;
+  unit.size = size;
+}
 
-Unit.prototype.setCityColor = function() {
-  this.cityRadiusColor = "rgba(255,50,50, 0.4)";
-  this.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
+function setCityColor(unit) {
+  unit.cityRadiusColor = "rgba(255,50,50, 0.4)";
+  unit.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
 }
 
 
@@ -155,16 +163,18 @@ Unit.prototype.setCityColor = function() {
 //
 /////////////////////////////////////////////
 
-
-Unit.prototype.setCitySize = function(size) {
-    this.cityRadius = size;
+function setResource(unit,resource_type, resource_value) {
+  unit.resource_type = resource_type;
+  unit.resource_value = resource_value;
 }
-
-Unit.prototype.setResources = function(food,wood,stone) {
-  this.resources = {'food':food, 'wood':wood, 'stone':stone};
+function setCitySize(unit, size) {
+  unit.cityRadius = size;
 }
-Unit.prototype.setCapacity = function(food,wood,stone) {
-  this.capacity = {'food':food, 'wood':wood, 'stone':stone};
+function setResourceStores(unit, food, wood, stone) {
+  unit.resources = {'food':food, 'wood':wood, 'stone':stone};
+}
+function setResourceCapacity(unit, food, wood, stone) {
+  unit.capacity = {'food':food, 'wood':wood, 'stone':stone};
 }
 
 
@@ -178,27 +188,33 @@ Unit.prototype.setCapacity = function(food,wood,stone) {
 //
 ////////////////////////////////////////////////
 
-Unit.prototype.setMovement = function(movement) {
-  this.setComponent('movement', movement);
-  this.setComponent('movement_left', movement);
+function setElevationRange(unit, minimum, maximum) {
+  unit.minimum_elevation = minimum;
+  unit.maximum_elevation = maximum;
+}
+
+function setMovement(unit, movement) {
+  unit.range = {};
+  unit.movement = movement;
+  unit.movement_left = movement;
 
   //GET NEIGHBORS FUNCTION
-  this.getNeighborsFunction = function(map,hex) {
+  unit.getNeighborsFunction = function(map,hex) {
     return map.getNeighbors(hex);
   }
 
-  this.getFunction = function(map, coord) {
+  unit.getFunction = function(map, coord) {
     return map.getValue(coord);
   }
 
   //TILE COST FUNCTION
-  this.tileCostFunction = function(tile) {
+  unit.tileCostFunction = function(tile) {
 
-    var cost = tile.getComponent('elevation');
-    if (cost > this.getComponent('maximum_elevation')) {
+    var cost = tile.elevation;
+    if (cost > unit.maximum_elevation) {
        cost = undefined;
     }
-    if (cost < this.getComponent('minimum_elevation')) {
+    if (cost < unit.minimum_elevation) {
        cost = undefined;
     }
     return cost;
@@ -207,35 +223,35 @@ Unit.prototype.setMovement = function(movement) {
 
 
   //STEP COST FUNCTION
-  this.stepCostFunction = function(previous_tile, tile) {
+  unit.stepCostFunction = function(previous_tile, tile) {
 
-  	//returns a positive number for uphill movement
-  	// negative number for downhill movement
-  	var cost_this = this.tileCostFunction(tile);
-  	var cost_previous = this.tileCostFunction(previous_tile);
+    //returns a positive number for uphill movement
+    // negative number for downhill movement
+    var cost_this = unit.tileCostFunction(tile);
+    var cost_previous = unit.tileCostFunction(previous_tile);
 
-  	if (cost_this === undefined) {
-  	  return undefined;
-  	}
+    if (cost_this === undefined) {
+      return undefined;
+    }
 
-  	if (cost_previous === undefined) {
-  	  cost_previous = 0;
-  	}
-  	
+    if (cost_previous === undefined) {
+      cost_previous = 0;
+    }
+    
     return 1;
   }
 
   //FIND RANGE FUNCTION
   //find the available movement of the unit and place it in the
   // range component. This code should not be in the bare unit class
-  this.findRange = function(map, position) {
-    let max_movement = this.movement_left;
+  unit.findRange = function(map, position) {
+    let max_movement = unit.movement_left;
 
     //setup movement cost functions
     var self = this;
-    var costFunction = this.stepCostFunction.bind(this);
-    var neighborFunction = this.getNeighborsFunction.bind(this);
-    var getFunction = this.getFunction.bind(this);
+    var costFunction = unit.stepCostFunction.bind(unit);
+    var neighborFunction = unit.getNeighborsFunction.bind(unit);
+    var getFunction = unit.getFunction.bind(unit);
 
     //ask pathfinder for info on area
     var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
@@ -243,8 +259,6 @@ Unit.prototype.setMovement = function(movement) {
     var range = pathfinder.getRange(map, position, max_movement);
 
     //set info for later
-    this.setComponent('range', range);
+    unit.setComponent('range', range);
   }
-
-  
 }
