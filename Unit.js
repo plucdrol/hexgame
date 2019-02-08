@@ -113,6 +113,15 @@ Unit.prototype.increaseComponent = function(label, value) {
 //
 ////////////////////////////////////
 
+//requirements should eventually be a function that can be run on the unit
+//cost would be a function evaluated once the action is taken
+function unitAction(name, target_type, cost, requirements, properties) {
+  this.name = name;
+  this.target_type = target_type;
+  this.requirements = requirements;
+  this.properties = properties;
+}
+
 function setGroundActionChangeTerrain(unit, affectable_value, new_value) {
   unit.ground_action_change_terrain = {};
   unit.ground_action_change_terrain.affectable_value = affectable_value;
@@ -120,6 +129,15 @@ function setGroundActionChangeTerrain(unit, affectable_value, new_value) {
 }
 
 function setSelfActionBecomeUnit(unit, type, resource, cost) {
+  var requirement = function(unit){ unit.resources.wood >= 10; };
+  var cost = function(unit){ unit.resources.wood -= 10; };
+
+  var action = new unitAction('become_city', 'self', requirement, cost);
+  if (!unit.actions) {
+    unit.actions = [];
+  }
+  unit.actions.push(action);
+
   unit.self_action_become_unit = {};
   unit.self_action_become_unit.type = type;
   unit.self_action_become_unit.resource = resource;
@@ -127,11 +145,29 @@ function setSelfActionBecomeUnit(unit, type, resource, cost) {
 }
 
 function setSelfActionGrowCity(unit, base_cost) {
+  var requirement = function(unit){ unit.resources.wood >= 30; };
+  var cost = function(unit){ unit.resources.wood -= 30; };
+
+  var action = new unitAction('grow_city', 'self', requirement, cost);
+  if (!unit.actions) {
+    unit.actions = [];
+  }
+  unit.actions.push(action);
+
   unit.self_action_grow = base_cost;
   unit.getGrowCost = function(){return 6*this.cityRadius*this.self_action_grow;};
 }
 
 function setGroundActionCreateUnit(unit, new_unit_type) {
+  var requirement = function(unit){ unit.resources.food >= 30; };
+  var cost = function(unit){ unit.resources.food -= 30; };
+  
+  var action = new unitAction('create_settlers', 'ground', requirement, cost, {unit_type:'settler'});
+  if (!unit.actions) {
+    unit.actions = [];
+  }
+  unit.actions.push(action);
+
   unit.ground_action_create_unit = new_unit_type;
 }
 
@@ -194,6 +230,15 @@ function setElevationRange(unit, minimum, maximum) {
 }
 
 function setMovement(unit, movement) {
+  var requirement = function(unit){ unit.resources.food >= 1; };
+  var cost = function(unit){ unit.resources.food -= 1; };
+
+  var action = new unitAction('move', 'ground', requirement, cost);
+  if (!unit.actions) {
+    unit.actions = [];
+  }
+  unit.actions.push(action);
+
   unit.range = {};
   unit.movement = movement;
   unit.movement_left = movement;

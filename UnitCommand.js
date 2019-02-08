@@ -13,6 +13,7 @@ function UnitCommand(map, units) {
 UnitCommand.p = UnitCommand.prototype;
 
 UnitCommand.p.commandUnit = function(unit, hex, new_hex) {
+  console.log(JSON.stringify(unit.actions));
   var unit_there = this.units.get(new_hex);
 
   //Do the unit's action if there is something there
@@ -112,6 +113,7 @@ UnitCommand.p.commandUnitToOtherUnit = function(unit, current_hex,target_hex) {
 
 UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 
+  console.log(JSON.stringify(unit.actions));
   if (unit.hasComponent('self_action_grow')) {
 
     if (unit.resources.wood >= unit.getGrowCost() ) {
