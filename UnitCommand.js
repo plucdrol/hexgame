@@ -120,14 +120,13 @@ UnitCommand.p.groundActionMoveUnit = function(unit, current_hex, new_hex) {
     unit.resources.food -= cost;
 
     //calculate movements remaining
-    //unit.movement_left = unit.resources.food;
-    var max_movement = unit.resources.food;//unit.movement_left; 
+    var max_movement = unit.resources.food;
 
-    //update the map
+    //move the unit
     this.units.remove(current_hex);
     this.units.set(new_hex, unit);
 
-    //unit.setComponent('movement_left', max_movement);
+    //calculate the range in the new position
     unit.findRange(this.map, new_hex);
   }
 }
@@ -146,30 +145,30 @@ UnitCommand.p.selfActionGrow = function(unit, hex) {
 }
 
 UnitCommand.p.selfActionBecomeUnit = function(unit, hex) {
-  console.log('try become unit');
+
   var type = unit.self_action_become_unit.type;
   var cost = unit.self_action_become_unit.cost;
   var cost_resource = unit.self_action_become_unit.resource;
 
-
   if (unit.resources.wood >= 1) {
     unit.resources.wood -= 1;
-
   
-    //keep resources component
+    //move resources to the new unit
     if (unit.resources != undefined) {
       var resources = unit.resources;
     }
-    console.log('creating house');
+
+    //replace the unit
     this.units.remove(hex);
     this.units.set(hex, new Unit('camp') );
-
     new_unit = this.units.get(hex);
 
-
+    //calculate the range of the new unit
     if (new_unit.hasComponent('range')) {
       new_unit.findRange(this.map, hex);
     }  
+
+    //assign the resources of the old unit
     if (resources != undefined) {
       new_unit.resources = resources;
     }
