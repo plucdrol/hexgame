@@ -106,11 +106,7 @@
 		</div>
 		
 		<form id='action-buttons' style="position:absolute; bottom: 1em; left: 1em;";>
-			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
-			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
-			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
-			<label><input name='actions' type="radio" value='action-1'><div class='action-button'>Do Action</div></label></input>
-		</form>	
+	  </form>	
 
 		<div id='tooltip'>
 			Nothing

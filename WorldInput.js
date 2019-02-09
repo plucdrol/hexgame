@@ -19,7 +19,7 @@ function WorldInput(world, view) {
   this.view = view;
 
   //this is where the unit controller is created
-  this.unit_controller = new UnitController(this.world.world_map, this.world.units); 
+  this.unit_input = new UnitInput(this.world.world_map, this.world.units); 
   this.hex_hovered = new Hex();
   this.hex_hovered_previous = new Hex();
 
@@ -81,6 +81,7 @@ function WorldInput(world, view) {
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
 
       document.getElementById('tooltip').innerHTML = "";
+      
       //HOVERING OVER RESOURCES
       if (this.hex_hovered)
         this.resource_hovered = this.world.getResource(this.hex_hovered);
@@ -109,14 +110,14 @@ function WorldInput(world, view) {
     if (this.view.getZoom() < 0.06 || this.view.getZoom() > 64*0.06 ) {
       return;
     }
-    if (this.unit_controller != undefined) {
+    if (this.unit_input != undefined) {
 
 
       var world_position = this.view.screenToWorld(screen_position);
       let hex_clicked = this.world.getHex(world_position);
 
       //Only reference to unit controller in WorldInterface
-      this.unit_controller.clickHex(hex_clicked);
+      this.unit_input.clickHex(hex_clicked);
       
       drawScreen();
     }

@@ -50,7 +50,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'fish':
     setGraphic(this,'lightblue',1);
-    setResource('food',1);
+    setResource(this,'food',1);
     break;
   case 'food':
     setGraphic(this,'yellow',2);

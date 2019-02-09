@@ -2,7 +2,7 @@
 //////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
                               
- //             UNIT CONTROLLER
+ //             UNIT INPUT
 
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
@@ -12,7 +12,8 @@
 //  Hex.js
 //  PathFinder.js 
 
-function UnitController(map, units) {
+
+function UnitInput(map, units) {
   this.map = map;
   this.hex_selected = undefined;
   this.city_selected = undefined;
@@ -21,58 +22,7 @@ function UnitController(map, units) {
 
 }
 //-------1---------2---------3---------4---------5---------6--------
-UnitController.p = UnitController.prototype;
-
-UnitController.p.newMap = function(map) {
-  
-  this.map = map;
-  this.units.removeAll();
-}
-
-UnitController.p.createUnit = function(hex, unit_type) {
-    var newUnit = new Unit(unit_type);
-    this.units.set(hex, newUnit);
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-//These should be functions of the World itself
-//It can call the unit controller for the 
-/////////////////////////////////////////////////////////
-                  // UNIT CREATION //
-/////////////////////////////////////////////////////////
-
-
-//returns the Unit at position Hex. only a single unit can be on each hex
-UnitController.p.unitAtPosition = function(hex) {
-  //This function returns false if there is no unit there
-  return this.units.get(hex);
-}
-
-UnitController.p.getUnit = UnitController.p.unitAtPosition;
-
-
-
-
-
-
-
-
-
-
-
-
-
+UnitInput.p = UnitInput.prototype;
 
 
 
@@ -83,10 +33,10 @@ UnitController.p.getUnit = UnitController.p.unitAtPosition;
 
 //Unit selection should be moved into UnitSelection class
 /////////////////////////////////////////////////////////
-                  // UNIT CLICKING //
+                  // UNIT INPUT //
 /////////////////////////////////////////////////////////
 
-UnitController.p.clickHex = function(hex) {
+UnitInput.p.clickHex = function(hex) {
   //if there is already a unit on the hex selected
   if (this.aUnitIsSelected()) {
     this.clickWithUnitSelected(hex);
@@ -109,25 +59,8 @@ writeResources = function(city) {
   writeMessage(message);
 }
 
-UnitController.p.selectNothing = function() {
-  this.hex_selected = undefined;
-  this.city_selected = undefined;
-  clearInterval(this.stop_city_interval_number);
-  clearButtons();
-  writeMessage("");
-}
 
-UnitController.p.selectCity = function(city) {
-  clearInterval(this.stop_city_interval_number);
-  this.city_selected = city;
-  writeResources(city); 
-  function update_function() { 
-    writeResources(city); 
-  };
-  this.stop_city_interval_number = setInterval(update_function, 1000);
-}
-
-UnitController.p.selectHex = function(hex) {
+UnitInput.p.selectHex = function(hex) {
 
   if (hex) {
     if (this.units.get(hex)) {
@@ -146,7 +79,25 @@ UnitController.p.selectHex = function(hex) {
   }
 }
 
-UnitController.p.selectUnit = function(potential_unit) {
+UnitInput.p.selectNothing = function() {
+  this.hex_selected = undefined;
+  this.city_selected = undefined;
+  clearInterval(this.stop_city_interval_number);
+  clearButtons();
+  writeMessage("");
+}
+
+UnitInput.p.selectCity = function(city) {
+  clearInterval(this.stop_city_interval_number);
+  this.city_selected = city;
+  writeResources(city); 
+  function update_function() { 
+    writeResources(city); 
+  };
+  this.stop_city_interval_number = setInterval(update_function, 1000);
+}
+
+UnitInput.p.selectUnit = function(potential_unit) {
 
   if (potential_unit.hasComponent('actions')) {
     updateActionButtons(potential_unit);
@@ -162,18 +113,18 @@ UnitController.p.selectUnit = function(potential_unit) {
   }
 }
 
-UnitController.p.aHexIsSelected = function() {
+UnitInput.p.aHexIsSelected = function() {
   return (this.hex_selected instanceof Hex);
 }
 
-UnitController.p.getHexSelected = function()  {
+UnitInput.p.getHexSelected = function()  {
   if (this.aHexIsSelected())
     return this.hex_selected;
   else
     return false;
 }
 
-UnitController.p.aUnitIsSelected = function() {
+UnitInput.p.aUnitIsSelected = function() {
   if (!this.aHexIsSelected()) 
     return false;
 
@@ -184,16 +135,18 @@ UnitController.p.aUnitIsSelected = function() {
     return false;
   }
 }
-UnitController.p.getUnitSelected = function() {
+
+UnitInput.p.getUnitSelected = function() {
   if (this.aUnitIsSelected()) {
     return this.units.get(this.getHexSelected());
   }
 }
-UnitController.p.clickWithNoSelection = function(hex) {
+
+UnitInput.p.clickWithNoSelection = function(hex) {
   this.selectHex(hex);
 }
 
-UnitController.p.clickWithUnitSelected = function(hex) {
+UnitInput.p.clickWithUnitSelected = function(hex) {
   
   var unit_selected = this.getUnitSelected();
   if (!unit_selected.hasComponent('range') ) {
@@ -213,13 +166,13 @@ UnitController.p.clickWithUnitSelected = function(hex) {
   }
 }
 
-UnitController.p.clickInsideUnitRange = function(hex) {
+UnitInput.p.clickInsideUnitRange = function(hex) {
   //if you are reclicking the unit
   if ( Hex.equals(this.getHexSelected(), hex)) {
     this.reClickUnit(this.getUnitSelected());
     this.selectHex(hex);
   
-  //if you are clicking somewhere else
+  //if you are clicking somewhere else inside its range
   } else {
     var command = new UnitCommand(this.map, this.units);
     command.commandUnit(this.getUnitSelected(), this.getHexSelected(), hex);
@@ -227,12 +180,12 @@ UnitController.p.clickInsideUnitRange = function(hex) {
   }
 }
 
-UnitController.p.reClickUnit = function() {
+UnitInput.p.reClickUnit = function() {
   var command = new UnitCommand(this.map, this.units);
   command.commandUnitToSelf(this.getUnitSelected(),this.getHexSelected());
 }
 
-UnitController.p.clickOutsideUnitRange = function(hex) {
+UnitInput.p.clickOutsideUnitRange = function(hex) {
   this.selectHex(undefined);
   this.clickHex(hex);
 }
