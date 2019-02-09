@@ -1,5 +1,5 @@
 
-
+//This function receives clicks from the UnitInput and starts a unit action
 /////////////////////////////////////////////////////////
                   // UNIT COMMAND //
 /////////////////////////////////////////////////////////
@@ -12,43 +12,36 @@ function UnitCommand(map, units) {
 }
 UnitCommand.p = UnitCommand.prototype;
 
+//Clicking a unit, then clicking somewhere else
 UnitCommand.p.commandUnit = function(unit, hex, new_hex) {
-  console.log(JSON.stringify(unit.actions));
+
   var unit_there = this.units.get(new_hex);
 
-  //Do the unit's action if there is something there
   if (unit_there) {
-    this.commandUnitToOtherUnit(unit, hex, new_hex);
-  
-  //Move the unit there if there is nothing
+    this.commandUnitToOtherUnit(unit, hex, new_hex); 
   } else {  
-
     this.commandUnitToGround(unit, hex, new_hex);
 
   }
 }
 
-//Move the unit from one hex to another hex
+//Clicking a unit, then clicking on the ground
 UnitCommand.p.commandUnitToGround = function(unit, hex, new_hex) {
 
-  //if the unit has an action to create more units
   if (unit.hasComponent('ground_action_create_unit')) {
     this.groundActionCreateUnit(unit, new_hex);
 
-  //if the unit has an action to change the terrain
   } else if (unit.hasComponent('ground_action_change_terrain')) {
     this.groundActionChangeTerrain(unit, new_hex);
 
-  //Move player if unit is a player
   } else {
     this.groundActionMoveUnit(unit, hex, new_hex);
   }
 }
 
+//Clicking a unit, then clicking it again
 UnitCommand.p.commandUnitToSelf = function(unit, hex) {
 
-  console.log(JSON.stringify(unit.actions));
-  console.log(unit.self_action_grow);
   if (unit.hasComponent('self_action_grow')) {
     this.selfActionGrow(unit, hex);
   } 
@@ -59,18 +52,15 @@ UnitCommand.p.commandUnitToSelf = function(unit, hex) {
   } else {
     this.selectHex('none');
   }
-
 }
 
-//Does the current_hex unit's action unto the new_hex unit
+//Clicking a unit, then clicking another unit
 UnitCommand.p.commandUnitToOtherUnit = function(unit, current_hex,target_hex) {
 
-  //get both units
   var active_unit = this.units.get(current_hex);
   var target_unit = this.units.get(target_hex);
 
   //nothing happens
-
 }
 
 
@@ -84,7 +74,6 @@ UnitCommand.p.commandUnitToOtherUnit = function(unit, current_hex,target_hex) {
 
 
 
-//
 
 
 
