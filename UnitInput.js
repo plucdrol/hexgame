@@ -70,7 +70,7 @@ UnitInput.p.selectHex = function(hex) {
       //look if there is a unit
       var potential_unit = this.units.get(hex);
       if (potential_unit) { 
-        this.selectUnit(potential_unit);
+        this.selectUnit(hex, potential_unit);
       }
     } 
   } else {
@@ -97,19 +97,19 @@ UnitInput.p.selectCity = function(city) {
   this.stop_city_interval_number = setInterval(update_function, 1000);
 }
 
-UnitInput.p.selectUnit = function(potential_unit) {
+UnitInput.p.selectUnit = function(hex, unit) {
 
-  if (potential_unit.hasComponent('actions')) {
-    updateActionButtons(potential_unit);
+  if (unit.hasComponent('actions')) {
+    updateActionButtons(unit);
   }
 
   //if the unit exists, find its range
-  if (potential_unit.hasComponent('range')) {
-    potential_unit.findRange(this.map, hex);
+  if (unit.hasComponent('range')) {
+    unit.findRange(this.map, hex);
 
   }
-  if (potential_unit.hasComponent('resources')) {
-    this.selectCity(potential_unit);
+  if (unit.hasComponent('resources')) {
+    this.selectCity(unit);
   }
 }
 
