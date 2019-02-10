@@ -51,18 +51,33 @@ UnitInput.p.clickHex = function(hex) {
     this.clickWithNoSelection(hex);
   }
 }
-clearButtons = function() {
+UnitInput.p.clearButtons = function() {
   document.getElementById('action-buttons').innerHTML = "";
 }
-writeMessage = function(message) {
+UnitInput.p.writeMessage = function(message) {
   document.getElementById('city-resources').innerHTML = message;
 }
-writeResources = function(city) {
+UnitInput.p.writeResources = function(city) {
   var message = "Food:".concat(city.resources.food).concat("/").concat(city.capacity.food)
                  .concat(" Wood:").concat(city.resources.wood).concat("/").concat(city.capacity.wood)
                  .concat(" Stone:").concat(city.resources.stone).concat("/").concat(city.capacity.stone);
-  writeMessage(message);
+  this.writeMessage(message);
 }
+
+UnitInput.p.trackUnitResources = function(unit) {
+  clearInterval(this.stop_city_interval_number);
+  this.writeResources(unit); 
+  function update_function() { 
+    this.writeResources(unit); 
+    this.updateActionButtons(unit);
+  };
+  this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);
+}
+
+
+
+
+
 
 
 UnitInput.p.selectHex = function(hex) {
@@ -84,101 +99,10 @@ UnitInput.p.selectHex = function(hex) {
   }
 }
 
-UnitInput.p.selectNothing = function() {
-  this.hex_selected = undefined;
-  clearInterval(this.stop_city_interval_number);
-  clearButtons();
-  writeMessage("");
-}
-
-UnitInput.p.trackUnitResources = function(unit) {
-  clearInterval(this.stop_city_interval_number);
-  writeResources(unit); 
-  function update_function() { 
-    writeResources(unit); 
-    this.updateActionButtons(unit);
-  };
-  this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-UnitInput.p.updateActionButtons = function(unit) {
-
-  //remember previous action
-  var current_action = this.getSelectedAction();
-
-  //update the action list
-  var action_buttons = document.getElementById('action-buttons');
-  action_buttons.innerHTML = "";
-  for (let action of unit.actions) {
-    //add the action to the list if its requirement is met
-    if (action.activation(unit)) {
-      let button = this.getActionButton(action);
-      action_buttons.innerHTML += button;
-      if (!action.requirement(unit)) {
-        document.getElementById("action-".concat(action.name)).disabled = true;
-      }
-    }
-  }
-
-  //reset the action to the previously selected action
-  if (current_action) {
-    this.selectAction(current_action);
-  }
-}
-
-UnitInput.p.getSelectedAction = function() {
-  var action_buttons = document.getElementsByClassName('action-button-input');
-  for (let input of action_buttons) {
-    if (input.checked) {
-      var current_action = input.id;
-      break;
-    }
-  }
-  return current_action;
-}
-
-UnitInput.p.selectAction = function(action_id) {
-  if (document.getElementById(action_id)) {
-    document.getElementById(action_id).checked = true;
-  }
-}
-
-UnitInput.p.getActionButton = function(unitAction) {
-  return "<label><input class='action-button-input' name='actions' type='radio'"
-          .concat(" id='action-").concat(unitAction.name)
-          .concat("' value='").concat(unitAction.name).concat("'><div class='action-button'>")
-          .concat(unitAction.name).concat("</div></label></input>");
-}
-
-
-
-
-
-
-
-
 UnitInput.p.selectUnit = function(hex, unit) {
 
   if ( unit.hasComponent('actions') ) {
     this.updateActionButtons(unit);
-
   }
 
   //if the unit exists, find its range
@@ -189,6 +113,13 @@ UnitInput.p.selectUnit = function(hex, unit) {
   if (unit.hasComponent('resources')) {
       this.trackUnitResources(unit);
     }
+}
+
+UnitInput.p.selectNothing = function() {
+  this.hex_selected = undefined;
+  clearInterval(this.stop_city_interval_number);
+  this.clearButtons();
+  this.writeMessage("");
 }
 
 UnitInput.p.aHexIsSelected = function() {
@@ -223,6 +154,103 @@ UnitInput.p.getUnitSelected = function() {
 UnitInput.p.clickWithNoSelection = function(hex) {
   this.selectHex(hex);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////
+                  // UNIT ACTIONS //
+/////////////////////////////////////////////////////////
+
+UnitInput.p.selectAction = function(action_id) {
+  if (document.getElementById(action_id)) {
+    document.getElementById(action_id).checked = true;
+  }
+}
+
+UnitInput.p.updateActionButtons = function(unit) {
+
+  //remember previous action
+  var current_action = this.getSelectedAction();
+
+  //update the action list
+  var action_buttons = document.getElementById('action-buttons');
+  action_buttons.innerHTML = "";
+  for (let action of unit.actions) {
+    
+    //only show actions whose activation is met
+    if (action.activation(unit)) {
+      let new_button = this.makeActionButton(action);
+      action_buttons.innerHTML += new_button;
+      
+      //Show actions in grey if their requirements are not met
+      if (!action.requirement(unit)) {
+        document.getElementById("action-".concat(action.name)).disabled = true;
+      }
+    }
+  }
+
+  //reset the action to the previously selected action
+  if (current_action) {
+    this.selectAction(current_action);
+  }
+
+  //select the unit's default action if none is currently selected
+  if (!this.getSelectedAction() && unit.defaultAction) {
+    this.selectAction('action-'.concat(unit.defaultAction.name));
+  }
+}
+
+//Returns the currently selected action of the selected unit
+UnitInput.p.getSelectedAction = function() {
+  var action_buttons = document.getElementsByClassName('action-button-input');
+  for (let input of action_buttons) {
+    if (input.checked) {
+      var current_action = input.id;
+      break;
+    }
+  }
+
+  if (current_action)
+    return current_action;
+  else
+    return false;
+}
+
+UnitInput.p.makeActionButton = function(unitAction) {
+  return "<label><input class='action-button-input' name='actions' type='radio'"
+          .concat(" id='action-").concat(unitAction.name)
+          .concat("' value='").concat(unitAction.name).concat("'><div class='action-button'>")
+          .concat(unitAction.name).concat("</div></label></input>");
+}
+
+
+
+
+
+
+
+
+
+
 
 UnitInput.p.clickWithUnitSelected = function(hex) {
   

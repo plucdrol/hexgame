@@ -35,7 +35,7 @@ Unit.prototype.setType = function(unit_type) {
     setResourceCapacity(this,5,10,5);
     setCitySize(this,0);
     setCityColor(this);
-    setDefaultAction(this, 'Move');
+    setDefaultAction(this, 'move');
 
     break;
   
@@ -153,10 +153,6 @@ function selectAction(unit, action_name) {
   }
 }
 
-function unitAction(name,target,requirement,cost) {
-  this.name = name;
-
-}
 
 function actionMove() {
 
