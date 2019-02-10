@@ -19,8 +19,7 @@ Unit.prototype.setType = function(unit_type) {
     setGroundActionCreateUnit(this,'settler');
     setSelfActionGrowCity(this,5);
     setGraphic(this,'white',5);
-    setElevationRange(this,2,13);
-    setMovement(this, 2);
+    setGroundActionMove(this, 2, 2, 13);
     setCitySize(this,1);
     setCityColor(this);
     setResourceStores(this,0,0,0);
@@ -30,21 +29,20 @@ Unit.prototype.setType = function(unit_type) {
   case 'settler':
     this.food_is_range = true;
     setSelfActionBecomeUnit(this,'camp', 'wood', 10);
+    setGroundActionMove(this, 5, 2, 13);
     setGraphic(this,'blue',2);
-    setElevationRange(this,2,13);
-    setMovement(this,5);
     setResourceStores(this,5,0,0)
     setResourceCapacity(this,5,10,5);
     setCitySize(this,0);
     setCityColor(this);
+    setDefaultAction(this, 'Move');
 
     break;
   
   case 'water-player':
     setGroundActionChangeTerrain(unit, 2, 1);
+    setGroundActionMove(this,6,0,2);
     setGraphic(this,'white',2);
-    setElevationRange(this,0,2);
-    setMovement(this,6);
     break;
 
 
@@ -139,7 +137,21 @@ Unit.prototype.addAction = function( action ) {
 
 //requirements should eventually be a function that can be run on the unit
 //cost would be a function evaluated once the action is taken
+function setDefaultAction(unit, action_name) {
+  for (let action of unit.actions) {
+    if (action.name == action_name) {
+      unit.defaultAction = action;
+    }
+  }
+}
 
+function selectAction(unit, action_name) {
+  for (let action of unit.actions) {
+    if (action.name == action_name) {
+
+    }
+  }
+}
 
 function unitAction(name,target,requirement,cost) {
   this.name = name;
@@ -255,6 +267,26 @@ function actionCreateUnit(unit_type) {
 
 function actionGrowCity() {
   this.name = "Grow city";
+  this.type = "instant";
+
+  this.requirement = function(unit) {
+    return unit.resources.wood >= 5;
+  };
+
+  this.getCost = function(world, unit, position, target) {
+    //calculate the cost of growing the city
+    return { wood: 5 };
+  };
+
+  this.payCost = function(world, unit, position, target) {
+    var wood_cost = this.getCost().wood;
+    unit.resources.wood -= wood_cost;
+  }
+
+  this.effect = function(world, unit, position, target) {
+    //grow the city
+    unit.cityRadius++;
+  }
 }
 
 
@@ -376,9 +408,10 @@ function setElevationRange(unit, minimum, maximum) {
   unit.maximum_elevation = maximum;
 }
 
-function setMovement(unit, movement) {
+function setGroundActionMove(unit, movement, minimum, maximum) {
 
   unit.addAction( new actionMove() );
+  setElevationRange(unit, minimum, maximum);
 
   unit.range = {};
   unit.movement = movement;

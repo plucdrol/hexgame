@@ -32,6 +32,11 @@ UnitInput.p = UnitInput.prototype;
 
 
 
+
+
+
+
+
 //Unit selection should be moved into UnitSelection class
 /////////////////////////////////////////////////////////
                   // UNIT INPUT //
@@ -102,10 +107,24 @@ UnitInput.p.selectCity = function(city) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 function updateActionButtons(unit) {
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
   for (let action of unit.actions) {
+    console.log(JSON.stringify(action));
     //add the action to the list if its requirement is met
     if (action.requirement(unit)) {
       let button = getActionButton(action);
