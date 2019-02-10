@@ -186,6 +186,21 @@ UnitInput.p.selectAction = function(action_id) {
   }
 }
 
+UnitInput.p.getActionRange = function(unit, action) {
+  var costFunction = action.stepCostFunction.bind(unit); //<---- depends on the action
+  var neighborFunction = unit.getNeighborsFunction.bind(unit); //<--- standard for all hex actions
+  var getTileFunction = unit.getTileFunction.bind(unit); //<-- standard for all hex actions
+
+  var pathfinder = new PathFinder(getTileFunction, costFunction, neighborFunction);
+
+  var max_distance = 5;
+  if (action.max_distance)
+    max_distance = action.mac_distance;
+
+  var actionRange = pathfinder.getRange( this.map, position, max_distance);
+  return actionRange;
+}
+
 UnitInput.p.updateActionButtons = function(unit) {
 
   //remember previous action
@@ -251,19 +266,18 @@ UnitInput.p.makeActionButton = function(unitAction) {
 
 
 
-
+//This is where target-actions should take effect
+//Instant effects will happen when the button is pressed instead
 UnitInput.p.clickWithUnitSelected = function(hex) {
   
-  var unit_selected = this.getUnitSelected();
-  if (!unit_selected.hasComponent('range') ) {
+  var unit = this.getUnitSelected();
+  if (!unit.hasComponent('range') ) {
     this.clickOutsideUnitRange(hex);
     return 0;
   }
 
-  var unit_range = unit_selected.getComponent('range');
-
   //if you are clicking inside the unit's range
-  if (listContainsHex(hex, unit_range) ) {
+  if (listContainsHex(hex, unit.range) ) {
     this.clickInsideUnitRange(hex);
 
   //if you are clicking outside the unit's range

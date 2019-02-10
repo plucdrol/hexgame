@@ -158,7 +158,11 @@ function actionMove() {
 
   this.name = "move";
   this.type = "target";
+  this.max_distance = 5;
 
+  this.stepCostFunction = function(previous_tile, tile) {
+    return 1;
+  }
   this.activation = function(unit) {
     return true;
   }
@@ -170,9 +174,9 @@ function actionMove() {
     //calculate the cost of moving
     var costFunction = unit.stepCostFunction.bind(unit);
     var neighborFunction = unit.getNeighborsFunction.bind(unit);
-    var getFunction = unit.getFunction.bind(unit);
+    var getTileFunction = unit.getTileFunction.bind(unit);
 
-    var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
+    var pathfinder = new PathFinder(getTileFunction, costFunction, neighborFunction);
     var foodCost = pathfinder.getCost( this.map, position, target, unit.resources.food );
     return { food: foodCost };
   };
@@ -199,8 +203,12 @@ function actionMove() {
 function actionBuildCamp() {
 
   this.name = "build-camp";
-  this.type = "instant";
-
+  this.type = "target";
+  this.max_distance = 1;
+  
+  this.stepCostFunction = function(previous_tile, tile) {
+    return 1;
+  }
   this.activation = function(unit) {
     return unit.resources.wood >= 1;
   }
@@ -245,7 +253,11 @@ function actionCreateUnit(unit_type) {
   this.name = "Create-".concat(unit_type);
   this.type = "target";
   this.new_unit_type = unit_type;
+  this.max_distance = 2;
 
+  this.stepCostFunction = function(previous_tile, tile) {
+    return 1;
+  }
   this.activation = function(unit) {
     return unit.resources.food >= 1;
   }
@@ -271,8 +283,12 @@ function actionCreateUnit(unit_type) {
 
 function actionGrowCity() {
   this.name = "grow-city";
-  this.type = "instant";
+  this.type = "target";
+  this.max_distance = 0;
 
+  this.stepCostFunction = function(previous_tile, tile) {
+    return 1;
+  }
   this.activation = function(unit) {
     return unit.resources.wood >= 1;
   }
@@ -427,7 +443,7 @@ function setGroundActionMove(unit, movement, minimum, maximum) {
     return map.getNeighbors(hex);
   }
 
-  unit.getFunction = function(map, coord) {
+  unit.getTileFunction = function(map, coord) {
     return map.getValue(coord);
   }
 
@@ -475,10 +491,10 @@ function setGroundActionMove(unit, movement, minimum, maximum) {
     var self = this;
     var costFunction = unit.stepCostFunction.bind(unit);
     var neighborFunction = unit.getNeighborsFunction.bind(unit);
-    var getFunction = unit.getFunction.bind(unit);
+    var getTileFunction = unit.getTileFunction.bind(unit);
 
     //ask pathfinder for info on area
-    var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
+    var pathfinder = new PathFinder(getTileFunction, costFunction, neighborFunction);
     pathfinder.fromUnit = true;
     var range = pathfinder.getRange(map, position, max_movement);
 
