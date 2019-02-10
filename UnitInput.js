@@ -100,9 +100,11 @@ UnitInput.p.selectCity = function(city) {
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
-  if (unit.hasComponent('actions')) {
+  if ( unit.hasComponent('actions') ) {
     updateActionButtons(unit);
-    
+    console.log(JSON.stringify(unit.actions));
+
+
 
   }
 
