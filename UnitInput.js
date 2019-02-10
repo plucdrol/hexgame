@@ -120,8 +120,10 @@ UnitInput.p.trackUnitResources = function(unit) {
 
 UnitInput.p.updateActionButtons = function(unit) {
 
+  //remember previous action
   var current_action = this.getSelectedAction();
 
+  //update the action list
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
   for (let action of unit.actions) {
@@ -134,6 +136,8 @@ UnitInput.p.updateActionButtons = function(unit) {
       }
     }
   }
+
+  //reset the action to the previously selected action
   if (current_action) {
     this.selectAction(current_action);
   }
@@ -141,10 +145,8 @@ UnitInput.p.updateActionButtons = function(unit) {
 
 UnitInput.p.getSelectedAction = function() {
   var action_buttons = document.getElementsByClassName('action-button-input');
-  console.log(action_buttons[0]);
   for (let input of action_buttons) {
     if (input.checked) {
-      console.log('input is checked');
       var current_action = input.id;
       break;
     }
