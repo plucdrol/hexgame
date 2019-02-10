@@ -126,15 +126,53 @@ function getActionButton(unitAction) {
   return "<label><input name='actions' type='radio' value='".concat(unitAction.name).concat("''><div class='action-button'>").concat(unitAction.name).concat("</div></label></input>");
 }
 
+
+
+
 //requirements should eventually be a function that can be run on the unit
 //cost would be a function evaluated once the action is taken
-function unitAction(name, target_type, requirements, cost, effect) {
-  this.name = name;
-  this.target_type = target_type;
-  this.requirements = requirements;
-  this.cost = cost;
-  this.effect = effect;
+
+function moveAction() {
+
+  this.name = "Move";
+
+  this.type = "target";
+
+  this.requirement = function(unit) {
+    unit.resources.food >= 1;
+  };
+
+  this.getCost = function(world, unit, position, target) {
+    //calculate the cost of moving
+    var costFunction = unit.stepCostFunction.bind(unit);
+    var neighborFunction = unit.getNeighborsFunction.bind(unit);
+    var getFunction = unit.getFunction.bind(unit);
+    var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
+    var foodCost = pathfinder.getCost( this.map, position, target, unit.resources.food );
+    return { food: foodCost };
+  };
+
+  this.payCost = function(world, unit, position, target) {
+    var food_cost = this.getCost().food;
+    unit.resources.food -= cost;
+  }
+
+  this.effect = function(world, unit, position, target) {
+    
+    //calculate the cost of moving
+    var costFunction = unit.stepCostFunction.bind(unit);
+    var neighborFunction = unit.getNeighborsFunction.bind(unit);
+    var getFunction = unit.getFunction.bind(unit);
+    var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
+    var cost = pathfinder.getCost( this.map, position, target, unit.resources.food );
+
+    //move the unit
+    this.units.remove(position);
+    this.units.set(target, unit);
+  };
 }
+
+
 
 function setGroundActionChangeTerrain(unit, affectable_value, new_value) {
   unit.actions.push(action);
