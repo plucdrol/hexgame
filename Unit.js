@@ -98,10 +98,11 @@ Unit.prototype.increaseComponent = function(label, value) {
 }
 
 Unit.prototype.addAction = function( action ) {
-  if (!unit.actions) {
-    unit.actions = [];
+  if (!this.actions) {
+    this.actions = [];
   }
-  unit.actions.push( action );
+  console.log('add action');
+  this.actions.push( action );
 }
 
 
@@ -114,29 +115,23 @@ Unit.prototype.addAction = function( action ) {
 
 
 
-///////////////////////////////////////////
-//
-//            ACTION COMPONENT
-//
-////////////////////////////////////
 
-function updateActionButtons(unit) {
-  var action_buttons = document.getElementById('action-buttons');
-  action_buttons.innerHTML = "";
-  unit.actions = [];
-  for (let action of unit.actions) {
-    //add the action to the list if its requirement is met
-    if (action.requirement(unit)) {
-      let button = getActionButton(action);
-      action_buttons.innerHTML += button;
-      unit.actions.push(action);
-    }
-  }
-}
 
-function getActionButton(unitAction) {
-  return "<label><input name='actions' type='radio' value='".concat(unitAction.name).concat("''><div class='action-button'>").concat(unitAction.name).concat("</div></label></input>");
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -157,7 +152,7 @@ function actionMove() {
   this.type = "target";
 
   this.requirement = function(unit) {
-    unit.resources.food >= 1;
+    return unit.resources.food >= 1;
   };
 
   this.getCost = function(world, unit, position, target) {
@@ -184,6 +179,11 @@ function actionMove() {
   };
 }
 
+
+
+
+
+
 //This action transforms the unit into a camp
 function actionBuildCamp() {
 
@@ -191,7 +191,7 @@ function actionBuildCamp() {
   this.type = "instant";
 
   this.requirement = function(unit) {
-    unit.resources.wood >= 1;
+    return unit.resources.wood >= 1;
   };
 
   this.getCost = function(world, unit, position, target) {
@@ -222,6 +222,9 @@ function actionBuildCamp() {
 
 
 
+
+
+
 //This action transforms the unit into a camp
 function actionCreateUnit(unit_type) {
 
@@ -230,7 +233,7 @@ function actionCreateUnit(unit_type) {
   this.new_unit_type = unit_type;
 
   this.requirement = function(unit) {
-    unit.resources.food >= 30;
+    return unit.resources.food >= 30;
   };
 
   this.getCost = function(world, unit, position, target) {
@@ -253,6 +256,34 @@ function actionCreateUnit(unit_type) {
 function actionGrowCity() {
   this.name = "Grow city";
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

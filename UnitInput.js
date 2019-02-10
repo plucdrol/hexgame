@@ -98,11 +98,33 @@ UnitInput.p.selectCity = function(city) {
   this.stop_city_interval_number = setInterval(update_function, 1000);
 }
 
+
+
+
+
+function updateActionButtons(unit) {
+  var action_buttons = document.getElementById('action-buttons');
+  action_buttons.innerHTML = "";
+  for (let action of unit.actions) {
+    //add the action to the list if its requirement is met
+    if (action.requirement(unit)) {
+      let button = getActionButton(action);
+      action_buttons.innerHTML += button;
+    }
+  }
+}
+
+function getActionButton(unitAction) {
+  return "<label><input name='actions' type='radio' value='".concat(unitAction.name).concat("''><div class='action-button'>").concat(unitAction.name).concat("</div></label></input>");
+}
+
 UnitInput.p.selectUnit = function(hex, unit) {
 
   if ( unit.hasComponent('actions') ) {
     updateActionButtons(unit);
-    console.log(JSON.stringify(unit.actions));
+    console.log(JSON.stringify(unit.actions[0]));
+    console.log(JSON.stringify(unit.actions[1]));
+    console.log(JSON.stringify(unit.actions[2]));
 
 
 
