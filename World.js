@@ -124,8 +124,6 @@ World.prototype.gatherCityResources = function(world) {
   
   return function(){
 
-
-
     //For all units
     for (let unit_hex of world.units.getHexArray() )  {
       //if they are a city

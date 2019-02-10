@@ -104,7 +104,7 @@ UnitInput.p.selectUnit = function(hex, unit) {
   
   if ( unit.hasComponent('actions') ) {
     var current_action = this.updateActionButtons(unit);
-    unit.range = this.getActionRange( unit, this.getSelectedAction() );
+    unit.range = this.getActionRange( unit, hex, this.getSelectedAction() );
   }
 
   //if the unit exists, find its range
@@ -196,8 +196,8 @@ UnitInput.p.selectActionById = function(action_id) {
   }
 }
 
-UnitInput.p.getActionRange = function(unit, action) {
-  var costFunction = action.stepCostFunction.bind(unit); //<---- depends on the action
+UnitInput.p.getActionRange = function(unit, hex, action) {
+  var costFunction = unit.stepCostFunction.bind(unit); //<---- depends on the action
   var neighborFunction = unit.getNeighborsFunction.bind(unit); //<--- standard for all hex actions
   var getTileFunction = unit.getTileFunction.bind(unit); //<-- standard for all hex actions
 
@@ -205,9 +205,9 @@ UnitInput.p.getActionRange = function(unit, action) {
 
   var max_distance = 5;
   if (action.max_distance)
-    max_distance = action.mac_distance;
+    max_distance = action.max_distance;
 
-  var actionRange = pathfinder.getRange( this.map, position, max_distance );
+  var actionRange = pathfinder.getRange( this.map, hex, max_distance );
   return actionRange;
 }
 
@@ -244,7 +244,12 @@ UnitInput.p.updateActionButtons = function(unit) {
   }
 }
 
-//Returns the currently selected action of the selected unit
+//returns the actual action object
+UnitInput.p.getSelectedAction = function() {
+  return this.getActionFromId(this.units.get(this.hex_selected), this.getSelectedActionId());
+}
+
+//Returns the currently selected action_id of the selected unit
 UnitInput.p.getSelectedActionId = function() {
   var action_buttons = document.getElementsByClassName('action-button-input');
   for (let input of action_buttons) {

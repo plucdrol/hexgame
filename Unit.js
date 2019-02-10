@@ -160,9 +160,6 @@ function actionMove() {
   this.type = "target";
   this.max_distance = 5;
 
-  this.stepCostFunction = function(previous_tile, tile) {
-    return 1;
-  }
   this.activation = function(unit) {
     return true;
   }
@@ -465,17 +462,10 @@ function setGroundActionMove(unit, movement, minimum, maximum) {
   //STEP COST FUNCTION
   unit.stepCostFunction = function(previous_tile, tile) {
 
-    //returns a positive number for uphill movement
-    // negative number for downhill movement
     var cost_this = unit.tileCostFunction(tile);
-    var cost_previous = unit.tileCostFunction(previous_tile);
 
     if (cost_this === undefined) {
       return undefined;
-    }
-
-    if (cost_previous === undefined) {
-      cost_previous = 0;
     }
     
     return 1;
