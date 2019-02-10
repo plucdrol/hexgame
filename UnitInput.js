@@ -96,8 +96,9 @@ UnitInput.p.trackUnitResources = function(unit) {
   writeResources(unit); 
   function update_function() { 
     writeResources(unit); 
+    this.updateActionButtons(unit);
   };
-  this.stop_city_interval_number = setInterval(update_function, 1000);
+  this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);
 }
 
 
@@ -118,21 +119,58 @@ UnitInput.p.trackUnitResources = function(unit) {
 
 
 UnitInput.p.updateActionButtons = function(unit) {
+
+  var current_action = this.getSelectedAction();
+
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
   for (let action of unit.actions) {
-    console.log(JSON.stringify(action));
     //add the action to the list if its requirement is met
     if (action.activation(unit)) {
       let button = this.getActionButton(action);
       action_buttons.innerHTML += button;
+      if (!action.requirement(unit)) {
+        document.getElementById("action-".concat(action.name)).disabled = true;
+      }
     }
+  }
+  if (current_action) {
+    this.selectAction(current_action);
+  }
+}
+
+UnitInput.p.getSelectedAction = function() {
+  var action_buttons = document.getElementsByClassName('action-button-input');
+  console.log(action_buttons[0]);
+  for (let input of action_buttons) {
+    if (input.checked) {
+      console.log('input is checked');
+      var current_action = input.id;
+      break;
+    }
+  }
+  return current_action;
+}
+
+UnitInput.p.selectAction = function(action_id) {
+  if (document.getElementById(action_id)) {
+    document.getElementById(action_id).checked = true;
   }
 }
 
 UnitInput.p.getActionButton = function(unitAction) {
-  return "<label><input name='actions' type='radio' value='".concat(unitAction.name).concat("''><div class='action-button'>").concat(unitAction.name).concat("</div></label></input>");
+  return "<label><input class='action-button-input' name='actions' type='radio'"
+          .concat(" id='action-").concat(unitAction.name)
+          .concat("' value='").concat(unitAction.name).concat("'><div class='action-button'>")
+          .concat(unitAction.name).concat("</div></label></input>");
 }
+
+
+
+
+
+
+
 
 UnitInput.p.selectUnit = function(hex, unit) {
 

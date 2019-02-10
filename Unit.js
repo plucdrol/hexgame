@@ -160,7 +160,7 @@ function unitAction(name,target,requirement,cost) {
 
 function actionMove() {
 
-  this.name = "Move";
+  this.name = "move";
   this.type = "target";
 
   this.activation = function(unit) {
@@ -202,14 +202,14 @@ function actionMove() {
 //This action transforms the unit into a camp
 function actionBuildCamp() {
 
-  this.name = "Build Camp";
+  this.name = "build-camp";
   this.type = "instant";
 
   this.activation = function(unit) {
-    return true;
+    return unit.resources.wood >= 1;
   }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 5;
+    return unit.resources.wood >= 10;
   };
 
   this.getCost = function(world, unit, position, target) {
@@ -246,7 +246,7 @@ function actionBuildCamp() {
 //This action transforms the unit into a camp
 function actionCreateUnit(unit_type) {
 
-  this.name = "Create ".concat(unit_type);
+  this.name = "Create-".concat(unit_type);
   this.type = "target";
   this.new_unit_type = unit_type;
 
@@ -274,7 +274,7 @@ function actionCreateUnit(unit_type) {
 }
 
 function actionGrowCity() {
-  this.name = "Grow city";
+  this.name = "grow-city";
   this.type = "instant";
 
   this.activation = function(unit) {

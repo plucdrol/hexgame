@@ -92,6 +92,15 @@
 			    display: none;
 			}
 
+			input[type="radio"][disabled] + .action-button {
+				background: #aaa;
+				color: #ccc;
+				border-bottom-color: lightgrey;
+		    border-right-color: lightgrey;
+		    border-top-color: white;
+		    border-left-color: white;
+			}
+
 		</style>
 	</head>
 	<body>
