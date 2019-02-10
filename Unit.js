@@ -148,7 +148,7 @@ function setDefaultAction(unit, action_name) {
 function selectAction(unit, action_name) {
   for (let action of unit.actions) {
     if (action.name == action_name) {
-
+      document.getElementById("_1234").checked = true;
     }
   }
 }
@@ -163,6 +163,9 @@ function actionMove() {
   this.name = "Move";
   this.type = "target";
 
+  this.activation = function(unit) {
+    return true;
+  }
   this.requirement = function(unit) {
     return unit.resources.food >= 1;
   };
@@ -202,8 +205,11 @@ function actionBuildCamp() {
   this.name = "Build Camp";
   this.type = "instant";
 
+  this.activation = function(unit) {
+    return true;
+  }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 1;
+    return unit.resources.wood >= 5;
   };
 
   this.getCost = function(world, unit, position, target) {
@@ -244,12 +250,14 @@ function actionCreateUnit(unit_type) {
   this.type = "target";
   this.new_unit_type = unit_type;
 
+  this.activation = function(unit) {
+    return unit.resources.food >= 1;
+  }
   this.requirement = function(unit) {
     return unit.resources.food >= 30;
   };
 
   this.getCost = function(world, unit, position, target) {
-    //calculate the cost of creating the unit
     return { food: 30 };
   };
 
@@ -269,12 +277,14 @@ function actionGrowCity() {
   this.name = "Grow city";
   this.type = "instant";
 
+  this.activation = function(unit) {
+    return unit.resources.wood >= 1;
+  }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 5;
+    return unit.resources.wood >= 10;
   };
 
   this.getCost = function(world, unit, position, target) {
-    //calculate the cost of growing the city
     return { wood: 5 };
   };
 
@@ -284,7 +294,6 @@ function actionGrowCity() {
   }
 
   this.effect = function(world, unit, position, target) {
-    //grow the city
     unit.cityRadius++;
   }
 }

@@ -126,7 +126,7 @@ function updateActionButtons(unit) {
   for (let action of unit.actions) {
     console.log(JSON.stringify(action));
     //add the action to the list if its requirement is met
-    if (action.requirement(unit)) {
+    if (action.activation(unit)) {
       let button = getActionButton(action);
       action_buttons.innerHTML += button;
     }
