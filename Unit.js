@@ -117,8 +117,11 @@ function updateActionButtons(unit) {
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
   for (let action of unit.actions) {
-    let button = getActionButton(action);
-    action_buttons.innerHTML += button;
+    //add the action to the list if its requirement is met
+    if (action.requirement(unit)) {
+      let button = getActionButton(action);
+      action_buttons.innerHTML += button;
+    }
   }
 }
 
@@ -129,13 +132,15 @@ function getActionButton(unitAction) {
 
 
 
+
+
+
 //requirements should eventually be a function that can be run on the unit
 //cost would be a function evaluated once the action is taken
 
-function moveAction() {
+function actionMove() {
 
   this.name = "Move";
-
   this.type = "target";
 
   this.requirement = function(unit) {
@@ -147,6 +152,7 @@ function moveAction() {
     var costFunction = unit.stepCostFunction.bind(unit);
     var neighborFunction = unit.getNeighborsFunction.bind(unit);
     var getFunction = unit.getFunction.bind(unit);
+
     var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
     var foodCost = pathfinder.getCost( this.map, position, target, unit.resources.food );
     return { food: foodCost };
@@ -154,23 +160,84 @@ function moveAction() {
 
   this.payCost = function(world, unit, position, target) {
     var food_cost = this.getCost().food;
-    unit.resources.food -= cost;
+    unit.resources.food -= food_cost;
   }
 
   this.effect = function(world, unit, position, target) {
     
-    //calculate the cost of moving
-    var costFunction = unit.stepCostFunction.bind(unit);
-    var neighborFunction = unit.getNeighborsFunction.bind(unit);
-    var getFunction = unit.getFunction.bind(unit);
-    var pathfinder = new PathFinder(getFunction, costFunction, neighborFunction);
-    var cost = pathfinder.getCost( this.map, position, target, unit.resources.food );
-
     //move the unit
     this.units.remove(position);
     this.units.set(target, unit);
   };
 }
+
+//This action transforms the unit into a camp
+function actionBuildCamp() {
+
+  this.name = "Build Camp";
+  this.type = "instant";
+
+  this.requirement = function(unit) {
+    unit.resources.wood >= 1;
+  };
+
+  this.getCost = function(world, unit, position, target) {
+    //calculate the cost of moving
+    return { wood: 5 };
+  };
+
+  this.payCost = function(world, unit, position, target) {
+    var wood_cost = this.getCost().wood;
+    unit.resources.wood -= wood_cost;
+  }
+
+  this.effect = function(world, unit, position, target) {
+ 
+    //replace the unit
+    world.units.remove( position );
+    world.units.set( position, new Unit('camp') );
+    new_unit = world.units.get( position );
+
+    //keep resources of the old unit
+    if (unit.resources) {
+      new_unit.resources = unit.resources;
+    }
+
+  }
+
+}
+
+
+
+//This action transforms the unit into a camp
+function actionCreateUnit(unit_type) {
+
+  this.name = "Create ".concat(unit_type);
+  this.type = "target";
+  this.new_unit_type = unit_type;
+
+  this.requirement = function(unit) {
+    unit.resources.food >= 30;
+  };
+
+  this.getCost = function(world, unit, position, target) {
+    //calculate the cost of creating the unit
+    return { food: 30 };
+  };
+
+  this.payCost = function(world, unit, position, target) {
+    var food_cost = this.getCost().food;
+    unit.resources.food -= food_cost;
+  }
+
+  this.effect = function(world, unit, position, target) {
+    //Create a unit_type at the target location
+    world.units.set(target, new Unit(this.new_unit_type));
+  }
+
+}
+
+
 
 
 

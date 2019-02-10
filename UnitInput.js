@@ -19,6 +19,7 @@ function UnitInput(map, units) {
   this.city_selected = undefined;
   this.units = units;
   this.stop_city_interval_number = 0;
+  this.action_selected = undefined;
 
 }
 //-------1---------2---------3---------4---------5---------6--------
@@ -101,6 +102,8 @@ UnitInput.p.selectUnit = function(hex, unit) {
 
   if (unit.hasComponent('actions')) {
     updateActionButtons(unit);
+    
+
   }
 
   //if the unit exists, find its range
