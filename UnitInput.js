@@ -16,7 +16,6 @@
 function UnitInput(map, units) {
   this.map = map;
   this.hex_selected = undefined;
-  this.city_selected = undefined;
   this.units = units;
   this.stop_city_interval_number = 0;
   this.action_selected = undefined;
@@ -87,18 +86,16 @@ UnitInput.p.selectHex = function(hex) {
 
 UnitInput.p.selectNothing = function() {
   this.hex_selected = undefined;
-  this.city_selected = undefined;
   clearInterval(this.stop_city_interval_number);
   clearButtons();
   writeMessage("");
 }
 
-UnitInput.p.selectCity = function(city) {
+UnitInput.p.trackUnitResources = function(unit) {
   clearInterval(this.stop_city_interval_number);
-  this.city_selected = city;
-  writeResources(city); 
+  writeResources(unit); 
   function update_function() { 
-    writeResources(city); 
+    writeResources(unit); 
   };
   this.stop_city_interval_number = setInterval(update_function, 1000);
 }
@@ -120,32 +117,27 @@ UnitInput.p.selectCity = function(city) {
 
 
 
-function updateActionButtons(unit) {
+UnitInput.p.updateActionButtons = function(unit) {
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
   for (let action of unit.actions) {
     console.log(JSON.stringify(action));
     //add the action to the list if its requirement is met
     if (action.activation(unit)) {
-      let button = getActionButton(action);
+      let button = this.getActionButton(action);
       action_buttons.innerHTML += button;
     }
   }
 }
 
-function getActionButton(unitAction) {
+UnitInput.p.getActionButton = function(unitAction) {
   return "<label><input name='actions' type='radio' value='".concat(unitAction.name).concat("''><div class='action-button'>").concat(unitAction.name).concat("</div></label></input>");
 }
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
   if ( unit.hasComponent('actions') ) {
-    updateActionButtons(unit);
-    console.log(JSON.stringify(unit.actions[0]));
-    console.log(JSON.stringify(unit.actions[1]));
-    console.log(JSON.stringify(unit.actions[2]));
-
-
+    this.updateActionButtons(unit);
 
   }
 
@@ -155,8 +147,8 @@ UnitInput.p.selectUnit = function(hex, unit) {
 
   }
   if (unit.hasComponent('resources')) {
-    this.selectCity(unit);
-  }
+      this.trackUnitResources(unit);
+    }
 }
 
 UnitInput.p.aHexIsSelected = function() {
