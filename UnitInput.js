@@ -101,15 +101,17 @@ UnitInput.p.selectHex = function(hex) {
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
+  
   if ( unit.hasComponent('actions') ) {
-    this.updateActionButtons(unit);
+    var current_action = this.updateActionButtons(unit);
+    unit.range = this.getActionRange( unit, this.getSelectedAction() );
   }
 
   //if the unit exists, find its range
-  if (unit.hasComponent('range')) {
-    unit.findRange(this.map, hex);
+  //if (unit.hasComponent('range')) {
+    //unit.findRange(this.map, hex);
 
-  }
+  //}
   if (unit.hasComponent('resources')) {
       this.trackUnitResources(unit);
     }
@@ -180,7 +182,15 @@ UnitInput.p.clickWithNoSelection = function(hex) {
                   // UNIT ACTIONS //
 /////////////////////////////////////////////////////////
 
-UnitInput.p.selectAction = function(action_id) {
+UnitInput.p.getActionFromId = function(unit, action_id) {
+  for (let action of unit.actions) {
+    if ('action-'.concat(action.name) == action_id) {
+      return action;
+    }
+  }
+}
+
+UnitInput.p.selectActionById = function(action_id) {
   if (document.getElementById(action_id)) {
     document.getElementById(action_id).checked = true;
   }
@@ -197,14 +207,14 @@ UnitInput.p.getActionRange = function(unit, action) {
   if (action.max_distance)
     max_distance = action.mac_distance;
 
-  var actionRange = pathfinder.getRange( this.map, position, max_distance);
+  var actionRange = pathfinder.getRange( this.map, position, max_distance );
   return actionRange;
 }
 
 UnitInput.p.updateActionButtons = function(unit) {
 
   //remember previous action
-  var current_action = this.getSelectedAction();
+  var current_action = this.getSelectedActionId();
 
   //update the action list
   var action_buttons = document.getElementById('action-buttons');
@@ -225,17 +235,17 @@ UnitInput.p.updateActionButtons = function(unit) {
 
   //reset the action to the previously selected action
   if (current_action) {
-    this.selectAction(current_action);
+    this.selectActionById(current_action);
   }
 
   //select the unit's default action if none is currently selected
-  if (!this.getSelectedAction() && unit.defaultAction) {
-    this.selectAction('action-'.concat(unit.defaultAction.name));
+  if (!this.getSelectedActionId() && unit.defaultAction) {
+    this.selectActionById('action-'.concat(unit.defaultAction.name));
   }
 }
 
 //Returns the currently selected action of the selected unit
-UnitInput.p.getSelectedAction = function() {
+UnitInput.p.getSelectedActionId = function() {
   var action_buttons = document.getElementsByClassName('action-button-input');
   for (let input of action_buttons) {
     if (input.checked) {

@@ -157,7 +157,7 @@ World.prototype.gatherCityResources = function(world) {
       if (unit.food_is_range) {
         let food = unit.resources.food;
         unit.movement_left = food;
-        unit.findRange(world.world_map, unit_hex);
+        //unit.findRange(world.world_map, unit_hex);
       }
     }
     drawScreen();
