@@ -305,27 +305,14 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
 
   //get the current action
   let action = this.getSelectedAction();
+  
   //then pay its cost and do the effect
   action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
   action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
 
-
-  //if you are reclicking the unit
-  //if ( Hex.equals(this.getHexSelected(), hex)) {
-    //this.reClickUnit(this.getUnitSelected());
+  //and select the new location (usually)
   this.selectHex(hex);
   
-  //if you are clicking somewhere else inside its range
-  //} else {
-    //var command = new UnitCommand(this.map, this.units);
-    //ommand.commandUnit(this.getUnitSelected(), this.getHexSelected(), hex);
-    //this.selectHex(hex);
-  //}
-}
-
-UnitInput.p.reClickUnit = function() {
-  var command = new UnitCommand(this.map, this.units);
-  command.commandUnitToSelf(this.getUnitSelected(),this.getHexSelected());
 }
 
 UnitInput.p.clickOutsideUnitRange = function(hex) {
