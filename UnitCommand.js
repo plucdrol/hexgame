@@ -1,5 +1,5 @@
 
-//This function receives clicks from the UnitInput and starts a unit action
+//This function receives clicks from the Uni Input and starts a unit action
 /////////////////////////////////////////////////////////
                   // UNIT COMMAND //
 /////////////////////////////////////////////////////////

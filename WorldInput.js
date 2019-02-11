@@ -19,7 +19,7 @@ function WorldInput(world, view) {
   this.view = view;
 
   //this is where the unit controller is created
-  this.unit_input = new UnitInput(this.world.world_map, this.world.units); 
+  this.unit_input = new UnitInput(world); 
   this.hex_hovered = new Hex();
   this.hex_hovered_previous = new Hex();
 

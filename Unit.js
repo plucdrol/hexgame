@@ -158,6 +158,7 @@ function actionMove() {
 
   this.name = "move";
   this.type = "target";
+  this.min_distance = 1;
   this.max_distance = 5;
 
   this.activation = function(unit) {
@@ -174,20 +175,20 @@ function actionMove() {
     var getTileFunction = unit.getTileFunction.bind(unit);
 
     var pathfinder = new PathFinder(getTileFunction, costFunction, neighborFunction);
-    var foodCost = pathfinder.getCost( this.map, position, target, unit.resources.food );
+    var foodCost = pathfinder.getCost( world.world_map, position, target, unit.resources.food );
     return { food: foodCost };
   };
 
   this.payCost = function(world, unit, position, target) {
-    var food_cost = this.getCost().food;
+    var food_cost = this.getCost(world, unit, position, target).food;
     unit.resources.food -= food_cost;
   }
 
   this.effect = function(world, unit, position, target) {
     
     //move the unit
-    this.units.remove(position);
-    this.units.set(target, unit);
+    world.units.remove(position);
+    world.units.set(target, unit);
   };
 }
 
@@ -201,6 +202,7 @@ function actionBuildCamp() {
 
   this.name = "build-camp";
   this.type = "target";
+  this.min_distance = 1;
   this.max_distance = 1;
   
   this.stepCostFunction = function(previous_tile, tile) {
@@ -219,7 +221,7 @@ function actionBuildCamp() {
   };
 
   this.payCost = function(world, unit, position, target) {
-    var wood_cost = this.getCost().wood;
+    var wood_cost = this.getCost(world, unit, position, target).wood;
     unit.resources.wood -= wood_cost;
   }
 
@@ -250,6 +252,7 @@ function actionCreateUnit(unit_type) {
   this.name = "Create-".concat(unit_type);
   this.type = "target";
   this.new_unit_type = unit_type;
+  this.min_distance = 1;
   this.max_distance = 2;
 
   this.stepCostFunction = function(previous_tile, tile) {
@@ -267,7 +270,7 @@ function actionCreateUnit(unit_type) {
   };
 
   this.payCost = function(world, unit, position, target) {
-    var food_cost = this.getCost().food;
+    var food_cost = this.getCost(world, unit, position, target).food;
     unit.resources.food -= food_cost;
   }
 
@@ -281,6 +284,7 @@ function actionCreateUnit(unit_type) {
 function actionGrowCity() {
   this.name = "grow-city";
   this.type = "target";
+  this.min_distance = 0;
   this.max_distance = 0;
 
   this.stepCostFunction = function(previous_tile, tile) {
@@ -293,17 +297,20 @@ function actionGrowCity() {
     return unit.resources.wood >= 10;
   };
 
-  this.getCost = function(world, unit, position, target) {
+  this.getCost = function(map, unit, position, target) {
     return { wood: 5 };
   };
 
-  this.payCost = function(world, unit, position, target) {
-    var wood_cost = this.getCost().wood;
+  this.payCost = function(map, unit, position, target) {
+    var wood_cost = this.getCost(map, unit, position, target).wood;
     unit.resources.wood -= wood_cost;
   }
 
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(units, unit, position, target) {
     unit.cityRadius++;
+    unit.capacity.food *= 2;
+    unit.capacity.wood *= 2;
+    unit.capacity.stone *= 2;
   }
 }
 

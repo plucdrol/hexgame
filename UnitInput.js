@@ -13,10 +13,10 @@
 //  PathFinder.js 
 
 
-function UnitInput(map, units) {
-  this.map = map;
+function UnitInput(world) {
+  this.world = world;
   this.hex_selected = undefined;
-  this.units = units;
+  this.units = world.units;
   this.stop_city_interval_number = 0;
   this.action_selected = undefined;
 
@@ -207,7 +207,7 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
   if (action.max_distance)
     max_distance = action.max_distance;
 
-  var actionRange = pathfinder.getRange( this.map, hex, max_distance );
+  var actionRange = pathfinder.getRange( this.world.world_map, hex, max_distance );
   return actionRange;
 }
 
@@ -302,17 +302,25 @@ UnitInput.p.clickWithUnitSelected = function(hex) {
 }
 
 UnitInput.p.clickInsideUnitRange = function(hex) {
+
+  //get the current action
+  let action = this.getSelectedAction();
+  //then pay its cost and do the effect
+  action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+  action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+
+
   //if you are reclicking the unit
-  if ( Hex.equals(this.getHexSelected(), hex)) {
-    this.reClickUnit(this.getUnitSelected());
-    this.selectHex(hex);
+  //if ( Hex.equals(this.getHexSelected(), hex)) {
+    //this.reClickUnit(this.getUnitSelected());
+  this.selectHex(hex);
   
   //if you are clicking somewhere else inside its range
-  } else {
-    var command = new UnitCommand(this.map, this.units);
-    command.commandUnit(this.getUnitSelected(), this.getHexSelected(), hex);
-    this.selectHex(hex);
-  }
+  //} else {
+    //var command = new UnitCommand(this.map, this.units);
+    //ommand.commandUnit(this.getUnitSelected(), this.getHexSelected(), hex);
+    //this.selectHex(hex);
+  //}
 }
 
 UnitInput.p.reClickUnit = function() {
