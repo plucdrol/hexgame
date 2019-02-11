@@ -24,6 +24,7 @@ Unit.prototype.setType = function(unit_type) {
     setCityColor(this);
     setResourceStores(this,0,0,0);
     setResourceCapacity(this,30,30,30);
+    setDefaultAction(this, 'create-settler');
     break;
 
   case 'settler':
@@ -168,6 +169,10 @@ function actionMove() {
     return unit.resources.food >= 1;
   };
 
+  this.displayCost = function(unit) {
+    return "1 food/step";
+  }
+
   this.getCost = function(world, unit, position, target) {
     //calculate the cost of moving
     var costFunction = unit.stepCostFunction.bind(unit);
@@ -212,9 +217,12 @@ function actionBuildCamp() {
     return unit.resources.wood >= 1;
   }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 10;
+    return unit.resources.wood >= 5;
   };
 
+  this.displayCost = function(unit) {
+    return "5 wood";
+  }
   this.getCost = function(world, unit, position, target) {
     //calculate the cost of moving
     return { wood: 5 };
@@ -249,7 +257,7 @@ function actionBuildCamp() {
 //This action transforms the unit into a camp
 function actionCreateUnit(unit_type) {
 
-  this.name = "Create-".concat(unit_type);
+  this.name = "create-".concat(unit_type);
   this.type = "target";
   this.new_unit_type = unit_type;
   this.min_distance = 1;
@@ -265,6 +273,9 @@ function actionCreateUnit(unit_type) {
     return unit.resources.food >= 30;
   };
 
+  this.displayCost = function(unit) {
+    return "30 food";
+  }
   this.getCost = function(world, unit, position, target) {
     return { food: 30 };
   };
@@ -294,11 +305,14 @@ function actionGrowCity() {
     return unit.resources.wood >= 1;
   }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 10;
+    return unit.resources.wood >= unit.cityRadius*30;
   };
 
+  this.displayCost = function(unit) {
+    return (unit.cityRadius*30).toString().concat(" wood");
+  }
   this.getCost = function(map, unit, position, target) {
-    return { wood: 5 };
+    return { wood: unit.cityRadius*30 };
   };
 
   this.payCost = function(map, unit, position, target) {

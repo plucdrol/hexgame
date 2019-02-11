@@ -101,20 +101,14 @@ UnitInput.p.selectHex = function(hex) {
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
-  
   if ( unit.hasComponent('actions') ) {
     var current_action = this.updateActionButtons(unit);
     unit.range = this.getActionRange( unit, hex, this.getSelectedAction() );
   }
 
-  //if the unit exists, find its range
-  //if (unit.hasComponent('range')) {
-    //unit.findRange(this.map, hex);
-
-  //}
   if (unit.hasComponent('resources')) {
-      this.trackUnitResources(unit);
-    }
+    this.trackUnitResources(unit);
+  }
 }
 
 UnitInput.p.selectNothing = function() {
@@ -223,7 +217,7 @@ UnitInput.p.updateActionButtons = function(unit) {
     
     //only show actions whose activation is met
     if (action.activation(unit)) {
-      let new_button = this.makeActionButton(action);
+      let new_button = this.makeActionButton(unit, action);
       action_buttons.innerHTML += new_button;
       
       //Show actions in grey if their requirements are not met
@@ -265,11 +259,12 @@ UnitInput.p.getSelectedActionId = function() {
     return false;
 }
 
-UnitInput.p.makeActionButton = function(unitAction) {
+UnitInput.p.makeActionButton = function(unit, action) {
   return "<label><input class='action-button-input' name='actions' type='radio'"
-          .concat(" id='action-").concat(unitAction.name)
-          .concat("' value='").concat(unitAction.name).concat("'><div class='action-button'>")
-          .concat(unitAction.name).concat("</div></label></input>");
+          .concat(" id='action-").concat(action.name)
+          .concat("' value='").concat(action.name).concat("'><div class='action-button'>")
+          .concat(action.name).concat("<br/>")
+          .concat(action.displayCost(unit)).concat("</div></label></input>");
 }
 
 
@@ -303,15 +298,25 @@ UnitInput.p.clickWithUnitSelected = function(hex) {
 
 UnitInput.p.clickInsideUnitRange = function(hex) {
 
-  //get the current action
-  let action = this.getSelectedAction();
-  
-  //then pay its cost and do the effect
-  action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
-  action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+  var unit_there = this.units.get(hex);
 
-  //and select the new location (usually)
-  this.selectHex(hex);
+  if (!unit_there) {
+    //get the current action
+    let action = this.getSelectedAction();
+    
+    //then pay its cost and do the effect
+    action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+    action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+
+    //and select the new location (usually)
+    this.selectHex(hex);
+    
+  } else {  
+    //do actions that target other units here
+
+  }
+
+
   
 }
 
