@@ -24,7 +24,11 @@ Unit.prototype.setType = function(unit_type) {
     setCityColor(this);
     setResourceStores(this,0,0,0);
     setResourceCapacity(this,30,30,30);
-    setDefaultAction(this, 'create-settler');
+    this.addAction( new actionMoveCamp() );
+    setDefaultAction(this, 'move');
+    this.resources.food = 5;
+
+
     break;
 
   case 'settler':
@@ -36,6 +40,8 @@ Unit.prototype.setType = function(unit_type) {
     setResourceCapacity(this,5,10,5);
     setCitySize(this,0);
     setCityColor(this);
+
+    this.addAction( new actionMove() );
     setDefaultAction(this, 'move');
 
     break;
@@ -177,9 +183,8 @@ function actionMove() {
     //calculate the cost of moving
     var costFunction = unit.stepCostFunction.bind(unit);
     var neighborFunction = unit.getNeighborsFunction.bind(unit);
-    var getTileFunction = unit.getTileFunction.bind(unit);
 
-    var pathfinder = new PathFinder(getTileFunction, costFunction, neighborFunction);
+    var pathfinder = new PathFinder(costFunction, neighborFunction);
     var foodCost = pathfinder.getCost( world.world_map, position, target, unit.resources.food );
     return { food: foodCost };
   };
@@ -197,6 +202,26 @@ function actionMove() {
   };
 }
 
+function actionMoveCamp() {
+
+  actionMove.call(this); 
+
+  this.min_distance = 1;
+  this.max_distance = 2;
+
+  this.requirement = function(unit) {
+    return unit.resources.food >= 1;
+  };
+
+  this.displayCost = function(unit) {
+    return "1 food";
+  }
+
+  this.getCost = function(world, unit, position, target) {
+    return { food: 1 };
+  };
+
+}
 
 
 
@@ -210,7 +235,7 @@ function actionBuildCamp() {
   this.min_distance = 1;
   this.max_distance = 1;
   
-  this.stepCostFunction = function(previous_tile, tile) {
+  this.stepCostFunction = function(map, previous_hex, hex) {
     return 1;
   }
   this.activation = function(unit) {
@@ -263,7 +288,7 @@ function actionCreateUnit(unit_type) {
   this.min_distance = 1;
   this.max_distance = 2;
 
-  this.stepCostFunction = function(previous_tile, tile) {
+  this.stepCostFunction = function(map, previous_hex, hex) {
     return 1;
   }
   this.activation = function(unit) {
@@ -298,7 +323,7 @@ function actionGrowCity() {
   this.min_distance = 0;
   this.max_distance = 0;
 
-  this.stepCostFunction = function(previous_tile, tile) {
+  this.stepCostFunction = function(map, hex, next_hex) {
     return 1;
   }
   this.activation = function(unit) {
@@ -358,35 +383,21 @@ function actionGrowCity() {
 
 
 
-function setGroundActionChangeTerrain(unit, affectable_value, new_value) {
-  unit.ground_action_change_terrain = {};
-  unit.ground_action_change_terrain.affectable_value = affectable_value;
-  unit.ground_action_change_terrain.new_value = new_value;
-}
+
 
 function setSelfActionBecomeUnit(unit, type, resource, cost) {
 
   unit.addAction( new actionBuildCamp() );
-
-  unit.self_action_become_unit = {};
-  unit.self_action_become_unit.type = type;
-  unit.self_action_become_unit.resource = resource;
-  unit.self_action_become_unit.cost = cost;
 }
 
 function setSelfActionGrowCity(unit, base_cost) {
 
   unit.addAction( new actionGrowCity() );
-
-  unit.self_action_grow = base_cost;
-  unit.getGrowCost = function(){return 5};
 }
 
 function setGroundActionCreateUnit(unit, new_unit_type) {
 
   unit.addAction( new actionCreateUnit('settler') );
-
-  unit.ground_action_create_unit = new_unit_type;
 }
 
 ///////////////////////////////////////////
@@ -449,7 +460,7 @@ function setElevationRange(unit, minimum, maximum) {
 
 function setGroundActionMove(unit, movement, minimum, maximum) {
 
-  unit.addAction( new actionMove() );
+
   setElevationRange(unit, minimum, maximum);
 
   unit.range = {};
@@ -461,55 +472,26 @@ function setGroundActionMove(unit, movement, minimum, maximum) {
     return map.getNeighbors(hex);
   }
 
-  unit.getTileFunction = function(map, coord) {
-    return map.getValue(coord);
-  }
-
   //TILE COST FUNCTION
   unit.tileCostFunction = function(tile) {
 
-    var cost = tile.elevation;
-    if (cost > unit.maximum_elevation) {
-       cost = undefined;
+    if (tile.elevation > this.maximum_elevation) {
+       return undefined;
     }
-    if (cost < unit.minimum_elevation) {
-       cost = undefined;
+    if (tile.elevation < this.minimum_elevation) {
+       return undefined;
     }
-    return cost;
+    return 1;
   }
 
 
 
   //STEP COST FUNCTION
-  unit.stepCostFunction = function(previous_tile, tile) {
+  unit.stepCostFunction = function(map, hex, next_hex) {
 
-    var cost_this = unit.tileCostFunction(tile);
-
-    if (cost_this === undefined) {
-      return undefined;
-    }
-    
-    return 1;
+    var tile = map.get(hex);
+    var cost = unit.tileCostFunction(tile);
+    return cost;
   }
 
-  //FIND RANGE FUNCTION
-  //find the available movement of the unit and place it in the
-  // range component. This code should not be in the bare unit class
-  unit.findRange = function(map, position) {
-    let max_movement = unit.movement_left;
-
-    //setup movement cost functions
-    var self = this;
-    var costFunction = unit.stepCostFunction.bind(unit);
-    var neighborFunction = unit.getNeighborsFunction.bind(unit);
-    var getTileFunction = unit.getTileFunction.bind(unit);
-
-    //ask pathfinder for info on area
-    var pathfinder = new PathFinder(getTileFunction, costFunction, neighborFunction);
-    pathfinder.fromUnit = true;
-    var range = pathfinder.getRange(map, position, max_movement);
-
-    //set info for later
-    unit.setComponent('range', range);
-  }
 }

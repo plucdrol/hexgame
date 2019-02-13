@@ -28,7 +28,7 @@ function World(radius) {
 
   //create units map
   this.units = new HexMap();
-  this.units.set(new Hex(0,0), new Unit('settler'));
+  this.units.set(new Hex(0,0), new Unit('camp'));
 
   //create resources map
   this.resources = new HexMap();

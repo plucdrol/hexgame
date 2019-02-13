@@ -3,14 +3,15 @@
 //Tracks the previous cell and total path cost
 //on 5e path.from the origin to cell
 //it take maps as arguments as returns maps as 'visited'
-function PathFinder(getTileFunction, stepCostFunction, getNeighborFunction) {
+function PathFinder(stepCostFunction, getNeighborFunction) {
+
+  //stepCostFunction must be (map, coordinate1, coordinate2)
+  //getNeighborFunction must be (map, coordinate)
 
   this.visited = new Map();
 
   this.stepCostFunction = stepCostFunction;
   this.getNeighborFunction = getNeighborFunction;
-  this.getTileFunction = getTileFunction;
-
 
   PathFinderCell = function(coord, previous_coord, path_cost) {
       this.coord = coord;
@@ -46,20 +47,17 @@ function PathFinder(getTileFunction, stepCostFunction, getNeighborFunction) {
     return this.visited.has(JSON.stringify(coord)); 
   }
 
-  this.calculateCost = function(cost_so_far, tile, previous_tile) {
+  this.calculateCost = function(map, cost_so_far, coord, previous_coord) {
 
-    return cost_so_far + this.stepCostFunction(tile, previous_tile);
+    return cost_so_far + this.stepCostFunction(map, previous_coord, coord);
   }
 
   this.makeNeighborCell = function(map, previous_cell) {
     var self = this;
     return function(coord) {
-      let tile = self.getTileFunction(map, coord);
-      let previous_tile = self.getTileFunction(map, self.getCoord(previous_cell));
-
-      let cost = self.calculateCost(previous_cell.path_cost, tile, previous_tile);
-
-      return new PathFinderCell(coord, self.getCoord(previous_cell), cost);
+      let previous_coord = self.getCoord(previous_cell);
+      let cost = self.calculateCost(map, previous_cell.path_cost, coord, previous_coord);
+      return new PathFinderCell(coord, previous_coord, cost);
     };
   }
 
@@ -111,9 +109,7 @@ function PathFinder(getTileFunction, stepCostFunction, getNeighborFunction) {
     var self = this;
     return function(cell) {
       let coord = self.getCoord(cell);
-      let tile = self.getTileFunction(map, coord);
-      let previous_tile = self.getTileFunction(map, cell.previous_coord);
-      return ( self.stepCostFunction( previous_tile, tile ) != undefined );
+      return ( self.stepCostFunction(map, cell.previous_coord, coord ) != undefined );
     }
   }
 

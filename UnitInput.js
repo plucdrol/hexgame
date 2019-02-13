@@ -191,13 +191,12 @@ UnitInput.p.selectActionById = function(action_id) {
 }
 
 UnitInput.p.getActionRange = function(unit, hex, action) {
-  var costFunction = unit.stepCostFunction.bind(unit); //<---- depends on the action
+  var stepCostFunction = unit.stepCostFunction.bind(unit); //<---- depends on the action
   var neighborFunction = unit.getNeighborsFunction.bind(unit); //<--- standard for all hex actions
-  var getTileFunction = unit.getTileFunction.bind(unit); //<-- standard for all hex actions
 
-  var pathfinder = new PathFinder(getTileFunction, costFunction, neighborFunction);
+  var pathfinder = new PathFinder(stepCostFunction, neighborFunction);
 
-  var max_distance = 5;
+  var max_distance = 3;
   if (action.max_distance)
     max_distance = action.max_distance;
 
