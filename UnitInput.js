@@ -191,8 +191,8 @@ UnitInput.p.selectActionById = function(action_id) {
 }
 
 UnitInput.p.getActionRange = function(unit, hex, action) {
-  var stepCostFunction = unit.stepCostFunction.bind(unit); //<---- depends on the action
-  var neighborFunction = unit.getNeighborsFunction.bind(unit); //<--- standard for all hex actions
+  var stepCostFunction = action.stepCostFunction.bind(action); //<---- depends on the action
+  var neighborFunction = action.getNeighborsFunction.bind(action); //<--- standard for all hex actions
 
   var pathfinder = new PathFinder(stepCostFunction, neighborFunction);
 
