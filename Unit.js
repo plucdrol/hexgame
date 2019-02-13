@@ -47,9 +47,19 @@ Unit.prototype.setType = function(unit_type) {
     break;
   
   case 'water-player':
-    setGroundActionChangeTerrain(unit, 2, 1);
-    setGroundActionMove(this,6,0,2);
+    setGroundActionMove(this,6,1,1);
+    this.addAction( new actionMove() );
     setGraphic(this,'white',2);
+
+    setGraphic(this,'blue',2);
+    setResourceStores(this,5,0,0)
+    setResourceCapacity(this,5,10,5);
+    setCitySize(this,0);
+    setCityColor(this);
+
+    this.addAction( new actionMove() );
+    setDefaultAction(this, 'move');
+
     break;
 
 
@@ -475,10 +485,10 @@ function setGroundActionMove(unit, movement, minimum, maximum) {
   //TILE COST FUNCTION
   unit.tileCostFunction = function(tile) {
 
-    if (tile.elevation > this.maximum_elevation) {
+    if (tile.elevation > unit.maximum_elevation) {
        return undefined;
     }
-    if (tile.elevation < this.minimum_elevation) {
+    if (tile.elevation < unit.minimum_elevation) {
        return undefined;
     }
     return 1;
@@ -489,7 +499,7 @@ function setGroundActionMove(unit, movement, minimum, maximum) {
   //STEP COST FUNCTION
   unit.stepCostFunction = function(map, hex, next_hex) {
 
-    var tile = map.get(hex);
+    var tile = map.get(next_hex);
     var cost = unit.tileCostFunction(tile);
     return cost;
   }
