@@ -22,7 +22,7 @@ var renderer = new Renderer(canv_draw, view);
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
-var world = new World(25);// <-- model
+var world = new World(35);// <-- model
 //Has functions for drawing hexes to the screen
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  

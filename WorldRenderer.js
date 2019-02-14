@@ -82,7 +82,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     if (this.getTile(hex).river) {
       let downstream_hex = this.getTile(hex).river.downstream_hex;
       let water_level = this.getTile(hex).river.water_level;
-      if (downstream_hex instanceof Hex && water_level >= 2)
+      if (downstream_hex instanceof Hex && water_level >= 3)
         this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*3)) );
     }
   }

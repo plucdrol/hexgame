@@ -451,7 +451,23 @@ MapGenerator.prototype.generateRivers = function() {
     //add its neighbors to the bag
     this.addNeighbors(nextHex);
     //console.log(next.getHexArray().length);
-    counter--;
+    //counter--;
+  }
+
+  //raise terrain between rivers
+  for (let hex of this.map.getHexArray() ) {
+    var tile = this.map.get(hex);
+    if (tile.river) {
+      if (tile.river.water_level <= 2 && tile.elevation >= 3) {
+        tile.elevation += 3;
+      }
+      if (tile.river.water_level >= 10 && tile.elevation >= 6) {
+        tile.elevation -= 2;
+      }
+      if (tile.river.water_level >= 25 && tile.elevation >= 8) {
+        tile.elevation -= 2;
+      }
+    }
   }
 
 
