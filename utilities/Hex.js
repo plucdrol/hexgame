@@ -555,9 +555,17 @@ HexMap.prototype.set = function(hex,value) {
   let key = Hex.getKey(hex);
   this.values[key] = value;
 }
+//This makes the value as undefined
 HexMap.prototype.remove = function(hex) {
   if (this.containsHex(hex)) {
     this.set(hex,undefined);
+  }
+}
+//This removes the value from the array entirely
+HexMap.prototype.delete = function(hex) {
+  if (this.containsHex(hex)) {
+    let key = Hex.getKey(hex);
+    delete this.values[key];
   }
 }
 HexMap.prototype.removeAll = function() {
@@ -636,7 +644,7 @@ HexMap.prototype.getValues = function() {
 //HexMap contains: finds if the hex is part of the map 
 //by checking if its value is defined
 HexMap.prototype.containsHex = function(hex) {
-  if (this.getValue(hex) !== undefined) {
+  if (this.getValue(hex)) {
     return true;
   } else {
     return false;
