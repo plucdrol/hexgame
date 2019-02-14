@@ -66,7 +66,8 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   for (hex of hexarray) {
     
     //draw tile
-    tile_renderer.drawTile(hex, this.getTile(hex));
+    if (this.getTile(hex).elevation >= 2)
+      tile_renderer.drawTile(hex, this.getTile(hex));
     
     //draw resources
     var this_resource = this.world.getResource(hex);
@@ -74,6 +75,23 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
         this.drawUnit(this_resource,hex,0);
     }
 
+  }
+
+  //draw the rivers
+  for (hex of hexarray) {
+    if (this.getTile(hex).river) {
+      let downstream_hex = this.getTile(hex).river.downstream_hex;
+      let water_level = this.getTile(hex).river.water_level;
+      if (downstream_hex instanceof Hex && water_level >= 2)
+        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*3)) );
+    }
+  }
+
+  //draw the water again
+  for (hex of hexarray) {
+    //draw tile
+    if (this.getTile(hex).elevation < 2)
+      tile_renderer.drawTile(hex, this.getTile(hex));
   }
 
   //draw the units and their associated zones

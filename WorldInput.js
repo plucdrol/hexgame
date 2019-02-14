@@ -82,6 +82,10 @@ function WorldInput(world, view) {
 
       document.getElementById('tooltip').innerHTML = "";
       
+      //HOVERING OVER HEXES
+      if (this.hex_hovered && this.world.world_map.get(this.hex_hovered).river)
+        document.getElementById('tooltip').innerHTML += this.world.world_map.get(this.hex_hovered).river.water_level.toString();
+
       //HOVERING OVER RESOURCES
       if (this.hex_hovered)
         this.resource_hovered = this.world.getResource(this.hex_hovered);
