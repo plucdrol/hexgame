@@ -25,7 +25,7 @@ Unit.prototype.setType = function(unit_type) {
     setResourceStores(this,0,0,0);
     setResourceCapacity(this,300,300,300);
     setDefaultAction(this, 'move');
-    this.resources.food = 35;
+    this.resources.food = 5;
     break;
 
   case 'settler':
