@@ -56,25 +56,13 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   var hexarray = hexmap.getHexArray();
 
   //make a tile renderer
-  var tile_renderer = new TileRenderer2D(
-                       this.hex_renderer,
-                       this.world.getLayout()
-                       );
-
+  var tile_renderer = new TileRenderer2D( this.hex_renderer, this.world.getLayout() );
 
   //draw the tiles of the array
   for (hex of hexarray) {
-    
     //draw tile
     if (this.getTile(hex).elevation >= 2)
       tile_renderer.drawTile(hex, this.getTile(hex));
-    
-    //draw resources
-    var this_resource = this.world.getResource(hex);
-    if (this_resource != undefined) {
-        this.drawUnit(this_resource,hex,0);
-    }
-
   }
 
   //draw the rivers
@@ -92,6 +80,12 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     //draw tile
     if (this.getTile(hex).elevation < 2)
       tile_renderer.drawTile(hex, this.getTile(hex));
+
+    //draw resources
+    var this_resource = this.world.getResource(hex);
+    if (this_resource != undefined) {
+        this.drawUnit(this_resource,hex,0);
+    }
   }
 
   //draw the units and their associated zones

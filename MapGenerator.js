@@ -386,8 +386,14 @@ MapGenerator.prototype.generateRivers = function() {
     var downstream_hex = next.get(hex);
     var tile = this.map.get(hex);
     tile.river = {};
-    tile.river.water_level = 1;
+    if (tile.elevation >= 3)
+      tile.river.water_level = 1;
+    else
+      tile.river.water_level = 0;
     tile.river.downstream_hex = downstream_hex;
+    //add 1 water level to all river tiles downstream until you reach the ocean
+    if (tile.elevation >= 3)
+      this.propagateWaterLevel(hex);
   }
 
   this.propagateWaterLevel = function(hex) {
@@ -405,6 +411,13 @@ MapGenerator.prototype.generateRivers = function() {
       //add 1 to the lower tiles in the river
       next_river_tile = this.map.get(downstream_hex);
       next_river_tile.river.water_level++;
+
+      //turn sand to grass once enough water is reached
+      for (let neighbor of downstream_hex.getNeighbors() ) {
+        if (this.map.get(neighbor) && this.map.get(neighbor).elevation == 2 && this.map.get(neighbor).river && this.map.get(neighbor).river.water_level > 5) {
+          this.map.get(neighbor).elevation = 3;
+        }
+      }
 
       //move down the river
       current_hex = downstream_hex;
@@ -446,8 +459,6 @@ MapGenerator.prototype.generateRivers = function() {
     //make it into a river, with 1 water level
     //connect it to the river that made it
     this.growRiver(nextHex);
-    //add 1 water level to all river tiles downstream until you reach the ocean
-    this.propagateWaterLevel(nextHex);
     //add its neighbors to the bag
     this.addNeighbors(nextHex);
     //console.log(next.getHexArray().length);

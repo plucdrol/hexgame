@@ -52,13 +52,18 @@ PerlinConfiguration = function(config_name) {
 
 
       break;
-    case 'fractal':
+    /*case 'fractal':
       this.scales = [0.001, 0.01, 0.1,  1];//,  0.2 ];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
       this.weights = [32, 16, 8,   4];//,    2   ];//,   8,    12,   4,     3,     2,     1,     1,   ];
       this.base = 5;
+      break;*/
 
-
+    case 'fractal':
+      this.scales = [ 0.04, 0.1, 0.1, 0.5, 1 ];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
+      this.weights = [8 ,2, 1, 1, 1  ];//,   8,    12,   4,     3,     2,     1,     1,   ];
+      this.base =5;
       break;
+
     default:
       this.scales = [0.02,0.1,0.2,0.5,1.0,2.0];
       this.weights = [16,8,4,2,1,0.5];
@@ -115,6 +120,7 @@ RandomTileGenerator.prototype = Object.create(TileGenerator.prototype);
 
 
 function PerlinTileGenerator() {
+
   TileGenerator.call(this); 
   var config = new PerlinConfiguration('fractal');
   var simplex = new SimplexNoise();  
@@ -125,6 +131,7 @@ function PerlinTileGenerator() {
 
   
   this.generateTile = function(x,y) {
+
     //add up all the perlin values
     var total = config.base;
     for (var i = 0; i < config.getLength(); i++ ) {
@@ -135,22 +142,23 @@ function PerlinTileGenerator() {
     }
 
     //shallow water for anything between these numbers
-    if (total < 1 && total > -7) 
-      {total = 1;}
+    //if (total < 1 && total > -7) 
+      //{total = 1;}
 
     //cutoff underwater to ocean
     if (total < 0) 
       {total = 0;}
 
     //more flatlands, and more mountain heights
-    total = Math.pow((total+1)/6,2);
+    //total = Math.pow((total+1)/6,2);
 
     //shallow water availability (between 0 and 1)
-    total += 0.75;
+    //total += 0.75;
 
 
     return total;
   }
+
   this.generateWind = function(x,y) {
     var wind = Hex.spiralDirection(x,y);
     return wind;
