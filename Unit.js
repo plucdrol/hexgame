@@ -16,16 +16,16 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.addAction( new actionCreateUnit('settler') );
+    this.addAction( new actionCreateUnit('camp'), 10 );
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(2,2,13) );
     setGraphic(this,'white',5);
     setCitySize(this,1);
     setCityColor(this);
     setResourceStores(this,0,0,0);
-    setResourceCapacity(this,30,30,30);
+    setResourceCapacity(this,300,300,300);
     setDefaultAction(this, 'move');
-    this.resources.food = 5;
+    this.resources.food = 35;
     break;
 
   case 'settler':
@@ -162,6 +162,11 @@ function selectAction(unit, action_name) {
 
 
 
+
+
+
+
+
 function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
   this.name = "move";
@@ -235,6 +240,11 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
 
 
+
+
+
+
+
 //This action transforms the unit into a camp
 function actionBuildCamp() {
 
@@ -245,6 +255,9 @@ function actionBuildCamp() {
   
   this.stepCostFunction = function(map, previous_hex, hex) {
     return 1;
+  }
+    this.getNeighborsFunction = function(map,hex) {
+    return map.getNeighbors(hex);
   }
   this.activation = function(unit) {
     return unit.resources.wood >= 1;
@@ -287,17 +300,28 @@ function actionBuildCamp() {
 
 
 
+
+
+
+
+
 //This action transforms the unit into a camp
-function actionCreateUnit(unit_type) {
+function actionCreateUnit(unit_type, max_distance) {
 
   this.name = "create-".concat(unit_type);
   this.type = "target";
   this.new_unit_type = unit_type;
   this.min_distance = 1;
-  this.max_distance = 2;
+  this.max_distance = max_distance;
 
   this.stepCostFunction = function(map, previous_hex, hex) {
-    return 1;
+    if (map.get(hex) && map.get(hex).elevation >= 2 && map.get(hex).elevation < 10) 
+      return 1;
+    else
+      return undefined;
+  }
+    this.getNeighborsFunction = function(map,hex) {
+    return map.getNeighbors(hex);
   }
   this.activation = function(unit) {
     return unit.resources.food >= 1;
@@ -333,6 +357,9 @@ function actionGrowCity() {
 
   this.stepCostFunction = function(map, hex, next_hex) {
     return 1;
+  }
+    this.getNeighborsFunction = function(map,hex) {
+    return map.getNeighbors(hex);
   }
   this.activation = function(unit) {
     return unit.resources.wood >= 1;

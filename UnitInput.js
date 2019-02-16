@@ -20,10 +20,10 @@ function UnitInput(world) {
   this.stop_city_interval_number = 0;
   this.action_selected = undefined;
 
+
 }
 //-------1---------2---------3---------4---------5---------6--------
 UnitInput.p = UnitInput.prototype;
-
 
 
 
@@ -99,11 +99,18 @@ UnitInput.p.selectHex = function(hex) {
   }
 }
 
+UnitInput.p.updateActionRange = function() {
+  let hex = this.hex_selected;
+  let unit = this.getUnitSelected();
+  let current_action = this.updateActionButtons(unit);
+
+  unit.range = this.getActionRange( unit, hex, this.getActionSelected() );
+}
+
 UnitInput.p.selectUnit = function(hex, unit) {
 
   if ( unit.hasComponent('actions') ) {
-    var current_action = this.updateActionButtons(unit);
-    unit.range = this.getActionRange( unit, hex, this.getSelectedAction() );
+    this.updateActionRange();
   }
 
   if (unit.hasComponent('resources')) {
@@ -207,7 +214,7 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
 UnitInput.p.updateActionButtons = function(unit) {
 
   //remember previous action
-  var current_action = this.getSelectedActionId();
+  var current_action = this.getActionSelectedId();
 
   //update the action list
   var action_buttons = document.getElementById('action-buttons');
@@ -226,24 +233,30 @@ UnitInput.p.updateActionButtons = function(unit) {
     }
   }
 
+  //add the click-detection code
+  let self = this;
+  for (let button of document.getElementsByClassName('action-button-input')) {
+    button.addEventListener('click', function(){ self.updateActionRange(); });
+  }
+
   //reset the action to the previously selected action
   if (current_action) {
     this.selectActionById(current_action);
   }
 
   //select the unit's default action if none is currently selected
-  if (!this.getSelectedActionId() && unit.defaultAction) {
+  if (!this.getActionSelectedId() && unit.defaultAction) {
     this.selectActionById('action-'.concat(unit.defaultAction.name));
   }
 }
 
 //returns the actual action object
-UnitInput.p.getSelectedAction = function() {
-  return this.getActionFromId(this.units.get(this.hex_selected), this.getSelectedActionId());
+UnitInput.p.getActionSelected = function() {
+  return this.getActionFromId(this.units.get(this.hex_selected), this.getActionSelectedId());
 }
 
 //Returns the currently selected action_id of the selected unit
-UnitInput.p.getSelectedActionId = function() {
+UnitInput.p.getActionSelectedId = function() {
   var action_buttons = document.getElementsByClassName('action-button-input');
   for (let input of action_buttons) {
     if (input.checked) {
@@ -265,6 +278,21 @@ UnitInput.p.makeActionButton = function(unit, action) {
           .concat(action.name).concat("<br/>")
           .concat(action.displayCost(unit)).concat("</div></label></input>");
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -297,11 +325,12 @@ UnitInput.p.clickWithUnitSelected = function(hex) {
 
 UnitInput.p.clickInsideUnitRange = function(hex) {
 
-  var unit_there = this.units.get(hex);
+  let action = this.getActionSelected();
+  let unit_there = this.units.get(hex);
 
-  if (!unit_there) {
+  if (!unit_there && action.requirement( this.getUnitSelected() )) {
     //get the current action
-    let action = this.getSelectedAction();
+    let action = this.getActionSelected();
     
     //then pay its cost and do the effect
     action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
