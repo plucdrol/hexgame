@@ -140,24 +140,20 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
   let action = this.getActionSelected();
   let unit_there = this.units.get(hex);
 
-  if (!unit_there && action.requirement( this.getUnitSelected() )) {
-    //get the current action
-    let action = this.getActionSelected();
+  if (!action.requirement( this.getUnitSelected()))
+    return;
+
+  //both unit-targetting and land-targetting actions happen here
+  if ((!unit_there && action.target=="land") || (unit_there && action.target=="unit")) {
     
     //then pay its cost and do the effect
     action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
     action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
 
     //and select the new location (usually)
-    this.selectHex(hex);
-    
-  } else {  
-    //do actions that target other units here
-
-  }
-
-
-  
+    this.selectHex(action.nextTarget(hex, this.hex_selected)); 
+  }  
+ 
 }
 
 UnitInput.p.clickOutsideUnitRange = function(hex) {

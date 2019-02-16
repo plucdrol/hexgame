@@ -120,6 +120,7 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
     this.hex_renderer.renderer.drawText(text, position, text_style);
   }
 
+  //draw the city radius
   if (unit.cityRadius != undefined) {
     this.drawCityRadius(hex, unit);
   }

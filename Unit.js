@@ -17,6 +17,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'camp':
     this.addAction( new actionCreateUnit('camp', 3));
+    this.addAction( new actionConquer(6));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(2,2,13) );
     setGraphic(this,'white',5);
@@ -123,8 +124,8 @@ function setGraphic(unit,color,size) {
 }
 
 function setCityColor(unit) {
-  unit.cityRadiusColor = "rgba(255,50,50, 0.4)";
-  unit.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
+  unit.cityRadiusColor = "hsla(".concat(Math.floor(255*Math.random())).concat(",100%,50%,0.6)"); 
+  unit.cityRadiusLineColor = "hsla(".concat(Math.floor(255*Math.random())).concat(",100%,50%,0.6)");
 }
 
 /////////////////////////////////////////
@@ -220,12 +221,16 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
   this.name = "move";
   this.type = "target";
+  this.target = "land";
   this.min_distance = 0;
   this.max_distance = max_distance;
   this.minimum_elevation = minimum_elevation;
   this.maximum_elevation = maximum_elevation;
   var action = this;
 
+  this.nextTarget = function(position, target) {
+    return target;
+  }
   this.activation = function(unit) {
     return true;
   }
@@ -303,9 +308,13 @@ function actionBuildCamp() {
 
   this.name = "build-camp";
   this.type = "target";
+  this.target = "land";
   this.min_distance = 1;
   this.max_distance = 1;
   
+  this.nextTarget = function(position, target) {
+    return position;
+  }
   this.stepCostFunction = function(map, previous_hex, hex) {
     return 1;
   }
@@ -363,10 +372,14 @@ function actionCreateUnit(unit_type, max_distance) {
 
   this.name = "create-".concat(unit_type);
   this.type = "target";
+  this.target = "land";
   this.new_unit_type = unit_type;
   this.min_distance = 1;
   this.max_distance = max_distance;
 
+  this.nextTarget = function(position, target) {
+    return position;
+  }
   this.stepCostFunction = function(map, previous_hex, hex) {
     if (map.get(hex) && map.get(hex).elevation >= 2 && map.get(hex).elevation < 10) 
       return 1;
@@ -402,14 +415,93 @@ function actionCreateUnit(unit_type, max_distance) {
 
 }
 
+
+
+
+
+
+
+
+
+
+
+//This action transforms the unit into a camp
+function actionConquer(max_distance) {
+  this.name = "conquer";
+  this.type = "target";
+  this.target = "unit";
+  this.min_distance = 1;
+  this.max_distance = max_distance;
+
+  this.nextTarget = function(position, target) {
+    return position;
+  }
+  this.stepCostFunction = function(map, previous_hex, hex) {
+    if (map.get(hex) && map.get(hex).elevation >= 2 && map.get(hex).elevation < 10) 
+      return 1;
+    else
+      return undefined;
+  }
+  this.getNeighborsFunction = function(map,hex) {
+    return map.getNeighbors(hex);
+  }
+  this.activation = function(unit) {
+    return unit.resources.wood >= 2;
+  }
+  this.requirement = function(unit) {
+    return unit.resources.wood >= 10;
+  };
+
+  this.displayCost = function(unit) {
+    return "10 wood";
+  }
+  this.getCost = function(world, unit, position, target) {
+    return { wood: 10 };
+  };
+
+  this.payCost = function(world, unit, position, target) {
+    var wood_cost = this.getCost(world, unit, position, target).wood;
+    unit.resources.wood -= wood_cost;
+  }
+
+  this.effect = function(world, unit, position, target) {
+    let enemy = world.units.get(target);
+
+    //take the enemy's resources
+    unit.food += enemy.food;
+    unit.wood += enemy.wood;
+    unit.stone += enemy.stone;
+
+    //Copy this unit at the target
+    world.units.set(target, unit);
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function actionGrowCity() {
   this.name = "grow-city";
   this.type = "target";
+  this.target = "unit";
   this.min_distance = 0;
   this.max_distance = 0;
 
   this.stepCostFunction = function(map, hex, next_hex) {
-    return 1;
+    return undefined;
   }
     this.getNeighborsFunction = function(map,hex) {
     return map.getNeighbors(hex);
