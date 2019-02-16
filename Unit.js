@@ -16,7 +16,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.addAction( new actionCreateUnit('camp'), 10 );
+    this.addAction( new actionCreateUnit('camp', 3));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(2,2,13) );
     setGraphic(this,'white',5);
@@ -232,6 +232,10 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
     var tile = map.get(next_hex);
     var cost = this.tileCostFunction(tile);
+    if (map.get(hex).river && map.get(hex).river.water_level > 3 &&
+        map.get(next_hex).river && map.get(next_hex).river.water_level > 3 &&
+        (map.get(hex).river.downstream_hex.equals(next_hex) || map.get(next_hex).river.downstream_hex.equals(hex) ) )
+    cost = cost/4;
     return cost;
   }
 }
