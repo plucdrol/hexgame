@@ -1,8 +1,10 @@
 function HUDRenderer(world_input, hex_renderer) {
 
+  this.stop_city_interval_number = 0;
+  var unit_input = world_input.unit_input;
+
   this.drawHUD = function() {
 
-    var unit_input = world_input.unit_input;
     var hex_selected = unit_input.hex_selected;
 
     //selection draw
@@ -31,6 +33,44 @@ function HUDRenderer(world_input, hex_renderer) {
     hover_style.line_width = 0;
     hex_renderer.drawHex( hex_hovered, hover_style );
   }
+
+
+
+
+  this.clearButtons = function() {
+    document.getElementById('action-buttons').innerHTML = "";
+  }
+  this.writeMessage = function(message) {
+    document.getElementById('city-resources').innerHTML = message;
+  }
+  this.writeResources = function(city) {
+    var message = "Food:".concat(city.resources.food).concat("/").concat(city.capacity.food)
+                   .concat(" Wood:").concat(city.resources.wood).concat("/").concat(city.capacity.wood)
+                   .concat(" Stone:").concat(city.resources.stone).concat("/").concat(city.capacity.stone);
+    this.writeMessage(message);
+  }
+
+  //starts an every-second screen update of city resources
+  this.trackUnitResources = function() {
+    
+    //clearInterval(this.stop_city_interval_number);
+    
+
+    function update_function() { 
+      let unit = unit_input.getUnitSelected();
+      
+      if (unit.resources) {
+        this.writeResources(unit); 
+        //this.updateActionButtons(unit);
+      } else {
+        this.clearButtons();
+        this.writeMessage("");
+      }
+    };
+    this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);
+  }
+
+  this.trackUnitResources();
 
 }
 

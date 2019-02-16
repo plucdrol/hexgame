@@ -17,7 +17,6 @@ function UnitInput(world) {
   this.world = world;
   this.hex_selected = undefined;
   this.units = world.units;
-  this.stop_city_interval_number = 0;
   this.action_selected = undefined;
 
 
@@ -51,34 +50,6 @@ UnitInput.p.clickHex = function(hex) {
     this.clickWithNoSelection(hex);
   }
 }
-UnitInput.p.clearButtons = function() {
-  document.getElementById('action-buttons').innerHTML = "";
-}
-UnitInput.p.writeMessage = function(message) {
-  document.getElementById('city-resources').innerHTML = message;
-}
-UnitInput.p.writeResources = function(city) {
-  var message = "Food:".concat(city.resources.food).concat("/").concat(city.capacity.food)
-                 .concat(" Wood:").concat(city.resources.wood).concat("/").concat(city.capacity.wood)
-                 .concat(" Stone:").concat(city.resources.stone).concat("/").concat(city.capacity.stone);
-  this.writeMessage(message);
-}
-
-UnitInput.p.trackUnitResources = function(unit) {
-  clearInterval(this.stop_city_interval_number);
-  this.writeResources(unit); 
-  function update_function() { 
-    this.writeResources(unit); 
-    this.updateActionButtons(unit);
-  };
-  this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);
-}
-
-
-
-
-
-
 
 UnitInput.p.selectHex = function(hex) {
 
@@ -113,16 +84,16 @@ UnitInput.p.selectUnit = function(hex, unit) {
     this.updateActionRange();
   }
 
-  if (unit.hasComponent('resources')) {
-    this.trackUnitResources(unit);
-  }
+  //if (unit.hasComponent('resources')) {
+    //this.trackUnitResources(unit);
+  //}
 }
 
 UnitInput.p.selectNothing = function() {
   this.hex_selected = undefined;
-  clearInterval(this.stop_city_interval_number);
-  this.clearButtons();
-  this.writeMessage("");
+  //clearInterval(this.stop_city_interval_number);
+  //this.clearButtons();
+  //this.writeMessage("");
 }
 
 UnitInput.p.aHexIsSelected = function() {
@@ -151,6 +122,8 @@ UnitInput.p.aUnitIsSelected = function() {
 UnitInput.p.getUnitSelected = function() {
   if (this.aUnitIsSelected()) {
     return this.units.get(this.getHexSelected());
+  } else {
+    return false;
   }
 }
 
