@@ -111,6 +111,41 @@ Unit.prototype.addAction = function( action ) {
 }
 
 
+///////////////////////////////////////////
+//
+//            CITY DISPLAY COMPONENT
+//
+////////////////////////////////////
+
+function setGraphic(unit,color,size) {
+  unit.color = color;
+  unit.size = size;
+}
+
+function setCityColor(unit) {
+  unit.cityRadiusColor = "rgba(255,50,50, 0.4)";
+  unit.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
+}
+
+/////////////////////////////////////////
+//
+//               RESOURCE GATHERING COMPONENT
+//
+/////////////////////////////////////////////
+
+function setResource(unit,resource_type, resource_value) {
+  unit.resource_type = resource_type;
+  unit.resource_value = resource_value;
+}
+function setCitySize(unit, size) {
+  unit.cityRadius = size;
+}
+function setResourceStores(unit, food, wood, stone) {
+  unit.resources = {'food':food, 'wood':wood, 'stone':stone};
+}
+function setResourceCapacity(unit, food, wood, stone) {
+  unit.capacity = {'food':food, 'wood':wood, 'stone':stone};
+}
 
 
 
@@ -141,6 +176,20 @@ Unit.prototype.addAction = function( action ) {
 
 
 
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////
+//
+//            UNIT ACTIONS
+//
+////////////////////////////////////
 
 //requirements should eventually be a function that can be run on the unit
 //cost would be a function evaluated once the action is taken
@@ -391,82 +440,3 @@ function actionGrowCity() {
     unit.capacity.stone *= 2;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-///////////////////////////////////////////
-//
-//            CITY DISPLAY COMPONENT
-//
-////////////////////////////////////
-
-function setGraphic(unit,color,size) {
-  unit.color = color;
-  unit.size = size;
-}
-
-function setCityColor(unit) {
-  unit.cityRadiusColor = "rgba(255,50,50, 0.4)";
-  unit.cityRadiusLineColor = "rgba(255,50,200, 0.6)";
-}
-
-
-
-
-
-
-
-/////////////////////////////////////////
-//
-//               RESOURCE GATHERING COMPONENT
-//
-/////////////////////////////////////////////
-
-function setResource(unit,resource_type, resource_value) {
-  unit.resource_type = resource_type;
-  unit.resource_value = resource_value;
-}
-function setCitySize(unit, size) {
-  unit.cityRadius = size;
-}
-function setResourceStores(unit, food, wood, stone) {
-  unit.resources = {'food':food, 'wood':wood, 'stone':stone};
-}
-function setResourceCapacity(unit, food, wood, stone) {
-  unit.capacity = {'food':food, 'wood':wood, 'stone':stone};
-}
-
-
-

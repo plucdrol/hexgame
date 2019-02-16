@@ -24,22 +24,6 @@ function UnitInput(world) {
 //-------1---------2---------3---------4---------5---------6--------
 UnitInput.p = UnitInput.prototype;
 
-
-
-
-
-
-
-
-
-
-
-
-//Unit selection should be moved into UnitSelection class
-/////////////////////////////////////////////////////////
-                  // UNIT INPUT //
-/////////////////////////////////////////////////////////
-
 UnitInput.p.clickHex = function(hex) {
   //if there is already a unit on the hex selected
   if (this.aUnitIsSelected()) {
@@ -130,6 +114,76 @@ UnitInput.p.getUnitSelected = function() {
 UnitInput.p.clickWithNoSelection = function(hex) {
   this.selectHex(hex);
 }
+
+//This is where target-actions should take effect
+//Instant effects will happen when the button is pressed instead
+UnitInput.p.clickWithUnitSelected = function(hex) {
+  
+  var unit = this.getUnitSelected();
+  if (!unit.hasComponent('range') ) {
+    this.clickOutsideUnitRange(hex);
+    return 0;
+  }
+
+  //if you are clicking inside the unit's range
+  if (listContainsHex(hex, unit.range) ) {
+    this.clickInsideUnitRange(hex);
+
+  //if you are clicking outside the unit's range
+  } else {
+    this.clickOutsideUnitRange(hex);
+  }
+}
+
+UnitInput.p.clickInsideUnitRange = function(hex) {
+
+  let action = this.getActionSelected();
+  let unit_there = this.units.get(hex);
+
+  if (!unit_there && action.requirement( this.getUnitSelected() )) {
+    //get the current action
+    let action = this.getActionSelected();
+    
+    //then pay its cost and do the effect
+    action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+    action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+
+    //and select the new location (usually)
+    this.selectHex(hex);
+    
+  } else {  
+    //do actions that target other units here
+
+  }
+
+
+  
+}
+
+UnitInput.p.clickOutsideUnitRange = function(hex) {
+  this.selectHex(undefined);
+  this.clickHex(hex);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -276,52 +330,3 @@ UnitInput.p.makeActionButton = function(unit, action) {
 
 
 
-//This is where target-actions should take effect
-//Instant effects will happen when the button is pressed instead
-UnitInput.p.clickWithUnitSelected = function(hex) {
-  
-  var unit = this.getUnitSelected();
-  if (!unit.hasComponent('range') ) {
-    this.clickOutsideUnitRange(hex);
-    return 0;
-  }
-
-  //if you are clicking inside the unit's range
-  if (listContainsHex(hex, unit.range) ) {
-    this.clickInsideUnitRange(hex);
-
-  //if you are clicking outside the unit's range
-  } else {
-    this.clickOutsideUnitRange(hex);
-  }
-}
-
-UnitInput.p.clickInsideUnitRange = function(hex) {
-
-  let action = this.getActionSelected();
-  let unit_there = this.units.get(hex);
-
-  if (!unit_there && action.requirement( this.getUnitSelected() )) {
-    //get the current action
-    let action = this.getActionSelected();
-    
-    //then pay its cost and do the effect
-    action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
-    action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
-
-    //and select the new location (usually)
-    this.selectHex(hex);
-    
-  } else {  
-    //do actions that target other units here
-
-  }
-
-
-  
-}
-
-UnitInput.p.clickOutsideUnitRange = function(hex) {
-  this.selectHex(undefined);
-  this.clickHex(hex);
-}
