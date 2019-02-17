@@ -103,7 +103,7 @@ MapGenerator.prototype.makeMap = function(radius) {
   var hex = new Hex(0,0);
   //contains the position and content of each tile
   var value = {}; 
-  var tile_gen = this.makeTileGenerator(type);
+  this.tile_gen = this.makeTileGenerator(type);
 
 
   // Iterates over the giant hexagon
@@ -118,8 +118,8 @@ MapGenerator.prototype.makeMap = function(radius) {
               
       //put in map
       hex = new Hex(q,r);
-      this.setElevation(hex,tile_gen.generateTile(q,r));
-      this.setWind(hex,tile_gen.generateWind(q,r));
+      this.setElevation(hex,this.tile_gen.generateTile(q,r));
+      this.setWind(hex,this.tile_gen.generateWind(q,r));
     }
   }
 

@@ -92,9 +92,9 @@ Renderer.prototype.drawText = function(text,position,style) {
 };
 
 //Draw multiple lines using the drawLine function
-Renderer.prototype.drawLines = function(points,style) {
+Renderer.prototype.drawLines = function(points,style, width) {
   for (var i=0;i<points.length-1;i++) {
-      this.drawLine(points[i], points[i+1], width);
+      this.drawLine(points[i], points[i+1], style);
   }
 };
 

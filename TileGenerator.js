@@ -103,6 +103,9 @@ function TileGenerator() {
 TileGenerator.prototype.generateTile = function(x,y) {
 }
 
+
+
+
 function RandomTileGenerator() {
   TileGenerator.call(this);
   var range = 10;

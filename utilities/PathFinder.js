@@ -201,14 +201,20 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
   this.targetPathfind = function(map, origin, target){
      
     //doesnt work
-    /*let max_cost = 200;
+    let path_array = [];
 
-    if (!this.hasCell(target)) {
+    if (!this.hasCell(target)) 
       return false;
-    } else {
-      return this.visited;
-    }*/
     
+    //trace path back from target to origin
+    let coord = target;
+    while (this.currentCell(coord).previous_coord) {
+      path_array.push(coord);
+      coord = this.currentCell(coord).previous_coord;
+    }
+
+    path_array.push(origin);
+    return path_array;
   }
 
   this.exploreArea = function(map, origin, max_cost) {
@@ -227,7 +233,7 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
   //Return a function which can be used many times
   this.getCost = function(map, origin, target, max_cost) {
     if (max_cost === undefined) 
-      max_cost = 100;
+      max_cost = 10;
     this.exploreArea(map, origin, max_cost);
     return this.currentCell(target).path_cost;
   }
@@ -235,7 +241,7 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
   //Return a function which can be reused to find the path
   this.getPath = function(map, origin, target, max_cost) {
     if (max_cost === undefined) 
-      max_cost = 100;
+      max_cost = 5;
     this.exploreArea(map, origin, max_cost);
     return this.targetPathfind(map, origin, target);
   }

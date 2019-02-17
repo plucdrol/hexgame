@@ -44,6 +44,18 @@ HexRenderer.p.drawCenterLine = function(hex1, hex2, width) {
   var point2 = this.hexToPoint(hex2);
   this.renderer.drawLine(point1, point2, style);
 }
+HexRenderer.p.drawLongLine = function(hex_array, width) {
+  var style = new RenderStyle();
+  style.line_width = width;
+  style.line_color = 'white';
+  style.fill_color = "";
+  let self = this;
+  let points = [];
+  for (let i=0;i<hex_array.length;i++){
+    points.push(this.hexToPoint(hex_array[i]));
+  }
+  this.renderer.drawLines(points, style, width);
+}
 HexRenderer.p.drawHex = function(hex, style) {
   
   var corners = this.hexesToPoints(Hex.corners(hex));

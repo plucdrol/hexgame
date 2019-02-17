@@ -5,6 +5,8 @@ function HUDRenderer(world_input, hex_renderer) {
 
   this.drawHUD = function() {
 
+    var hover_style = new RenderStyle();
+    var hex_hovered = world_input.hex_hovered;
     var hex_selected = unit_input.hex_selected;
 
     //selection draw
@@ -18,6 +20,17 @@ function HUDRenderer(world_input, hex_renderer) {
 
       }
 
+      //draw line from selected unit to mouse position
+      let action = unit_input.getActionSelected();
+      if (action) {
+        let action_step = action.stepCostFunction.bind(action);
+        let action_neighbors = action.getNeighborsFunction.bind(action);
+
+        let pathfinder = new PathFinder(action_step, action_neighbors );
+        let path_hexes = pathfinder.getPath(world_input.world.world_map, hex_selected, hex_hovered);
+        hex_renderer.drawLongLine(path_hexes, 5);
+      }
+
       //draw selection hex
       var select_style = new RenderStyle();
       select_style.fill_color = "rgba(200,200,0,0.5)";
@@ -26,13 +39,15 @@ function HUDRenderer(world_input, hex_renderer) {
     }
 
     //draw hovered hex
-    var hover_style = new RenderStyle();
-    var hex_hovered = world_input.hex_hovered;
-
     hover_style.fill_color = "rgba(200,200,200,0.4)";
     hover_style.line_width = 0;
     hex_renderer.drawHex( hex_hovered, hover_style );
   }
+
+
+
+
+
 
 
 
