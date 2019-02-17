@@ -217,7 +217,41 @@ function selectAction(unit, action_name) {
 
 
 
+//All actions inherit from this action
+function basicAction() {
+  this.minimum_elevation = 2;
+  this.maximum_elevation = 13;
+  this.nextTarget = function(position, target) {
+    return position;
+  }
+  this.activation = function(unit) {
+    return true;
+  }
+  this.getNeighborsFunction = function(map,hex) {
+    return map.getNeighbors(hex);
+  }
+  //STEP COST FUNCTION
+  this.stepCostFunction = function(map, hex, next_hex) {
+
+    var tile = map.get(next_hex);
+    if (tile.elevation > this.maximum_elevation) {
+       return undefined;
+    }
+    if (tile.elevation < this.minimum_elevation) {
+       return undefined;
+    }
+    let cost = 1;
+    if (map.get(hex).river && map.get(hex).river.water_level > 3 &&
+        map.get(next_hex).river && map.get(next_hex).river.water_level > 3 &&
+        (map.get(hex).river.downstream_hex.equals(next_hex) || map.get(next_hex).river.downstream_hex.equals(hex) ) )
+      cost = cost/4;
+
+    return cost;
+  }
+}
+
 function actionMove(max_distance, minimum_elevation, maximum_elevation) {
+  basicAction.call(this);
 
   this.name = "move";
   this.type = "target";
@@ -230,9 +264,6 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
   this.nextTarget = function(position, target) {
     return target;
-  }
-  this.activation = function(unit) {
-    return true;
   }
   this.requirement = function(unit) {
     return unit.resources.food >= 1;
@@ -264,34 +295,6 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     world.units.set(target, unit);
   };
 
-  //TILE COST FUNCTION
-  this.tileCostFunction = function(tile) {
-
-    if (tile.elevation > this.maximum_elevation) {
-       return undefined;
-    }
-    if (tile.elevation < this.minimum_elevation) {
-       return undefined;
-    }
-    return 1;
-  }
-
-  //GET NEIGHBORS FUNCTION
-  this.getNeighborsFunction = function(map,hex) {
-    return map.getNeighbors(hex);
-  }
-
-  //STEP COST FUNCTION
-  this.stepCostFunction = function(map, hex, next_hex) {
-
-    var tile = map.get(next_hex);
-    var cost = this.tileCostFunction(tile);
-    if (map.get(hex).river && map.get(hex).river.water_level > 3 &&
-        map.get(next_hex).river && map.get(next_hex).river.water_level > 3 &&
-        (map.get(hex).river.downstream_hex.equals(next_hex) || map.get(next_hex).river.downstream_hex.equals(hex) ) )
-    cost = cost/4;
-    return cost;
-  }
 }
 
 
@@ -305,6 +308,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
 //This action transforms the unit into a camp
 function actionBuildCamp() {
+  basicAction.call(this);
 
   this.name = "build-camp";
   this.type = "target";
@@ -312,15 +316,6 @@ function actionBuildCamp() {
   this.min_distance = 1;
   this.max_distance = 1;
   
-  this.nextTarget = function(position, target) {
-    return position;
-  }
-  this.stepCostFunction = function(map, previous_hex, hex) {
-    return 1;
-  }
-    this.getNeighborsFunction = function(map,hex) {
-    return map.getNeighbors(hex);
-  }
   this.activation = function(unit) {
     return unit.resources.wood >= 1;
   }
@@ -369,6 +364,7 @@ function actionBuildCamp() {
 
 //This action transforms the unit into a camp
 function actionCreateUnit(unit_type, max_distance) {
+  basicAction.call(this);
 
   this.name = "create-".concat(unit_type);
   this.type = "target";
@@ -377,18 +373,6 @@ function actionCreateUnit(unit_type, max_distance) {
   this.min_distance = 1;
   this.max_distance = max_distance;
 
-  this.nextTarget = function(position, target) {
-    return position;
-  }
-  this.stepCostFunction = function(map, previous_hex, hex) {
-    if (map.get(hex) && map.get(hex).elevation >= 2 && map.get(hex).elevation < 10) 
-      return 1;
-    else
-      return undefined;
-  }
-    this.getNeighborsFunction = function(map,hex) {
-    return map.getNeighbors(hex);
-  }
   this.activation = function(unit) {
     return unit.resources.food >= 1;
   }
@@ -427,24 +411,13 @@ function actionCreateUnit(unit_type, max_distance) {
 
 //This action transforms the unit into a camp
 function actionConquer(max_distance) {
+  basicAction.call(this);
   this.name = "conquer";
   this.type = "target";
   this.target = "unit";
   this.min_distance = 1;
   this.max_distance = max_distance;
 
-  this.nextTarget = function(position, target) {
-    return position;
-  }
-  this.stepCostFunction = function(map, previous_hex, hex) {
-    if (map.get(hex) && map.get(hex).elevation >= 2 && map.get(hex).elevation < 10) 
-      return 1;
-    else
-      return undefined;
-  }
-  this.getNeighborsFunction = function(map,hex) {
-    return map.getNeighbors(hex);
-  }
   this.activation = function(unit) {
     return unit.resources.wood >= 2;
   }
@@ -494,18 +467,13 @@ function actionConquer(max_distance) {
 
 
 function actionGrowCity() {
+  basicAction.call(this);
   this.name = "grow-city";
   this.type = "target";
   this.target = "unit";
   this.min_distance = 0;
   this.max_distance = 0;
 
-  this.stepCostFunction = function(map, hex, next_hex) {
-    return undefined;
-  }
-    this.getNeighborsFunction = function(map,hex) {
-    return map.getNeighbors(hex);
-  }
   this.activation = function(unit) {
     return unit.resources.wood >= 1;
   }
