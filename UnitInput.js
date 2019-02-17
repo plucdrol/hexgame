@@ -57,7 +57,7 @@ UnitInput.p.selectHex = function(hex) {
 UnitInput.p.updateActionRange = function() {
   let hex = this.hex_selected;
   let unit = this.getUnitSelected();
-  let current_action = this.updateActionButtons(unit);
+  let current_action = this.updateActionButtons();
 
   unit.range = this.getActionRange( unit, hex, this.getActionSelected() );
 }
@@ -151,7 +151,7 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
     action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
 
     //and select the new location (usually)
-    this.selectHex(action.nextTarget(hex, this.hex_selected)); 
+    this.selectHex(action.nextTarget(this.hex_selected, hex)); 
   }  
  
 }
@@ -234,7 +234,12 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
   return actionRange;
 }
 
-UnitInput.p.updateActionButtons = function(unit) {
+UnitInput.p.updateActionButtons = function() {
+
+  //do nothing if there is no unit to update
+  let unit = this.getUnitSelected();
+  if (!unit)
+    return;
 
   //remember previous action
   var current_action = this.getActionSelectedId();

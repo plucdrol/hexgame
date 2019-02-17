@@ -61,7 +61,7 @@ function HUDRenderer(world_input, hex_renderer) {
       
       if (unit.resources) {
         this.writeResources(unit); 
-        //this.updateActionButtons(unit);
+        unit_input.updateActionButtons();
       } else {
         this.clearButtons();
         this.writeMessage("");
