@@ -21,7 +21,7 @@ function UnitInput(world) {
 
 
 }
-//-------1---------2---------3---------4---------5---------6--------
+//-------1---------2---------3---------4---------5---------6--------7---------8--------
 UnitInput.p = UnitInput.prototype;
 
 UnitInput.p.clickHex = function(hex) {
@@ -238,8 +238,7 @@ UnitInput.p.updateActionButtons = function() {
 
   //do nothing if there is no unit to update
   let unit = this.getUnitSelected();
-  if (!unit)
-    return;
+  if (!unit) return;
 
   //remember previous action
   var current_action = this.getActionSelectedId();
