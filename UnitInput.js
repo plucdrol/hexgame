@@ -54,30 +54,15 @@ UnitInput.p.selectHex = function(hex) {
   }
 }
 
-UnitInput.p.updateActionRange = function() {
-  let hex = this.hex_selected;
-  let unit = this.getUnitSelected();
-  let current_action = this.updateActionButtons();
-
-  unit.range = this.getActionRange( unit, hex, this.getActionSelected() );
-}
-
 UnitInput.p.selectUnit = function(hex, unit) {
 
   if ( unit.hasComponent('actions') ) {
     this.updateActionRange();
   }
-
-  //if (unit.hasComponent('resources')) {
-    //this.trackUnitResources(unit);
-  //}
 }
 
 UnitInput.p.selectNothing = function() {
   this.hex_selected = undefined;
-  //clearInterval(this.stop_city_interval_number);
-  //this.clearButtons();
-  //this.writeMessage("");
 }
 
 UnitInput.p.aHexIsSelected = function() {
@@ -152,6 +137,8 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
 
     //and select the new location (usually)
     this.selectHex(action.nextTarget(this.hex_selected, hex)); 
+  } else {
+    this.selectHex(hex);
   }  
  
 }
@@ -220,6 +207,18 @@ UnitInput.p.selectActionById = function(action_id) {
   }
 }
 
+UnitInput.p.updateActionRange = function() {
+  let hex = this.hex_selected;
+  let unit = this.getUnitSelected();
+  this.updateActionButtons();
+  let action = this.getActionSelected();
+
+  if (action)
+    unit.range = this.getActionRange( unit, hex, this.getActionSelected() );
+  else
+    unit.range = new HexMap();
+}
+
 UnitInput.p.getActionRange = function(unit, hex, action) {
   var stepCostFunction = action.stepCostFunction.bind(action); //<---- depends on the action
   var neighborFunction = action.getNeighborsFunction.bind(action); //<--- standard for all hex actions
@@ -272,9 +271,9 @@ UnitInput.p.updateActionButtons = function() {
   }
 
   //select the unit's default action if none is currently selected
-  if (!this.getActionSelectedId() && unit.defaultAction) {
-    this.selectActionById('action-'.concat(unit.defaultAction.name));
-  }
+  //if (!this.getActionSelectedId() && unit.defaultAction) {
+    //this.selectActionById('action-'.concat(unit.defaultAction.name));
+  //}
 }
 
 //returns the actual action object

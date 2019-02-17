@@ -25,7 +25,6 @@ Unit.prototype.setType = function(unit_type) {
     setCityColor(this);
     setResourceStores(this,0,0,0);
     setResourceCapacity(this,300,300,300);
-    setDefaultAction(this, 'move');
     this.resources.food = 5;
     break;
 
@@ -37,7 +36,6 @@ Unit.prototype.setType = function(unit_type) {
     setResourceCapacity(this,5,10,5);
     setCitySize(this,0);
     setCityColor(this);
-    setDefaultAction(this, 'move');
 
     break;
   
@@ -49,7 +47,6 @@ Unit.prototype.setType = function(unit_type) {
     setResourceCapacity(this,5,10,5);
     setCitySize(this,0);
     setCityColor(this);
-    setDefaultAction(this, 'move');
 
     break;
 
@@ -107,7 +104,6 @@ Unit.prototype.addAction = function( action ) {
   if (!this.actions) {
     this.actions = [];
   }
-  console.log('add action');
   this.actions.push( action );
 }
 
@@ -192,30 +188,6 @@ function setResourceCapacity(unit, food, wood, stone) {
 //
 ////////////////////////////////////
 
-//requirements should eventually be a function that can be run on the unit
-//cost would be a function evaluated once the action is taken
-function setDefaultAction(unit, action_name) {
-  for (let action of unit.actions) {
-    if (action.name == action_name) {
-      unit.defaultAction = action;
-    }
-  }
-}
-
-function selectAction(unit, action_name) {
-  for (let action of unit.actions) {
-    if (action.name == action_name) {
-      document.getElementById("_1234").checked = true;
-    }
-  }
-}
-
-
-
-
-
-
-
 
 //All actions inherit from this action
 function basicAction() {
@@ -250,6 +222,17 @@ function basicAction() {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
 function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   basicAction.call(this);
 
@@ -270,7 +253,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   };
 
   this.displayCost = function(unit) {
-    return "1 food/step";
+    return "1 food/step<br/>All wood&stone";
   }
 
   this.getCost = function(world, unit, position, target) {
@@ -286,6 +269,8 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   this.payCost = function(world, unit, position, target) {
     var food_cost = this.getCost(world, unit, position, target).food;
     unit.resources.food -= food_cost;
+    unit.resources.wood = 0;
+    unit.resources.stone = 0;
   }
 
   this.effect = function(world, unit, position, target) {
@@ -293,6 +278,8 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     //move the unit
     world.units.remove(position);
     world.units.set(target, unit);
+    unit.wood = 0;
+    unit.stone = 0;
   };
 
 }
