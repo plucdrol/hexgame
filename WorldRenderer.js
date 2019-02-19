@@ -42,13 +42,28 @@ WorldRenderer.p.calculateHexesToRender = function() {
 }
     
 
-WorldRenderer.p.drawWorld = function(world) {
+WorldRenderer.p.drawWorld = function() {
 
   if (this.ready_to_render) {
+    this.drawBigHex(this.world.radius);
     var hexmap = this.calculateHexesToRender();
     this.drawHexMap(hexmap);
     
   }
+}
+
+WorldRenderer.p.drawBigHex = function(radius) {
+
+  let big_corners = [];
+  let center = new Hex(0,0);
+  for (corner of center.getNeighbors()) {
+    big_corners.push(this.hex_renderer.hexToPoint(Hex.multiply(corner,this.world.radius)));
+  }
+  console.log(JSON.stringify(big_corners[0]));
+
+  let style = new RenderStyle();
+  style.fill_color = "#005";
+  this.hex_renderer.renderer.drawPolygon(big_corners, style);
 }
 
 WorldRenderer.p.drawHexMap = function(hexmap) {
@@ -70,15 +85,15 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     if (this.getTile(hex).river) {
       let downstream_hex = this.getTile(hex).river.downstream_hex;
       let water_level = this.getTile(hex).river.water_level;
-      if (downstream_hex instanceof Hex && water_level >= 3)
+      if (downstream_hex instanceof Hex && water_level >= 7)
         this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*3)) );
     }
   }
 
-  //draw the water again
+  //draw the coastal water
   for (hex of hexarray) {
     //draw tile
-    if (this.getTile(hex).elevation < 2)
+    if (this.getTile(hex).elevation == 1)
       tile_renderer.drawTile(hex, this.getTile(hex));
 
     //draw resources
