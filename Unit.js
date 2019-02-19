@@ -120,8 +120,8 @@ function setGraphic(unit,color,size) {
 }
 
 function setCityColor(unit) {
-  unit.cityRadiusColor = "hsla(".concat(Math.floor(255*Math.random())).concat(",100%,50%,0.6)"); 
-  unit.cityRadiusLineColor = "hsla(".concat(Math.floor(255*Math.random())).concat(",100%,50%,0.6)");
+  unit.cityRadiusColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
+  unit.cityRadiusLineColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
 }
 
 /////////////////////////////////////////
