@@ -87,17 +87,17 @@ function CanvasDraw (canvas) {
     
     //remember the last polygon drawn
     this.saved_polygon = line;
-    
-    //draw the line if thick enough
-    if (width > 0) {
-      line.stroke(); 
-    }
 
     //optional fill color
     if (typeof fill_color != 'undefined' && fill_color != 'transparent') {
 
       line.fillStyle = fill_color;
       line.fill('evenodd'); 
+    }
+
+    //draw the line if thick enough
+    if (width > 0) {
+      line.stroke(); 
     }
     
   };
