@@ -59,7 +59,6 @@ WorldRenderer.p.drawBigHex = function(radius) {
   for (corner of center.getNeighbors()) {
     big_corners.push(this.hex_renderer.hexToPoint(Hex.multiply(corner,this.world.radius)));
   }
-  console.log(JSON.stringify(big_corners[0]));
 
   let style = new RenderStyle();
   style.fill_color = "#005";
