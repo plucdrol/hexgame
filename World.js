@@ -17,6 +17,8 @@
 
 function World(radius) {
 
+  this.radius = radius;
+  
   //configure world dimensions
   var tile_size = new Point(35, 35);
   var origin = new Point(0,0);

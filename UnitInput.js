@@ -230,7 +230,8 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
     max_distance = action.max_distance;
 
   var actionRange = pathfinder.getRange( this.world.world_map, hex, max_distance );
-  return actionRange;
+  let landRange = actionRange.filter(hex => this.world.getMapValue(hex).elevation > 1 );
+  return landRange;
 }
 
 UnitInput.p.updateActionButtons = function() {

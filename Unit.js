@@ -16,7 +16,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.addAction( new actionCreateUnit('camp', 3));
+    this.addAction( new actionCreateUnit('camp', 12));
     this.addAction( new actionConquer(6));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(2,2,13) );
@@ -213,8 +213,10 @@ function basicAction() {
        return undefined;
     }
     let cost = 1;
-    if (map.get(hex).river && map.get(hex).river.water_level > 3 &&
-        map.get(next_hex).river && map.get(next_hex).river.water_level > 3 &&
+
+    //4 times faster movement on rivers
+    if (map.get(hex).river && map.get(hex).river.water_level > 7 &&
+        map.get(next_hex).river && map.get(next_hex).river.water_level > 7 &&
         (map.get(hex).river.downstream_hex.equals(next_hex) || map.get(next_hex).river.downstream_hex.equals(hex) ) )
       cost = cost/4;
 
@@ -352,6 +354,8 @@ function actionBuildCamp() {
 //This action transforms the unit into a camp
 function actionCreateUnit(unit_type, max_distance) {
   basicAction.call(this);
+
+  this.minimum_elevation = 1;
 
   this.name = "create-".concat(unit_type);
   this.type = "target";
