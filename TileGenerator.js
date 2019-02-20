@@ -59,8 +59,8 @@ PerlinConfiguration = function(config_name) {
       break;*/
 
     case 'fractal':
-      this.scales = [ 0.04, 0.1, 0.1, 0.5, 1 ];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
-      this.weights = [8 ,2, 1, 1, 1  ];//,   8,    12,   4,     3,     2,     1,     1,   ];
+      this.scales = [ 0.04, 0.1, 0.1, 0.5,  1 ];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
+      this.weights = [8 ,   2,   2,   1,    1  ];//,   8,    12,   4,     3,     2,     1,     1,   ];
       this.base =5;
       break;
 
