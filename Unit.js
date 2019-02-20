@@ -264,7 +264,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     var neighborFunction = action.getNeighborsFunction.bind(action);
 
     var pathfinder = new PathFinder(costFunction, neighborFunction);
-    var foodCost = pathfinder.getCost( world.world_map, position, target, unit.resources.food );
+    var foodCost = pathfinder.getCost( world.world_map, position, target, 10 );
     return { food: foodCost };
   };
 

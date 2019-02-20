@@ -56,12 +56,13 @@ UnitInput.p.selectHex = function(hex) {
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
-  if ( unit.hasComponent('actions') ) {
-    this.updateActionRange();
-  }
+  //if ( unit.hasComponent('actions') ) {
+    //this.updateActionRange();
+  //}
 }
 
 UnitInput.p.selectNothing = function() {
+  this.getUnitSelected().range = undefined;
   this.hex_selected = undefined;
 }
 
