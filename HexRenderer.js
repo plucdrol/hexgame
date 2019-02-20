@@ -108,7 +108,7 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
     range_style.line_color = "rgba(255,255,100,1)";
   }
 
-    range_style.line_width = 3;
+    range_style.line_width = 4;
 
   //draw the outline of the range
   this.drawHexOutline( outline,range_style);
