@@ -127,6 +127,7 @@ MapGenerator.prototype.makeMap = function(radius) {
   this.addWaterRim(0.1);
   this.roundDown();
   this.addShallowWater();
+  this.addIcePoles();
 
   //trip coasts
   this.trimPoints(1, [1,2,3,4,5,6,7], 2, 0 );
@@ -239,8 +240,32 @@ MapGenerator.prototype.addWaterRim = function(rim_size) {
       value = 0;
     }
 
+
     this.setElevation(thishex,value);
 
+
+
+  }
+}
+
+MapGenerator.prototype.addIcePoles = function() {
+  
+  let size = this.radius;
+  let origin = new Hex(0,0);
+
+  for (let thishex of this.map.getHexArray()) {  
+    //ice rim around the edge of the map
+    if (Hex.distance(origin, thishex) > 0.9*size && Math.random() < 0.5) {
+      this.setElevation(thishex, 18);
+    }
+    if (Hex.distance(origin, thishex) == size) {
+      this.setElevation(thishex, 18);
+    }
+
+    //ice pole in the center
+    //if (Hex.distance(origin, thishex) < 0.2*size && this.getElevation(thishex) >= 1) {
+      //this.setElevation(thishex, 18);
+    //}
   }
 }
 
@@ -386,13 +411,13 @@ MapGenerator.prototype.generateRivers = function() {
     var downstream_hex = next.get(hex);
     var tile = this.map.get(hex);
     tile.river = {};
-    if (tile.elevation >= 3)
+    if (tile.elevation >= 3 && tile.elevation < 12)
       tile.river.water_level = 1;
     else
       tile.river.water_level = 0;
     tile.river.downstream_hex = downstream_hex;
     //add 1 water level to all river tiles downstream until you reach the ocean
-    if (tile.elevation >= 3)
+    if (tile.elevation >= 3 && tile.elevation < 12)
       this.propagateWaterLevel(hex);
   }
 
