@@ -132,11 +132,17 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
   if ((!unit_there && action.target=="land") || (unit_there && action.target=="unit")) {
     
     //then pay its cost and do the effect
-    action.payCost(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
-    action.effect(this.world, this.units.get(this.hex_selected), this.hex_selected, hex);
+    action.payCost(this.world, this.getUnitSelected(), this.hex_selected, hex);
+    action.effect(this.world, this.getUnitSelected(), this.hex_selected, hex);
 
     //and select the new location (usually)
-    this.selectHex(action.nextTarget(this.hex_selected, hex)); 
+    if (action.nextSelection == 'target') {
+      this.selectHex(hex); 
+      this.updateActionRange();
+    }
+      
+
+
   } else {
     this.selectHex(hex);
   }  
@@ -144,7 +150,7 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
 }
 
 UnitInput.p.clickOutsideUnitRange = function(hex) {
-  this.selectHex(undefined);
+  this.selectNothing();
   this.clickHex(hex);
 }
 

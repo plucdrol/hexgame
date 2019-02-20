@@ -193,9 +193,8 @@ function setResourceCapacity(unit, food, wood, stone) {
 function basicAction() {
   this.minimum_elevation = 2;
   this.maximum_elevation = 13;
-  this.nextTarget = function(position, target) {
-    return position;
-  }
+  this.nextSelection = "self";
+
   this.activation = function(unit) {
     return true;
   }
@@ -241,6 +240,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   this.name = "move";
   this.type = "target";
   this.target = "land";
+  this.nextSelection = "target";
   this.min_distance = 0;
   this.max_distance = max_distance;
   this.minimum_elevation = minimum_elevation;
