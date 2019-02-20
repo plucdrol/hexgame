@@ -16,7 +16,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.addAction( new actionCreateUnit('camp', 12));
+    this.addAction( new actionCreateUnit('camp', 2, 12));
     this.addAction( new actionConquer(6));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(2,2,13) );
@@ -352,7 +352,7 @@ function actionBuildCamp() {
 
 
 //This action transforms the unit into a camp
-function actionCreateUnit(unit_type, max_distance) {
+function actionCreateUnit(unit_type, min_distance, max_distance) {
   basicAction.call(this);
 
   this.minimum_elevation = 1;
@@ -361,8 +361,19 @@ function actionCreateUnit(unit_type, max_distance) {
   this.type = "target";
   this.target = "land";
   this.new_unit_type = unit_type;
-  this.min_distance = 1;
+  this.min_distance = min_distance;
   this.max_distance = max_distance;
+
+  function noCitiesInArea(world, position, radius) {
+    let area = Hex.circle(position, radius);
+    for (hex of area) {
+      if (world.units.containsHex(hex)) {
+        return false;
+      }
+    }
+    //no cities
+    return true;
+  }
 
   this.activation = function(unit) {
     return unit.resources.food >= 1;
@@ -383,9 +394,12 @@ function actionCreateUnit(unit_type, max_distance) {
     unit.resources.food -= food_cost;
   }
 
+
+
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
-    world.units.set(target, new Unit(this.new_unit_type));
+    if (noCitiesInArea(world,target,2))
+      world.units.set(target, new Unit(this.new_unit_type));
   }
 
 }

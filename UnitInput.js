@@ -111,7 +111,7 @@ UnitInput.p.clickWithUnitSelected = function(hex) {
   }
 
   //if you are clicking inside the unit's range
-  if (listContainsHex(hex, unit.range) ) {
+  if (unit.range && listContainsHex(hex, unit.range) ) {
     this.clickInsideUnitRange(hex);
 
   //if you are clicking outside the unit's range
@@ -235,7 +235,11 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
   if (action.max_distance)
     max_distance = action.max_distance;
 
-  var actionRange = pathfinder.getRange( this.world.world_map, hex, max_distance );
+  var min_distance = 0;
+  if (action.min_distance)
+    min_distance = action.min_distance;
+
+  var actionRange = pathfinder.getRange( this.world.world_map, hex, max_distance, min_distance );
   let landRange = actionRange.filter(hex => this.world.getMapValue(hex).elevation > 1 );
   return landRange;
 }
