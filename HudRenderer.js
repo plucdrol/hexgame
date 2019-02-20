@@ -55,8 +55,10 @@ function HUDRenderer(world_input, hex_renderer) {
   this.clearButtons = function() {
     document.getElementById('action-buttons').innerHTML = "";
   }
-  this.writeMessage = function(message) {
-    document.getElementById('city-resources').innerHTML = message;
+  this.writeMessage = function(message, element) {
+    if (!element) 
+      var element = 'city-resources';
+    document.getElementById(element).innerHTML = message;
   }
   this.writeResources = function(city) {
     var message = "Food:".concat(city.resources.food).concat("/").concat(city.capacity.food)
@@ -79,8 +81,9 @@ function HUDRenderer(world_input, hex_renderer) {
         unit_input.updateActionButtons();
       } else {
         this.clearButtons();
-        let pop = world.total_population;
-        this.writeMessage("World population: ".concat(pop));
+        let pop = Math.floor(world.total_population);
+        this.writeMessage("", 'city-resources');
+        this.writeMessage("World population: ".concat(pop), 'world-resources');
       }
     };
     this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);

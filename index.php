@@ -53,6 +53,9 @@
 			#city-name {
 				color: darkgreen;
 			}
+			#world-resources {
+				float: right;
+			}
 			#mycanvas{
 				background: black;
 				clear: both;
@@ -107,6 +110,7 @@
 			<div id='city-bar'>
 			<span id='city-name'>City</span>
 			<span id='city-resources'></span>
+			<span id='world-resources'></span>
 		</div>
 		<div style="float:left;">
 			<canvas id="mycanvas" width="600" height="400">
