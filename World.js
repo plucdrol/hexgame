@@ -40,6 +40,8 @@ function World(radius) {
   land_tile.elevation = 2;
   this.setHex(new Hex(0,0), land_tile);
 
+  this.total_population = 0;
+
 
   //start the 1-second counter which gathers resources for cities
   this.startGathering = function() {
@@ -125,6 +127,8 @@ World.prototype.gatherCityResources = function(world) {
   
   return function(){
 
+    let total_food = 0;
+
     //For all units
     for (let unit_hex of world.units.getHexArray() )  {
       //if they are a city
@@ -134,11 +138,8 @@ World.prototype.gatherCityResources = function(world) {
       if (!unit.hasComponent('resources') || !unit.hasComponent('cityRadius')) 
         continue;
 
-
-      //get the tiles in its radius
+      //collect resources in city range
       let collection_hexes = Hex.circle(unit_hex,unit.cityRadius);
-      //for each tile in that array
-
       for (let collection_hex of collection_hexes) {
         //add the resources to the city
         if (!world.resources.containsHex(collection_hex)) 
@@ -148,17 +149,13 @@ World.prototype.gatherCityResources = function(world) {
         if (unit.resources[resource_type] >= unit.capacity[resource_type]) 
           continue;
         unit.resources[resource_type] += resource.resource_value;
-
-
       }
 
-      //unit has resources
-      if (unit.food_is_range) {
-        let food = unit.resources.food;
-        unit.movement_left = food;
-        //unit.findRange(world.world_map, unit_hex);
-      }
+      //count total food
+      total_food += unit.resources.food;
     }
+
+    world.total_population = total_food;
     drawScreen();
   }
 }

@@ -15,7 +15,7 @@ function HUDRenderer(world_input, hex_renderer) {
       //draw range of selected unit  
       var potential_unit = unit_input.units.get(hex_selected);
 
-      if (potential_unit instanceof Unit && potential_unit.hasComponent('range')) {
+      if (potential_unit instanceof Unit && potential_unit.range) {
         hex_renderer.drawHexes(potential_unit.range);
 
       }
@@ -79,12 +79,14 @@ function HUDRenderer(world_input, hex_renderer) {
         unit_input.updateActionButtons();
       } else {
         this.clearButtons();
-        this.writeMessage("");
+        let pop = world.total_population;
+        this.writeMessage("World population: ".concat(pop));
       }
     };
     this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);
   }
 
+  //start tracking
   this.trackUnitResources();
 
 }
