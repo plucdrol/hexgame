@@ -14,7 +14,7 @@
 // Hex
 // Events
 
-function WorldInput(world, view) {
+function GameInput(world, view) {
   this.world = world;
   this.view = view;
 
