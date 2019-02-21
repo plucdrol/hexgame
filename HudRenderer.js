@@ -46,11 +46,50 @@ function HUDRenderer(world_input, hex_renderer) {
 
 
 
+  this.makeActionButton = function(unit, action) {
+    return "<label><input class='action-button-input' name='actions' type='radio'"
+            .concat(" id='action-").concat(action.name)
+            .concat("' value='").concat(action.name).concat("'><div class='action-button'>")
+            .concat(action.name).concat("<br/>")
+            .concat(action.displayCost(unit)).concat("</div></label></input>");
+  }
 
+  this.updateActionButtons = function() {
 
+    //do nothing if there is no unit to update
+    let unit = unit_input.getUnitSelected();
+    if (!unit) return;
 
+    //remember previous action
+    var current_action = unit_input.getActionSelectedId();
 
+    //update the action list
+    var action_buttons = document.getElementById('action-buttons');
+    action_buttons.innerHTML = "";
+    for (let action of unit.actions) {
+      
+      //only show actions whose activation is met
+      if (action.activation(unit)) {
+        let new_button = this.makeActionButton(unit, action);
+        action_buttons.innerHTML += new_button;
+        
+        //Show actions in grey if their requirements are not met
+        if (!action.requirement(unit)) {
+          document.getElementById("action-".concat(action.name)).disabled = true;
+        }
+      }
+    }
 
+    //add the click-detection code
+    for (let button of document.getElementsByClassName('action-button-input')) {
+      button.addEventListener('click', function(){ unit_input.updateActionRange(); });
+    }
+
+    //reset the action to the previously selected action
+    if (current_action) {
+      unit_input.selectActionById(current_action);
+    }
+  }
 
   this.clearButtons = function() {
     document.getElementById('action-buttons').innerHTML = "";
@@ -75,15 +114,15 @@ function HUDRenderer(world_input, hex_renderer) {
 
     function update_function() { 
       let unit = unit_input.getUnitSelected();
-      
+      let pop = Math.floor(world.total_population);
+      this.writeMessage("World population: ".concat(pop), 'world-resources');
+
       if (unit.resources) {
         this.writeResources(unit); 
-        unit_input.updateActionButtons();
+        this.updateActionButtons();
       } else {
         this.clearButtons();
-        let pop = Math.floor(world.total_population);
         this.writeMessage("", 'city-resources');
-        this.writeMessage("World population: ".concat(pop), 'world-resources');
       }
     };
     this.stop_city_interval_number = setInterval(update_function.bind(this), 1000);

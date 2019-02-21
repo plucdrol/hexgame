@@ -56,9 +56,7 @@ UnitInput.p.selectHex = function(hex) {
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
-  //if ( unit.hasComponent('actions') ) {
-    //this.updateActionRange();
-  //}
+  //nothing happens
 }
 
 UnitInput.p.selectNothing = function() {
@@ -124,30 +122,12 @@ UnitInput.p.clickWithUnitSelected = function(hex) {
 UnitInput.p.clickInsideUnitRange = function(hex) {
 
   let action = this.getActionSelected();
-  let unit_there = this.units.get(hex);
+  let maybe_unit = this.units.get(hex);
+  let unit = this.getUnitSelected();
 
-  if (!action.requirement( this.getUnitSelected()))
-    return;
+  if (action.requirement( this.getUnitSelected()))
+    this.takeAction(unit, action, this.hex_selected, hex);
 
-  //both unit-targetting and land-targetting actions happen here
-  if ((!unit_there && action.target=="land") || (unit_there && action.target=="unit")) {
-    
-    //then pay its cost and do the effect
-    action.payCost(this.world, this.getUnitSelected(), this.hex_selected, hex);
-    action.effect(this.world, this.getUnitSelected(), this.hex_selected, hex);
-
-    //and select the new location (usually)
-    if (action.nextSelection == 'target') {
-      this.selectHex(hex); 
-      this.updateActionRange();
-    }
-      
-
-
-  } else {
-    this.selectHex(hex);
-  }  
- 
 }
 
 UnitInput.p.clickOutsideUnitRange = function(hex) {
@@ -200,6 +180,28 @@ UnitInput.p.clickOutsideUnitRange = function(hex) {
                   // UNIT ACTIONS //
 /////////////////////////////////////////////////////////
 
+UnitInput.p.takeAction = function(unit, action, position, target) {
+
+  let target_unit = this.units.get(target);
+
+  //both unit-targetting and land-targetting actions happen here
+  if ((!target_unit && action.target=="land") || (target_unit && action.target=="unit")) {
+    
+    //then pay its cost and do the effect
+    action.payCost(this.world, unit, position, target);
+    action.effect(this.world, unit, position, target);
+
+    //and select the new location (usually)
+    if (action.nextSelection == 'target') {
+      this.selectHex(target); 
+      this.updateActionRange();
+    }
+
+  } else {
+    this.selectHex(target);
+  }  
+}
+
 UnitInput.p.getActionFromId = function(unit, action_id) {
   for (let action of unit.actions) {
     if ('action-'.concat(action.name) == action_id) {
@@ -217,7 +219,6 @@ UnitInput.p.selectActionById = function(action_id) {
 UnitInput.p.updateActionRange = function() {
   let hex = this.hex_selected;
   let unit = this.getUnitSelected();
-  this.updateActionButtons();
   let action = this.getActionSelected();
 
   if (action)
@@ -245,48 +246,7 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
   return landRange;
 }
 
-UnitInput.p.updateActionButtons = function() {
 
-  //do nothing if there is no unit to update
-  let unit = this.getUnitSelected();
-  if (!unit) return;
-
-  //remember previous action
-  var current_action = this.getActionSelectedId();
-
-  //update the action list
-  var action_buttons = document.getElementById('action-buttons');
-  action_buttons.innerHTML = "";
-  for (let action of unit.actions) {
-    
-    //only show actions whose activation is met
-    if (action.activation(unit)) {
-      let new_button = this.makeActionButton(unit, action);
-      action_buttons.innerHTML += new_button;
-      
-      //Show actions in grey if their requirements are not met
-      if (!action.requirement(unit)) {
-        document.getElementById("action-".concat(action.name)).disabled = true;
-      }
-    }
-  }
-
-  //add the click-detection code
-  let self = this;
-  for (let button of document.getElementsByClassName('action-button-input')) {
-    button.addEventListener('click', function(){ self.updateActionRange(); });
-  }
-
-  //reset the action to the previously selected action
-  if (current_action) {
-    this.selectActionById(current_action);
-  }
-
-  //select the unit's default action if none is currently selected
-  //if (!this.getActionSelectedId() && unit.defaultAction) {
-    //this.selectActionById('action-'.concat(unit.defaultAction.name));
-  //}
-}
 
 //returns the actual action object
 UnitInput.p.getActionSelected = function() {
@@ -309,13 +269,6 @@ UnitInput.p.getActionSelectedId = function() {
     return false;
 }
 
-UnitInput.p.makeActionButton = function(unit, action) {
-  return "<label><input class='action-button-input' name='actions' type='radio'"
-          .concat(" id='action-").concat(action.name)
-          .concat("' value='").concat(action.name).concat("'><div class='action-button'>")
-          .concat(action.name).concat("<br/>")
-          .concat(action.displayCost(unit)).concat("</div></label></input>");
-}
 
 
 
