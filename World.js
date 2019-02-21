@@ -27,6 +27,7 @@ function World(radius) {
   //create land map
   this.world_map = new HexMap();
   this.world_map = new MapGenerator('perlin').makeMap(radius);
+  this.hideWorld();
 
   //create units map
   this.units = new HexMap();
@@ -112,7 +113,7 @@ World.prototype.generateResources = function(world_map) {
       case 8: 
         resources.set(hex, new Unit('wood'));
         break;
-      case 9: //forest
+      case 9: //hills
       case 10: 
       case 11: 
         resources.set(hex, new Unit('stone'));
@@ -122,6 +123,14 @@ World.prototype.generateResources = function(world_map) {
   return resources;
 }
 
+World.prototype.hideWorld = function() {
+  for (hex of this.world_map.getHexArray()) {
+    if (Hex.distance(new Hex(0,0), hex) > 10)
+      this.world_map.get(hex).hidden = true;
+    else
+      this.world_map.get(hex).hidden = false;
+  }
+}
 
 //This function is created in WORLD for now, because we need access to the map
 //Move it somewhere else where it belongs

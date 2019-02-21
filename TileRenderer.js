@@ -52,6 +52,7 @@ TileRenderer2D.prototype.drawTile = function(hex,tile) {
   style.fill_color = this.mapColors(height);
 
   //draw ground
+
   if (this.actuallyDrawHexes) {
     this.hex_renderer.drawHex(hex, style);
   } else {
@@ -60,14 +61,7 @@ TileRenderer2D.prototype.drawTile = function(hex,tile) {
   }
   var position = this.hex_renderer.hexToPoint(hex);
 
-  //wind arrows
-  var wind_direction = tile.wind;
-  var charcode = getWindArrowCharacter( wind_direction );
-  var arrow_style = new RenderStyle();
-  arrow_style.font_size = 30;
-  arrow_style.text_color = 'white';
-  var wind_text = String.fromCharCode(charcode);
-  //this.drawText(wind_text, position, arrow_style);
+
 
 }
 

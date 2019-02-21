@@ -233,16 +233,17 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
 
   var pathfinder = new PathFinder(stepCostFunction, neighborFunction);
 
-  var max_distance = 3;
-  if (action.max_distance)
-    max_distance = action.max_distance;
-
-  var min_distance = 0;
-  if (action.min_distance)
-    min_distance = action.min_distance;
+  var max_distance = action.max_distance | 3;
+  var min_distance = action.min_distance | 0;
 
   var actionRange = pathfinder.getRange( this.world.world_map, hex, max_distance, min_distance );
   let landRange = actionRange.filter(hex => this.world.getMapValue(hex).elevation > 1 );
+
+  for (hex of landRange) {
+    for (neighbor of hex.getNeighbors())
+      world.world_map.get(neighbor).hidden = false;
+  }
+
   return landRange;
 }
 
