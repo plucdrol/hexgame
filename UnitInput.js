@@ -126,7 +126,7 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
   let unit = this.getUnitSelected();
 
   if (action.requirement( this.getUnitSelected()))
-    this.takeAction(unit, action, this.hex_selected, hex);
+    this.doAction(unit, action, this.hex_selected, hex);
 
 }
 
@@ -180,7 +180,7 @@ UnitInput.p.clickOutsideUnitRange = function(hex) {
                   // UNIT ACTIONS //
 /////////////////////////////////////////////////////////
 
-UnitInput.p.takeAction = function(unit, action, position, target) {
+UnitInput.p.doAction = function(unit, action, position, target) {
 
   let target_unit = this.units.get(target);
 
