@@ -100,9 +100,9 @@ function HUDRenderer(world_input, hex_renderer) {
     document.getElementById(element).innerHTML = message;
   }
   this.writeResources = function(city) {
-    var message = "Food:".concat(city.resources.food).concat("/").concat(city.capacity.food)
-                   .concat(" Wood:").concat(city.resources.wood).concat("/").concat(city.capacity.wood)
-                   .concat(" Stone:").concat(city.resources.stone).concat("/").concat(city.capacity.stone);
+    var message = "Food:".concat(city.resources.food)
+                   .concat(" Wood:").concat(city.resources.wood)
+                   .concat(" Stone:").concat(city.resources.stone);
     this.writeMessage(message);
   }
 

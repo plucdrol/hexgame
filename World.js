@@ -168,8 +168,6 @@ World.prototype.gatherCityResources = function(world) {
           continue;
         let resource = world.resources.getValue(collection_hex);
         let resource_type = resource.resource_type;
-        if (unit.resources[resource_type] >= unit.capacity[resource_type]) 
-          continue;
         unit.resources[resource_type] += resource.resource_value;
       }
 

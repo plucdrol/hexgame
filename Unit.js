@@ -20,59 +20,59 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionConquer(6));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(5,2,13) );
-    setGraphic(this,'white',5);
-    setCitySize(this,1);
-    setCityColor(this);
-    setResourceStores(this,0,0,0);
-    setResourceCapacity(this,300,300,300);
+    this.setGraphic('white',5);
+    this.setCitySize(1);
+    this.setCityColor();
+    this.setResourceStores(0,0,0);
     this.resources.food = 5;
+    this.setCivilization();
     break;
 
   case 'settler':
     this.addAction( new actionBuildCamp() );
     this.addAction( new actionMove(5,2,13) );
-    setGraphic(this,'blue',2);
-    setResourceStores(this,5,0,0)
-    setResourceCapacity(this,10,10,10);
-    setCitySize(this,0);
-    setCityColor(this);
+    this.setGraphic('blue',2);
+    this.setResourceStores(5,0,0)
+    this.setCitySize(0);
+    this.setCityColor();
+    this.setCivilization();
 
     break;
   
   case 'water-player':
     this.addAction( new actionMove(6,1,1) );
-    setGraphic(this,'white',2);
-    setGraphic(this,'blue',2);
-    setResourceStores(this,5,0,0)
-    setResourceCapacity(this,5,10,5);
-    setCitySize(this,0);
-    setCityColor(this);
+    this.setGraphic('white',2);
+    this.setGraphic('blue',2);
+    this.setResourceStores(5,0,0)
+    this.setCitySize(0);
+    this.setCityColor();
+    this.setCivilization();
 
     break;
 
 
   case 'fish':
-    setGraphic(this,'lightblue',1);
-    setResource(this,'food',1);
+    this.setGraphic('lightblue',1);
+    this.setResource('food',1);
     break;
   case 'food':
-    setGraphic(this,'yellow',2);
-    setResource(this,'food',1);
+    this.setGraphic('yellow',2);
+    this.setResource('food',1);
     break;
   case 'wood':
-    setGraphic(this,'brown',2);
-    setResource(this,'wood',1);
+    this.setGraphic('brown',2);
+    this.setResource('wood',1);
     break;
   case 'stone':
-    setGraphic(this,'grey',2);
-    setResource(this,'stone',1);
+    this.setGraphic('grey',2);
+    this.setResource('stone',1);
     break;
   case 'terrain':
     this.elevation = 0;
     this.wind = 0;
     break;
   default:
-    setGraphic(this,'yellow',2);
+    setGraphic('yellow',2);
     break;
   }
 }
@@ -114,14 +114,14 @@ Unit.prototype.addAction = function( action ) {
 //
 ////////////////////////////////////
 
-function setGraphic(unit,color,size) {
-  unit.color = color;
-  unit.size = size;
+Unit.prototype.setGraphic = function(color,size) {
+  this.color = color;
+  this.size = size;
 }
 
-function setCityColor(unit) {
-  unit.cityRadiusColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
-  unit.cityRadiusLineColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
+Unit.prototype.setCityColor = function() {
+  this.cityRadiusColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
+  this.cityRadiusLineColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
 }
 
 /////////////////////////////////////////
@@ -130,17 +130,44 @@ function setCityColor(unit) {
 //
 /////////////////////////////////////////////
 
-function setResource(unit,resource_type, resource_value) {
-  unit.resource_type = resource_type;
-  unit.resource_value = resource_value;
+Unit.prototype.setCitySize = function(size) {
+  this.cityRadius = size;
 }
-function setCitySize(unit, size) {
-  unit.cityRadius = size;
+Unit.prototype.setResourceStores = function(food, wood, stone) {
+  this.resources = {'food':food, 'wood':wood, 'stone':stone};
 }
-function setResourceStores(unit, food, wood, stone) {
-  unit.resources = {'food':food, 'wood':wood, 'stone':stone};
-}
-function setResourceCapacity(unit, food, wood, stone) {
-  unit.capacity = {'food':food, 'wood':wood, 'stone':stone};
+Unit.prototype.setCivilization = function(civilization) {
+  this.civilization = civilization | new Civilization();
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////
+//
+//               CIVILIZATION
+//
+/////////////////////////////////////////////
+
+function Civilization() {
+  this.setColors();
+}
+
+Civilization.prototype.setColors = function() {
+  this.fillColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
+  this.lineColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
+}
+Civilization.prototype.setResourceStores = function(food, wood, stone) {
+  this.resources = {'food':food, 'wood':wood, 'stone':stone};
+}

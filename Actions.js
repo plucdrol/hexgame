@@ -317,8 +317,5 @@ function actionGrowCity() {
 
   this.effect = function(units, unit, position, target) {
     unit.cityRadius++;
-    unit.capacity.food *= 2;
-    unit.capacity.wood *= 2;
-    unit.capacity.stone *= 2;
   }
 }
