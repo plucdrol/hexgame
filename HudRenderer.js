@@ -21,7 +21,7 @@ function HUDRenderer(world_input, hex_renderer) {
       }
 
       //draw line from selected unit to mouse position
-      let action = unit_input.getActionSelected();
+      /*let action = unit_input.getActionSelected();
       if (action) {
         let action_step = action.stepCostFunction.bind(action);
         let action_neighbors = action.getNeighborsFunction.bind(action);
@@ -29,7 +29,7 @@ function HUDRenderer(world_input, hex_renderer) {
         let pathfinder = new PathFinder(action_step, action_neighbors );
         let path_hexes = pathfinder.getPath(world_input.world.world_map, hex_selected, hex_hovered);
         hex_renderer.drawLongLine(path_hexes, 5);
-      }
+      }*/
 
       //draw selection hex
       var select_style = new RenderStyle();
