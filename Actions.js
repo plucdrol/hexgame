@@ -255,7 +255,7 @@ function actionConquer(max_distance) {
   }
 
   this.effect = function(world, unit, position, target) {
-    let enemy = world.units.get(target);
+    let enemy_civ = world.units.get(target).civ;
 
     //take the enemy's resources
     unit.civ.resources.food += enemy.civ.resources.food;
@@ -263,7 +263,7 @@ function actionConquer(max_distance) {
     unit.civ.resources.stone += enemy.civ.resources.stone;
 
     //Copy this unit at the target
-    world.units.set(target, unit);
+    enemy.civ = unit.civ;
   }
 
 }

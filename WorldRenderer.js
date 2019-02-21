@@ -150,8 +150,8 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 WorldRenderer.p.drawCityRadius = function(hex, unit) {
   
   var radius_style = new RenderStyle();
-  radius_style.fill_color = unit.cityRadiusColor;
-  radius_style.line_color = unit.cityRadiusLineColor;
+  radius_style.fill_color = unit.civ.fill_color;
+  radius_style.line_color = unit.civ.line_color;
 
   let radius_array = Hex.circle(hex, unit.cityRadius);
   this.hex_renderer.drawHexes(radius_array, radius_style);

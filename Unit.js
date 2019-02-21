@@ -22,11 +22,9 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionMove(5,2,13) );
     this.setGraphic('white',5);
     this.setCitySize(1);
-    this.setCityColor();
     
     this.setCiv();
-    this.civ.setResourceStores(0,0,0);
-    this.civ.resources.food = 5;
+    this.civ.setResourceStores(5,0,0);
     break;
 
   case 'settler':
@@ -34,7 +32,6 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionMove(5,2,13) );
     this.setGraphic('blue',2);
     this.setCitySize(0);
-    this.setCityColor();
 
     this.setCiv();
     this.civ.setResourceStores(5,0,0)
@@ -46,10 +43,9 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('white',2);
     this.setGraphic('blue',2);
     this.setCitySize(0);
-    this.setCityColor();
 
     this.setCiv();
-    this.civ.setResourceStores(5,0,0)
+    this.civ.setResourceStores(5,0,0);
 
     break;
 
@@ -171,8 +167,8 @@ function Civilization() {
 }
 
 Civilization.prototype.setColors = function() {
-  this.fillColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
-  this.lineColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
+  this.fill_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
+  this.line_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
 }
 Civilization.prototype.setResourceStores = function(food, wood, stone) {
   this.resources = {'food':food, 'wood':wood, 'stone':stone};
