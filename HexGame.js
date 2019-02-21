@@ -27,9 +27,9 @@ var world = new World(35);// <-- model
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
 //Receives input for the game
-var world_input = new WorldInput(world, view);     //<--controller
+var game_input = new GameInput(world, view);     //<--controller
 //draws mouse interactions
-var hud_renderer = new HUDRenderer(world_input, hex_renderer);
+var hud_renderer = new HUDRenderer(game_input, hex_renderer);
 
 
 
