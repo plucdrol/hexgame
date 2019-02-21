@@ -16,10 +16,10 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.addAction( new actionCreateUnit('camp', 2, 12));
+    this.addAction( new actionCreateUnit('camp', 2, 8));
     this.addAction( new actionConquer(6));
     this.addAction( new actionGrowCity() );
-    this.addAction( new actionMove(2,2,13) );
+    this.addAction( new actionMove(5,2,13) );
     setGraphic(this,'white',5);
     setCitySize(this,1);
     setCityColor(this);
@@ -33,7 +33,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionMove(5,2,13) );
     setGraphic(this,'blue',2);
     setResourceStores(this,5,0,0)
-    setResourceCapacity(this,5,10,5);
+    setResourceCapacity(this,10,10,10);
     setCitySize(this,0);
     setCityColor(this);
 
@@ -271,8 +271,8 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   this.payCost = function(world, unit, position, target) {
     var food_cost = this.getCost(world, unit, position, target).food;
     unit.resources.food -= food_cost;
-    unit.resources.wood = 0;
-    unit.resources.stone = 0;
+    if (unit.resources.wood > 10) unit.resources.wood = 10;
+    if (unit.resources.stone > 10) unit.resources.stone = 10;
   }
 
   this.effect = function(world, unit, position, target) {
@@ -301,9 +301,9 @@ function actionBuildCamp() {
 
   this.name = "build-camp";
   this.type = "target";
-  this.target = "land";
-  this.min_distance = 1;
-  this.max_distance = 1;
+  this.target = "target";
+  this.min_distance = 0;
+  this.max_distance = 0;
   
   this.activation = function(unit) {
     return unit.resources.wood >= 1;
@@ -424,17 +424,17 @@ function actionConquer(max_distance) {
   this.max_distance = max_distance;
 
   this.activation = function(unit) {
-    return unit.resources.wood >= 2;
+    return unit.resources.wood >= 30;
   }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 10;
+    return unit.resources.wood >= 100;
   };
 
   this.displayCost = function(unit) {
-    return "10 wood";
+    return "100 wood";
   }
   this.getCost = function(world, unit, position, target) {
-    return { wood: 10 };
+    return { wood: 100 };
   };
 
   this.payCost = function(world, unit, position, target) {

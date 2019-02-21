@@ -134,9 +134,6 @@ function GameInput(world, view) {
       drawScreen();
     }
   }
-
-
-
 }
 
 
