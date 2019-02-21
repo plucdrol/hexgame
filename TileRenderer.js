@@ -86,37 +86,15 @@ getWindArrowCharacter = function(direction) {
 //colors of different tiles depending on height
 var greenscale_colors = function (i) {
 
-  let color_scheme = 'deprecated';
+  var greenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
+                    '#080','#062', //grass 3 4
+                    '#052','#042','#032','#020', //forest 5 6 7 8
+                    '#010','#110','#210', //hills 9 10 11 12 13
+                    '#410','#420',
+                    '#777', '#777','#777', //mountains 14 15 16
+                    '#888','#888','#888', //mountains 17 18 19
+                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF',]; //ice
 
-  if (color_scheme == 'space') {
-    var spacescale = ['#000','#000','#ccc','#222','#222', '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000', '#000','#000','#000','#000','#000',
-                      '#000','#000','#000','#000','#000', '#000','#000','#000','#000','#000',
-                      '#000','#000',];
-     return spacescale[i];
-   }
-
-  if (color_scheme == 'galaxy') {
-    var galaxyscale = ['#000','#000','#dd0','#222','#222', '#000','#000','#000','#000','#000',
-                       '#000','#000','#000','#000','#000', '#000','#000','#000','#000','#000',
-                       '#000','#000','#000','#000','#000', '#000','#000','#000','#000','#000',
-                       '#000','#000',];
-     return galaxyscale[i];
-   }
-
-  if (color_scheme == 'earth') {
-      var greenscale = ['#005','#00D','#AA3','#080','#062', '#052','#042','#032','#020','#010',
-                        '#110','#210','#410','#420','#777', '#777','#777','#888','#888','#888',
-                        '#FFF','#FFF','#FFF','#FFF','#FFF', '#FFF','#FFF','#FFF','#FFF','#FFF',
-                        '#FFF','#FFF'];
-     return greenscale[i];
-   }
-
-  var greenscale = ['#005','#00D','#AA3','#080','#062', '#052','#042','#032','#020','#010',
-                    '#110','#210','#410','#420','#777', '#777','#777','#888','#888','#888',
-                    '#FFF','#FFF','#FFF','#FFF','#FFF', '#FFF','#FFF','#FFF','#FFF','#FFF',
-                    '#FFF','#FFF'];
-
-  return greenscale[i];  
+  return greenscale[i] ;  
 }
 
