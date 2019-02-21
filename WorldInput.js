@@ -82,24 +82,32 @@ function WorldInput(world, view) {
 
       document.getElementById('tooltip').innerHTML = "";
       
-      //HOVERING OVER HEXES
-      if (this.hex_hovered && this.world.world_map.get(this.hex_hovered).river)
-        document.getElementById('tooltip').innerHTML += this.world.world_map.get(this.hex_hovered).river.water_level.toString();
 
-      //HOVERING OVER RESOURCES
-      if (this.hex_hovered)
-        this.resource_hovered = this.world.getResource(this.hex_hovered);
-      if (this.resource_hovered && this.resource_hovered.hasComponent('resource_value')) {
-        document.getElementById('tooltip').innerHTML += this.resource_hovered.type;
-        document.getElementById('tooltip').innerHTML += " ";
-      } 
 
       //HOVERING OVER UNITS
       if (this.hex_hovered)
         this.unit_hovered = this.world.getUnit(this.hex_hovered);
       if (this.unit_hovered && this.unit_hovered.hasComponent('size')) {
-        document.getElementById('tooltip').innerHTML += this.unit_hovered.type;
+        document.getElementById('tooltip').innerHTML += this.unit_hovered.type+", ";
       } 
+
+      //HOVERING OVER RESOURCES
+      if (this.hex_hovered)
+        this.resource_hovered = this.world.getResource(this.hex_hovered);
+      if (this.resource_hovered && !this.world.world_map.get(this.hex_hovered).hidden && this.resource_hovered.hasComponent('resource_value')) {
+        document.getElementById('tooltip').innerHTML += this.resource_hovered.type+", ";
+      } 
+
+      //HOVERING OVER LAND
+      if (this.hex_hovered) {
+        this.tile_hovered = this.world.getMapValue(this.hex_hovered);
+        if (this.tile_hovered && !this.world.world_map.get(this.hex_hovered).hidden && this.tile_hovered.elevation) {
+          document.getElementById('tooltip').innerHTML += land_tiles[this.tile_hovered.elevation]+", ";
+        }
+        if (this.tile_hovered && !this.world.world_map.get(this.hex_hovered).hidden && this.tile_hovered.river && this.tile_hovered.river.water_level >= 7) {
+          document.getElementById('tooltip').innerHTML += 'river, ';
+        }
+      }
 
       drawScreen();
     }

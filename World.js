@@ -15,6 +15,17 @@
 //  WorldMap
 //  UnitMap
 
+var land_tiles = [
+'ocean',
+'coast',
+'sand',
+'grass','grass',
+'forest','forest','forest','forest',
+'hills','hills','hills','hills','hills',
+'mountains','mountains','mountains','mountains','mountains','mountains',
+'ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice'
+];
+
 function World(radius) {
 
   this.radius = radius;
