@@ -43,7 +43,7 @@ function World(radius) {
   //create units map
   this.units = new HexMap();
   this.units.set(new Hex(0,0), new Unit('camp'));
-  this.units.get(new Hex(0,0)).resources.food = 30;
+  this.units.get(new Hex(0,0)).civ.resources.food = 30;
 
   //create resources map
   this.resources = new HexMap();
@@ -157,7 +157,7 @@ World.prototype.gatherCityResources = function(world) {
       let unit = world.units.get(unit_hex);
       if (!unit) 
         continue;
-      if (!unit.hasComponent('resources') || !unit.hasComponent('cityRadius')) 
+      if (!unit.hasComponent('cityRadius')) 
         continue;
 
       //collect resources in city range
@@ -168,11 +168,11 @@ World.prototype.gatherCityResources = function(world) {
           continue;
         let resource = world.resources.getValue(collection_hex);
         let resource_type = resource.resource_type;
-        unit.resources[resource_type] += resource.resource_value;
+        unit.civ.resources[resource_type] += resource.resource_value;
       }
 
       //count total food
-      total_food += unit.resources.food;
+      total_food += unit.civ.resources.food;
     }
 
     world.total_population = total_food;

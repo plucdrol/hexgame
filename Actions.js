@@ -68,7 +68,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     return target;
   }
   this.requirement = function(unit) {
-    return unit.resources.food >= 1;
+    return unit.civ.resources.food >= 1;
   };
 
   this.displayCost = function(unit) {
@@ -87,9 +87,9 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
   this.payCost = function(world, unit, position, target) {
     var food_cost = this.getCost(world, unit, position, target).food;
-    unit.resources.food -= food_cost;
-    if (unit.resources.wood > 10) unit.resources.wood = 10;
-    if (unit.resources.stone > 10) unit.resources.stone = 10;
+    unit.civ.resources.food -= food_cost;
+    if (unit.civ.resources.wood > 10) unit.civ.resources.wood = 10;
+    if (unit.civ.resources.stone > 10) unit.civ.resources.stone = 10;
   }
 
   this.effect = function(world, unit, position, target) {
@@ -97,8 +97,8 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     //move the unit
     world.units.remove(position);
     world.units.set(target, unit);
-    unit.wood = 0;
-    unit.stone = 0;
+    unit.civ.resources.wood = 0;
+    unit.civ.resources.stone = 0;
   };
 
 }
@@ -123,10 +123,10 @@ function actionBuildCamp() {
   this.max_distance = 0;
   
   this.activation = function(unit) {
-    return unit.resources.wood >= 1;
+    return unit.civ.resources.wood >= 1;
   }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 5;
+    return unit.civ.resources.wood >= 5;
   };
 
   this.displayCost = function(unit) {
@@ -139,7 +139,7 @@ function actionBuildCamp() {
 
   this.payCost = function(world, unit, position, target) {
     var wood_cost = this.getCost(world, unit, position, target).wood;
-    unit.resources.wood -= wood_cost;
+    unit.civ.resources.wood -= wood_cost;
   }
 
   this.effect = function(world, unit, position, target) {
@@ -148,11 +148,6 @@ function actionBuildCamp() {
     world.units.remove( position );
     world.units.set( position, new Unit('camp') );
     new_unit = world.units.get( position );
-
-    //keep resources of the old unit
-    if (unit.resources) {
-      new_unit.resources = unit.resources;
-    }
 
   }
 
@@ -193,10 +188,10 @@ function actionCreateUnit(unit_type, min_distance, max_distance) {
   }
 
   this.activation = function(unit) {
-    return unit.resources.food >= 1;
+    return unit.civ.resources.food >= 1;
   }
   this.requirement = function(unit) {
-    return unit.resources.food >= 30;
+    return unit.civ.resources.food >= 30;
   };
 
   this.displayCost = function(unit) {
@@ -208,7 +203,7 @@ function actionCreateUnit(unit_type, min_distance, max_distance) {
 
   this.payCost = function(world, unit, position, target) {
     var food_cost = this.getCost(world, unit, position, target).food;
-    unit.resources.food -= food_cost;
+    unit.civ.resources.food -= food_cost;
   }
 
 
@@ -241,10 +236,10 @@ function actionConquer(max_distance) {
   this.max_distance = max_distance;
 
   this.activation = function(unit) {
-    return unit.resources.wood >= 30;
+    return unit.civ.resources.wood >= 30;
   }
   this.requirement = function(unit) {
-    return unit.resources.wood >= 100;
+    return unit.civ.resources.wood >= 100;
   };
 
   this.displayCost = function(unit) {
@@ -256,16 +251,16 @@ function actionConquer(max_distance) {
 
   this.payCost = function(world, unit, position, target) {
     var wood_cost = this.getCost(world, unit, position, target).wood;
-    unit.resources.wood -= wood_cost;
+    unit.civ.resources.wood -= wood_cost;
   }
 
   this.effect = function(world, unit, position, target) {
     let enemy = world.units.get(target);
 
     //take the enemy's resources
-    unit.food += enemy.food;
-    unit.wood += enemy.wood;
-    unit.stone += enemy.stone;
+    unit.civ.resources.food += enemy.civ.resources.food;
+    unit.civ.resources.wood += enemy.civ.resources.wood;
+    unit.civ.resources.stone += enemy.civ.resources.stone;
 
     //Copy this unit at the target
     world.units.set(target, unit);
@@ -297,10 +292,10 @@ function actionGrowCity() {
   this.max_distance = 0;
 
   this.activation = function(unit) {
-    return unit.resources.wood >= 1;
+    return unit.civ.resources.wood >= 1;
   }
   this.requirement = function(unit) {
-    return unit.resources.wood >= unit.cityRadius*30;
+    return unit.civ.resources.wood >= unit.cityRadius*30;
   };
 
   this.displayCost = function(unit) {
@@ -312,7 +307,7 @@ function actionGrowCity() {
 
   this.payCost = function(map, unit, position, target) {
     var wood_cost = this.getCost(map, unit, position, target).wood;
-    unit.resources.wood -= wood_cost;
+    unit.civ.resources.wood -= wood_cost;
   }
 
   this.effect = function(units, unit, position, target) {

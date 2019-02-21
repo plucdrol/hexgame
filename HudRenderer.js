@@ -100,9 +100,9 @@ function HUDRenderer(world_input, hex_renderer) {
     document.getElementById(element).innerHTML = message;
   }
   this.writeResources = function(city) {
-    var message = "Food:".concat(city.resources.food)
-                   .concat(" Wood:").concat(city.resources.wood)
-                   .concat(" Stone:").concat(city.resources.stone);
+    var message = "Food:".concat(city.civ.resources.food)
+                   .concat(" Wood:").concat(city.civ.resources.wood)
+                   .concat(" Stone:").concat(city.civ.resources.stone);
     this.writeMessage(message);
   }
 
@@ -117,7 +117,7 @@ function HUDRenderer(world_input, hex_renderer) {
       let pop = Math.floor(world.total_population);
       this.writeMessage("World population: ".concat(pop), 'world-resources');
 
-      if (unit.resources) {
+      if (unit.civ && unit.civ.resources) {
         this.writeResources(unit); 
         this.updateActionButtons();
       } else {

@@ -23,19 +23,21 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('white',5);
     this.setCitySize(1);
     this.setCityColor();
-    this.setResourceStores(0,0,0);
-    this.resources.food = 5;
-    this.setCivilization();
+    
+    this.setCiv();
+    this.civ.setResourceStores(0,0,0);
+    this.civ.resources.food = 5;
     break;
 
   case 'settler':
     this.addAction( new actionBuildCamp() );
     this.addAction( new actionMove(5,2,13) );
     this.setGraphic('blue',2);
-    this.setResourceStores(5,0,0)
     this.setCitySize(0);
     this.setCityColor();
-    this.setCivilization();
+
+    this.setCiv();
+    this.civ.setResourceStores(5,0,0)
 
     break;
   
@@ -43,10 +45,11 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionMove(6,1,1) );
     this.setGraphic('white',2);
     this.setGraphic('blue',2);
-    this.setResourceStores(5,0,0)
     this.setCitySize(0);
     this.setCityColor();
-    this.setCivilization();
+
+    this.setCiv();
+    this.civ.setResourceStores(5,0,0)
 
     break;
 
@@ -75,6 +78,11 @@ Unit.prototype.setType = function(unit_type) {
     setGraphic('yellow',2);
     break;
   }
+}
+
+Unit.prototype.setResource = function(type, value) {
+  this.resource_type = type;
+  this.resource_value = value;
 }
 
 Unit.prototype.hasComponent = function(component_name) {
@@ -133,11 +141,9 @@ Unit.prototype.setCityColor = function() {
 Unit.prototype.setCitySize = function(size) {
   this.cityRadius = size;
 }
-Unit.prototype.setResourceStores = function(food, wood, stone) {
-  this.resources = {'food':food, 'wood':wood, 'stone':stone};
-}
-Unit.prototype.setCivilization = function(civilization) {
-  this.civilization = civilization | new Civilization();
+
+Unit.prototype.setCiv = function() {
+  this.civ = new Civilization();
 }
 
 
@@ -167,6 +173,9 @@ function Civilization() {
 Civilization.prototype.setColors = function() {
   this.fillColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
   this.lineColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
+}
+Civilization.prototype.setResourceStores = function(food, wood, stone) {
+  this.resources = {'food':food, 'wood':wood, 'stone':stone};
 }
 Civilization.prototype.setResourceStores = function(food, wood, stone) {
   this.resources = {'food':food, 'wood':wood, 'stone':stone};
