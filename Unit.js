@@ -20,7 +20,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionConquer(6));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(5,2,13) );
-    setGraphic(this,'white',5);
+    this.setGraphic('white',5);
     setCitySize(this,1);
     setCityColor(this);
     setResourceStores(this,0,0,0);
@@ -31,7 +31,7 @@ Unit.prototype.setType = function(unit_type) {
   case 'settler':
     this.addAction( new actionBuildCamp() );
     this.addAction( new actionMove(5,2,13) );
-    setGraphic(this,'blue',2);
+    this.setGraphic('blue',2);
     setResourceStores(this,5,0,0)
     setResourceCapacity(this,10,10,10);
     setCitySize(this,0);
@@ -41,8 +41,8 @@ Unit.prototype.setType = function(unit_type) {
   
   case 'water-player':
     this.addAction( new actionMove(6,1,1) );
-    setGraphic(this,'white',2);
-    setGraphic(this,'blue',2);
+    this.setGraphic('white',2);
+    this.setGraphic('blue',2);
     setResourceStores(this,5,0,0)
     setResourceCapacity(this,5,10,5);
     setCitySize(this,0);
@@ -52,19 +52,19 @@ Unit.prototype.setType = function(unit_type) {
 
 
   case 'fish':
-    setGraphic(this,'lightblue',1);
+    this.setGraphic('lightblue',1);
     setResource(this,'food',1);
     break;
   case 'food':
-    setGraphic(this,'yellow',2);
+    this.setGraphic('yellow',2);
     setResource(this,'food',1);
     break;
   case 'wood':
-    setGraphic(this,'brown',2);
+    this.setGraphic('brown',2);
     setResource(this,'wood',1);
     break;
   case 'stone':
-    setGraphic(this,'grey',2);
+    this.setGraphic('grey',2);
     setResource(this,'stone',1);
     break;
   case 'terrain':
@@ -72,7 +72,7 @@ Unit.prototype.setType = function(unit_type) {
     this.wind = 0;
     break;
   default:
-    setGraphic(this,'yellow',2);
+    this.setGraphic('yellow',2);
     break;
   }
 }
@@ -114,9 +114,9 @@ Unit.prototype.addAction = function( action ) {
 //
 ////////////////////////////////////
 
-function setGraphic(unit,color,size) {
-  unit.color = color;
-  unit.size = size;
+Unit.prototype.setGraphic = function(color, size) {
+  this.color = color;
+  this.size = size;
 }
 
 function setCityColor(unit) {
