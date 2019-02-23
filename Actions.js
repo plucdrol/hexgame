@@ -177,8 +177,11 @@ function actionCreateUnit(unit_type, min_distance, max_distance) {
   this.max_distance = max_distance;
 
   function setCivOnTiles(world, civ, position) {
+    world.world_map.get(position).civ = civ;
     for (hex of position.getNeighbors()) {
       if (!world.world_map.containsHex(hex)) 
+        continue;
+      if (world.world_map.get(hex).elevation < 2) 
         continue;
       if (!world.world_map.get(hex).civ)
         world.world_map.get(hex).civ = civ;
