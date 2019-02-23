@@ -24,7 +24,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setCitySize(1);
     
     this.setCiv();
-    this.civ.setResourceStores(5,0,0);
+    this.civ.setResourceStores(35,0,0);
     break;
 
   case 'settler':
@@ -180,7 +180,7 @@ Civilization.prototype.setResourceStores = function(food, wood, stone) {
 function setCivOnTiles(world, civ, position) {
   for (hex of position.getNeighbors()) {
     if (!world.world_map.containsHex(hex)) continue;
-    if (world.world_map.get(hex).civ == null)
+    //if (!world.world_map.get(hex).civ)
       world.world_map.get(hex).civ = civ;
   }
 }

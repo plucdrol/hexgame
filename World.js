@@ -43,7 +43,7 @@ function World(radius) {
   //create units map
   this.units = new HexMap();
   this.units.set(new Hex(0,0), new Unit('camp'));
-  this.units.get(new Hex(0,0)).civ.resources.food = 30;
+  this.units.get(new Hex(0,0)).civ.resources.food = 300;
 
   //create resources map
   this.resources = new HexMap();
@@ -152,8 +152,29 @@ World.prototype.gatherCityResources = function(world) {
 
 
     //for all tiles
-    for (let unit_hex of world.units.getHexArray() )  {
-      
+    for (let hex of world.world_map.getHexArray() )  {
+      let tile = world.world_map.get(hex);
+      //ignore tiles with no civilization already
+      if (!tile.civ) 
+        continue;
+      if (Math.random() < 0.80)
+        continue;
+
+      //spread that civ to all neighbor tiles
+      for (let neighbor_hex of hex.getNeighbors()) {
+        //skip tiles outside the map
+        if (!world.world_map.containsHex(neighbor_hex))
+          continue;
+        if (Math.random() < 0.80)
+        continue;
+
+        let neighbor_tile = world.world_map.get(neighbor_hex);
+        if ((neighbor_tile.elevation > 1 && neighbor_tile.elevation < 14) || neighbor_tile.civ) {
+          neighbor_tile.civ = tile.civ;
+          neighbor_tile.hidden = false;
+        }
+      }
+
     }
 
     //For all units

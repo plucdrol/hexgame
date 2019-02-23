@@ -83,6 +83,33 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
       tile_renderer.drawTile(hex, this.getTile(hex));
   }
 
+
+
+  //draw the coastal water
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    //draw tile
+    if (this.getTile(hex).elevation == 1) 
+      tile_renderer.drawTile(hex, this.getTile(hex));
+  }
+
+
+  //draw the civiliztaion borders
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    if (!this.getTile(hex).civ) continue;
+    //draw tile
+    this.drawCivTile(hex, this.getTile(hex));
+  }
+  //draw the units and their associated zones
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    //draw units
+    var this_unit = this.world.getUnit(hex);
+    if (this_unit != undefined) {
+        this.drawUnit(this_unit,hex,0);
+    }
+  }
   //draw the rivers
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
@@ -93,37 +120,13 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
         this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*3)) );
     }
   }
-
-  //draw the coastal water
+  //draw resources
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
-    //draw tile
-    if (this.getTile(hex).elevation == 1) 
-      tile_renderer.drawTile(hex, this.getTile(hex));
-
-    //draw resources
     var this_resource = this.world.getResource(hex);
     if (this_resource != undefined) {
         this.drawUnit(this_resource,hex,0);
     }
-  }
-
-  //draw the units and their associated zones
-  for (hex of hexarray) {
-    if (this.getTile(hex).hidden) continue;
-    //draw units
-    var this_unit = this.world.getUnit(hex);
-    if (this_unit != undefined) {
-        this.drawUnit(this_unit,hex,0);
-    }
-  }
-
-  //draw the civiliztaion borders
-  for (hex of hexarray) {
-    if (this.getTile(hex).hidden) continue;
-    if (!this.getTile(hex).civ) continue;
-    //draw tile
-    this.drawCivTile(hex, this.getTile(hex));
   }
 }
 
