@@ -72,13 +72,14 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   //make a tile renderer
   var tile_renderer = new TileRenderer2D( this.hex_renderer, this.world.getLayout() );
 
-  //draw the tiles of the array
+  //draw the land colors
   for (hex of hexarray) {
+    //clouds if not explored
     if (this.getTile(hex).hidden) {
       tile_renderer.drawTile(hex, {elevation: 21});
       continue;
     }
-    //draw tile
+    //actual tiles
     if (this.getTile(hex).elevation >= 2)
       tile_renderer.drawTile(hex, this.getTile(hex));
   }
@@ -94,14 +95,15 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   }
 
 
-  //draw the civiliztaion borders
+  //draw the civilization tiles
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     if (!this.getTile(hex).civ) continue;
     //draw tile
     this.drawCivTile(hex, this.getTile(hex));
   }
-  //draw the units and their associated zones
+
+  //draw the units and their resource-collection area
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     //draw units
@@ -154,14 +156,14 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
   //draw the city radius
   if (unit.cityRadius != undefined) {
-    //this.drawCityRadius(hex, unit);
+    this.drawCityRadius(hex, unit);
   }
 };
 
 WorldRenderer.p.drawCityRadius = function(hex, unit) {
   
   var radius_style = new RenderStyle();
-  radius_style.fill_color = unit.civ.fill_color;
+  radius_style.fill_color = 'rgba(0,0,0,0)';
   radius_style.line_color = unit.civ.line_color;
 
   let radius_array = Hex.circle(hex, unit.cityRadius);
