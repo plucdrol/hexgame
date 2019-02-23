@@ -86,7 +86,7 @@ getWindArrowCharacter = function(direction) {
 //colors of different tiles depending on height
 var greenscale_colors = function (i) {
 
-  var greenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
+  var oldgreenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
                     '#080','#062', //grass 3 4
                     '#052','#042','#032','#020', //forest 5 6 7 8
                     '#010','#110','#210', //hills 9 10 11 12 13
@@ -95,6 +95,20 @@ var greenscale_colors = function (i) {
                     '#888','#888','#888', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF',]; //ice
 
-  return greenscale[i] ;  
+  var greenscale = [224,190,61, //ocean coast sand 0 1 2
+                    90,100, //grass 3 4
+                    100,105,110,120, //forest 5 6 7 8
+                    34,35,36,37,38];  //hills 9 10 11 12 13
+                    
+
+  //ice
+  if (i >= 20)
+    return "hsl(0, 0%, 90%)"; 
+  //mountains
+  if (i >= 14)
+    return "hsl(0, 0%, 50%)"; 
+  //land
+  return "hsl("+greenscale[i]+", 30%, 50%)"; 
+
 }
 

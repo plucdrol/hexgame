@@ -32,6 +32,10 @@ MapGenerator = function(map_type) {
       return 0;
     }
   }
+  this.setCiv = function(hex, civ) {
+    var current_tile = this.map.getValue(hex);
+    current_tile.civ = civ;
+  }
   this.setWind = function(hex,new_value) {
 
     var current_tile = this.map.getValue(hex);
@@ -120,6 +124,7 @@ MapGenerator.prototype.makeMap = function(radius) {
       hex = new Hex(q,r);
       this.setElevation(hex,this.tile_gen.generateTile(q,r));
       this.setWind(hex,this.tile_gen.generateWind(q,r));
+      this.setCiv(hex, null);
     }
   }
 

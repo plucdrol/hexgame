@@ -149,9 +149,15 @@ World.prototype.gatherCityResources = function(world) {
   
   return function(){
 
-    let total_food = 0;
+
+
+    //for all tiles
+    for (let unit_hex of world.units.getHexArray() )  {
+      
+    }
 
     //For all units
+    let total_food = 0;
     for (let unit_hex of world.units.getHexArray() )  {
       //if they are a city
       let unit = world.units.get(unit_hex);
@@ -171,8 +177,10 @@ World.prototype.gatherCityResources = function(world) {
         unit.civ.resources[resource_type] += resource.resource_value;
       }
 
+
       //count total food
       total_food += unit.civ.resources.food;
+
     }
 
     world.total_population = total_food;

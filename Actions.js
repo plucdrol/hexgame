@@ -176,6 +176,13 @@ function actionCreateUnit(unit_type, min_distance, max_distance) {
   this.min_distance = min_distance;
   this.max_distance = max_distance;
 
+  function setCivOnTiles(world, civ, position) {
+    for (hex of position.getNeighbors().concat(position)) {
+      if (!world.world_map.containsHex(hex)) continue;
+      if (world.world_map.get(hex).civ == null)
+        world.world_map.get(hex).civ = civ;
+    }
+  }
   function noCitiesInArea(world, position, radius) {
     let area = Hex.circle(position, radius);
     for (hex of area) {
@@ -210,8 +217,11 @@ function actionCreateUnit(unit_type, min_distance, max_distance) {
 
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
-    if (noCitiesInArea(world,target,2))
-      world.units.set(target, new Unit(this.new_unit_type));
+    if (noCitiesInArea(world,target,2)) {
+      let new_unit = new Unit(this.new_unit_type);
+      world.units.set(target, new_unit);
+      setCivOnTiles(world, new_unit.civ, target);
+    }
   }
 
 }
@@ -250,12 +260,11 @@ function actionConquer(max_distance) {
   };
 
   this.payCost = function(world, unit, position, target) {
-    var wood_cost = this.getCost(world, unit, position, target).wood;
-    unit.civ.resources.wood -= wood_cost;
+    unit.civ.resources.wood -= 100;
   }
 
   this.effect = function(world, unit, position, target) {
-    let enemy_civ = world.units.get(target).civ;
+    let enemy = world.units.get(target);
 
     //take the enemy's resources
     unit.civ.resources.food += enemy.civ.resources.food;

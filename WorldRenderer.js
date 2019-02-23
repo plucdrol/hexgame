@@ -98,7 +98,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     //draw tile
-    if (this.getTile(hex).elevation == 1)
+    if (this.getTile(hex).elevation == 1) 
       tile_renderer.drawTile(hex, this.getTile(hex));
 
     //draw resources
@@ -116,6 +116,14 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     if (this_unit != undefined) {
         this.drawUnit(this_unit,hex,0);
     }
+  }
+
+  //draw the civiliztaion borders
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    if (!this.getTile(hex).civ) continue;
+    //draw tile
+    this.drawCivTile(hex, this.getTile(hex));
   }
 }
 
@@ -143,7 +151,7 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
   //draw the city radius
   if (unit.cityRadius != undefined) {
-    this.drawCityRadius(hex, unit);
+    //this.drawCityRadius(hex, unit);
   }
 };
 
@@ -157,6 +165,13 @@ WorldRenderer.p.drawCityRadius = function(hex, unit) {
   this.hex_renderer.drawHexes(radius_array, radius_style);
 }
 
+WorldRenderer.p.drawCivTile = function(hex, tile) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = tile.civ.fill_color;
+  radius_style.line_color = tile.civ.line_color;
+  this.hex_renderer.drawHex(hex, radius_style);
+}
 
 WorldRenderer.p.drawPath = function(range,destination) {
     
