@@ -176,11 +176,3 @@ Civilization.prototype.setResourceStores = function(food, wood, stone) {
 Civilization.prototype.setResourceStores = function(food, wood, stone) {
   this.resources = {'food':food, 'wood':wood, 'stone':stone};
 }
-
-function setCivOnTiles(world, civ, position) {
-  for (hex of position.getNeighbors()) {
-    if (!world.world_map.containsHex(hex)) continue;
-    //if (!world.world_map.get(hex).civ)
-      world.world_map.get(hex).civ = civ;
-  }
-}
