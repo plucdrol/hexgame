@@ -17,7 +17,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'camp':
     this.addAction( new actionCreateCamp(6, 8));
-    this.addAction( new actionConquer(6));
+    this.addAction( new actionConquer(10));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(5,2,13) );
     this.setGraphic('white',5);
