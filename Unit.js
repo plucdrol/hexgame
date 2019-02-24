@@ -168,4 +168,5 @@ Civilization.prototype.setColors = function() {
 
 Civilization.prototype.setResourceStores = function(food, wood, stone) {
   this.resources = {'food':food, 'wood':wood, 'stone':stone};
+}
 
