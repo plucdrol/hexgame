@@ -81,13 +81,26 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 }
 
 WorldRenderer.p.drawCivTiles = function(hexarray) {
+  let civ_tile_arrays = [];
     //draw the civilization tiles
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     if (!this.getTile(hex).civ) continue;
-    //draw tile
-    this.drawCivTile(hex, this.getTile(hex));
+    if (!civ_tile_arrays[this.getTile(hex).civ.id])
+      civ_tile_arrays[this.getTile(hex).civ.id] = [];
+    civ_tile_arrays[this.getTile(hex).civ.id].push(hex);
   }
+
+  //draw tile arrays
+  if (!civ_tile_arrays)
+    return;
+  for (culture of civ_tile_arrays) {
+    if (!(culture instanceof Array))
+      continue;
+    let civ = this.getTile(culture[0]).civ;    
+    this.drawCivHexes(culture, civ);
+  }
+  
 }
 
 WorldRenderer.p.drawRivers = function(hexarray) {
@@ -127,6 +140,23 @@ WorldRenderer.p.drawResources = function(hexarray) {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 WorldRenderer.p.getTile = function(hex) {
     return this.world.world_map.getValue(hex);
 }
@@ -151,7 +181,7 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
   //draw the city radius
   if (unit.cityRadius) {
-    this.drawCityRadius(hex, unit);
+    //this.drawCityRadius(hex, unit);
   }
 };
 
@@ -171,6 +201,13 @@ WorldRenderer.p.drawCivTile = function(hex, tile) {
   radius_style.fill_color = tile.civ.fill_color;
   radius_style.line_color = tile.civ.line_color;
   this.hex_renderer.drawHex(hex, radius_style);
+}
+WorldRenderer.p.drawCivHexes = function(hexes, civ) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = civ.fill_color;
+  radius_style.line_color = civ.line_color;
+  this.hex_renderer.drawHexes(hexes, radius_style);
 }
 
 WorldRenderer.p.drawPath = function(range,destination) {

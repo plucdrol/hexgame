@@ -158,6 +158,7 @@ Unit.prototype.setCiv = function(civilization) {
 /////////////////////////////////////////////
 
 function Civilization() {
+  this.id = Math.floor(Math.random()*10000);
   this.setColors();
 }
 
