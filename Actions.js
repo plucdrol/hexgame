@@ -83,19 +83,9 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     return "1 food/step<br/>All wood&stone";
   }
 
-  this.getCost = function(world, unit, position, target) {
-    //calculate the cost of moving
-    var costFunction = action.stepCostFunction.bind(action);
-    var neighborFunction = action.getNeighborsFunction.bind(action);
-
-    var pathfinder = new PathFinder(costFunction, neighborFunction);
-    var foodCost = pathfinder.getCost( world.world_map, position, target, 10 );
-    return { food: foodCost };
-  };
-
   this.payCost = function(world, unit, position, target) {
-    var food_cost = this.getCost(world, unit, position, target).food;
-    unit.civ.resources.food -= food_cost;
+    var food_cost = 5;
+    unit.civ.resources.food -= 5;
     if (unit.civ.resources.wood > 10) unit.civ.resources.wood = 10;
     if (unit.civ.resources.stone > 10) unit.civ.resources.stone = 10;
   }
@@ -144,14 +134,9 @@ function actionBuildCamp() {
   this.displayCost = function(unit) {
     return "5 wood";
   }
-  this.getCost = function(world, unit, position, target) {
-    //calculate the cost of moving
-    return { wood: 5 };
-  };
 
   this.payCost = function(world, unit, position, target) {
-    var wood_cost = this.getCost(world, unit, position, target).wood;
-    unit.civ.resources.wood -= wood_cost;
+    unit.civ.resources.wood -= 5;
   }
 
   this.effect = function(world, unit, position, target) {
@@ -304,13 +289,9 @@ function actionGrowCity() {
   this.displayCost = function(unit) {
     return (unit.cityRadius*30).toString().concat(" wood");
   }
-  this.getCost = function(map, unit, position, target) {
-    return { wood: unit.cityRadius*30 };
-  };
 
   this.payCost = function(map, unit, position, target) {
-    var wood_cost = this.getCost(map, unit, position, target).wood;
-    unit.civ.resources.wood -= wood_cost;
+    unit.civ.resources.wood -= unit.cityRadius*30 };
   }
 
   this.effect = function(units, unit, position, target) {
