@@ -304,7 +304,7 @@ World.prototype.noCitiesInArea = function(position, radius, unit_to_ignore) {
 
 World.prototype.setCivOnTiles = function(civ, position) {
   this.world_map.get(position).civ = civ;
-  this.world_map.get(position).culture = 3;
+  this.world_map.get(position).culture = 10;
   for (hex of position.getNeighbors()) {
     //skip claimed hexes
     if (!this.world_map.containsHex(hex)) 
@@ -314,7 +314,7 @@ World.prototype.setCivOnTiles = function(civ, position) {
       continue;
     if (!this.world_map.get(hex).civ) {
       this.world_map.get(hex).civ = civ;
-      this.world_map.get(hex).culture = 2;
+      this.world_map.get(hex).culture = 9;
     }
   }
 }
