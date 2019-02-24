@@ -36,10 +36,10 @@ HexRenderer.p.pointToHex = function(point) {
 }
 
 // RENDERING FUNCTIONS
-HexRenderer.p.drawCenterLine = function(hex1, hex2, width) {
+HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color) {
   var style = new RenderStyle();
   style.line_width = width;
-  style.line_color = "hsl(190, 30%, 50%)"; 
+  style.line_color = line_color; 
   var point1 = this.hexToPoint(hex1);
   var point2 = this.hexToPoint(hex2);
   this.renderer.drawLine(point1, point2, style);
