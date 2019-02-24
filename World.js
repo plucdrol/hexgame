@@ -200,8 +200,14 @@ World.prototype.spreadCulture = function() {
     if (!tile.civ || !tile.culture) 
       continue;
     //randomly reduce culture value of tiles
-    if (Math.random() < 0.40 && tile.culture > 1)
-      tile.culture = Math.floor(tile.culture*0.8);
+    if (Math.random() < 0.10) {
+      if (tile.culture == 1) {
+        tile.civ = undefined;
+        tile.culture = 0;
+      } else {
+        tile.culture = Math.floor(tile.culture*0.8);
+      }
+    }
 
     //in some percentage of times, spread the culture of the tile
     if (Math.random() < 0.80)
