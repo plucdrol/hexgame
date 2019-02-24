@@ -38,7 +38,7 @@ function World(radius) {
   //create land map
   this.world_map = new HexMap();
   this.world_map = new MapGenerator('perlin').makeMap(radius);
-  this.hideWorld();
+  this.makeCloudsEverywhere();
 
   //create units map
   this.units = new HexMap();
@@ -60,7 +60,7 @@ function World(radius) {
   //start the 1-second counter which gathers resources for cities
   this.startGathering = function() {
     var self = this; 
-    setInterval( self.gatherCityResources(self), 1000 );
+    setInterval( self.everySecond(self), 1000 );
   }
   this.startGathering();
 
@@ -136,7 +136,7 @@ World.prototype.generateResources = function(world_map) {
   return resources;
 }
 
-World.prototype.hideWorld = function() {
+World.prototype.makeCloudsEverywhere = function() {
   for (hex of this.world_map.getHexArray()) {
     if (Hex.distance(new Hex(0,0), hex) > 10)
       this.world_map.get(hex).hidden = true;
@@ -147,7 +147,7 @@ World.prototype.hideWorld = function() {
 
 //This function is created in WORLD for now, because we need access to the map
 //Move it somewhere else where it belongs
-World.prototype.gatherCityResources = function(world) {
+World.prototype.everySecond = function(world) {
   
   return function(){
 
@@ -219,6 +219,26 @@ World.prototype.gatherCityResources = function(world) {
     drawScreen();
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
