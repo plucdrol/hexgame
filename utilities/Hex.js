@@ -282,10 +282,13 @@ function Vertex(hex,direction_number) {
   };
 
   //returns the vertex coordinate in fractional hexes 
-  Vertex.prototype.getPoint = function() {
+  Vertex.prototype.getPoint = function(shrink_ratio) {
+
+    //shrink ratio will multiply the distance from the center of the hex
+    let shrink = shrink_ratio || 1;
 
     //returns the fractional hex coordinates of the corner
-    var corner = hex_corner[this.direction_number];
+    var corner = Hex.multiply(hex_corner[this.direction_number], shrink);
     return Hex.add( this.hex, corner );
   };
 
@@ -345,16 +348,16 @@ function Edge(hex,direction_number) {
 
   //As seen from the InnerHex's perspective, 
   //Point2 is counterclockwise from Point1
-  Edge.prototype.getPoint1 = function() {
-    return this.getVertex1().getPoint();
+  Edge.prototype.getPoint1 = function(shrink_ratio) {
+    return this.getVertex1().getPoint(shrink_ratio);
   };
   Edge.prototype.getVertex1 = function() {
     var vertex_direction = (this.direction_number);
     return new Vertex(this.hex, vertex_direction);
   };
   //return the coordinates of the second one
-  Edge.prototype.getPoint2 = function() {
-    return this.getVertex2().getPoint();
+  Edge.prototype.getPoint2 = function(shrink_ratio) {
+    return this.getVertex2().getPoint(shrink_ratio);
   };
   Edge.prototype.getVertex2 = function() {
     var vertex_direction = (this.direction_number+1)%6;

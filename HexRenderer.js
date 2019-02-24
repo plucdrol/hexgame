@@ -73,10 +73,10 @@ HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
     var edges = edge_arrays[outline];
 
     for (var i=0;i<edges.length;i++){
-      let corner = this.hexToPoint(edges[i].getPoint1() );
+      let corner = this.hexToPoint(edges[i].getPoint1(0.9) );
       corners.push( corner );
     }
-    let corner = this.hexToPoint(edges[0].getPoint1() );
+    let corner = this.hexToPoint(edges[0].getPoint1(0.9) );
     corner.breakLine = true; //used in complex polygons to know when to break the drawing loops
     corners.push( corner ); //add the first point again to close the loop
   }
