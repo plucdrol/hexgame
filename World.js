@@ -145,13 +145,32 @@ World.prototype.makeCloudsEverywhere = function() {
   }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////
+//
+//            FUNCTION RUN EVERY SECOND ON THE WORLD
+//
+////////////////////////////////////
+
 //This function is created in WORLD for now, because we need access to the map
 //Move it somewhere else where it belongs
 World.prototype.everySecond = function(world) {
   
   return function(){
-
-
 
     //for all tiles
     for (let hex of world.world_map.getHexArray() )  {
@@ -201,14 +220,22 @@ World.prototype.everySecond = function(world) {
       //collect resources in city range
       let collection_hexes = Hex.circle(unit_hex,unit.cityRadius);
       for (let collection_hex of collection_hexes) {
+        
         //add the resources to the city
-        if (!world.resources.containsHex(collection_hex)) 
+        if (world.resources.containsHex(collection_hex)) {
+          let resource = world.resources.getValue(collection_hex);
+          let resource_type = resource.resource_type;
+          unit.civ.resources[resource_type] += resource.resource_value;
           continue;
-        let resource = world.resources.getValue(collection_hex);
-        let resource_type = resource.resource_type;
-        unit.civ.resources[resource_type] += resource.resource_value;
-      }
+        }
 
+        //add 1 food from river tiles
+        if (world.world_map.containsHex(collection_hex)) {
+          let river = world.world_map.get(collection_hex).river;
+          if (river && river.water_level >= 7)
+            unit.civ.resources.food += 1;
+        }
+      }
 
       //count total food
       total_food += unit.civ.resources.food;
