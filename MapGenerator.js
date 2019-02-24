@@ -134,14 +134,11 @@ MapGenerator.prototype.makeMap = function(radius) {
   this.addShallowWater();
   this.addIcePoles();
 
-  //trip coasts
+  //trim coasts
   this.trimPoints(1, [1,2,3,4,5,6,7], 2, 0 );
 
-  //trip oceans
+  //trim oceans
   this.trimPoints(0, [0], 2, 1 );
-
-  //this.flatenRange(2,3);
-  //this.flatenRange(3,6);
 
   this.generateRivers();
 
@@ -179,6 +176,7 @@ MapGenerator.prototype.roundDown = function() {
   }
 }
 
+//this function is used to eliminate thin strips of random tiles
 MapGenerator.prototype.trimPoints = function(land_type, required_neighbor_array, required_neighbor_count, new_land_type) {
   
   //initialize counter: tiles modified this run
@@ -289,7 +287,7 @@ MapGenerator.prototype.flatenRange = function(min,max) {
         var this_hex = new Hex(q,r);
         var this_value = this.getElevation(this_hex);
 
-        //for cells between range_min and range_max
+      //for cells between range_min and range_max
       for (var i = min; i < max; i++) {
         var diff = i-min;
 
@@ -312,26 +310,25 @@ MapGenerator.prototype.flatenRange = function(min,max) {
 MapGenerator.prototype.addShallowWater = function() {
   var neighbors = [];
 
-
   //for each hex
   for (let thishex of this.map.getHexArray()) {
     
-      //if the hex is deep water
-      if (this.getElevation(thishex) == 0) {
+    //if the hex is deep water
+    if (this.getElevation(thishex) == 0) {
 
-        //check its neighbors
-        for (var dir =0; dir < 6; dir++) {
-          var neighbor = thishex.getNeighbor(dir);
-          if (this.map.containsHex(neighbor)) {
-            //and if they are land
-            if (this.getElevation(neighbor) > 1) {
-              //turn the deep water into shallow water
-              this.setElevation(thishex,1);
+      //check its neighbors
+      for (var dir =0; dir < 6; dir++) {
+        var neighbor = thishex.getNeighbor(dir);
+        if (this.map.containsHex(neighbor)) {
+          //and if they are land
+          if (this.getElevation(neighbor) > 1) {
+            //turn the deep water into shallow water
+            this.setElevation(thishex,1);
 
-            }
           }
         }
       }
+    }
   }
 }
 
