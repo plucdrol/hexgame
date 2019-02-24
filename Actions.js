@@ -72,19 +72,15 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   this.targetFilterFunction = function(world, unit, hex) {
     return world.noCitiesInArea(hex,5,unit);
   }
-  this.nextTarget = function(position, target) {
-    return target;
-  }
   this.requirement = function(unit) {
     return unit.civ.resources.food >= 1;
   };
 
   this.displayCost = function(unit) {
-    return "1 food/step<br/>All wood&stone";
+    return "5 food<br/>All wood&stone";
   }
 
   this.payCost = function(world, unit, position, target) {
-    var food_cost = 5;
     unit.civ.resources.food -= 5;
     if (unit.civ.resources.wood > 10) unit.civ.resources.wood = 10;
     if (unit.civ.resources.stone > 10) unit.civ.resources.stone = 10;
@@ -112,7 +108,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 
 
 //This action transforms the unit into a camp
-function actionBuildCamp() {
+function actionBecomeCamp() {
   basicAction.call(this);
 
   this.name = "build-camp";
@@ -176,7 +172,6 @@ function actionCreateCamp(min_distance, max_distance) {
   this.targetFilterFunction = function(world, unit, hex) {
     return world.noCitiesInArea(hex,5);
   }
-
   this.activation = function(unit) {
     return unit.civ.resources.food >= 1;
   }
@@ -190,14 +185,12 @@ function actionCreateCamp(min_distance, max_distance) {
   this.payCost = function(world, unit, position, target) {
     unit.civ.resources.food -= 30;
   }
-
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
     let new_unit = new Unit(this.new_unit_type);
     world.units.set(target, new_unit);
     world.setCivOnTiles(new_unit.civ, target);
     world.clearClouds(target, 5);
-
   }
 
 }
@@ -291,7 +284,7 @@ function actionGrowCity() {
   }
 
   this.payCost = function(map, unit, position, target) {
-    unit.civ.resources.wood -= unit.cityRadius*30 };
+    unit.civ.resources.wood -= unit.cityRadius*30 ;
   }
 
   this.effect = function(units, unit, position, target) {
