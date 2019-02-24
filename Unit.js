@@ -18,7 +18,7 @@ Unit.prototype.setType = function(unit_type) {
   case 'camp':
     this.addAction( new actionCreateCamp(6, 8));
     this.addAction( new actionConquer(6));
-    //this.addAction( new actionGrowCity() );
+    this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(5,2,13) );
     this.setGraphic('white',5);
     this.setCitySize(1);
@@ -66,6 +66,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('grey',2);
     this.setResource('stone',1);
     break;
+
   case 'terrain':
     this.elevation = 0;
     this.wind = 0;
@@ -87,6 +88,7 @@ Unit.prototype.hasComponent = function(component_name) {
   }
   return false;
 }
+
 Unit.prototype.getComponent = function(component_name) {
   if (this.hasComponent(component_name)) {
     return this[component_name];
@@ -97,11 +99,6 @@ Unit.prototype.getComponent = function(component_name) {
 
 Unit.prototype.setComponent = function(label, value) {
   this[label] = value;  
-}
-Unit.prototype.increaseComponent = function(label, value) {
-  if (this.hasComponent(label)){
-    this[label] += value;
-  }
 }
 
 Unit.prototype.addAction = function( action ) {
@@ -114,18 +111,13 @@ Unit.prototype.addAction = function( action ) {
 
 ///////////////////////////////////////////
 //
-//            CITY DISPLAY COMPONENT
+//            RESOURCE DISPLAY COMPONENT
 //
 ////////////////////////////////////
 
 Unit.prototype.setGraphic = function(color,size) {
   this.color = color;
   this.size = size;
-}
-
-Unit.prototype.setCityColor = function() {
-  this.cityRadiusColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
-  this.cityRadiusLineColor = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
 }
 
 /////////////////////////////////////////
@@ -138,8 +130,11 @@ Unit.prototype.setCitySize = function(size) {
   this.cityRadius = size;
 }
 
-Unit.prototype.setCiv = function() {
-  this.civ = new Civilization();
+Unit.prototype.setCiv = function(civilization) {
+  if (civilization)
+    this.civ = civilization;
+  else
+    this.civ = new Civilization();
 }
 
 
@@ -170,9 +165,7 @@ Civilization.prototype.setColors = function() {
   this.fill_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
   this.line_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
 }
+
 Civilization.prototype.setResourceStores = function(food, wood, stone) {
   this.resources = {'food':food, 'wood':wood, 'stone':stone};
-}
-Civilization.prototype.setResourceStores = function(food, wood, stone) {
-  this.resources = {'food':food, 'wood':wood, 'stone':stone};
-}
+
