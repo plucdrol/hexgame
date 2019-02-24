@@ -98,6 +98,8 @@ World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
 }
 
+
+
 World.prototype.generateResources = function(world_map) {
   var resources = new HexMap();
   for (let hex of world_map.getHexArray() )  {
@@ -215,5 +217,57 @@ World.prototype.gatherCityResources = function(world) {
 
     world.total_population = total_food;
     drawScreen();
+  }
+}
+
+
+
+
+///////////////////////////////////////////
+//
+//            HELPER FUNCTIONS FOR THE WORLD
+//
+////////////////////////////////////
+
+
+World.prototype.clearClouds = function(position, radius) {
+  for (hex of Hex.circle(position, 5)) {
+    if (this.world_map.containsHex(hex))
+      this.world_map.get(hex).hidden = false;
+  }
+}
+
+
+
+
+
+//'unit' is overlooked, leave it undefined to avoid that
+World.prototype.noCitiesInArea = function(position, radius, unit_to_ignore) {
+  let area = Hex.circle(position, radius);
+  for (hex of area) {
+    if (this.units.containsHex(hex) ) {
+      if (this.units.get(hex) === unit_to_ignore)
+        continue;
+      return false;
+    }
+  }
+  //no cities
+  return true;
+}
+
+World.prototype.setCivOnTiles = function(civ, position) {
+  this.world_map.get(position).civ = civ;
+  this.world_map.get(position).culture = 3;
+  for (hex of position.getNeighbors()) {
+    //skip claimed hexes
+    if (!this.world_map.containsHex(hex)) 
+      continue;
+    //skip water
+    if (this.world_map.get(hex).elevation < 2) 
+      continue;
+    if (!this.world_map.get(hex).civ) {
+      this.world_map.get(hex).civ = civ;
+      this.world_map.get(hex).culture = 2;
+    }
   }
 }
