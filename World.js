@@ -155,7 +155,7 @@ World.prototype.gatherCityResources = function(world) {
     for (let hex of world.world_map.getHexArray() )  {
       let tile = world.world_map.get(hex);
       //ignore tiles with no civilization already
-      if (!tile.civ) 
+      if (!tile.civ || !tile.culture) 
         continue;
       if (Math.random() < 0.80)
         continue;
@@ -166,11 +166,20 @@ World.prototype.gatherCityResources = function(world) {
         if (!world.world_map.containsHex(neighbor_hex))
           continue;
         if (Math.random() < 0.80)
-        continue;
+          continue;
+        if (tile.culture < 1)
+            continue;
 
+
+        //check the neighbor tile
         let neighbor_tile = world.world_map.get(neighbor_hex);
         if ((neighbor_tile.elevation > 1 && neighbor_tile.elevation < 14) || neighbor_tile.civ) {
+          if (neighbor_tile.culture >= tile.culture)
+            continue;
+
+          //spready to neighbors
           neighbor_tile.civ = tile.civ;
+          neighbor_tile.culture = tile.culture-1;
           neighbor_tile.hidden = false;
         }
       }

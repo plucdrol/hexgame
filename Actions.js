@@ -1,3 +1,46 @@
+///////////////////////////////////////////
+//
+//            HELPER FUNCTIONS FOR UNIT ACTIONS
+//
+////////////////////////////////////
+
+function clearClouds(world, position, radius) {
+  for (hex of Hex.circle(position, 5)) {
+    if (world.world_map.containsHex(hex))
+      world.world_map.get(hex).hidden = false;
+  }
+}
+
+
+function noCitiesInArea(world, unit, position, radius) {
+  let area = Hex.circle(position, radius);
+  for (hex of area) {
+    if (world.units.containsHex(hex) ) {
+      if (world.units.get(hex) === unit)
+        continue;
+      return false;
+    }
+  }
+  //no cities
+  return true;
+}
+
+function setCivOnTiles(world, civ, position) {
+  world.world_map.get(position).civ = civ;
+  world.world_map.get(position).culture = 3;
+  for (hex of position.getNeighbors()) {
+    //skip claimed hexes
+    if (!world.world_map.containsHex(hex)) 
+      continue;
+    //skip water
+    if (world.world_map.get(hex).elevation < 2) 
+      continue;
+    if (!world.world_map.get(hex).civ) {
+      world.world_map.get(hex).civ = civ;
+      world.world_map.get(hex).culture = 2;
+    }
+  }
+}
 
 ///////////////////////////////////////////
 //
@@ -15,29 +58,33 @@ function basicAction() {
   this.activation = function(unit) {
     return true;
   }
+
+  this.targetFilterFunction = function(world, unit, hex) {
+    return noCitiesInArea(world, unit, hex,5);
+  }
+
   this.getNeighborsFunction = function(map,hex) {
     return map.getNeighbors(hex);
   }
   //STEP COST FUNCTION
   this.stepCostFunction = function(map, hex, next_hex) {
-
     var tile = map.get(next_hex);
-    if (tile.elevation > this.maximum_elevation) {
-       return undefined;
-    }
-    if (tile.elevation < this.minimum_elevation) {
-       return undefined;
-    }
+    if (tile.elevation > this.maximum_elevation) 
+      return undefined;
+    if (tile.elevation < this.minimum_elevation) 
+      return undefined;
+
     let cost = 1;
 
     //4 times faster movement on rivers
-    if (map.get(hex).river && map.get(hex).river.water_level > 7 &&
+    /*if (map.get(hex).river && map.get(hex).river.water_level > 7 &&
         map.get(next_hex).river && map.get(next_hex).river.water_level > 7 &&
         (map.get(hex).river.downstream_hex.equals(next_hex) || map.get(next_hex).river.downstream_hex.equals(hex) ) )
-      cost = cost/4;
+      cost = cost/4;*/
 
     return cost;
   }
+
 }
 
 
@@ -64,6 +111,9 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   this.maximum_elevation = maximum_elevation;
   var action = this;
 
+  this.targetFilterFunction = function(world, unit, hex) {
+    return noCitiesInArea(world, unit, hex,5);
+  }
   this.nextTarget = function(position, target) {
     return target;
   }
@@ -99,6 +149,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     world.units.set(target, unit);
     unit.civ.resources.wood = 0;
     unit.civ.resources.stone = 0;
+    clearClouds(world, target, 5);
   };
 
 }
@@ -122,6 +173,9 @@ function actionBuildCamp() {
   this.min_distance = 0;
   this.max_distance = 0;
   
+  this.targetFilterFunction = function(world, unit, hex) {
+    return noCitiesInArea(world, unit, hex,5);
+  }
   this.activation = function(unit) {
     return unit.civ.resources.wood >= 1;
   }
@@ -164,39 +218,23 @@ function actionBuildCamp() {
 
 
 //This action transforms the unit into a camp
-function actionCreateUnit(unit_type, min_distance, max_distance) {
+function actionCreateCamp(min_distance, max_distance) {
   basicAction.call(this);
 
   this.minimum_elevation = 1;
 
-  this.name = "create-".concat(unit_type);
+  this.name = "create-camp";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = unit_type;
+  this.new_unit_type = 'camp';
   this.min_distance = min_distance;
   this.max_distance = max_distance;
 
-  function setCivOnTiles(world, civ, position) {
-    world.world_map.get(position).civ = civ;
-    for (hex of position.getNeighbors()) {
-      if (!world.world_map.containsHex(hex)) 
-        continue;
-      if (world.world_map.get(hex).elevation < 2) 
-        continue;
-      if (!world.world_map.get(hex).civ)
-        world.world_map.get(hex).civ = civ;
-    }
+  this.targetFilterFunction = function(world, unit, hex) {
+    return noCitiesInArea(world, undefined, hex,5);
   }
-  function noCitiesInArea(world, position, radius) {
-    let area = Hex.circle(position, radius);
-    for (hex of area) {
-      if (world.units.containsHex(hex)) {
-        return false;
-      }
-    }
-    //no cities
-    return true;
-  }
+
+
 
   this.activation = function(unit) {
     return unit.civ.resources.food >= 1;
@@ -221,11 +259,11 @@ function actionCreateUnit(unit_type, min_distance, max_distance) {
 
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
-    if (noCitiesInArea(world,target,2)) {
-      let new_unit = new Unit(this.new_unit_type);
-      world.units.set(target, new_unit);
-      setCivOnTiles(world, new_unit.civ, target);
-    }
+    let new_unit = new Unit(this.new_unit_type);
+    world.units.set(target, new_unit);
+    setCivOnTiles(world, new_unit.civ, target);
+    clearClouds(world, target, 5);
+
   }
 
 }
@@ -249,6 +287,9 @@ function actionConquer(max_distance) {
   this.min_distance = 1;
   this.max_distance = max_distance;
 
+  this.targetFilterFunction = function(world, unit, hex) {
+    return true;
+  }
   this.activation = function(unit) {
     return unit.civ.resources.wood >= 30;
   }
@@ -304,6 +345,9 @@ function actionGrowCity() {
   this.min_distance = 0;
   this.max_distance = 0;
 
+  this.targetFilterFunction = function(world, unit, hex) {
+    return true;
+  }
   this.activation = function(unit) {
     return unit.civ.resources.wood >= 1;
   }

@@ -107,8 +107,8 @@ function GameInput(world, view) {
         if (this.tile_hovered && !this.world.world_map.get(this.hex_hovered).hidden && this.tile_hovered.river && this.tile_hovered.river.water_level >= 7) {
           document.getElementById('tooltip').innerHTML += 'river, ';
         }
-        if (this.tile_hovered && this.world.world_map.get(this.hex_hovered).civ ) {
-          document.getElementById('tooltip').innerHTML += this.world.world_map.get(this.hex_hovered).civ.fill_color;
+        if (this.tile_hovered && this.world.world_map.get(this.hex_hovered).culture ) {
+          document.getElementById('tooltip').innerHTML += this.world.world_map.get(this.hex_hovered).culture;
         }
       }
 

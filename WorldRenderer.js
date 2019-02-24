@@ -71,7 +71,6 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
 
   //make a tile renderer
   var tile_renderer = new TileRenderer2D( this.hex_renderer, this.world.getLayout() );
-
   //draw the land colors
   for (hex of hexarray) {
     //clouds if not explored
@@ -84,8 +83,6 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
       tile_renderer.drawTile(hex, this.getTile(hex));
   }
 
-
-
   //draw the coastal water
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
@@ -94,13 +91,23 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
       tile_renderer.drawTile(hex, this.getTile(hex));
   }
 
-
   //draw the civilization tiles
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     if (!this.getTile(hex).civ) continue;
     //draw tile
     this.drawCivTile(hex, this.getTile(hex));
+  }
+  
+  //draw the rivers
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    if (this.getTile(hex).river) {
+      let downstream_hex = this.getTile(hex).river.downstream_hex;
+      let water_level = this.getTile(hex).river.water_level;
+      if (downstream_hex instanceof Hex && water_level >= 7)
+        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*3)) );
+    }
   }
 
   //draw the units and their resource-collection area
@@ -112,16 +119,7 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
         this.drawUnit(this_unit,hex,0);
     }
   }
-  //draw the rivers
-  for (hex of hexarray) {
-    if (this.getTile(hex).hidden) continue;
-    if (this.getTile(hex).river) {
-      let downstream_hex = this.getTile(hex).river.downstream_hex;
-      let water_level = this.getTile(hex).river.water_level;
-      if (downstream_hex instanceof Hex && water_level >= 7)
-        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*3)) );
-    }
-  }
+
   //draw resources
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
