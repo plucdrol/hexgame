@@ -89,8 +89,8 @@ var greenscale_colors = function (i) {
   var oldgreenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
                     '#080','#062', //grass 3 4
                     '#052','#042','#032','#020', //forest 5 6 7 8
-                    '#010','#110','#210', //hills 9 10 11 12 13
-                    '#410','#420',
+                    '#310','#310','#320', //hills 9 10 11 12 13
+                    '#310','#310',
                     '#777', '#777','#777', //mountains 14 15 16
                     '#888','#888','#888', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF',]; //ice
@@ -100,6 +100,7 @@ var greenscale_colors = function (i) {
                     100,105,110,120, //forest 5 6 7 8
                     34,35,36,37,38];  //hills 9 10 11 12 13
                     
+ return oldgreenscale[i];
 
   //ice
   if (i >= 20)
