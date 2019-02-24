@@ -266,7 +266,7 @@ function actionGrowCity() {
     return true;
   }
   this.activation = function(unit) {
-    return unit.civ.resources.wood >= 1;
+    return (unit.civ.resources.wood >= 1 && unit.cityRadius < 2);
   }
   this.requirement = function(unit) {
     return unit.civ.resources.wood >= unit.cityRadius*30;

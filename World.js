@@ -89,6 +89,7 @@ World.prototype.setHex = function(hex,value) {
 World.prototype.getMapValue = function(hex) {
   return this.world_map.getValue(hex);
 }
+World.prototype.getTile = World.prototype.getMapValue;
 
 World.prototype.getUnit = function(hex) {
   return this.units.get(hex);

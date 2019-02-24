@@ -1,8 +1,9 @@
-function HUDRenderer(world_input, hex_renderer) {
+function HUDRenderer(world, game_input, hex_renderer) {
 
   this.stop_city_interval_number = 0;
-  this.world_input = world_input;
-  this.unit_input = world_input.unit_input;
+  this.game_input = game_input;
+  this.world = world;
+  this.unit_input = game_input.unit_input;
   //start tracking
   this.trackUnitResources();
 }
@@ -10,7 +11,7 @@ function HUDRenderer(world_input, hex_renderer) {
 HUDRenderer.prototype.drawHUD = function() {
 
   var hover_style = new RenderStyle();
-  var hex_hovered = this.world_input.hex_hovered;
+  var hex_hovered = this.game_input.hex_hovered;
   var hex_selected = this.unit_input.hex_selected;
 
   //selection draw
@@ -110,7 +111,7 @@ HUDRenderer.prototype.trackUnitResources = function() {
 
   function update_function() { 
     let unit = this.unit_input.getUnitSelected();
-    let pop = Math.floor(world.total_population);
+    let pop = Math.floor(this.world.total_population);
     this.writeMessage("World population: ".concat(pop), 'world-resources');
 
     if (unit.civ && unit.civ.resources) {
@@ -124,4 +125,43 @@ HUDRenderer.prototype.trackUnitResources = function() {
 
   let self = this;
   this.stop_city_interval_number = setInterval(update_function.bind(self), 1000);
+}
+
+function tooltip(message) {
+  document.getElementById('tooltip').innerHTML += message;
+}
+
+HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
+  document.getElementById('tooltip').innerHTML = "";
+  
+  //skip hidden and out-of-bounds hexes
+  if (!hex_hovered) 
+    return;
+  if (this.world.getTile(hex_hovered).hidden) {
+    tooltip("clouds");
+    return;
+  }
+
+  //HOVERING OVER UNITS
+  let unit = this.world.getUnit(hex_hovered);
+  if (unit && unit.hasComponent('size'))
+    tooltip(unit.type+", ");
+
+  //HOVERING OVER RESOURCES
+  let resource = this.world.getResource(hex_hovered);
+  if (resource && resource.hasComponent('resource_value')) 
+    tooltip(resource.type+", ");
+
+  //HOVERING OVER LAND TILES, RIVERS, and CULTURE
+  let tile = this.world.getTile(hex_hovered);
+  if (tile && tile.elevation) {
+    tooltip(land_tiles[tile.elevation]+", ");
+  }
+  if (tile && tile.river && tile.river.water_level >= 7) {
+    tooltip('river, ');
+  }
+  if (tile && this.world.getTile(hex_hovered).culture ) {
+    tooltip(this.world.getTile(hex_hovered).culture);
+  }
+
 }

@@ -63,11 +63,13 @@ function GameInput(world, view) {
 	  drawScreen();
 	}
 
+
   //React to the window being resized
 	this.resizeEvent = function(width, height) {
 	  this.view.resizeOutput(width, height);
 	  drawScreen();
 	}
+
 
   //React to the mouse hovering at screen_position
   this.hoverEvent = function(screen_position) {
@@ -76,49 +78,17 @@ function GameInput(world, view) {
     var world_position = this.view.screenToWorld(screen_position);
     this.hex_hovered = this.world.getHex(world_position);
 
-    function tooltip(message) {
-      document.getElementById('tooltip').innerHTML += message;
-    }
-
     //if the mouse moved to a new hex, redraw the screen
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
 
-      document.getElementById('tooltip').innerHTML = "";
-
-      //HOVERING OVER UNITS
-      if (this.hex_hovered)
-        this.unit_hovered = this.world.getUnit(this.hex_hovered);
-      if (this.unit_hovered && this.unit_hovered.hasComponent('size')) {
-        tooltip(this.unit_hovered.type+", ");
-      } 
-
-      //HOVERING OVER RESOURCES
-      if (this.hex_hovered)
-        this.resource_hovered = this.world.getResource(this.hex_hovered);
-      if (this.resource_hovered && !this.world.world_map.get(this.hex_hovered).hidden && this.resource_hovered.hasComponent('resource_value')) {
-        tooltip(this.resource_hovered.type+", ");
-      } 
-
-      //HOVERING OVER LAND
-      if (this.hex_hovered) {
-        this.tile_hovered = this.world.getMapValue(this.hex_hovered);
-        if (this.tile_hovered && !this.world.world_map.get(this.hex_hovered).hidden && this.tile_hovered.elevation) {
-          tooltip(land_tiles[this.tile_hovered.elevation]+", ");
-        }
-        if (this.tile_hovered && !this.world.world_map.get(this.hex_hovered).hidden && this.tile_hovered.river && this.tile_hovered.river.water_level >= 7) {
-          tooltip('river, ');
-        }
-        if (this.tile_hovered && this.world.world_map.get(this.hex_hovered).culture ) {
-          tooltip(this.world.world_map.get(this.hex_hovered).culture);
-        }
-      }
-
+      hud_renderer.updateTooltip(this.hex_hovered);
       drawScreen();
     }
 
     //remember the currently hovered hex
     this.hex_hovered_previous = this.hex_hovered;
   }
+
 
   //React to the screen being clicked at screen_position
   this.clickScreenEvent = function(screen_position) {

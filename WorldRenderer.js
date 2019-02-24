@@ -82,7 +82,8 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 
 WorldRenderer.p.drawCivTiles = function(hexarray) {
   let civ_tile_arrays = [];
-    //draw the civilization tiles
+    
+  //collect all civ tiles into arrays for each civilization
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     if (!this.getTile(hex).civ) continue;
