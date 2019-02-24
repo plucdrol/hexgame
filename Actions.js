@@ -34,6 +34,7 @@ function basicAction() {
 
     let cost = 1;
 
+    //this is disabled 
     //4 times faster movement on rivers
     /*if (map.get(hex).river && map.get(hex).river.water_level > 7 &&
         map.get(next_hex).river && map.get(next_hex).river.water_level > 7 &&
@@ -130,20 +131,16 @@ function actionBecomeCamp() {
   this.displayCost = function(unit) {
     return "5 wood";
   }
-
   this.payCost = function(world, unit, position, target) {
     unit.civ.resources.wood -= 5;
   }
-
   this.effect = function(world, unit, position, target) {
  
     //replace the unit
     world.units.remove( position );
     world.units.set( position, new Unit('camp') );
     new_unit = world.units.get( position );
-
   }
-
 }
 
 
@@ -223,15 +220,12 @@ function actionConquer(max_distance) {
   this.requirement = function(unit) {
     return unit.civ.resources.wood >= 100;
   };
-
   this.displayCost = function(unit) {
     return "100 wood";
   }
-
   this.payCost = function(world, unit, position, target) {
     unit.civ.resources.wood -= 100;
   }
-
   this.effect = function(world, unit, position, target) {
     let enemy = world.units.get(target);
 
@@ -243,7 +237,6 @@ function actionConquer(max_distance) {
     //Copy this unit at the target
     enemy.civ = unit.civ;
   }
-
 }
 
 
@@ -278,15 +271,12 @@ function actionGrowCity() {
   this.requirement = function(unit) {
     return unit.civ.resources.wood >= unit.cityRadius*30;
   };
-
   this.displayCost = function(unit) {
     return (unit.cityRadius*30).toString().concat(" wood");
   }
-
   this.payCost = function(map, unit, position, target) {
     unit.civ.resources.wood -= unit.cityRadius*30 ;
   }
-
   this.effect = function(units, unit, position, target) {
     unit.cityRadius++;
   }
