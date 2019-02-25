@@ -99,7 +99,7 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
 function actionBecomeCamp() {
   basicAction.call(this);
 
-  this.name = "build-camp";
+  this.name = "settle";
   this.type = "target";
   this.target = "target";
   this.min_distance = 0;
@@ -143,7 +143,7 @@ function actionCreateCamp(min_distance, max_distance) {
 
   this.minimum_elevation = 1;
 
-  this.name = "create-camp";
+  this.name = "resettlement";
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'camp';
@@ -186,7 +186,7 @@ function actionCreateCamp(min_distance, max_distance) {
 //This action transforms the unit into a camp
 function actionConquer(max_distance) {
   basicAction.call(this);
-  this.name = "conquer";
+  this.name = "alliance";
   this.type = "target";
   this.target = "unit";
   this.min_distance = 1;
@@ -228,7 +228,7 @@ function actionConquer(max_distance) {
 
 function actionGrowCity() {
   basicAction.call(this);
-  this.name = "grow-city";
+  this.name = "grow";
   this.type = "target";
   this.target = "unit";
   this.min_distance = 0;
