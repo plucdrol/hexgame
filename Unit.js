@@ -159,7 +159,9 @@ Unit.prototype.setCiv = function(civilization) {
 
 function Civilization() {
   this.id = Math.floor(Math.random()*10000);
+  this.name = this.generateName();
   this.setColors();
+
 }
 
 Civilization.prototype.setColors = function() {
@@ -169,5 +171,17 @@ Civilization.prototype.setColors = function() {
 
 Civilization.prototype.setResourceStores = function(food, wood, stone) {
   this.resources = {'food':food, 'wood':wood, 'stone':stone};
+}
+
+Civilization.prototype.generateName = function() {
+  let vowels = ['a','e','i','o','u'];
+  let consonants = ['b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v',
+                    'b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v','w','x','z'];
+  function v(){return vowels[Math.floor(Math.random()*vowels.length)]}
+  function c(){return consonants[Math.floor(Math.random()*consonants.length)]}
+  if (Math.random() > 0.5)
+    return v()+c()+v()+c()+v()+'nian';
+  else
+    return c()+v()+c()+v()+c()+'ec';
 }
 
