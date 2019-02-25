@@ -34,13 +34,6 @@ function basicAction() {
 
     let cost = 1;
 
-    //this is disabled 
-    //4 times faster movement on rivers
-    /*if (map.get(hex).river && map.get(hex).river.water_level > 7 &&
-        map.get(next_hex).river && map.get(next_hex).river.water_level > 7 &&
-        (map.get(hex).river.downstream_hex.equals(next_hex) || map.get(next_hex).river.downstream_hex.equals(hex) ) )
-      cost = cost/4;*/
-
     return cost;
   }
 
@@ -74,17 +67,11 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     return world.noCitiesInArea(hex,5,unit);
   }
   this.requirement = function(unit) {
-    return unit.civ.resources.food >= 1;
+    return true;
   };
 
   this.displayCost = function(unit) {
-    return "5 food<br/>All wood&stone";
-  }
-
-  this.payCost = function(world, unit, position, target) {
-    unit.civ.resources.food -= 5;
-    if (unit.civ.resources.wood > 10) unit.civ.resources.wood = 10;
-    if (unit.civ.resources.stone > 10) unit.civ.resources.stone = 10;
+    return "";
   }
 
   this.effect = function(world, unit, position, target) {
@@ -92,8 +79,8 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
     //move the unit
     world.units.remove(position);
     world.units.set(target, unit);
-    unit.civ.resources.wood = 0;
-    unit.civ.resources.stone = 0;
+    //unit.civ.resources.wood = 0;
+    //unit.civ.resources.stone = 0;
     world.clearClouds(target, 5);
   };
 
@@ -122,17 +109,14 @@ function actionBecomeCamp() {
     return world.noCitiesInArea(hex, 5, unit);
   }
   this.activation = function(unit) {
-    return unit.civ.resources.wood >= 1;
+    return unit.civ.resources.food >= 1;
   }
   this.requirement = function(unit) {
-    return unit.civ.resources.wood >= 5;
+    return unit.civ.resources.food >= 1;
   };
 
   this.displayCost = function(unit) {
-    return "5 wood";
-  }
-  this.payCost = function(world, unit, position, target) {
-    unit.civ.resources.wood -= 5;
+    return "1 food";
   }
   this.effect = function(world, unit, position, target) {
  
@@ -170,17 +154,14 @@ function actionCreateCamp(min_distance, max_distance) {
     return world.noCitiesInArea(hex,5);
   }
   this.activation = function(unit) {
-    return unit.civ.resources.food >= 1;
+    return true;
   }
   this.requirement = function(unit) {
-    return unit.civ.resources.food >= 30;
+    return unit.civ.resources.food >= 2;
   };
 
   this.displayCost = function(unit) {
-    return "30 food";
-  }
-  this.payCost = function(world, unit, position, target) {
-    unit.civ.resources.food -= 30;
+    return "2 food";
   }
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
@@ -215,26 +196,17 @@ function actionConquer(max_distance) {
     return true;
   }
   this.activation = function(unit) {
-    return unit.civ.resources.wood >= 30;
+    return (unit.civ.resources.wood >= 1 && unit.civ.resources.stone >= 1);
   }
   this.requirement = function(unit) {
-    return unit.civ.resources.wood >= 100;
+    return (unit.civ.resources.wood >= 2 && unit.civ.resources.stone >= 2);
   };
   this.displayCost = function(unit) {
-    return "100 wood";
-  }
-  this.payCost = function(world, unit, position, target) {
-    unit.civ.resources.wood -= 100;
+    return "2 wood, 2 stone";
   }
   this.effect = function(world, unit, position, target) {
+    //Make the other city part of this civilization
     let enemy = world.units.get(target);
-
-    //take the enemy's resources
-    unit.civ.resources.food += enemy.civ.resources.food;
-    unit.civ.resources.wood += enemy.civ.resources.wood;
-    unit.civ.resources.stone += enemy.civ.resources.stone;
-
-    //Copy this unit at the target
     enemy.civ = unit.civ;
   }
 }
@@ -269,13 +241,13 @@ function actionGrowCity() {
     return (unit.civ.resources.wood >= 1 && unit.cityRadius < 2);
   }
   this.requirement = function(unit) {
-    return unit.civ.resources.wood >= unit.cityRadius*30;
+    return (unit.civ.resources.wood >= 2 && unit.cityRadius < 2);
   };
   this.displayCost = function(unit) {
-    return (unit.cityRadius*30).toString().concat(" wood");
+    return "2 wood";
   }
   this.payCost = function(map, unit, position, target) {
-    unit.civ.resources.wood -= unit.cityRadius*30 ;
+    //unit.civ.resources.wood -= unit.cityRadius*30 ;
   }
   this.effect = function(units, unit, position, target) {
     unit.cityRadius++;

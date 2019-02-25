@@ -37,6 +37,8 @@ UnitInput.p.clickHex = function(hex) {
 
 UnitInput.p.selectHex = function(hex) {
 
+  this.unselectActions();
+
   if (hex) {
     if (this.units.get(hex)) {
 
@@ -187,8 +189,7 @@ UnitInput.p.doAction = function(unit, action, position, target) {
   //if the action target is OK
   if ((!target_unit && action.target=="land") || (target_unit && action.target=="unit")) {
     
-    //then pay its cost and do the effect
-    action.payCost(this.world, unit, position, target);
+    //then do the action
     action.effect(this.world, unit, position, target);
 
     //and select the new location (usually)
@@ -254,7 +255,12 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
   return filteredRange;
 }
 
-
+UnitInput.p.unselectActions = function() {
+  let buttons = document.getElementsByClassName('action-button-input');
+  for (button of buttons) {
+    button.checked = false;
+  }
+}
 
 //returns the actual action object
 UnitInput.p.getActionSelected = function() {
