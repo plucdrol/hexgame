@@ -237,6 +237,7 @@ World.prototype.spreadCulture = function() {
   }
 }
 
+//counts up resources once per second
 World.prototype.collectResources = function() {
   let total_food = 0;
 
@@ -247,6 +248,7 @@ World.prototype.collectResources = function() {
       unit.civ.resources.food = 0;
       unit.civ.resources.wood = 0;
       unit.civ.resources.stone = 0;
+      unit.civ.pop = 0;
     }
   }
 
@@ -264,6 +266,7 @@ World.prototype.collectResources = function() {
       let resource_type = resource.resource_type;
       tile.civ.resources[resource_type] += resource.resource_value;
       if (resource_type == 'food')
+        tile.civ.pop += resource.resource_value*10; 
         total_food += resource.resource_value*10;
     }
 
