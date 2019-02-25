@@ -177,11 +177,19 @@ Civilization.prototype.generateName = function() {
   let vowels = ['a','e','i','o','u'];
   let consonants = ['b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v',
                     'b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v','w','x','z'];
+  let double_consonants = ['br','ch','cr','sk','pl','fl','gr','sm'];
   function v(){return vowels[Math.floor(Math.random()*vowels.length)]}
   function c(){return consonants[Math.floor(Math.random()*consonants.length)]}
-  if (Math.random() > 0.5)
+  function cc(){return double_consonants[Math.floor(Math.random()*consonants.length)]}
+  if (Math.random() < 0.3)
     return v()+c()+v()+c()+v()+'nian';
-  else
-    return c()+v()+c()+v()+c()+'ec';
+  if (Math.random() < 0.2)
+    return c()+v()+c()+v()+c()+v()+c()+'ian';
+  if (Math.random() < 0.2)
+    return c()+v()+c()+'ese';
+  if (Math.random() < 0.2)
+    return v()+c()+c()+'ec';
+
+  return v()+c()+v()+c()+v()+'nian';
 }
 
