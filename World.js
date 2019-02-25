@@ -277,7 +277,7 @@ World.prototype.collectResources = function() {
     }
   }
 
-  this.total_population = total_food+Math.floor(Math.random()*10);
+  this.total_population = Math.floor(total_food*(1+Math.random()*0.2));
 }
 
 
