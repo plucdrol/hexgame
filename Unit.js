@@ -174,7 +174,7 @@ Civilization.prototype.setResourceStores = function(food, wood, stone) {
 }
 
 Civilization.prototype.generateName = function() {
-  let vowels = ['a','e','i','o','u'];
+  let vowels = ['a','e','i','o','u','a','e','i','o','u', 'an','ou','in','eu'];
   let consonants = ['b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v',
                     'b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v','w','x','z'];
   let double_consonants = ['br','ch','cr','sk','pl','fl','gr','sm'];
@@ -184,12 +184,12 @@ Civilization.prototype.generateName = function() {
   if (Math.random() < 0.3)
     return v()+c()+v()+c()+v()+'nian';
   if (Math.random() < 0.2)
-    return c()+v()+c()+v()+c()+v()+c()+'ian';
-  if (Math.random() < 0.2)
     return c()+v()+c()+'ese';
   if (Math.random() < 0.2)
-    return v()+c()+c()+'ec';
+    return v()+c()+c()+'ec';  
+  if (Math.random() < 0.1)
+    return c()+v()+c()+v()+c()+v()+c()+'ian';
 
-  return v()+c()+v()+c()+v()+'nian';
+  return c()+v()+c()+'an';
 }
 
