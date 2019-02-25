@@ -157,8 +157,9 @@ function actionCreateCamp(min_distance, max_distance) {
     return true;
   }
   this.requirement = function(unit) {
+    console.log(unit.civ.resources.toString());
     return unit.civ.resources.food >= 2;
-  };
+  }
 
   this.displayCost = function(unit) {
     return "2 food";
@@ -172,6 +173,56 @@ function actionCreateCamp(min_distance, max_distance) {
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+//This action transforms the unit into a camp
+function actionExtension(min_distance, max_distance) {
+  basicAction.call(this);
+
+  this.minimum_elevation = 1;
+
+  this.name = "expansion";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'camp';
+  this.min_distance = min_distance;
+  this.max_distance = max_distance;
+
+  this.targetFilterFunction = function(world, unit, hex) {
+    return world.noCitiesInArea(hex,2);
+  }
+  this.activation = function(unit) {
+    return (unit.civ.resources.food >= 3 && unit.civ.resources.wood >= 1);
+  }
+  this.requirement = function(unit) {
+    return (unit.civ.resources.food >= 5 && unit.civ.resources.wood >= 2);
+  }
+
+  this.displayCost = function(unit) {
+    return "5 food, 2 wood";
+  }
+  this.effect = function(world, unit, position, target) {
+    //Create a unit_type at the target location
+    let new_unit = new Unit(this.new_unit_type);
+    new_unit.civ = unit.civ;
+    world.units.set(target, new_unit);
+    world.setCivOnTiles(new_unit.civ, target);
+    world.clearClouds(target, 5);
+  }
+
+}
+
+
+
+
 
 
 
@@ -199,7 +250,7 @@ function actionConquer(max_distance) {
     return (unit.civ.resources.wood >= 1 && unit.civ.resources.stone >= 1);
   }
   this.requirement = function(unit) {
-    return (unit.civ.resources.wood >= 2 && unit.civ.resources.stone >= 2);
+    return (unit.civ.resources.wood >= 2 && unit.civ.resources.stone >= 1);
   };
   this.displayCost = function(unit) {
     return "2 wood, 2 stone";
