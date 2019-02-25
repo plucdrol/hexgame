@@ -6,39 +6,50 @@ function HUDRenderer(world, game_input, hex_renderer) {
   this.unit_input = game_input.unit_input;
   //start tracking
   this.trackUnitResources();
+  this.hex_renderer = hex_renderer;
 }
 
 HUDRenderer.prototype.drawHUD = function() {
 
-  var hover_style = new RenderStyle();
+
   var hex_hovered = this.game_input.hex_hovered;
   var hex_selected = this.unit_input.hex_selected;
 
-  //selection draw
-  if (hex_selected instanceof Hex) {
-  
-    //draw range of selected unit  
-    var potential_unit = this.unit_input.units.get(hex_selected);
+  if (hex_selected) {
+    this.drawUnitRange(hex_selected);
+    this.drawSelectionHex(hex_selected);
+  }
 
-    if (potential_unit instanceof Unit && potential_unit.range) {
-      hex_renderer.drawHexes(potential_unit.range);
+  if (hex_hovered) {
+    this.drawHoveredHex(hex_hovered);
+  }
+}
 
-    }
+HUDRenderer.prototype.drawUnitRange = function(hex_selected) {
+  //draw range of selected unit  
+  var potential_unit = this.unit_input.units.get(hex_selected);
 
+  if (potential_unit instanceof Unit && potential_unit.range) {
+    this.hex_renderer.drawHexes(potential_unit.range);
+
+  }
+}
+
+HUDRenderer.prototype.drawHoveredHex = function(hex_hovered) {
+  //draw hovered hex
+  var hover_style = new RenderStyle();
+  hover_style.fill_color = "rgba(200,200,200,0.4)";
+  hover_style.line_width = 0;
+  this.hex_renderer.drawHex( hex_hovered, hover_style );
+}
+
+HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
     //draw selection hex
     var select_style = new RenderStyle();
     select_style.fill_color = "rgba(200,200,0,0.5)";
     select_style.line_width = 2;
-    hex_renderer.drawHex(hex_selected, select_style);
-  }
-
-  //draw hovered hex
-  hover_style.fill_color = "rgba(200,200,200,0.4)";
-  hover_style.line_width = 0;
-  hex_renderer.drawHex( hex_hovered, hover_style );
+    this.hex_renderer.drawHex(hex_selected, select_style);
 }
-
-
 
 HUDRenderer.prototype.makeActionButton = function(unit, action) {
   return "<label><input class='action-button-input' name='actions' type='radio'"
