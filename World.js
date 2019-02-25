@@ -106,12 +106,15 @@ World.prototype.generateResources = function(world_map) {
   for (let hex of world_map.getHexArray() )  {
     let terrain = world_map.getValue(hex);
 
-    //only 30% of the land gets resources
+    //only 20% of the land gets resources
     if (Math.random() < 0.8) {
 
       continue;
     }
-
+    if (terrain.river && terrain.river.water_level >= 7) {
+      resources.set(hex, new Unit('fish'));
+      continue;
+    }
     switch (terrain.elevation) {
       case 1: //coasts
         resources.set(hex, new Unit('fish') );

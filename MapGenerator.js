@@ -477,9 +477,8 @@ MapGenerator.prototype.generateRivers = function() {
 
   //2. Growing rivers inland
   //as long as there are tiles in the bag
-  var counter = 1000;
   console.log(next.getHexArray().length);
-  while (next.getHexArray().length > 0 && counter > 0) {
+  while (next.getHexArray().length > 0) {
 
     //pick a tile randomly from the bag
     let nextHex = this.getRandomNext();
@@ -489,10 +488,9 @@ MapGenerator.prototype.generateRivers = function() {
     //add its neighbors to the bag
     this.addNeighbors(nextHex);
     //console.log(next.getHexArray().length);
-    //counter--;
   }
 
-  //raise terrain between rivers
+  //3. Simulate terrain erosion
   for (let hex of this.map.getHexArray() ) {
     var tile = this.map.get(hex);
     if (tile.river) {
