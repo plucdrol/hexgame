@@ -240,6 +240,7 @@ World.prototype.spreadCulture = function() {
 World.prototype.collectResources = function() {
   let total_food = 0;
 
+  //set resource total to 0 to start counting
   for (let unit_hex of this.units.getHexArray() ) {
     let unit = this.units.get(unit_hex);
     if (unit.civ && unit.civ.resources) {
@@ -249,37 +250,33 @@ World.prototype.collectResources = function() {
     }
   }
 
-  for (let unit_hex of this.units.getHexArray() )  {
-    //if they are a city
-    let unit = this.units.get(unit_hex);
-    if (!unit) 
-      continue;
-    if (!unit.hasComponent('cityRadius')) 
+  //add up all the food in civ tiles
+  for (let hex of this.world_map.getHexArray() ) {
+
+    //for each tile with a civilization
+    let tile = this.getTile(hex);
+    if (!tile.civ)
       continue;
 
-    //collect resources in city range
-    let collection_hexes = Hex.circle(unit_hex,unit.cityRadius);
-    for (let collection_hex of collection_hexes) {
-      
-      //add the resources to the city
-      if (this.resources.containsHex(collection_hex)) {
-        let resource = this.getResource(collection_hex);
-        let resource_type = resource.resource_type;
-        unit.civ.resources[resource_type] += resource.resource_value;
-      }
-
-      //add 1 food from river tiles
-      if (this.world_map.containsHex(collection_hex)) {
-        let river = this.getTile(collection_hex).river;
-        if (river && river.water_level >= 7)
-          unit.civ.resources.food += 1;
-      }
+    //add the resources to the civilization
+    if (this.resources.containsHex(hex)) {
+      let resource = this.getResource(hex);
+      let resource_type = resource.resource_type;
+      tile.civ.resources[resource_type] += resource.resource_value;
+      if (resource_type == 'food')
+        total_food += resource.resource_value*10;
     }
 
-    //count total food
-    total_food += unit.civ.resources.food*10;
-
+    //add food for rivers
+    if (this.world_map.containsHex(hex)) {
+      let river = this.getTile(hex).river;
+      if (river && river.water_level >= 7) {
+        tile.civ.resources.food += 1;
+        total_food += 10;
+      }
+    }
   }
+
   this.total_population = total_food+Math.floor(Math.random()*10);
 }
 
