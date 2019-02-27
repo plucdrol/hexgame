@@ -32,6 +32,10 @@ MapGenerator = function(map_type) {
       return 0;
     }
   }
+  this.setCiv = function(hex, civ) {
+    var current_tile = this.map.get(hex);
+    current_tile.civ = civ;
+  }
   this.setWind = function(hex,new_value) {
 
     var current_tile = this.map.getValue(hex);
@@ -120,6 +124,7 @@ MapGenerator.prototype.makeMap = function(radius) {
       hex = new Hex(q,r);
       this.setElevation(hex,this.tile_gen.generateTile(q,r));
       this.setWind(hex,this.tile_gen.generateWind(q,r));
+      this.setCiv(hex, undefined);
     }
   }
 
@@ -129,14 +134,11 @@ MapGenerator.prototype.makeMap = function(radius) {
   this.addShallowWater();
   this.addIcePoles();
 
-  //trip coasts
+  //trim coasts
   this.trimPoints(1, [1,2,3,4,5,6,7], 2, 0 );
 
-  //trip oceans
+  //trim oceans
   this.trimPoints(0, [0], 2, 1 );
-
-  //this.flatenRange(2,3);
-  //this.flatenRange(3,6);
 
   this.generateRivers();
 
@@ -174,6 +176,7 @@ MapGenerator.prototype.roundDown = function() {
   }
 }
 
+//this function is used to eliminate thin strips of random tiles
 MapGenerator.prototype.trimPoints = function(land_type, required_neighbor_array, required_neighbor_count, new_land_type) {
   
   //initialize counter: tiles modified this run
@@ -284,7 +287,7 @@ MapGenerator.prototype.flatenRange = function(min,max) {
         var this_hex = new Hex(q,r);
         var this_value = this.getElevation(this_hex);
 
-        //for cells between range_min and range_max
+      //for cells between range_min and range_max
       for (var i = min; i < max; i++) {
         var diff = i-min;
 
@@ -307,26 +310,25 @@ MapGenerator.prototype.flatenRange = function(min,max) {
 MapGenerator.prototype.addShallowWater = function() {
   var neighbors = [];
 
-
   //for each hex
   for (let thishex of this.map.getHexArray()) {
     
-      //if the hex is deep water
-      if (this.getElevation(thishex) == 0) {
+    //if the hex is deep water
+    if (this.getElevation(thishex) == 0) {
 
-        //check its neighbors
-        for (var dir =0; dir < 6; dir++) {
-          var neighbor = thishex.getNeighbor(dir);
-          if (this.map.containsHex(neighbor)) {
-            //and if they are land
-            if (this.getElevation(neighbor) > 1) {
-              //turn the deep water into shallow water
-              this.setElevation(thishex,1);
+      //check its neighbors
+      for (var dir =0; dir < 6; dir++) {
+        var neighbor = thishex.getNeighbor(dir);
+        if (this.map.containsHex(neighbor)) {
+          //and if they are land
+          if (this.getElevation(neighbor) > 1) {
+            //turn the deep water into shallow water
+            this.setElevation(thishex,1);
 
-            }
           }
         }
       }
+    }
   }
 }
 
@@ -475,9 +477,8 @@ MapGenerator.prototype.generateRivers = function() {
 
   //2. Growing rivers inland
   //as long as there are tiles in the bag
-  var counter = 1000;
   console.log(next.getHexArray().length);
-  while (next.getHexArray().length > 0 && counter > 0) {
+  while (next.getHexArray().length > 0) {
 
     //pick a tile randomly from the bag
     let nextHex = this.getRandomNext();
@@ -487,10 +488,9 @@ MapGenerator.prototype.generateRivers = function() {
     //add its neighbors to the bag
     this.addNeighbors(nextHex);
     //console.log(next.getHexArray().length);
-    //counter--;
   }
 
-  //raise terrain between rivers
+  //3. Simulate terrain erosion
   for (let hex of this.map.getHexArray() ) {
     var tile = this.map.get(hex);
     if (tile.river) {

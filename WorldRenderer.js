@@ -18,10 +18,7 @@
 function WorldRenderer (world, hex_renderer) {
   
   this.hex_renderer = hex_renderer;
-
   this.world = world;
-
-  this.ready_to_render = true;
 }
 
 WorldRenderer.p = WorldRenderer.prototype;
@@ -37,19 +34,21 @@ WorldRenderer.p.calculateHexesToRender = function() {
                                                   rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
-
    return hexmap;
 }
     
 
 WorldRenderer.p.drawWorld = function() {
 
-  if (this.ready_to_render) {
-    this.drawBigHex(this.world.radius);
-    var hexmap = this.calculateHexesToRender();
-    this.drawHexMap(hexmap);
-    
-  }
+  var hexmap = this.calculateHexesToRender();
+  var hexarray = hexmap.getHexArray();
+  
+  this.drawBigHex(this.world.radius);
+  this.drawTiles(hexarray);
+  this.drawCivTiles(hexarray);
+  this.drawRivers(hexarray);
+  this.drawUnits(hexarray);
+  this.drawResources(hexarray);
 }
 
 WorldRenderer.p.drawBigHex = function(radius) {
@@ -65,24 +64,47 @@ WorldRenderer.p.drawBigHex = function(radius) {
   this.hex_renderer.renderer.drawPolygon(big_corners, style);
 }
 
-WorldRenderer.p.drawHexMap = function(hexmap) {
-  //get the array
-  var hexarray = hexmap.getHexArray();
-
+WorldRenderer.p.drawTiles = function(hexarray) {
   //make a tile renderer
-  var tile_renderer = new TileRenderer2D( this.hex_renderer, this.world.getLayout() );
-
-  //draw the tiles of the array
+  var tile_renderer = new TileRenderer( this.hex_renderer, this.world.getLayout() );
+  //draw the land colors
   for (hex of hexarray) {
+    //clouds if not explored
     if (this.getTile(hex).hidden) {
       tile_renderer.drawTile(hex, {elevation: 21});
       continue;
     }
-    //draw tile
-    if (this.getTile(hex).elevation >= 2)
+    //actual tiles
+    if (this.getTile(hex).elevation >= 1)
       tile_renderer.drawTile(hex, this.getTile(hex));
   }
+}
 
+WorldRenderer.p.drawCivTiles = function(hexarray) {
+  let civ_tile_arrays = [];
+    
+  //collect all civ tiles into arrays for each civilization
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    if (!this.getTile(hex).civ) continue;
+    if (!civ_tile_arrays[this.getTile(hex).civ.id])
+      civ_tile_arrays[this.getTile(hex).civ.id] = [];
+    civ_tile_arrays[this.getTile(hex).civ.id].push(hex);
+  }
+
+  //draw tile arrays
+  if (!civ_tile_arrays)
+    return;
+  for (culture of civ_tile_arrays) {
+    if (!(culture instanceof Array))
+      continue;
+    let civ = this.getTile(culture[0]).civ;    
+    this.drawCivHexes(culture, civ);
+  }
+  
+}
+
+WorldRenderer.p.drawRivers = function(hexarray) {
   //draw the rivers
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
@@ -90,25 +112,13 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
       let downstream_hex = this.getTile(hex).river.downstream_hex;
       let water_level = this.getTile(hex).river.water_level;
       if (downstream_hex instanceof Hex && water_level >= 7)
-        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*3)) );
+        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*6)), '#00D' );
     }
   }
+}
 
-  //draw the coastal water
-  for (hex of hexarray) {
-    if (this.getTile(hex).hidden) continue;
-    //draw tile
-    if (this.getTile(hex).elevation == 1)
-      tile_renderer.drawTile(hex, this.getTile(hex));
-
-    //draw resources
-    var this_resource = this.world.getResource(hex);
-    if (this_resource != undefined) {
-        this.drawUnit(this_resource,hex,0);
-    }
-  }
-
-  //draw the units and their associated zones
+//draw the units and their resource-collection area
+WorldRenderer.p.drawUnits = function(hexarray) {
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     //draw units
@@ -118,6 +128,35 @@ WorldRenderer.p.drawHexMap = function(hexmap) {
     }
   }
 }
+
+//draw the resource icons
+WorldRenderer.p.drawResources = function(hexarray) {
+  //draw resources
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    var this_resource = this.world.getResource(hex);
+    if (this_resource != undefined) {
+        this.drawUnit(this_resource,hex,0);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 WorldRenderer.p.getTile = function(hex) {
     return this.world.world_map.getValue(hex);
@@ -134,7 +173,7 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   let size = 10*unit.size;
   this.hex_renderer.renderer.drawDot(position, size, unit_style);
   
-  if (unit.population != undefined) {
+  if (unit.population) {
     let text_style = new RenderStyle();
     text_style.font_size = 25;
     let text = unit.population;      
@@ -142,21 +181,35 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   }
 
   //draw the city radius
-  if (unit.cityRadius != undefined) {
-    this.drawCityRadius(hex, unit);
+  if (unit.cityRadius) {
+    //this.drawCityRadius(hex, unit);
   }
 };
 
 WorldRenderer.p.drawCityRadius = function(hex, unit) {
   
   var radius_style = new RenderStyle();
-  radius_style.fill_color = unit.cityRadiusColor;
-  radius_style.line_color = unit.cityRadiusLineColor;
+  radius_style.fill_color = 'rgba(0,0,0,0)';
+  radius_style.line_color = unit.civ.line_color;
 
   let radius_array = Hex.circle(hex, unit.cityRadius);
   this.hex_renderer.drawHexes(radius_array, radius_style);
 }
 
+WorldRenderer.p.drawCivTile = function(hex, tile) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = tile.civ.fill_color;
+  radius_style.line_color = tile.civ.line_color;
+  this.hex_renderer.drawHex(hex, radius_style);
+}
+WorldRenderer.p.drawCivHexes = function(hexes, civ) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = civ.fill_color;
+  radius_style.line_color = civ.line_color;
+  this.hex_renderer.drawHexes(hexes, radius_style);
+}
 
 WorldRenderer.p.drawPath = function(range,destination) {
     
