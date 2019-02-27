@@ -29,7 +29,7 @@ var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view
 //Receives input for the game
 var game_input = new GameInput(world, view);     //<--controller
 //draws mouse interactions
-var hud_renderer = new HUDRenderer(game_input, hex_renderer);
+var hud_renderer = new HUDRenderer(world, game_input, hex_renderer);
 
 
 

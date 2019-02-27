@@ -36,10 +36,10 @@ HexRenderer.p.pointToHex = function(point) {
 }
 
 // RENDERING FUNCTIONS
-HexRenderer.p.drawCenterLine = function(hex1, hex2, width) {
+HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color) {
   var style = new RenderStyle();
   style.line_width = width;
-  style.line_color = 'blue';
+  style.line_color = line_color; 
   var point1 = this.hexToPoint(hex1);
   var point2 = this.hexToPoint(hex2);
   this.renderer.drawLine(point1, point2, style);
@@ -73,10 +73,10 @@ HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
     var edges = edge_arrays[outline];
 
     for (var i=0;i<edges.length;i++){
-      let corner = this.hexToPoint(edges[i].getPoint1() );
+      let corner = this.hexToPoint(edges[i].getPoint1(0.9) );
       corners.push( corner );
     }
-    let corner = this.hexToPoint(edges[0].getPoint1() );
+    let corner = this.hexToPoint(edges[0].getPoint1(0.9) );
     corner.breakLine = true; //used in complex polygons to know when to break the drawing loops
     corners.push( corner ); //add the first point again to close the loop
   }

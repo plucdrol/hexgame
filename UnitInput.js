@@ -37,6 +37,8 @@ UnitInput.p.clickHex = function(hex) {
 
 UnitInput.p.selectHex = function(hex) {
 
+  this.unselectActions();
+
   if (hex) {
     if (this.units.get(hex)) {
 
@@ -184,19 +186,19 @@ UnitInput.p.doAction = function(unit, action, position, target) {
 
   let target_unit = this.units.get(target);
 
-  //both unit-targetting and land-targetting actions happen here
+  //if the action target is OK
   if ((!target_unit && action.target=="land") || (target_unit && action.target=="unit")) {
     
-    //then pay its cost and do the effect
-    action.payCost(this.world, unit, position, target);
+    //then do the action
     action.effect(this.world, unit, position, target);
 
     //and select the new location (usually)
     if (action.nextSelection == 'target') {
       this.selectHex(target); 
-      this.updateActionRange();
     }
+    this.updateActionRange();
 
+  //else just select that new location
   } else {
     this.selectHex(target);
   }  
@@ -228,26 +230,37 @@ UnitInput.p.updateActionRange = function() {
 }
 
 UnitInput.p.getActionRange = function(unit, hex, action) {
-  var stepCostFunction = action.stepCostFunction.bind(action); //<---- depends on the action
-  var neighborFunction = action.getNeighborsFunction.bind(action); //<--- standard for all hex actions
 
+  //get the movement functions from the action
+  var stepCostFunction = action.stepCostFunction.bind(action); 
+  var neighborFunction = action.getNeighborsFunction.bind(action);
+  var targetFilterFunction = action.targetFilterFunction.bind(action); 
+
+  //create a pathfinder to explore the area around the unit
   var pathfinder = new PathFinder(stepCostFunction, neighborFunction);
-
   var max_distance = action.max_distance | 3;
   var min_distance = action.min_distance | 0;
-
   var actionRange = pathfinder.getRange( this.world.world_map, hex, max_distance, min_distance );
   let landRange = actionRange.filter(hex => this.world.getMapValue(hex).elevation > 1 );
 
+  //clear the clouds over the area explored
   for (hex of landRange) {
     for (neighbor of hex.getNeighbors())
       world.world_map.get(neighbor).hidden = false;
   }
 
-  return landRange;
+  //remove unsuitable targets
+  let filteredRange = landRange.filter(hex => targetFilterFunction(this.world, unit, hex));
+
+  return filteredRange;
 }
 
-
+UnitInput.p.unselectActions = function() {
+  let buttons = document.getElementsByClassName('action-button-input');
+  for (button of buttons) {
+    button.checked = false;
+  }
+}
 
 //returns the actual action object
 UnitInput.p.getActionSelected = function() {
