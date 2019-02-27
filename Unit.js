@@ -72,7 +72,7 @@ Unit.prototype.setType = function(unit_type) {
     this.wind = 0;
     break;
   default:
-    setGraphic('yellow',2);
+    this.setGraphic('yellow',2);
     break;
   }
 }
