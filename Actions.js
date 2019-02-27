@@ -66,8 +66,11 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   this.targetFilterFunction = function(world, unit, hex) {
     return world.noCitiesInArea(hex,5,unit);
   }
+  this.activation = function(unit) {
+    return unit.cityRadius < 2;
+  }
   this.requirement = function(unit) {
-    return true;
+    return unit.cityRadius < 2;
   };
 
   this.displayCost = function(unit) {
@@ -157,16 +160,19 @@ function actionCreateCamp(min_distance, max_distance) {
     return true;
   }
   this.requirement = function(unit) {
-    console.log(unit.civ.resources.toString());
-    return unit.civ.resources.food >= 2;
+    return unit.civ.resources.food >= 1;
   }
 
   this.displayCost = function(unit) {
-    return "2 food";
+    return "1 food";
   }
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
     let new_unit = new Unit(this.new_unit_type);
+    //most of the time, keep the same civilization style
+    if (Math.random() < 0.7) 
+      new_unit.civ.setType(unit.civ.type);
+
     world.units.set(target, new_unit);
     world.setCivOnTiles(new_unit.civ, target);
     world.clearClouds(target, 5);
@@ -253,7 +259,7 @@ function actionConquer(max_distance) {
     return (unit.civ.resources.wood >= 2 && unit.civ.resources.stone >= 1);
   };
   this.displayCost = function(unit) {
-    return "2 wood, 2 stone";
+    return "2 wood, 1 stone";
   }
   this.effect = function(world, unit, position, target) {
     //Make the other city part of this civilization
@@ -283,7 +289,7 @@ function actionGrowCity() {
   this.type = "target";
   this.target = "unit";
   this.min_distance = 0;
-  this.max_distance = 0;
+  this.max_distance = 1;
 
   this.targetFilterFunction = function(world, unit, hex) {
     return true;

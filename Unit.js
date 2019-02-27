@@ -16,9 +16,9 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
+    this.addAction( new actionExtension(2, 5));
     this.addAction( new actionCreateCamp(6, 8));
     this.addAction( new actionConquer(10));
-    this.addAction( new actionExtension(2, 5));
     this.addAction( new actionGrowCity() );
     this.addAction( new actionMove(5,2,13) );
     this.setGraphic('white',5);
@@ -66,6 +66,10 @@ Unit.prototype.setType = function(unit_type) {
   case 'stone':
     this.setGraphic('grey',2);
     this.setResource('stone',1);
+    break;
+  case 'unknown':
+    this.setGraphic('purple',2);
+    this.setResource('unknown',1);
     break;
 
   case 'terrain':
@@ -159,12 +163,23 @@ Unit.prototype.setCiv = function(civilization) {
 /////////////////////////////////////////////
 
 function Civilization() {
+  this.type = Math.floor(Math.random()*5)+1;
   this.id = Math.floor(Math.random()*10000);
   this.name = this.generateName();
   this.setColors();
 
 }
-
+Civilization.prototype.startCount = function() {
+  this.resources.food = 0;
+  this.resources.wood = 0;
+  this.resources.stone = 0;
+  this.resources.unknown = 0;
+  this.pop = 0;
+}
+Civilization.prototype.setType = function(type) {
+  this.type = type;
+  this.name = this.generateName();
+}
 Civilization.prototype.setColors = function() {
   this.fill_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
   this.line_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
@@ -176,21 +191,21 @@ Civilization.prototype.setResourceStores = function(food, wood, stone) {
 
 Civilization.prototype.generateName = function() {
   let vowels = ['a','e','i','o','u','a','e','i','o','u', 'an','ou','in','eu'];
-  let consonants = ['b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v',
-                    'b','c','d','f','g','h','j','k','l','m','n','p','r','s','t','v','w','x','z'];
-  let double_consonants = ['br','ch','cr','sk','pl','fl','gr','sm'];
+  let consonants = ['b','d','f','g','h','j','k','l','m','n','p','r','s','t','v',
+                    'b','d','f','g','h','j','k','l','m','n','p','r','s','t','v','w','x','z'];
+  let double_consonants = ['p','br','ch','cr','ct','sk','pl','fl','gr','sm'];
   function v(){return vowels[Math.floor(Math.random()*vowels.length)]}
   function c(){return consonants[Math.floor(Math.random()*consonants.length)]}
-  function cc(){return double_consonants[Math.floor(Math.random()*consonants.length)]}
-  if (Math.random() < 0.3)
+  function cc(){return double_consonants[Math.floor(Math.random()*double_consonants.length)]}
+  if (this.type == 1)
     return v()+c()+v()+c()+v()+'nian';
-  if (Math.random() < 0.2)
+  if (this.type == 2)
     return c()+v()+c()+'ese';
-  if (Math.random() < 0.2)
+  if (this.type == 3)
     return v()+c()+c()+'ec';  
-  if (Math.random() < 0.1)
-    return c()+v()+c()+v()+c()+v()+c()+'ian';
-
-  return c()+v()+c()+'an';
+  if (this.type == 4)
+    return c()+v()+c()+v()+c()+v()+c()+'al';
+  if (this.type == 5)
+    return c()+v()+cc()+'ish';
 }
 

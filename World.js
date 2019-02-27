@@ -47,7 +47,8 @@ function World(radius) {
 
   //create resources map
   this.resources = new HexMap();
-  this.resources = this.generateResources(this.world_map);
+  this.resources = this.generateResources();
+  this.generateUnknown();
 
   //Make the center tile into sand
   let land_tile = new Unit('terrain');
@@ -91,6 +92,13 @@ World.prototype.getMapValue = function(hex) {
 }
 World.prototype.getTile = World.prototype.getMapValue;
 
+World.prototype.getRandomHex = function() {
+
+  let hex_array = this.world_map.getHexArray();
+  let random_hex = hex_array[Math.floor(Math.random()*hex_array.length)];
+  return random_hex;
+}
+
 World.prototype.getUnit = function(hex) {
   return this.units.get(hex);
 }
@@ -100,11 +108,21 @@ World.prototype.getResource = function(hex) {
 }
 
 
+World.prototype.generateUnknown = function() {
+  let count=8;
+  while(count > 0) {
+    let random_hex = this.getRandomHex();
+    if (this.getTile(random_hex).elevation < 1)
+      continue;
+    this.resources.set(random_hex, new Unit('unknown'));
+    count--;
+  }
+}
 
-World.prototype.generateResources = function(world_map) {
+World.prototype.generateResources = function() {
   var resources = new HexMap();
-  for (let hex of world_map.getHexArray() )  {
-    let terrain = world_map.getValue(hex);
+  for (let hex of this.world_map.getHexArray() )  {
+    let terrain = this.getTile(hex);
 
     //only 20% of the land gets resources
     if (Math.random() < 0.8) {
@@ -248,10 +266,7 @@ World.prototype.collectResources = function() {
   for (let unit_hex of this.units.getHexArray() ) {
     let unit = this.units.get(unit_hex);
     if (unit.civ && unit.civ.resources) {
-      unit.civ.resources.food = 0;
-      unit.civ.resources.wood = 0;
-      unit.civ.resources.stone = 0;
-      unit.civ.pop = 0;
+      unit.civ.startCount();
     }
   }
 
@@ -263,7 +278,7 @@ World.prototype.collectResources = function() {
     if (!tile.civ)
       continue;
 
-    //add the resources to the civilization
+    //add resources from tiles
     if (this.resources.containsHex(hex)) {
       let resource = this.getResource(hex);
       let resource_type = resource.resource_type;
@@ -277,9 +292,17 @@ World.prototype.collectResources = function() {
     if (this.world_map.containsHex(hex)) {
       let river = this.getTile(hex).river;
       if (river && river.water_level >= 7) {
-        tile.civ.resources.food += 1;
-        total_food += 10;
+        //tile.civ.resources.food += 1;
+        //total_food += 10;
       }
+    }
+
+    //remove 1 food for each from cities
+    if (this.units.containsHex(hex)) {
+      if (this.getUnit(hex).type='camp') {
+        this.getUnit(hex).civ.resources.food -= 1;
+      }
+      total_food -= 10;
     }
   }
 

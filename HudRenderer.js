@@ -111,6 +111,8 @@ HUDRenderer.prototype.writeResources = function(city) {
   var message = "Food:".concat(city.civ.resources.food)
                  .concat(" Wood:").concat(city.civ.resources.wood)
                  .concat(" Stone:").concat(city.civ.resources.stone);
+  if (city.civ.resources.unknown > 0)
+    message = message.concat(" Unknown:").concat(city.civ.resources.unknown);
   this.writeMessage(message);
 }
 
