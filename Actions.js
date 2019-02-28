@@ -152,6 +152,7 @@ function actionCreateCamp(min_distance, max_distance) {
   this.new_unit_type = 'camp';
   this.min_distance = min_distance;
   this.max_distance = max_distance;
+  this.nextSelection = "target";
 
   this.targetFilterFunction = function(world, unit, hex) {
     return world.noCitiesInArea(hex,5);

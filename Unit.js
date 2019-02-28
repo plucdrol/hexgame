@@ -73,6 +73,7 @@ Unit.prototype.setType = function(unit_type) {
   case 'unknown':
     this.setGraphic('purple',2);
     this.setResource('unknown',1);
+    this.setResource('food',2);
     break;
 
   case 'terrain':
@@ -198,7 +199,7 @@ Civilization.prototype.generateName = function() {
   let vowels = ['a','e','i','o','u','a','e','i','o','u', 'an','ou','in','eu'];
   let consonants = ['b','d','f','g','h','j','k','l','m','n','p','r','s','t','v',
                     'b','d','f','g','h','j','k','l','m','n','p','r','s','t','v','w','x','z'];
-  let double_consonants = ['p','br','ch','cr','ct','sk','pl','fl','gr','sm'];
+  let double_consonants = ['p','br','ch','cr','sk','pl','fl','gr','sm','th'];
   function v(){return vowels[Math.floor(Math.random()*vowels.length)]}
   function c(){return consonants[Math.floor(Math.random()*consonants.length)]}
   function cc(){return double_consonants[Math.floor(Math.random()*double_consonants.length)]}

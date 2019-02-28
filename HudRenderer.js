@@ -172,7 +172,7 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
     tooltip(land_tiles[tile.elevation]+", ");
   }
   if (tile && tile.river && tile.river.water_level >= 7) {
-    tooltip('river, ');
+    tooltip('river '+tile.river.name+', ');
   }
   if (tile && this.world.getTile(hex_hovered).civ ) {
     tooltip(this.world.getTile(hex_hovered).civ.name);
