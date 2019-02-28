@@ -63,6 +63,7 @@ HUDRenderer.prototype.updateActionButtons = function() {
 
   //do nothing if there is no unit to update
   let unit = this.unit_input.getUnitSelected();
+  let position = this.unit_input.getHexSelected();
   if (!unit) return;
 
   //remember previous action
@@ -74,12 +75,12 @@ HUDRenderer.prototype.updateActionButtons = function() {
   for (let action of unit.actions) {
     
     //only show actions whose activation is met
-    if (action.activation(unit)) {
+    if (action.activation(unit, position)) {
       let new_button = this.makeActionButton(unit, action);
       action_buttons.innerHTML += new_button;
       
       //Show actions in grey if their requirements are not met
-      if (!action.requirement(unit)) {
+      if (!action.requirement(unit, position)) {
         document.getElementById("action-".concat(action.name)).disabled = true;
       }
     }

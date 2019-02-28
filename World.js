@@ -229,7 +229,13 @@ World.prototype.spreadCulture = function() {
       tile.civ = undefined;
       tile.culture = 0;
     } else {
-      tile.culture = tile.culture-1;
+      if (tile.civ.border_growth) {
+        if (Math.random() < 0.4)
+          tile.culture = tile.culture-1;
+      } else {
+        tile.culture = tile.culture-1;
+      }
+      
     }
 
     //spread that civ to all neighbor tiles
@@ -308,9 +314,9 @@ World.prototype.collectResources = function() {
     //remove 1 food for each from cities
     if (this.units.containsHex(hex)) {
       if (this.getUnit(hex).type='camp') {
-        this.getUnit(hex).civ.resources.food -= 1;
+        //this.getUnit(hex).civ.resources.food -= 1;
       }
-      total_food -= 10;
+      //total_food -= 10;
     }
   }
 
