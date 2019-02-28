@@ -100,15 +100,13 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
   
   var outline = Hex.outline(hex_array);
 
-
-
   if (range_style === undefined) {
     var range_style = new RenderStyle();
     range_style.fill_color = "rgba(255,255,150, 0.2)";
     range_style.line_color = "rgba(255,255,100,1)";
   }
 
-    range_style.line_width = 4;
+  range_style.line_width = 4;
 
   //draw the outline of the range
   this.drawHexOutline( outline,range_style);

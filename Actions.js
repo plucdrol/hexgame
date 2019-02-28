@@ -238,6 +238,83 @@ function actionExtension(min_distance, max_distance) {
 
 
 
+//This action transforms the unit into a camp
+function actionFishermen(min_distance, max_distance) {
+  basicAction.call(this);
+
+  this.minimum_elevation = 1;
+
+  this.name = "fishing-villages";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'camp';
+  this.min_distance = min_distance;
+  this.max_distance = max_distance;
+
+  //return all tiles with fish in range
+  this.targetFilterFunction = function(world, unit, position) {
+
+
+    if (!world.world_map.containsHex(position))
+      return false;
+
+    if (!world.noCitiesInArea(hex,2))
+      return false;
+    
+    let fish_count = 0;
+    for (neighbor of position.getNeighbors()) {
+      if (world.getResource(neighbor) && 
+          world.getResource(neighbor).type == 'fish')
+        fish_count++;
+    }
+    if (fish_count == 0) 
+      return false;
+
+    let coast_count = 0;
+    for (neighbor of position.getNeighbors()) {
+      if (world.getTile(neighbor) && 
+          world.getTile(neighbor).elevation == 1)
+        coast_count++;
+    }
+    if (coast_count == 0) 
+      return false;
+
+    return true;
+  }
+
+  this.activation = function(unit) {
+    return (unit.civ.resources.food >= 2);
+  }
+  this.requirement = function(unit) {
+    return (unit.civ.resources.food >= 3);
+  }
+
+  this.displayCost = function(unit) {
+    return "3 food";
+  }
+  this.effect = function(world, unit, position, target) {
+    
+    for (new_position of unit.range) {
+      //Create a unit_type at the target location
+      let new_unit = new Unit(this.new_unit_type);
+      new_unit.civ = unit.civ;
+      world.units.set(new_position, new_unit);
+      world.setCivOnTiles(new_unit.civ, target);
+      world.clearClouds(target, 5);
+    }
+
+  }
+
+}
+
+
+
+
+
+
+
+
+
 
 
 //This action transforms the unit into a camp

@@ -162,7 +162,7 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
 
   //HOVERING OVER RESOURCES
   let resource = this.world.getResource(hex_hovered);
-  if (resource && resource.hasComponent('resource_value')) 
+  if (resource && resource.resources) 
     tooltip(resource.type+", ");
 
   //HOVERING OVER LAND TILES, RIVERS, and CULTURE

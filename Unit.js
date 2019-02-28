@@ -16,6 +16,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
+    this.addAction( new actionFishermen(2, 8));
     this.addAction( new actionExtension(2, 5));
     this.addAction( new actionCreateCamp(6, 8));
     this.addAction( new actionConquer(10));
@@ -83,8 +84,10 @@ Unit.prototype.setType = function(unit_type) {
 }
 
 Unit.prototype.setResource = function(type, value) {
-  this.resource_type = type;
-  this.resource_value = value;
+  if (!this.resources)
+    this.resources = [];
+  this.resources[type] = value;
+  //this.resource_value = value;
 }
 
 Unit.prototype.hasComponent = function(component_name) {

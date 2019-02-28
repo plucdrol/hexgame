@@ -281,11 +281,19 @@ World.prototype.collectResources = function() {
     //add resources from tiles
     if (this.resources.containsHex(hex)) {
       let resource = this.getResource(hex);
-      let resource_type = resource.resource_type;
-      tile.civ.resources[resource_type] += resource.resource_value;
-      if (resource_type == 'food')
-        tile.civ.pop += resource.resource_value*10; 
-        total_food += resource.resource_value*10;
+
+      if (resource.resources.wood) 
+        tile.civ.resources.wood += resource.resources.wood;
+      if (resource.resources.stone) 
+        tile.civ.resources.stone += resource.resources.stone;
+      if (resource.resources.unknown) 
+        tile.civ.resources.unknown += resource.resources.unknown;
+
+      if (resource.resources.food) {
+        tile.civ.resources.food += resource.resources.food;
+        tile.civ.pop += resource.resources.food*10; 
+        total_food += resource.resources.food*10;
+      }
     }
 
     //add food for rivers
