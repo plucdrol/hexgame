@@ -4,11 +4,19 @@ function HUDRenderer(world, game_input, hex_renderer) {
   this.game_input = game_input;
   this.world = world;
   this.unit_input = game_input.unit_input;
+  
   //start tracking
   this.trackUnitResources();
   this.hex_renderer = hex_renderer;
 }
 
+
+
+
+
+/////////////////////////////////////////////////////
+//          Functions about map overlay information
+/////////////////////////////////////////////////////
 HUDRenderer.prototype.drawHUD = function() {
 
 
@@ -16,7 +24,7 @@ HUDRenderer.prototype.drawHUD = function() {
   var hex_selected = this.unit_input.hex_selected;
 
   if (hex_selected) {
-    this.drawUnitRange(hex_selected);
+    this.drawUnitRange();
     this.drawSelectionHex(hex_selected);
   }
 
@@ -25,12 +33,18 @@ HUDRenderer.prototype.drawHUD = function() {
   }
 }
 
-HUDRenderer.prototype.drawUnitRange = function(hex_selected) {
-  //draw range of selected unit  
-  var potential_unit = this.unit_input.units.get(hex_selected);
 
-  if (potential_unit instanceof Unit && potential_unit.range) {
-    this.hex_renderer.drawHexes(potential_unit.range);
+HUDRenderer.prototype.unitHasRenderableRange = function(unit) {
+  return (unit && unit instanceof Unit && unit.range.length > 0)
+}
+
+
+HUDRenderer.prototype.drawUnitRange = function() {
+  //draw range of selected unit  
+  var unit = this.unit_input.getUnitSelected();
+
+  if (this.unitHasRenderableRange(unit)) {
+    this.hex_renderer.drawHexes(unit.range);
 
   }
 }
@@ -51,11 +65,27 @@ HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
     this.hex_renderer.drawHex(hex_selected, select_style);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////
+//              Functions about action buttons
+/////////////////////////////////////////////////////
+
 HUDRenderer.prototype.makeActionButton = function(unit, action) {
   return "<label><input class='action-button-input' name='actions' type='radio' "
            +" id='action-" + action.name + "'"
            +" value='" + action.name + "'><div class='action-button'>"
-           + action.description(unit) + "</div></label></input>";
+           + action.description() + "</div></label></input>";
 }
 
 HUDRenderer.prototype.updateActionButtons = function() {
@@ -68,32 +98,41 @@ HUDRenderer.prototype.updateActionButtons = function() {
   //remember previous action
   var current_action = this.unit_input.getActionSelectedId();
 
-  //update the action list
+  //generate new button list
+  this.generateButtons(unit, position);
+  this.addClickDetection();
+
+  //reselect the previously selected action
+  if (current_action) {
+    this.unit_input.selectActionById(current_action);
+  }
+}
+
+HUDRenderer.prototype.generateButtons = function(unit, position) {
+
+  //get button-list HTML element
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
 
+  //display simple message if no unit is selected
   if (!unit.actions || unit.actions.length == 0) {
     action_buttons.innerHTML = "Click a village";
+    return;
   }
+
   for (let action of unit.actions) {
     
     //only show actions whose activation is met
-    if (action.activation(this.world, unit, position)) {
-      let new_button = this.makeActionButton(unit, action);
-      action_buttons.innerHTML += new_button;
-      
-      //Show actions in grey if their requirements are not met
-      if (!action.requirement(this.world, unit, position)) {
-        document.getElementById("action-".concat(action.name)).disabled = true;
-      }
+    if (!action.activation(this.world, unit, position)) 
+      continue;
+
+    let new_button = this.makeActionButton(unit, action);
+    action_buttons.innerHTML += new_button;
+    
+    //Show actions in grey if their requirements are not met
+    if (!action.requirement(this.world, unit, position)) {
+      document.getElementById("action-".concat(action.name)).disabled = true;
     }
-  }
-
-  this.addClickDetection();
-
-  //reset the action to the previously selected action
-  if (current_action) {
-    this.unit_input.selectActionById(current_action);
   }
 }
 
@@ -108,6 +147,20 @@ HUDRenderer.prototype.addClickDetection = function() {
 HUDRenderer.prototype.clearButtons = function() {
   document.getElementById('action-buttons').innerHTML = "<p>Click a village</p>";
 }
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////
+//           Functions about top bar messages
+/////////////////////////////////////////////////////
 
 HUDRenderer.prototype.writeMessage = function(message, element) {
   if (!element) 
@@ -130,59 +183,84 @@ HUDRenderer.prototype.trackUnitResources = function() {
   if (this.stop_city_interval_number != 0)
     clearInterval(this.stop_city_interval_number);
 
-  function update_function() { 
-    let unit = this.unit_input.getUnitSelected();
-    let pop = Math.floor(this.world.total_population);
-    this.writeMessage("World population: ".concat(pop), 'world-resources');
-
-    if (unit.civ && unit.civ.resources) {
-      this.writeResources(unit); 
-      this.updateActionButtons();
-    } else {
-      this.clearButtons();
-      this.writeMessage("", 'city-resources');
-    }
-  }
-
   let self = this;
-  this.stop_city_interval_number = setInterval(update_function.bind(self), 1000);
+  this.stop_city_interval_number = setInterval(self.update_function.bind(self), 1000);
 }
 
-function tooltip(message) {
+
+HUDRenderer.prototype.update_function = function() { 
+  let unit = this.unit_input.getUnitSelected();
+  let pop = this.world.totalPopulation();
+  this.writeMessage("World population: ".concat(pop), 'world-resources');
+
+  if (unit.civ && unit.civ.resources) {
+    this.writeResources(unit); 
+    this.updateActionButtons();
+  } else {
+    this.clearButtons();
+    this.writeMessage("", 'city-resources');
+  }
+}
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////
+//              Functions about Tooltip
+/////////////////////////////////////////////////////
+
+function clearTooltip() {
+  document.getElementById('tooltip').innerHTML = "";
+}
+
+function writeTooltip(message) {
   document.getElementById('tooltip').innerHTML += message;
 }
 
 HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
-  document.getElementById('tooltip').innerHTML = "";
+  clearTooltip();
   
   //skip hidden and out-of-bounds hexes
   if (!hex_hovered) 
     return;
-  if (this.world.getTile(hex_hovered).hidden) {
-    tooltip("clouds");
+  if (this.world.tileIsRevealed(hex_hovered)) {
+    writeTooltip("clouds");
     return;
   }
 
-  //HOVERING OVER UNITS
-  let unit = this.world.getUnit(hex_hovered);
-  if (unit && unit.hasComponent('size'))
-    tooltip(unit.type+", ");
+  //HOVERING OVER THINGS
+  this.tooltipUnit(hex_hovered);
+  this.tooltipResource(hex_hovered);
+  this.tooltipTile(hex_hovered);
 
-  //HOVERING OVER RESOURCES
+}
+
+HUDRenderer.prototype.tooltipUnit = function(hex_hovered) {
+  let unit = this.world.getUnit(hex_hovered);
+  if (unit && unit.hasOwnProperty('size'))
+    writeTooltip(unit.type+", ");
+}
+
+HUDRenderer.prototype.tooltipResource = function(hex_hovered) {
   let resource = this.world.getResource(hex_hovered);
   if (resource && resource.resources) 
-    tooltip(resource.type+", ");
+    writeTooltip(resource.type+", ");
+}
 
-  //HOVERING OVER LAND TILES, RIVERS, and CULTURE
+HUDRenderer.prototype.tooltipTile = function(hex_hovered) {
   let tile = this.world.getTile(hex_hovered);
-  if (tile && tile.elevation) {
-    tooltip(land_tiles[tile.elevation]+", ");
+  if (tile && tile.hasOwnProperty('elevation')) {
+    writeTooltip(land_tiles[tile.elevation]+", ");
   }
   if (tile && tile.river && tile.river.water_level >= 7) {
-    tooltip('river '+tile.river.name+', ');
+    writeTooltip('river '+tile.river.name+', ');
   }
   if (tile && this.world.getTile(hex_hovered).civ ) {
-    tooltip(this.world.getTile(hex_hovered).civ.name);
+    writeTooltip(this.world.getTile(hex_hovered).civ.name);
   }
-
 }

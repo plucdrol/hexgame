@@ -107,7 +107,7 @@ UnitInput.p.clickWithNoSelection = function(hex) {
 UnitInput.p.clickWithUnitSelected = function(hex) {
   
   var unit = this.getUnitSelected();
-  if (!unit.hasComponent('range') ) {
+  if (!unit.hasDefinedRange() ) {
     this.clickOutsideUnitRange(hex);
     return 0;
   }

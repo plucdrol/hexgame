@@ -91,23 +91,8 @@ Unit.prototype.setResource = function(type, value) {
   //this.resource_value = value;
 }
 
-Unit.prototype.hasComponent = function(component_name) {
-  if (this.hasOwnProperty(component_name)) {
-    return true;
-  }
-  return false;
-}
-
-Unit.prototype.getComponent = function(component_name) {
-  if (this.hasComponent(component_name)) {
-    return this[component_name];
-  } else {
-    return false;
-  }
-}
-
-Unit.prototype.setComponent = function(label, value) {
-  this[label] = value;  
+Unit.prototype.hasDefinedRange = function() {
+  return this.hasOwnProperty('range');
 }
 
 Unit.prototype.addAction = function( action ) {

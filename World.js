@@ -69,7 +69,9 @@ function World(radius) {
 
   
 }
-
+World.prototype.totalPopulation = function() {
+  return Math.floor(this.total_population);
+}
 World.prototype.getLayout = function() {
   return this.layout;
 }
@@ -106,7 +108,9 @@ World.prototype.getUnit = function(hex) {
 World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
 }
-
+World.prototype.tileIsRevealed = function(hex) {
+  return (this.world_map.containsHex(hex) && this.getTile(hex).hidden);
+}
 
 World.prototype.generateUnknown = function() {
   let count=8;
