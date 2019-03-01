@@ -15,7 +15,7 @@ Unit.prototype.setType = function(unit_type) {
 
   switch (unit_type) {
 
-  case 'camp':
+  case 'village':
     this.addAction( new actionFishermen());
     this.addAction( new actionRiverlands());
     this.addAction( new actionForesters());

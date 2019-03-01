@@ -71,6 +71,10 @@ HUDRenderer.prototype.updateActionButtons = function() {
   //update the action list
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
+
+  if (!unit.actions || unit.actions.length == 0) {
+    action_buttons.innerHTML = "Click a village";
+  }
   for (let action of unit.actions) {
     
     //only show actions whose activation is met
@@ -102,7 +106,7 @@ HUDRenderer.prototype.addClickDetection = function() {
 }
 
 HUDRenderer.prototype.clearButtons = function() {
-  document.getElementById('action-buttons').innerHTML = "";
+  document.getElementById('action-buttons').innerHTML = "<p>Click a village</p>";
 }
 
 HUDRenderer.prototype.writeMessage = function(message, element) {

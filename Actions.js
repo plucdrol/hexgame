@@ -133,7 +133,7 @@ function actionBecomeCamp() {
  
     //replace the unit
     world.units.remove( position );
-    world.units.set( position, new Unit('camp') );
+    world.units.set( position, new Unit('village') );
     new_unit = world.units.get( position );
   }
 }
@@ -157,7 +157,7 @@ function actionCreateCamp() {
   this.name = "resettlement";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'camp';
+  this.new_unit_type = 'village';
   this.min_distance = 6;
   this.max_distance = 8;
 
@@ -181,7 +181,7 @@ function actionCreateCamp() {
   }
 
   this.description = function(unit) {
-    return "Send settlers to<br/> found a new camp";
+    return "Send settlers to<br/> found a new village";
   }
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
@@ -215,7 +215,7 @@ function actionExtension() {
   this.name = "expansion";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'camp';
+  this.new_unit_type = 'village';
   this.min_distance = 2;
   this.max_distance = 5;
 
@@ -264,7 +264,7 @@ function actionFishermen() {
   this.name = "fishing-villages";
   this.type = "target";
   this.target = "both";
-  this.new_unit_type = 'camp';
+  this.new_unit_type = 'village';
   this.min_distance = 1;
   this.max_distance = 6;
 
@@ -371,7 +371,7 @@ function actionRiverlands() {
   this.name = "river-farming";
   this.type = "target";
   this.target = "both";
-  this.new_unit_type = 'camp';
+  this.new_unit_type = 'village';
   this.min_distance = 1;
   this.max_distance = 5;
 
@@ -446,7 +446,7 @@ function actionForesters() {
   this.name = "forest-dwellers";
   this.type = "target";
   this.target = "both";
-  this.new_unit_type = 'camp';
+  this.new_unit_type = 'village';
   this.min_distance = 1;
   this.max_distance = 6;
 
