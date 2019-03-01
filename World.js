@@ -229,13 +229,7 @@ World.prototype.spreadCulture = function() {
       tile.civ = undefined;
       tile.culture = 0;
     } else {
-      //if (tile.civ.border_growth) {
-        //if (Math.random() < 0.4)
-          //tile.culture = tile.culture-1;
-     // } else {
         tile.culture = tile.culture-1;
-      //}
-      
     }
 
     //spread that civ to all neighbor tiles

@@ -153,7 +153,6 @@ RiverGenerator = function(world_map) {
 
   //2. Growing rivers inland
   //as long as there are tiles in the bag
-  console.log(next.getHexArray().length);
   while (next.getHexArray().length > 0) {
 
     //pick a tile randomly from the bag

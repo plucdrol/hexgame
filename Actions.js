@@ -48,8 +48,6 @@ function basicAction() {
 
 
 
-
-
 function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   basicAction.call(this);
 
@@ -64,6 +62,16 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   var action = this;
 
   this.targetFilterFunction = function(world, unit, hex) {
+    let food_count = 0;
+
+    for (neighbor of hex.getNeighbors().concat(hex) ) {
+      if (world.getResource(neighbor) && 
+          world.getResource(neighbor).resources.food >= 1)
+        food_count++;
+    }
+    if (food_count == 0) 
+      return false;
+
     return world.noCitiesInArea(hex,5,unit);
   }
   this.activation = function(world, unit, position) {
@@ -152,9 +160,17 @@ function actionCreateCamp(min_distance, max_distance) {
   this.new_unit_type = 'camp';
   this.min_distance = min_distance;
   this.max_distance = max_distance;
-  this.nextSelection = "target";
 
   this.targetFilterFunction = function(world, unit, hex) {
+    let food_count = 0;
+    for (neighbor of hex.getNeighbors().concat(hex)) {
+      if (world.getResource(neighbor) && 
+          world.getResource(neighbor).resources.food >= 1)
+        food_count++;
+    }
+    if (food_count == 0) 
+      return false;
+
     return world.noCitiesInArea(hex,5);
   }
   this.activation = function(world, unit, position) {
@@ -247,7 +263,7 @@ function actionFishermen(min_distance, max_distance) {
 
   this.name = "fishing-villages";
   this.type = "target";
-  this.target = "land";
+  this.target = "both";
   this.new_unit_type = 'camp';
   this.min_distance = min_distance;
   this.max_distance = max_distance;
@@ -259,8 +275,8 @@ function actionFishermen(min_distance, max_distance) {
     if (!world.world_map.containsHex(position))
       return false;
 
-    if (!world.noCitiesInArea(position,2))
-      return false;
+    //if (!world.noCitiesInArea(position,2))
+      //return false;
     
     let fish_count = 0;
     for (neighbor of position.getNeighbors()) {
@@ -322,10 +338,14 @@ function actionFishermen(min_distance, max_distance) {
     unit.civ.border_growth = true;
 
     for (new_position of unit.range) {
+
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
       new_unit.setGraphic('white',3);
+      if (world.getUnit(new_position)) {
+        new_unit.setGraphic('red',3);
+      }
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -353,7 +373,7 @@ function actionRiverlands(min_distance, max_distance) {
 
   this.name = "river-farming";
   this.type = "target";
-  this.target = "land";
+  this.target = "both";
   this.new_unit_type = 'camp';
   this.min_distance = min_distance;
   this.max_distance = max_distance;
@@ -397,6 +417,9 @@ function actionRiverlands(min_distance, max_distance) {
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
       new_unit.setGraphic('white',3);
+      if (world.getUnit(new_position)) {
+        new_unit.setGraphic('red',3);
+      }
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -425,7 +448,7 @@ function actionForesters(min_distance, max_distance) {
 
   this.name = "forest-dwellers";
   this.type = "target";
-  this.target = "land";
+  this.target = "both";
   this.new_unit_type = 'camp';
   this.min_distance = min_distance;
   this.max_distance = max_distance;
@@ -436,8 +459,8 @@ function actionForesters(min_distance, max_distance) {
     if (!world.world_map.containsHex(position))
       return false;
 
-    if (!world.noCitiesInArea(position,2))
-      return false;
+    //if (!world.noCitiesInArea(position,2))
+      //return false;
     
     if (world.getResource(position) && world.getResource(position).type == 'wood')
         return true;
@@ -468,6 +491,9 @@ function actionForesters(min_distance, max_distance) {
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
       new_unit.setGraphic('white',3);
+      if (world.getUnit(new_position)) {
+        new_unit.setGraphic('red',3);
+      }
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -491,14 +517,14 @@ function actionForesters(min_distance, max_distance) {
 //This action transforms the unit into a camp
 function actionConquer(max_distance) {
   basicAction.call(this);
-  this.name = "alliance";
+  this.name = "conquer";
   this.type = "target";
   this.target = "unit";
   this.min_distance = 1;
   this.max_distance = max_distance;
 
   this.targetFilterFunction = function(world, unit, hex) {
-    return true;
+    return (world.getUnit(hex));
   }
   this.activation = function(world, unit, position) {
     return (unit.civ.resources.wood >= 1 && unit.civ.resources.stone >= 1);
@@ -540,6 +566,8 @@ function actionGrowCity() {
   this.max_distance = 1;
 
   this.targetFilterFunction = function(world, unit, hex) {
+
+
     return true;
   }
   this.activation = function(world, unit, position) {

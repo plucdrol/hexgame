@@ -188,7 +188,7 @@ UnitInput.p.doAction = function(unit, action, position, target) {
   let target_unit = this.units.get(target);
 
   //if the action target is OK
-  if ((!target_unit && action.target=="land") || (target_unit && action.target=="unit")) {
+  if (action.target=="both" || (!target_unit && action.target=="land") || (target_unit && action.target=="unit") ) {
     
     //then do the action
     action.effect(this.world, unit, position, target);
