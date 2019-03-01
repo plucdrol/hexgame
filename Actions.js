@@ -48,7 +48,7 @@ function basicAction() {
 
 
 
-function actionMove(max_distance, minimum_elevation, maximum_elevation) {
+function actionMove() {
   basicAction.call(this);
 
   this.name = "move";
@@ -56,9 +56,9 @@ function actionMove(max_distance, minimum_elevation, maximum_elevation) {
   this.target = "land";
   this.nextSelection = "target";
   this.min_distance = 0;
-  this.max_distance = max_distance;
-  this.minimum_elevation = minimum_elevation;
-  this.maximum_elevation = maximum_elevation;
+  this.max_distance = 5;
+  this.minimum_elevation = 2;
+  this.maximum_elevation = 13;
   var action = this;
 
   this.targetFilterFunction = function(world, unit, hex) {
@@ -149,7 +149,7 @@ function actionBecomeCamp() {
 
 
 //This action transforms the unit into a camp
-function actionCreateCamp(min_distance, max_distance) {
+function actionCreateCamp() {
   basicAction.call(this);
 
   this.minimum_elevation = 1;
@@ -158,8 +158,8 @@ function actionCreateCamp(min_distance, max_distance) {
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'camp';
-  this.min_distance = min_distance;
-  this.max_distance = max_distance;
+  this.min_distance = 6;
+  this.max_distance = 8;
 
   this.targetFilterFunction = function(world, unit, hex) {
     let food_count = 0;
@@ -207,7 +207,7 @@ function actionCreateCamp(min_distance, max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionExtension(min_distance, max_distance) {
+function actionExtension() {
   basicAction.call(this);
 
   this.minimum_elevation = 2;
@@ -216,8 +216,8 @@ function actionExtension(min_distance, max_distance) {
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'camp';
-  this.min_distance = min_distance;
-  this.max_distance = max_distance;
+  this.min_distance = 2;
+  this.max_distance = 5;
 
   this.targetFilterFunction = function(world, unit, hex) {
     return world.noCitiesInArea(hex,2);
@@ -256,7 +256,7 @@ function actionExtension(min_distance, max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionFishermen(min_distance, max_distance) {
+function actionFishermen() {
   basicAction.call(this);
 
   this.minimum_elevation = 0;
@@ -265,8 +265,8 @@ function actionFishermen(min_distance, max_distance) {
   this.type = "target";
   this.target = "both";
   this.new_unit_type = 'camp';
-  this.min_distance = min_distance;
-  this.max_distance = max_distance;
+  this.min_distance = 1;
+  this.max_distance = 6;
 
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, unit, position) {
@@ -274,9 +274,6 @@ function actionFishermen(min_distance, max_distance) {
 
     if (!world.world_map.containsHex(position))
       return false;
-
-    //if (!world.noCitiesInArea(position,2))
-      //return false;
     
     let fish_count = 0;
     for (neighbor of position.getNeighbors()) {
@@ -366,7 +363,7 @@ function actionFishermen(min_distance, max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionRiverlands(min_distance, max_distance) {
+function actionRiverlands() {
   basicAction.call(this);
 
   this.minimum_elevation = 2;
@@ -375,8 +372,8 @@ function actionRiverlands(min_distance, max_distance) {
   this.type = "target";
   this.target = "both";
   this.new_unit_type = 'camp';
-  this.min_distance = min_distance;
-  this.max_distance = max_distance;
+  this.min_distance = 1;
+  this.max_distance = 5;
 
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, unit, position) {
@@ -441,7 +438,7 @@ function actionRiverlands(min_distance, max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionForesters(min_distance, max_distance) {
+function actionForesters() {
   basicAction.call(this);
 
   this.minimum_elevation = 1;
@@ -450,17 +447,14 @@ function actionForesters(min_distance, max_distance) {
   this.type = "target";
   this.target = "both";
   this.new_unit_type = 'camp';
-  this.min_distance = min_distance;
-  this.max_distance = max_distance;
+  this.min_distance = 1;
+  this.max_distance = 6;
 
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, unit, position) {
 
     if (!world.world_map.containsHex(position))
       return false;
-
-    //if (!world.noCitiesInArea(position,2))
-      //return false;
     
     if (world.getResource(position) && world.getResource(position).type == 'wood')
         return true;
@@ -515,13 +509,13 @@ function actionForesters(min_distance, max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionConquer(max_distance) {
+function actionConquer() {
   basicAction.call(this);
   this.name = "conquer";
   this.type = "target";
   this.target = "unit";
   this.min_distance = 1;
-  this.max_distance = max_distance;
+  this.max_distance = 6;
 
   this.targetFilterFunction = function(world, unit, hex) {
     return (world.getUnit(hex));

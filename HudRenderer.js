@@ -86,15 +86,19 @@ HUDRenderer.prototype.updateActionButtons = function() {
     }
   }
 
-  let self = this;
-  //add the click-detection code
-  for (let button of document.getElementsByClassName('action-button-input')) {
-    button.addEventListener('click', function(){ self.unit_input.updateActionRange(); });
-  }
+  this.addClickDetection();
 
   //reset the action to the previously selected action
   if (current_action) {
     this.unit_input.selectActionById(current_action);
+  }
+}
+
+HUDRenderer.prototype.addClickDetection = function() {
+  let self = this;
+  //add the click-detection code
+  for (let button of document.getElementsByClassName('action-button-input')) {
+    button.addEventListener('click', function(){ self.unit_input.updateActionRange(); });
   }
 }
 

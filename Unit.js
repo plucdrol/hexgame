@@ -16,14 +16,12 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'camp':
-    this.addAction( new actionFishermen(2, 6));
-    this.addAction( new actionRiverlands(2, 5));
-    this.addAction( new actionForesters(2, 6));
-    //this.addAction( new actionExtension(2, 5));
-    this.addAction( new actionCreateCamp(6, 8));
-    this.addAction( new actionConquer(10));
-    //this.addAction( new actionGrowCity() );
-    this.addAction( new actionMove(5,2,13) );
+    this.addAction( new actionFishermen());
+    this.addAction( new actionRiverlands());
+    this.addAction( new actionForesters());
+    this.addAction( new actionCreateCamp());
+    this.addAction( new actionConquer());
+    this.addAction( new actionMove() );
     this.setGraphic('white',5);
     this.setCitySize(1);
     
@@ -33,7 +31,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'settler':
     this.addAction( new actionBuildCamp() );
-    this.addAction( new actionMove(5,2,13) );
+    this.addAction( new actionMove() );
     this.setGraphic('blue',2);
     this.setCitySize(0);
 
@@ -43,7 +41,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
   
   case 'water-player':
-    this.addAction( new actionMove(6,1,1) );
+    this.addAction( new actionMove() );
     this.setGraphic('white',2);
     this.setGraphic('blue',2);
     this.setCitySize(0);
