@@ -52,11 +52,10 @@ HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
 }
 
 HUDRenderer.prototype.makeActionButton = function(unit, action) {
-  return "<label><input class='action-button-input' name='actions' type='radio'"
-          .concat(" id='action-").concat(action.name)
-          .concat("' value='").concat(action.name).concat("'><div class='action-button'>")
-          .concat(action.name).concat("<br/>")
-          .concat("(").concat(action.displayCost(unit)).concat(")").concat("</div></label></input>");
+  return "<label><input class='action-button-input' name='actions' type='radio' "
+           +" id='action-" + action.name + "'"
+           +" value='" + action.name + "'><div class='action-button'>"
+           + action.description(unit) + "</div></label></input>";
 }
 
 HUDRenderer.prototype.updateActionButtons = function() {

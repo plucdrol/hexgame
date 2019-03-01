@@ -81,8 +81,8 @@ function actionMove() {
     return unit.cityRadius < 2;
   };
 
-  this.displayCost = function(unit) {
-    return "";
+  this.description = function(unit) {
+    return "Move somewhere<br/> with more food";
   }
 
   this.effect = function(world, unit, position, target) {
@@ -126,8 +126,8 @@ function actionBecomeCamp() {
     return unit.civ.resources.food >= 1;
   };
 
-  this.displayCost = function(unit) {
-    return "1 food";
+  this.description = function(unit) {
+    return "Found a <br/> camp here";
   }
   this.effect = function(world, unit, position, target) {
  
@@ -180,8 +180,8 @@ function actionCreateCamp() {
     return unit.civ.resources.food >= 1;
   }
 
-  this.displayCost = function(unit) {
-    return "1 food";
+  this.description = function(unit) {
+    return "Send settlers to<br/> found a new camp";
   }
   this.effect = function(world, unit, position, target) {
     //Create a unit_type at the target location
@@ -229,7 +229,7 @@ function actionExtension() {
     return (unit.civ.resources.food >= 5 && unit.civ.resources.wood >= 2);
   }
 
-  this.displayCost = function(unit) {
+  this.description = function(unit) {
     return "5 food, 2 wood";
   }
   this.effect = function(world, unit, position, target) {
@@ -326,8 +326,8 @@ function actionFishermen() {
     return (unit.civ.resources.food >= 1 && !unit.civ.food_source);
   }
 
-  this.displayCost = function(unit) {
-    return "coastal fish";
+  this.description = function(unit) {
+    return "Become fishermen<br/> requires fish";
   }
   this.effect = function(world, unit, position, target) {
     
@@ -389,20 +389,20 @@ function actionRiverlands() {
   }
 
   this.activation = function(world, unit, position) {
-        if (world.total_population < 100)
+    if (world.total_population < 100)
       return false;
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
-    return (unit.civ.resources.food >= 1 && !unit.civ.food_source);
+    return (!unit.civ.food_source);
   }
   this.requirement = function(world, unit, position) {
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
-    return (unit.civ.resources.food >= 1 && !unit.civ.food_source);
+    return (!unit.civ.food_source);
   }
 
-  this.displayCost = function(unit) {
-    return "1 food, on river";
+  this.description = function(unit) {
+    return "Become farmers<br/> must be on river";
   }
   this.effect = function(world, unit, position, target) {
     
@@ -472,8 +472,8 @@ function actionForesters() {
     return (unit.civ.resources.food >= 1 && !unit.civ.food_source);
   }
 
-  this.displayCost = function(unit) {
-    return "1 wood";
+  this.description = function(unit) {
+    return "Become hunters</br> must be near forests";
   }
   this.effect = function(world, unit, position, target) {
     
@@ -526,8 +526,8 @@ function actionConquer() {
   this.requirement = function(world, unit, position) {
     return (unit.civ.resources.wood >= 2 && unit.civ.resources.stone >= 2);
   };
-  this.displayCost = function(unit) {
-    return "2 wood, 2 stone";
+  this.description = function(unit) {
+    return "Conquer a city";
   }
   this.effect = function(world, unit, position, target) {
     //Make the other city part of this civilization
@@ -570,7 +570,7 @@ function actionGrowCity() {
   this.requirement = function(world, unit, position) {
     return (unit.civ.resources.wood >= 2 && unit.cityRadius < 2);
   };
-  this.displayCost = function(unit) {
+  this.description = function(unit) {
     return "2 wood";
   }
   this.payCost = function(map, unit, position, target) {
