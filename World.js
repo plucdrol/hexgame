@@ -288,8 +288,13 @@ World.prototype.collectResources = function() {
     if (this.resources.containsHex(hex)) {
       let resource = this.getResource(hex);
 
-      if (resource.resources.wood) 
+      if (resource.resources.wood) {
         tile.civ.resources.wood += resource.resources.wood;
+        if (tile.civ.food_source == 'hunting') {
+          tile.civ.resources.food += 1;
+          total_food += 10;
+        }
+      }
       if (resource.resources.stone) 
         tile.civ.resources.stone += resource.resources.stone;
       if (resource.resources.unknown) 
@@ -305,9 +310,9 @@ World.prototype.collectResources = function() {
     //add food for rivers
     if (this.world_map.containsHex(hex)) {
       let river = this.getTile(hex).river;
-      if (river && river.water_level >= 7) {
-        //tile.civ.resources.food += 1;
-        //total_food += 10;
+      if (river && river.water_level >= 7 && tile.civ.food_source == 'farming') {
+        tile.civ.resources.food += 1;
+        total_food += 10;
       }
     }
 
@@ -320,7 +325,7 @@ World.prototype.collectResources = function() {
     }
   }
 
-  this.total_population = Math.floor(total_food*(1+Math.random()*0.2));
+  this.total_population = total_food;
 }
 
 

@@ -56,7 +56,7 @@ HUDRenderer.prototype.makeActionButton = function(unit, action) {
           .concat(" id='action-").concat(action.name)
           .concat("' value='").concat(action.name).concat("'><div class='action-button'>")
           .concat(action.name).concat("<br/>")
-          .concat(action.displayCost(unit)).concat("</div></label></input>");
+          .concat("(").concat(action.displayCost(unit)).concat(")").concat("</div></label></input>");
 }
 
 HUDRenderer.prototype.updateActionButtons = function() {
@@ -75,12 +75,12 @@ HUDRenderer.prototype.updateActionButtons = function() {
   for (let action of unit.actions) {
     
     //only show actions whose activation is met
-    if (action.activation(unit, position)) {
+    if (action.activation(this.world, unit, position)) {
       let new_button = this.makeActionButton(unit, action);
       action_buttons.innerHTML += new_button;
       
       //Show actions in grey if their requirements are not met
-      if (!action.requirement(unit, position)) {
+      if (!action.requirement(this.world, unit, position)) {
         document.getElementById("action-".concat(action.name)).disabled = true;
       }
     }

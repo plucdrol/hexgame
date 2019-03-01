@@ -58,6 +58,7 @@ UnitInput.p.selectHex = function(hex) {
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
+  unit.range = [];
   //nothing happens
 }
 
@@ -127,7 +128,7 @@ UnitInput.p.clickInsideUnitRange = function(hex) {
   let maybe_unit = this.units.get(hex);
   let unit = this.getUnitSelected();
 
-  if (action.requirement( this.getUnitSelected(), this.hex_selected))
+  if (action.requirement(this.world, this.getUnitSelected(), this.hex_selected))
     this.doAction(unit, action, this.hex_selected, hex);
 
 }
