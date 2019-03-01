@@ -75,10 +75,10 @@ function actionMove() {
     return world.noCitiesInArea(hex,5,unit);
   }
   this.activation = function(world, unit, position) {
-    return unit.cityRadius < 2;
+    return unit.cityRadius < 2 && unit.civ.resources.food < 1;
   }
   this.requirement = function(world, unit, position) {
-    return unit.cityRadius < 2;
+    return unit.cityRadius < 2 && unit.civ.resources.food < 1;
   };
 
   this.description = function() {
@@ -298,7 +298,7 @@ function actionFishermen() {
 
   this.activation = function(world, unit, position) {
 
-    if (world.total_population < 100)
+    if (!world.populationUnlock(1))
       return false;
 
     let fish_count = 0;
@@ -389,7 +389,7 @@ function actionRiverlands() {
   }
 
   this.activation = function(world, unit, position) {
-    if (world.total_population < 100)
+    if (!world.populationUnlock(1))
       return false;
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
@@ -464,7 +464,7 @@ function actionForesters() {
   }
 
   this.activation = function(world, unit, position) {
-        if (world.total_population < 100)
+    if (!world.populationUnlock(1))
       return false;
     return (unit.civ.resources.wood >= 1 && !unit.civ.food_source);
   }

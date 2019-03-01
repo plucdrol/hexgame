@@ -56,6 +56,7 @@ function World(radius) {
   this.setHex(new Hex(0,0), land_tile);
 
   this.total_population = 0;
+  this.population_unlocks = [100,500,1000,5000];
 
 
   //start the 1-second counter which gathers resources for cities
@@ -72,6 +73,17 @@ function World(radius) {
 World.prototype.totalPopulation = function() {
   return Math.floor(this.total_population);
 }
+
+World.prototype.populationNextGoal = function() {
+  let n = 0;
+  while (this.totalPopulation() > this.population_unlocks[n])
+    n++;
+  return this.population_unlocks[n];
+}
+World.prototype.populationUnlock = function(n) {
+  return (this.totalPopulation() > this.population_unlocks[n-1])
+}
+
 World.prototype.getLayout = function() {
   return this.layout;
 }

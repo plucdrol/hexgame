@@ -191,7 +191,7 @@ HUDRenderer.prototype.trackUnitResources = function() {
 HUDRenderer.prototype.update_function = function() { 
   let unit = this.unit_input.getUnitSelected();
   let pop = this.world.totalPopulation();
-  this.writeMessage("World population: ".concat(pop), 'world-resources');
+  this.writeMessage("World population: "+pop+"/"+world.populationNextGoal(), 'world-resources');
 
   if (unit.civ && unit.civ.resources) {
     this.writeResources(unit); 
