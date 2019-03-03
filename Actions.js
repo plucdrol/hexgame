@@ -340,7 +340,7 @@ function actionFishermen() {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
-      new_unit.setGraphic('white',0);
+      new_unit.setGraphic('white',3);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
@@ -415,7 +415,7 @@ function actionRiverlands() {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
-      new_unit.setGraphic('white',0);
+      new_unit.setGraphic('white',3);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
@@ -489,7 +489,7 @@ function actionForesters() {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
-      new_unit.setGraphic('white',0);
+      new_unit.setGraphic('white',3);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
