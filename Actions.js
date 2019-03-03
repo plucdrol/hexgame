@@ -270,7 +270,8 @@ function actionFishermen() {
 
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, unit, position) {
-
+    if (targetIsSameCiv(unit, position))
+      return false;
 
     if (!world.world_map.containsHex(position))
       return false;
@@ -339,7 +340,7 @@ function actionFishermen() {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
-      new_unit.setGraphic('white',3);
+      new_unit.setGraphic('white',0);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
@@ -377,7 +378,8 @@ function actionRiverlands() {
 
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, unit, position) {
-
+    if (targetIsSameCiv(unit, position))
+      return false;
 
     if (!world.world_map.containsHex(position))
       return false;
@@ -413,7 +415,7 @@ function actionRiverlands() {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
-      new_unit.setGraphic('white',3);
+      new_unit.setGraphic('white',0);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
@@ -453,6 +455,9 @@ function actionForesters() {
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, unit, position) {
 
+    if (targetIsSameCiv(unit, position))
+      return false;
+
     if (!world.world_map.containsHex(position))
       return false;
     
@@ -484,7 +489,7 @@ function actionForesters() {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
       new_unit.civ = unit.civ;
-      new_unit.setGraphic('white',3);
+      new_unit.setGraphic('white',0);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
@@ -504,6 +509,9 @@ function actionForesters() {
 
 
 
+function targetIsSameCiv(unit, target) {
+  return (world.getUnit(target) && world.getUnit(target).civ == unit.civ)
+}
 
 
 
@@ -518,9 +526,11 @@ function actionConquer() {
   this.max_distance = 6;
 
   this.targetFilterFunction = function(world, unit, hex) {
-    return (world.getUnit(hex));
+    return (!world.getUnit(hex) && !targetIsSameCiv(unit,hex));
   }
   this.activation = function(world, unit, position) {
+    if (!world.populationUnlock(3))
+      return false;
     return (unit.civ.resources.wood >= 1 && unit.civ.resources.stone >= 1);
   }
   this.requirement = function(world, unit, position) {
