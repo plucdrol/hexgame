@@ -23,6 +23,8 @@ HUDRenderer.prototype.drawHUD = function() {
   var hex_hovered = this.game_input.hex_hovered;
   var hex_selected = this.unit_input.hex_selected;
 
+  this.drawCityConnections();
+
   if (hex_selected) {
     this.drawUnitRange();
     this.drawSelectionHex(hex_selected);
@@ -31,6 +33,8 @@ HUDRenderer.prototype.drawHUD = function() {
   if (hex_hovered) {
     this.drawHoveredHex(hex_hovered);
   }
+
+
 }
 
 
@@ -65,7 +69,18 @@ HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
     this.hex_renderer.drawHex(hex_selected, select_style);
 }
 
+HUDRenderer.prototype.drawCityConnections = function() {
+  for (hex of this.world.units.getHexArray()) {
+    let unit = this.world.getUnit(hex);
+    if (!unit)
+      continue;
 
+    if (!unit.previous_position)
+      continue;
+
+    this.hex_renderer.drawCenterLine(hex, unit.previous_position, 2, 'white' );
+  }
+}
 
 
 

@@ -190,6 +190,15 @@ function actionCreateCamp() {
     if (Math.random() < 0.7) 
       new_unit.civ.setType(unit.civ.type);
 
+    new_unit.previous_unit = unit;
+    new_unit.previous_position = position;
+
+    //draw a line to the capital, when a subcity creates another city
+    if (unit.capital_position) {
+      unit.previous_unit = unit.capital_unit;
+      unit.previous_position = unit.capital_position;
+    }
+
     world.units.set(target, new_unit);
     world.setCivOnTiles(new_unit.civ, target);
     world.clearClouds(target, 5);
@@ -344,6 +353,9 @@ function actionFishermen() {
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
+      new_unit.capital_unit = unit;
+      new_unit.capital_position = position;
+
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -419,6 +431,9 @@ function actionRiverlands() {
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
+      new_unit.capital_unit = unit;
+      new_unit.capital_position = position;
+
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -493,6 +508,9 @@ function actionForesters() {
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
+      new_unit.capital_unit = unit;
+      new_unit.capital_position = position;
+
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -526,7 +544,7 @@ function actionConquer() {
   this.max_distance = 6;
 
   this.targetFilterFunction = function(world, unit, hex) {
-    return (!world.getUnit(hex) && !targetIsSameCiv(unit,hex));
+    return (!(world.getUnit(hex) && targetIsSameCiv(unit,hex)));
   }
   this.activation = function(world, unit, position) {
     if (!world.populationUnlock(3))
