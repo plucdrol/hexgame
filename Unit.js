@@ -16,6 +16,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'village':
+    this.setCiv();
     this.addAction( new actionFishermen());
     this.addAction( new actionRiverlands());
     this.addAction( new actionForesters());
@@ -25,28 +26,28 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('white',5);
     this.setCitySize(1);
     
-    this.setCiv();
+
     this.civ.setResourceStores(35,0,0);
     break;
 
   case 'settler':
+    this.setCiv();
     this.addAction( new actionBuildCamp() );
     this.addAction( new actionMove() );
     this.setGraphic('blue',2);
     this.setCitySize(0);
-
-    this.setCiv();
     this.civ.setResourceStores(5,0,0)
 
     break;
   
   case 'water-player':
+    this.setCiv();
     this.addAction( new actionMove() );
     this.setGraphic('white',2);
     this.setGraphic('blue',2);
     this.setCitySize(0);
 
-    this.setCiv();
+
     this.civ.setResourceStores(5,0,0);
 
     break;
@@ -96,10 +97,10 @@ Unit.prototype.hasDefinedRange = function() {
 }
 
 Unit.prototype.addAction = function( action ) {
-  if (!this.actions) {
-    this.actions = [];
+  if (!this.civ.actions) {
+    this.civ.actions = [];
   }
-  this.actions.push( action );
+  this.civ.actions.push( action );
 }
 
 

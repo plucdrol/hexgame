@@ -18,6 +18,7 @@ function UnitInput(world) {
   this.hex_selected = undefined;
   this.units = world.units;
   this.action_selected = undefined;
+  this.civ_selected = undefined;
 
 
 }
@@ -216,7 +217,7 @@ UnitInput.p.actionTargetIsOK = function(action, target) {
 }
 
 UnitInput.p.getActionFromId = function(unit, action_id) {
-  for (let action of unit.actions) {
+  for (let action of unit.civ.actions) {
     if ('action-'.concat(action.name) == action_id) {
       return action;
     }

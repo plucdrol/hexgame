@@ -130,12 +130,12 @@ HUDRenderer.prototype.generateButtons = function(unit, position) {
   action_buttons.innerHTML = "";
 
   //display simple message if no unit is selected
-  if (!unit.actions || unit.actions.length == 0) {
+  if (!unit.civ.actions || unit.civ.actions.length == 0) {
     action_buttons.innerHTML = "Click a village";
     return;
   }
 
-  for (let action of unit.actions) {
+  for (let action of unit.civ.actions) {
     
     //only show actions whose activation is met
     if (!action.activation(this.world, unit, position)) 
