@@ -130,7 +130,7 @@ function Civilization() {
     this.addAction( new actionForesters());
     this.addAction( new actionCreateCamp());
     this.addAction( new actionConquer());
-    this.addAction( new actionMove() );
+    //this.addAction( new actionMove() );
 
 }
 Civilization.prototype.startCount = function() {
@@ -180,3 +180,6 @@ Civilization.prototype.addAction = function( action ) {
   this.actions.push( action );
 }
 
+Civilization.prototype.hasDefinedRange = function() {
+  return this.hasOwnProperty('range');
+}

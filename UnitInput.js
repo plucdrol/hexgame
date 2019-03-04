@@ -27,15 +27,22 @@ UnitInput.p = UnitInput.prototype;
 
 UnitInput.p.clickHex = function(hex) {
   //if there is already a unit on the hex selected
-  if (this.aUnitIsSelected()) {
-    this.clickWithUnitSelected(hex);
+  //if (this.aUnitIsSelected() ) {
+    //this.clickWithUnitSelected(hex);
+   // return;
+  //}
+
+  //if there is already a unit on the hex selected
+  if (this.aCivIsSelected() ) {
+    this.clickWithCivSelected(hex);
+    return;
+  }
     
   //if there is no unit selected
-  } else {
-    this.clickWithNoSelection(hex);
-  }
+  this.clickWithNoSelection(hex);
 }
 
+/* //unit style
 UnitInput.p.selectHex = function(hex) {
 
   this.unselectActions();
@@ -55,11 +62,38 @@ UnitInput.p.selectHex = function(hex) {
     this.hex_selected = undefined;
     this.selectNothing();
   }
+}*/
+
+//civ style
+UnitInput.p.selectHex = function(hex) {
+
+  this.unselectActions();
+
+  if (hex) {
+    if (this.world.getCiv(hex)) {
+
+      this.hex_selected = hex;
+
+      //look if there is a unit
+      var potential_civ = this.getCivSelected();
+      if (potential_civ) { 
+        this.selectCiv(hex, potential_civ);
+      }
+    } 
+  } else {
+    this.hex_selected = undefined;
+    this.selectNothing();
+  }
 }
 
 UnitInput.p.selectUnit = function(hex, unit) {
 
   unit.range = [];
+}
+
+UnitInput.p.selectCiv = function(hex, civ) {
+
+  civ.range = [];
 }
 
 UnitInput.p.selectNothing = function() {
@@ -90,9 +124,29 @@ UnitInput.p.aUnitIsSelected = function() {
   }
 }
 
+UnitInput.p.aCivIsSelected = function() {
+  if (!this.aHexIsSelected()) 
+    return false;
+
+  var maybe_civ = this.world.getTile(this.getHexSelected()).civ;
+  if (maybe_civ) {
+    return (maybe_civ instanceof Civilization);
+  } else {
+    return false;
+  }
+}
+
 UnitInput.p.getUnitSelected = function() {
   if (this.aUnitIsSelected()) {
     return this.units.get(this.getHexSelected());
+  } else {
+    return false;
+  }
+}
+
+UnitInput.p.getCivSelected = function() {
+  if (this.aCivIsSelected()) {
+    return this.world.getTile(this.getHexSelected()).civ;
   } else {
     return false;
   }
@@ -122,14 +176,41 @@ UnitInput.p.clickWithUnitSelected = function(hex) {
   }
 }
 
+UnitInput.p.clickWithCivSelected = function(hex) {
+  
+  var civ = this.getCivSelected();
+  if (!civ.hasDefinedRange() ) {
+    this.clickOutsideUnitRange(hex);
+    return 0;
+  }
+
+  //if you are clicking inside the civ's range
+  if (civ.range && listContainsHex(hex, civ.range) ) {
+    this.clickInsideCivRange(hex);
+
+  //if you are clicking outside the civ's range
+  } else {
+    this.clickOutsideCivRange(hex);
+  }
+}
+
 UnitInput.p.clickInsideUnitRange = function(hex) {
 
   let action = this.getActionSelected();
-  let maybe_unit = this.units.get(hex);
   let unit = this.getUnitSelected();
 
   if (action.requirement(this.world, this.getUnitSelected(), this.hex_selected))
     this.doAction(unit, action, this.hex_selected, hex);
+
+}
+
+UnitInput.p.clickInsideCivRange = function(hex) {
+
+  let action = this.getActionSelected();
+  let civ = this.getCivSelected();
+
+  if (action.requirement(this.world, this.getCivSelected(), this.hex_selected))
+    this.doAction(civ, action, this.hex_selected, hex);
 
 }
 
@@ -138,6 +219,10 @@ UnitInput.p.clickOutsideUnitRange = function(hex) {
   this.clickHex(hex);
 }
 
+UnitInput.p.clickOutsideCivRange = function(hex) {
+  this.selectNothing();
+  this.clickHex(hex);
+}
 
 
 
@@ -183,12 +268,12 @@ UnitInput.p.clickOutsideUnitRange = function(hex) {
                   // UNIT ACTIONS //
 /////////////////////////////////////////////////////////
 
-UnitInput.p.doAction = function(unit, action, position, target) {
+UnitInput.p.doAction = function(object, action, position, target) {
 
   if (this.actionTargetIsOK(action, target)) {
     
     //then do the action
-    action.effect(this.world, unit, position, target);
+    action.effect(this.world, object, position, target);
 
     //and select the new location (usually)
     if (action.nextSelection == 'target') {
@@ -198,26 +283,26 @@ UnitInput.p.doAction = function(unit, action, position, target) {
 
   //else just select that new location
   } else {
-    unit.range = [];
+    object.range = [];
     this.selectHex(target);
   }  
 }
 
 UnitInput.p.actionTargetIsOK = function(action, target) {
-  let target_unit = this.units.get(target);
+  let target_object = this.units.get(target);
 
   if (action.target == "both")
     return true;
-  if (!target_unit && action.target=="land")
+  if (!target_object && action.target=="land")
     return true;
-  if (target_unit && action.target=="unit")
+  if (target_object && action.target=="unit")
     return true;
 
   return false;
 }
 
-UnitInput.p.getActionFromId = function(unit, action_id) {
-  for (let action of unit.civ.actions) {
+UnitInput.p.getActionFromId = function(object, action_id) {
+  for (let action of object.actions) {
     if ('action-'.concat(action.name) == action_id) {
       return action;
     }
@@ -232,16 +317,16 @@ UnitInput.p.selectActionById = function(action_id) {
 
 UnitInput.p.updateActionRange = function() {
   let hex = this.hex_selected;
-  let unit = this.getUnitSelected();
+  let civ = this.getCivSelected();
   let action = this.getActionSelected();
 
   if (action)
-    unit.range = this.getActionRange( unit, hex, this.getActionSelected() );
+    civ.range = this.getActionRange(civ, hex, this.getActionSelected() );
   else
-    unit.range = new HexMap();
+    civ.range = new HexMap();
 }
 
-UnitInput.p.getActionRange = function(unit, hex, action) {
+UnitInput.p.getActionRange = function(civ, hex, action) {
 
   //get the movement functions from the action
   var stepCostFunction = action.stepCostFunction.bind(action); 
@@ -262,7 +347,7 @@ UnitInput.p.getActionRange = function(unit, hex, action) {
   }
 
   //remove unsuitable targets
-  let filteredRange = landRange.filter(hex => targetFilterFunction(this.world, unit, hex));
+  let filteredRange = landRange.filter(position => targetFilterFunction(this.world, civ, position, hex));
 
   return filteredRange;
 }
@@ -276,7 +361,7 @@ UnitInput.p.unselectActions = function() {
 
 //returns the actual action object
 UnitInput.p.getActionSelected = function() {
-  return this.getActionFromId(this.units.get(this.hex_selected), this.getActionSelectedId());
+  return this.getActionFromId(this.getCivSelected(), this.getActionSelectedId());
 }
 
 //Returns the currently selected action_id of the selected unit

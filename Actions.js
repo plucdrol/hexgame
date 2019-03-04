@@ -13,12 +13,12 @@ function basicAction() {
   this.maximum_elevation = 13;
   this.nextSelection = "self";
 
-  this.activation = function(world, unit, position) {
+  this.activation = function(world, civ, position) {
     return true;
   }
 
-  this.targetFilterFunction = function(world, unit, hex) {
-    return world.noCitiesInArea(hex,5,unit);
+  this.targetFilterFunction = function(world, civ, hex, source_position) {
+    return world.noCitiesInArea(hex,5,source_position);
   }
 
   this.getNeighborsFunction = function(map,hex) {
@@ -46,7 +46,7 @@ function basicAction() {
 
 
 
-
+/*
 
 function actionMove() {
   basicAction.call(this);
@@ -61,7 +61,7 @@ function actionMove() {
   this.maximum_elevation = 13;
   var action = this;
 
-  this.targetFilterFunction = function(world, unit, hex) {
+  this.targetFilterFunction = function(world, civ, hex, source_position) {
     let food_count = 0;
 
     for (neighbor of hex.getNeighbors().concat(hex) ) {
@@ -72,20 +72,20 @@ function actionMove() {
     if (food_count == 0) 
       return false;
 
-    return world.noCitiesInArea(hex,5,unit);
+    return world.noCitiesInArea(hex,5, source_position);
   }
-  this.activation = function(world, unit, position) {
-    return unit.cityRadius < 2 && unit.civ.resources.food < 1;
+  this.activation = function(world, civ, position) {
+    return civ.resources.food < 1;
   }
-  this.requirement = function(world, unit, position) {
-    return unit.cityRadius < 2 && unit.civ.resources.food < 1;
+  this.requirement = function(world, civ, position) {
+    return civ.resources.food < 1;
   };
 
   this.description = function() {
     return "Move somewhere<br/> with more food";
   }
 
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
     
     //move the unit
     world.units.remove(position);
@@ -95,7 +95,7 @@ function actionMove() {
     world.clearClouds(target, 5);
   };
 
-}
+}*/
 
 
 
@@ -116,20 +116,20 @@ function actionBecomeCamp() {
   this.min_distance = 0;
   this.max_distance = 0;
   
-  this.targetFilterFunction = function(world, unit, hex) {
-    return world.noCitiesInArea(hex, 5, unit);
+  this.targetFilterFunction = function(world, civ, hex, source_position) {
+    return world.noCitiesInArea(hex, 5, source_position);
   }
-  this.activation = function(world, unit, position) {
-    return unit.civ.resources.food >= 1;
+  this.activation = function(world, civ, position) {
+    return civ.resources.food >= 1;
   }
-  this.requirement = function(world, unit, position) {
-    return unit.civ.resources.food >= 1;
+  this.requirement = function(world, civ, position) {
+    return civ.resources.food >= 1;
   };
 
   this.description = function() {
     return "Found a <br/> camp here";
   }
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
  
     //replace the unit
     world.units.remove( position );
@@ -161,7 +161,7 @@ function actionCreateCamp() {
   this.min_distance = 6;
   this.max_distance = 8;
 
-  this.targetFilterFunction = function(world, unit, hex) {
+  this.targetFilterFunction = function(world, civ, hex, source_position) {
     let food_count = 0;
     for (neighbor of hex.getNeighbors().concat(hex)) {
       if (world.getResource(neighbor) && 
@@ -173,31 +173,24 @@ function actionCreateCamp() {
 
     return world.noCitiesInArea(hex,5);
   }
-  this.activation = function(world, unit, position) {
+  this.activation = function(world, civ, position) {
     return true;
   }
-  this.requirement = function(world, unit, position) {
-    return unit.civ.resources.food >= 1;
+  this.requirement = function(world, civ, position) {
+    return civ.resources.food >= 1;
   }
 
   this.description = function() {
     return "Send settlers to<br/> found a new village";
   }
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
     //Create a unit_type at the target location
     let new_unit = new Unit(this.new_unit_type);
     //most of the time, keep the same civilization style
     if (Math.random() < 0.7) 
-      new_unit.civ.setType(unit.civ.type);
+      new_unit.civ.setType(civ.type);
 
-    new_unit.previous_unit = unit;
-    new_unit.previous_position = position;
-
-    //draw a line to the capital, when a subcity creates another city
-    if (unit.capital_position) {
-      unit.previous_unit = unit.capital_unit;
-      unit.previous_position = unit.capital_position;
-    }
+    new_unit.previous_position = position;    
 
     world.units.set(target, new_unit);
     world.setCivOnTiles(new_unit.civ, target);
@@ -228,23 +221,23 @@ function actionExtension() {
   this.min_distance = 2;
   this.max_distance = 5;
 
-  this.targetFilterFunction = function(world, unit, hex) {
+  this.targetFilterFunction = function(world, civ, hex, source_position) {
     return world.noCitiesInArea(hex,2);
   }
-  this.activation = function(world, unit, position) {
-    return (unit.civ.resources.food >= 3 && unit.civ.resources.wood >= 1);
+  this.activation = function(world, civ, position) {
+    return (civ.resources.food >= 3 && civ.resources.wood >= 1);
   }
-  this.requirement = function(world, unit, position) {
-    return (unit.civ.resources.food >= 5 && unit.civ.resources.wood >= 2);
+  this.requirement = function(world, civ, position) {
+    return (civ.resources.food >= 5 && civ.resources.wood >= 2);
   }
 
   this.description = function() {
     return "5 food, 2 wood";
   }
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
     //Create a unit_type at the target location
     let new_unit = new Unit(this.new_unit_type);
-    new_unit.civ = unit.civ;
+    new_unit.civ = civ;
     world.units.set(target, new_unit);
     world.setCivOnTiles(new_unit.civ, target);
     world.clearClouds(target, 5);
@@ -278,8 +271,8 @@ function actionFishermen() {
   this.max_distance = 6;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, unit, position) {
-    if (targetIsSameCiv(unit, position))
+  this.targetFilterFunction = function(world, civ, position, source_position) {
+    if (targetIsSameCiv(civ, position))
       return false;
 
     if (!world.world_map.containsHex(position))
@@ -306,7 +299,7 @@ function actionFishermen() {
     return true;
   }
 
-  this.activation = function(world, unit, position) {
+  this.activation = function(world, civ, position) {
 
     if (!world.populationUnlock(1))
       return false;
@@ -320,9 +313,9 @@ function actionFishermen() {
     if (fish_count == 0) 
       return false;
 
-    return (unit.civ.resources.food >= 1 && !unit.civ.food_source);
+    return (civ.resources.food >= 1 && !civ.food_source);
   }
-  this.requirement = function(world, unit, position) {
+  this.requirement = function(world, civ, position) {
 
     let fish_count = 0;
     for (neighbor of position.getNeighbors()) {
@@ -333,27 +326,26 @@ function actionFishermen() {
     if (fish_count == 0) 
       return false;
 
-    return (unit.civ.resources.food >= 1 && !unit.civ.food_source);
+    return (civ.resources.food >= 1 && !civ.food_source);
   }
 
   this.description = function() {
     return "Become fishermen<br/> requires fish";
   }
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
     
-    unit.civ.food_source = 'fishing';
-    unit.civ.border_growth = true;
+    civ.food_source = 'fishing';
+    civ.border_growth = true;
 
-    for (new_position of unit.range) {
+    for (new_position of civ.range) {
 
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
-      new_unit.civ = unit.civ;
+      new_unit.civ = civ;
       new_unit.setGraphic('white',3);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
-      new_unit.capital_unit = unit;
       new_unit.capital_position = position;
 
       world.units.set(new_position, new_unit);
@@ -389,8 +381,8 @@ function actionRiverlands() {
   this.max_distance = 5;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, unit, position) {
-    if (targetIsSameCiv(unit, position))
+  this.targetFilterFunction = function(world, civ, position, source_position) {
+    if (targetIsSameCiv(civ, position))
       return false;
 
     if (!world.world_map.containsHex(position))
@@ -402,36 +394,36 @@ function actionRiverlands() {
     return false;
   }
 
-  this.activation = function(world, unit, position) {
+  this.activation = function(world, civ, position) {
     if (!world.populationUnlock(1))
       return false;
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
-    return (!unit.civ.food_source);
+    return (!civ.food_source);
   }
-  this.requirement = function(world, unit, position) {
+  this.requirement = function(world, civ, position) {
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
-    return (!unit.civ.food_source);
+    return (!civ.food_source);
   }
 
   this.description = function() {
     return "Become farmers<br/> must be on river";
   }
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
     
-    unit.civ.food_source = 'farming';
-    unit.civ.border_growth = true;
+    civ.food_source = 'farming';
+    civ.border_growth = true;
 
-    for (new_position of unit.range) {
+    for (new_position of civ.range) {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
-      new_unit.civ = unit.civ;
+      new_unit.civ = civ;
       new_unit.setGraphic('white',3);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
-      new_unit.capital_unit = unit;
+
       new_unit.capital_position = position;
 
       world.units.set(new_position, new_unit);
@@ -468,9 +460,9 @@ function actionForesters() {
   this.max_distance = 6;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, unit, position) {
+  this.targetFilterFunction = function(world, civ, position, source_position) {
 
-    if (targetIsSameCiv(unit, position))
+    if (targetIsSameCiv(civ, position))
       return false;
 
     if (!world.world_map.containsHex(position))
@@ -483,32 +475,32 @@ function actionForesters() {
 
   }
 
-  this.activation = function(world, unit, position) {
+  this.activation = function(world, civ, position) {
     if (!world.populationUnlock(1))
       return false;
-    return (unit.civ.resources.wood >= 1 && !unit.civ.food_source);
+    return (civ.resources.wood >= 1 && !civ.food_source);
   }
-  this.requirement = function(world, unit, position) {
-    return (unit.civ.resources.food >= 1 && !unit.civ.food_source);
+  this.requirement = function(world, civ, position) {
+    return (civ.resources.food >= 1 && !civ.food_source);
   }
 
   this.description = function() {
     return "Become hunters</br> must be near forests";
   }
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
     
-    unit.civ.food_source = 'hunting';
-    unit.civ.border_growth = true;
+    civ.food_source = 'hunting';
+    civ.border_growth = true;
 
-    for (new_position of unit.range) {
+    for (new_position of civ.range) {
       //Create a unit_type at the target location
       let new_unit = new Unit(this.new_unit_type);
-      new_unit.civ = unit.civ;
+      new_unit.civ = civ;
       new_unit.setGraphic('white',3);
       if (world.getUnit(new_position)) {
         new_unit.setGraphic('red',3);
       }
-      new_unit.capital_unit = unit;
+
       new_unit.capital_position = position;
 
       world.units.set(new_position, new_unit);
@@ -527,8 +519,8 @@ function actionForesters() {
 
 
 
-function targetIsSameCiv(unit, target) {
-  return (world.getUnit(target) && world.getUnit(target).civ == unit.civ)
+function targetIsSameCiv(civ, target) {
+  return (world.getUnit(target) && world.getUnit(target).civ == civ)
 }
 
 
@@ -543,24 +535,24 @@ function actionConquer() {
   this.min_distance = 1;
   this.max_distance = 6;
 
-  this.targetFilterFunction = function(world, unit, hex) {
-    return (!(world.getUnit(hex) && targetIsSameCiv(unit,hex)));
+  this.targetFilterFunction = function(world, civ, hex, source_position) {
+    return (!(world.getUnit(hex) && targetIsSameCiv(civ,hex)));
   }
-  this.activation = function(world, unit, position) {
+  this.activation = function(world, civ, position) {
     if (!world.populationUnlock(3))
       return false;
-    return (unit.civ.resources.wood >= 1 && unit.civ.resources.stone >= 1);
+    return (civ.resources.wood >= 1 && civ.resources.stone >= 1);
   }
-  this.requirement = function(world, unit, position) {
-    return (unit.civ.resources.wood >= 2 && unit.civ.resources.stone >= 2);
+  this.requirement = function(world, civ, position) {
+    return (civ.resources.wood >= 2 && civ.resources.stone >= 2);
   };
   this.description = function() {
     return "Conquer a city";
   }
-  this.effect = function(world, unit, position, target) {
+  this.effect = function(world, civ, position, target) {
     //Make the other city part of this civilization
     let enemy = world.units.get(target);
-    enemy.civ = unit.civ;
+    enemy.civ = civ;
   }
 }
 
@@ -578,33 +570,3 @@ function actionConquer() {
 
 
 
-
-function actionGrowCity() {
-  basicAction.call(this);
-  this.name = "grow";
-  this.type = "target";
-  this.target = "unit";
-  this.min_distance = 0;
-  this.max_distance = 1;
-
-  this.targetFilterFunction = function(world, unit, hex) {
-
-
-    return true;
-  }
-  this.activation = function(world, unit, position) {
-    return (unit.civ.resources.wood >= 1 && unit.cityRadius < 2);
-  }
-  this.requirement = function(world, unit, position) {
-    return (unit.civ.resources.wood >= 2 && unit.cityRadius < 2);
-  };
-  this.description = function() {
-    return "2 wood";
-  }
-  this.payCost = function(map, unit, position, target) {
-    //unit.civ.resources.wood -= unit.cityRadius*30 ;
-  }
-  this.effect = function(units, unit, position, target) {
-    unit.cityRadius++;
-  }
-}

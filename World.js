@@ -116,6 +116,12 @@ World.prototype.getRandomHex = function() {
 World.prototype.getUnit = function(hex) {
   return this.units.get(hex);
 }
+World.prototype.getCiv = function(hex) {
+  let tile = this.getTile(hex);
+  if (tile)
+    return tile.civ;
+
+}
 
 World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
@@ -379,12 +385,12 @@ World.prototype.clearClouds = function(position, radius) {
 
 
 //'unit' is overlooked, leave it undefined to avoid that
-World.prototype.noCitiesInArea = function(position, radius, unit_to_ignore) {
+World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) {
   let area = Hex.circle(position, radius);
   for (hex of area) {
     if (this.units.containsHex(hex) ) {
-      if (this.units.get(hex) === unit_to_ignore)
-        continue;
+      //if (hex.equals(position_to_ignore))
+        //continue;
       return false;
     }
   }
