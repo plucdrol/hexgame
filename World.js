@@ -219,6 +219,7 @@ World.prototype.everySecond = function() {
     this.setCityCulture();
     this.spreadCulture();
     this.collectResources();
+    this.countUpCivTiles();
 
 
     drawScreen();
@@ -345,6 +346,24 @@ World.prototype.collectResources = function() {
 }
 
 
+
+World.prototype.countUpCivTiles = function() {
+  let civ_tile_arrays = [];
+
+  //clear the civ tile arrays
+  for (hex of this.world_map.getHexArray()) {
+    if (this.getTile(hex).civ)
+      this.getTile(hex).civ.tile_array = [];
+  }
+    
+  //collect all civ tiles into arrays for each civilization
+  for (hex of this.world_map.getHexArray()) {
+    if (this.getTile(hex).hidden) continue;
+    if (!this.getTile(hex).civ) continue;
+
+    this.getTile(hex).civ.tile_array.push(hex);
+  }
+}
 
 
 
