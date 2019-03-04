@@ -27,7 +27,7 @@ HUDRenderer.prototype.drawHUD = function() {
 
   if (hex_selected) {
     this.drawCivRange();
-    this.drawSelectionHex(hex_selected);
+    //this.drawSelectionHex(hex_selected);
   }
 
   if (hex_hovered) {

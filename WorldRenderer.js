@@ -47,7 +47,7 @@ WorldRenderer.p.drawWorld = function() {
   this.drawTiles(hexarray);
   this.drawCivTiles(hexarray);
   this.drawRivers(hexarray);
-  this.drawUnits(hexarray);
+  //this.drawUnits(hexarray);
   this.drawResources(hexarray);
 }
 
