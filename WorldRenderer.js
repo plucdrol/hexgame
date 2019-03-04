@@ -99,7 +99,19 @@ WorldRenderer.p.drawCivTiles = function(hexarray) {
     if (!(culture instanceof Array))
       continue;
     let civ = this.getTile(culture[0]).civ;    
-    this.drawCivHexes(culture, civ);
+
+
+    //draw the selected civ as yellow
+    let selected_civ = game_input.unit_input.getCivSelected();
+    if (selected_civ && selected_civ.name == civ.name) {
+        let golden_civ = new RenderStyle();
+        golden_civ.fill_color = "rgba(150,150,50,0.8)";
+        golden_civ.line_color = "black";
+        this.drawCivHexes(culture, golden_civ);
+    } else {
+        this.drawCivHexes(culture, civ);
+    }
+
   }
   
 }
