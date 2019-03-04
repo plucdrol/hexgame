@@ -26,7 +26,12 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
   //Creates a new map of the visited cells
   this.initVisited = function(origin) {
     this.visited = new Map();
-    this.setCell( origin, this.originCell(origin) );
+
+    if (Array.isArray(origin))
+      for (position of origin)
+        this.setCell( position, this.originCell(position) );
+    else
+      this.setCell( origin, this.originCell(origin) );
   }
  
   this.originCell = function(coord) {
@@ -219,11 +224,17 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
   }
 
   this.exploreArea = function(map, origin, max_cost) {
-      this.initVisited(origin);
       
-      //return a map of origin only if movement is 0
-      if (max_cost > 0)
+    this.initVisited(origin);
+        
+    //return a map of origin only if movement is 0
+    if (max_cost > 0) {
+      if (Array.isArray(origin))
+        for (position of origin)
+          this.rangeFindRecursive(map, position, max_cost);
+      else
         this.rangeFindRecursive(map, origin, max_cost);
+    }
   }
 
 
@@ -252,7 +263,5 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
     this.exploreArea(map, origin, max_cost);
     return this.getRangeArray(min_cost);
   }
-
-
 }
 

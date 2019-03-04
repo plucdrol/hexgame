@@ -337,7 +337,7 @@ UnitInput.p.getActionRange = function(civ, hex, action) {
   var pathfinder = new PathFinder(stepCostFunction, neighborFunction);
   var max_distance = action.max_distance | 3;
   var min_distance = action.min_distance | 0;
-  var actionRange = pathfinder.getRange( this.world.world_map, hex, max_distance, min_distance );
+  var actionRange = pathfinder.getRange( this.world.world_map, civ.tile_array, max_distance, min_distance );
   let landRange = actionRange.filter(hex => this.world.getMapValue(hex).elevation > 1 );
 
   //clear the clouds over the area explored
