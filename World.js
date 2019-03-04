@@ -123,6 +123,25 @@ World.prototype.getCiv = function(hex) {
 
 }
 
+World.prototype.buildRoad = function(hexarray) {
+  let previous_hex;
+
+  for (hex of hexarray) {
+    if (previous_hex && this.getTile(hex)) {
+      this.addRoadTile(previous_hex, hex);
+    }
+    previous_hex = hex;
+  }
+}
+World.prototype.addRoadTile = function(hex1, hex2) {
+
+  if (!this.getTile(hex2).road_from)
+    this.getTile(hex2).road_from = [];
+
+  this.getTile(hex2).road_from.push(hex1);
+
+}
+
 World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
 }

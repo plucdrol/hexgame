@@ -145,7 +145,7 @@ Civilization.prototype.setType = function(type) {
   this.name = this.generateName();
 }
 Civilization.prototype.setColors = function() {
-  this.fill_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.6)"); 
+  this.fill_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.3)"); 
   this.line_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
 }
 

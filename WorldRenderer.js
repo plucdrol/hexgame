@@ -47,6 +47,7 @@ WorldRenderer.p.drawWorld = function() {
   this.drawTiles(hexarray);
   this.drawCivTiles(hexarray);
   this.drawRivers(hexarray);
+  this.drawRoads(hexarray);
   //this.drawUnits(hexarray);
   this.drawResources(hexarray);
 }
@@ -125,6 +126,19 @@ WorldRenderer.p.drawRivers = function(hexarray) {
       let water_level = this.getTile(hex).river.water_level;
       if (downstream_hex instanceof Hex && water_level >= 7)
         this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*6)), '#00D' );
+    }
+  }
+}
+
+WorldRenderer.p.drawRoads = function(hexarray) {
+  //draw the rivers
+  for (hex of hexarray) {
+    let tile = this.getTile(hex);
+    if (!tile) continue;
+    if (tile.hidden) continue;
+    if (tile.road_from) {
+      for (from of tile.road_from)
+      this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0' );
     }
   }
 }

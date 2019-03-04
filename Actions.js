@@ -17,8 +17,8 @@ function basicAction() {
     return true;
   }
 
-  this.targetFilterFunction = function(world, civ, hex, source_position) {
-    return world.noCitiesInArea(hex,5,source_position);
+  this.targetFilterFunction = function(world, civ, hex) {
+    return world.noCitiesInArea(hex,5);
   }
 
   this.getNeighborsFunction = function(map,hex) {
@@ -35,6 +35,19 @@ function basicAction() {
     let cost = 1;
 
     return cost;
+  }
+
+  this.getPathfinder = function() {
+
+    let action = this;
+
+    //get the movement functions
+    var stepCostFunction = action.stepCostFunction.bind(action); 
+    var neighborFunction = action.getNeighborsFunction.bind(action);
+    var targetFilterFunction = action.targetFilterFunction.bind(action); 
+
+    //create a pathfinder to explore the area around the unit
+    return new PathFinder(stepCostFunction, neighborFunction);
   }
 
 }
@@ -61,7 +74,7 @@ function actionMove() {
   this.maximum_elevation = 13;
   var action = this;
 
-  this.targetFilterFunction = function(world, civ, hex, source_position) {
+  this.targetFilterFunction = function(world, civ, hex) {
     let food_count = 0;
 
     for (neighbor of hex.getNeighbors().concat(hex) ) {
@@ -72,7 +85,7 @@ function actionMove() {
     if (food_count == 0) 
       return false;
 
-    return world.noCitiesInArea(hex,5, source_position);
+    return world.noCitiesInArea(hex,5);
   }
   this.activation = function(world, civ, position) {
     return civ.resources.food < 1;
@@ -116,8 +129,8 @@ function actionBecomeCamp() {
   this.min_distance = 0;
   this.max_distance = 0;
   
-  this.targetFilterFunction = function(world, civ, hex, source_position) {
-    return world.noCitiesInArea(hex, 5, source_position);
+  this.targetFilterFunction = function(world, civ, hex) {
+    return world.noCitiesInArea(hex, 5);
   }
   this.activation = function(world, civ, position) {
     return civ.resources.food >= 1;
@@ -161,7 +174,7 @@ function actionCreateCamp() {
   this.min_distance = 6;
   this.max_distance = 8;
 
-  this.targetFilterFunction = function(world, civ, hex, source_position) {
+  this.targetFilterFunction = function(world, civ, hex) {
     let food_count = 0;
     for (neighbor of hex.getNeighbors().concat(hex)) {
       if (world.getResource(neighbor) && 
@@ -177,7 +190,7 @@ function actionCreateCamp() {
     return true;
   }
   this.requirement = function(world, civ, position) {
-    return civ.resources.food >= 1;
+    return true;
   }
 
   this.description = function() {
@@ -190,11 +203,24 @@ function actionCreateCamp() {
     if (Math.random() < 0.7) 
       new_unit.civ.setType(civ.type);
 
-    new_unit.previous_position = position;    
+    new_unit.previous_position = position;     
+    this.createPath(world, civ, target);
 
     world.units.set(target, new_unit);
     world.setCivOnTiles(new_unit.civ, target);
     world.clearClouds(target, 5);
+  }
+
+
+  this.createPath = function(world, civ, target) {
+
+    let pathfinder = this.getPathfinder();
+
+    var max_distance = this.max_distance | 3;
+    var min_distance = this.min_distance | 0;
+    var actionPath = pathfinder.getPath( world.world_map, civ.tile_array, target, max_distance );
+
+    world.buildRoad(actionPath);
   }
 
 }
@@ -206,44 +232,6 @@ function actionCreateCamp() {
 
 
 
-
-
-//This action transforms the unit into a camp
-function actionExtension() {
-  basicAction.call(this);
-
-  this.minimum_elevation = 2;
-
-  this.name = "expansion";
-  this.type = "target";
-  this.target = "land";
-  this.new_unit_type = 'village';
-  this.min_distance = 2;
-  this.max_distance = 5;
-
-  this.targetFilterFunction = function(world, civ, hex, source_position) {
-    return world.noCitiesInArea(hex,2);
-  }
-  this.activation = function(world, civ, position) {
-    return (civ.resources.food >= 3 && civ.resources.wood >= 1);
-  }
-  this.requirement = function(world, civ, position) {
-    return (civ.resources.food >= 5 && civ.resources.wood >= 2);
-  }
-
-  this.description = function() {
-    return "5 food, 2 wood";
-  }
-  this.effect = function(world, civ, position, target) {
-    //Create a unit_type at the target location
-    let new_unit = new Unit(this.new_unit_type);
-    new_unit.civ = civ;
-    world.units.set(target, new_unit);
-    world.setCivOnTiles(new_unit.civ, target);
-    world.clearClouds(target, 5);
-  }
-
-}
 
 
 
@@ -271,7 +259,7 @@ function actionFishermen() {
   this.max_distance = 6;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, civ, position, source_position) {
+  this.targetFilterFunction = function(world, civ, position) {
     if (targetIsSameCiv(civ, position))
       return false;
 
@@ -381,7 +369,7 @@ function actionRiverlands() {
   this.max_distance = 5;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, civ, position, source_position) {
+  this.targetFilterFunction = function(world, civ, position) {
     if (targetIsSameCiv(civ, position))
       return false;
 
@@ -460,7 +448,7 @@ function actionForesters() {
   this.max_distance = 6;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, civ, position, source_position) {
+  this.targetFilterFunction = function(world, civ, position) {
 
     if (targetIsSameCiv(civ, position))
       return false;
@@ -535,7 +523,7 @@ function actionConquer() {
   this.min_distance = 1;
   this.max_distance = 6;
 
-  this.targetFilterFunction = function(world, civ, hex, source_position) {
+  this.targetFilterFunction = function(world, civ, hex) {
     return (!(world.getUnit(hex) && targetIsSameCiv(civ,hex)));
   }
   this.activation = function(world, civ, position) {

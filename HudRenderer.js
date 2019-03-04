@@ -23,7 +23,7 @@ HUDRenderer.prototype.drawHUD = function() {
   var hex_hovered = this.game_input.hex_hovered;
   var hex_selected = this.unit_input.hex_selected;
 
-  this.drawCityConnections();
+  //this.drawCityConnections();
 
   if (hex_selected) {
     this.drawCivRange();

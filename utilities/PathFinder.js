@@ -219,7 +219,7 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
       coord = this.currentCell(coord).previous_coord;
     }
 
-    path_array.push(origin);
+    path_array.push(coord);
     return path_array;
   }
 

@@ -321,20 +321,15 @@ UnitInput.p.updateActionRange = function() {
   let action = this.getActionSelected();
 
   if (action)
-    civ.range = this.getActionRange(civ, hex, this.getActionSelected() );
+    civ.range = this.getActionRange(civ, this.getActionSelected() );
   else
     civ.range = new HexMap();
 }
 
-UnitInput.p.getActionRange = function(civ, hex, action) {
+UnitInput.p.getActionRange = function(civ, action) {
 
-  //get the movement functions from the action
-  var stepCostFunction = action.stepCostFunction.bind(action); 
-  var neighborFunction = action.getNeighborsFunction.bind(action);
-  var targetFilterFunction = action.targetFilterFunction.bind(action); 
+  let pathfinder = action.getPathfinder();
 
-  //create a pathfinder to explore the area around the unit
-  var pathfinder = new PathFinder(stepCostFunction, neighborFunction);
   var max_distance = action.max_distance | 3;
   var min_distance = action.min_distance | 0;
   var actionRange = pathfinder.getRange( this.world.world_map, civ.tile_array, max_distance, min_distance );
@@ -347,9 +342,20 @@ UnitInput.p.getActionRange = function(civ, hex, action) {
   }
 
   //remove unsuitable targets
-  let filteredRange = landRange.filter(position => targetFilterFunction(this.world, civ, position, hex));
+  let filteredRange = landRange.filter(position => action.targetFilterFunction(this.world, civ, position));
 
   return filteredRange;
+}
+
+UnitInput.p.getActionPath = function(civ, action, target) {
+
+  let pathfinder = action.getPathfinder();
+
+  var max_distance = action.max_distance | 3;
+  var min_distance = action.min_distance | 0;
+  var actionPath = pathfinder.getPath( this.world.world_map, civ.tile_array, target, max_distance );
+
+  return actionPath;
 }
 
 UnitInput.p.unselectActions = function() {
