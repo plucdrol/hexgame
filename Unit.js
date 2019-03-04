@@ -17,40 +17,11 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'village':
     this.setCiv();
-    this.addAction( new actionFishermen());
-    this.addAction( new actionRiverlands());
-    this.addAction( new actionForesters());
-    this.addAction( new actionCreateCamp());
-    this.addAction( new actionConquer());
-    this.addAction( new actionMove() );
     this.setGraphic('white',5);
     this.setCitySize(1);
-    
-
     this.civ.setResourceStores(35,0,0);
     break;
 
-  case 'settler':
-    this.setCiv();
-    this.addAction( new actionBuildCamp() );
-    this.addAction( new actionMove() );
-    this.setGraphic('blue',2);
-    this.setCitySize(0);
-    this.civ.setResourceStores(5,0,0)
-
-    break;
-  
-  case 'water-player':
-    this.setCiv();
-    this.addAction( new actionMove() );
-    this.setGraphic('white',2);
-    this.setGraphic('blue',2);
-    this.setCitySize(0);
-
-
-    this.civ.setResourceStores(5,0,0);
-
-    break;
 
 
   case 'fish':
@@ -96,12 +67,7 @@ Unit.prototype.hasDefinedRange = function() {
   return this.hasOwnProperty('range');
 }
 
-Unit.prototype.addAction = function( action ) {
-  if (!this.civ.actions) {
-    this.civ.actions = [];
-  }
-  this.civ.actions.push( action );
-}
+
 
 
 ///////////////////////////////////////////
@@ -128,8 +94,10 @@ Unit.prototype.setCitySize = function(size) {
 Unit.prototype.setCiv = function(civilization) {
   if (civilization)
     this.civ = civilization;
-  else
+  else {
     this.civ = new Civilization();
+
+  }
 }
 
 
@@ -157,6 +125,12 @@ function Civilization() {
   this.id = Math.floor(Math.random()*10000);
   this.name = this.generateName();
   this.setColors();
+    this.addAction( new actionFishermen());
+    this.addAction( new actionRiverlands());
+    this.addAction( new actionForesters());
+    this.addAction( new actionCreateCamp());
+    this.addAction( new actionConquer());
+    this.addAction( new actionMove() );
 
 }
 Civilization.prototype.startCount = function() {
@@ -197,5 +171,12 @@ Civilization.prototype.generateName = function() {
     return c()+v()+c()+v()+c()+v()+c()+'al';
   if (this.type == 5)
     return c()+v()+cc()+'ish';
+}
+
+Civilization.prototype.addAction = function( action ) {
+  if (!this.actions) {
+    this.actions = [];
+  }
+  this.actions.push( action );
 }
 
