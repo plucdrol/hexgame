@@ -104,6 +104,10 @@ World.prototype.setHex = function(hex,value) {
 World.prototype.getMapValue = function(hex) {
   return this.world_map.getValue(hex);
 }
+
+World.prototype.getActor = function(hex) {
+  return this.getTile(hex).civ;
+}
 World.prototype.getTile = World.prototype.getMapValue;
 
 World.prototype.getRandomHex = function() {

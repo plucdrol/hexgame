@@ -103,7 +103,7 @@ WorldRenderer.p.drawCivTiles = function(hexarray) {
 
 
     //draw the selected civ as yellow
-    let selected_civ = game_input.unit_input.getCivSelected();
+    let selected_civ = game_input.unit_input.getActorSelected();
     if (selected_civ && selected_civ.name == civ.name) {
         let golden_civ = new RenderStyle();
         golden_civ.fill_color = "rgba(150,150,50,0.8)";

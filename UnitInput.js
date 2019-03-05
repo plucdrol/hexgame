@@ -2,7 +2,7 @@
 //////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
                               
- //             UNIT INPUT
+ //             ACTOR INPUT
 
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
@@ -26,43 +26,16 @@ function UnitInput(world) {
 UnitInput.p = UnitInput.prototype;
 
 UnitInput.p.clickHex = function(hex) {
-  //if there is already a unit on the hex selected
-  //if (this.aUnitIsSelected() ) {
-    //this.clickWithUnitSelected(hex);
-   // return;
-  //}
 
   //if there is already a unit on the hex selected
-  if (this.aCivIsSelected() ) {
-    this.clickWithCivSelected(hex);
+  if (this.anActorIsSelected() ) {
+    this.clickWithSelection(hex);
     return;
   }
     
   //if there is no unit selected
   this.clickWithNoSelection(hex);
-}
-
-/* //unit style
-UnitInput.p.selectHex = function(hex) {
-
-  this.unselectActions();
-
-  if (hex) {
-    if (this.units.get(hex)) {
-
-      this.hex_selected = hex;
-
-      //look if there is a unit
-      var potential_unit = this.units.get(hex);
-      if (potential_unit) { 
-        this.selectUnit(hex, potential_unit);
-      }
-    } 
-  } else {
-    this.hex_selected = undefined;
-    this.selectNothing();
-  }
-}*/
+};
 
 //civ style
 UnitInput.p.selectHex = function(hex) {
@@ -70,305 +43,151 @@ UnitInput.p.selectHex = function(hex) {
   this.unselectActions();
 
   if (hex) {
-    if (this.world.getCiv(hex)) {
+    if (this.world.getActor(hex)) {
 
       this.hex_selected = hex;
 
       //look if there is a unit
-      var potential_civ = this.getCivSelected();
-      if (potential_civ) { 
-        this.selectCiv(hex, potential_civ);
+      var actor = this.getActorSelected();
+      if (actor) { 
+        this.selectActor(actor);
       }
     } 
   } else {
     this.hex_selected = undefined;
     this.selectNothing();
   }
-}
+};
 
-UnitInput.p.selectUnit = function(hex, unit) {
+UnitInput.p.selectActor = function(actor) {
 
-  unit.range = [];
-}
-
-UnitInput.p.selectCiv = function(hex, civ) {
-
-  civ.range = [];
-}
+  actor.range = [];
+};
 
 UnitInput.p.selectNothing = function() {
-  this.getUnitSelected().range = undefined;
+  this.getActorSelected().range = undefined;
   this.hex_selected = undefined;
-}
+};
 
 UnitInput.p.aHexIsSelected = function() {
   return (this.hex_selected instanceof Hex);
-}
+};
 
 UnitInput.p.getHexSelected = function()  {
   if (this.aHexIsSelected())
     return this.hex_selected;
   else
     return false;
-}
+};
 
-UnitInput.p.aUnitIsSelected = function() {
+UnitInput.p.anActorIsSelected = function() {
   if (!this.aHexIsSelected()) 
     return false;
 
-  var maybe_unit = this.units.get(this.getHexSelected());
-  if (maybe_unit) {
-    return (maybe_unit instanceof Unit);
+  var maybe_actor = this.world.getActor(this.getHexSelected());
+  if (maybe_actor) {
+    return (maybe_actor instanceof Civilization);
   } else {
     return false;
   }
-}
+};
 
-UnitInput.p.aCivIsSelected = function() {
-  if (!this.aHexIsSelected()) 
-    return false;
-
-  var maybe_civ = this.world.getTile(this.getHexSelected()).civ;
-  if (maybe_civ) {
-    return (maybe_civ instanceof Civilization);
+UnitInput.p.getActorSelected = function() {
+  if (this.anActorIsSelected()) {
+    return this.world.getActor(this.getHexSelected());
   } else {
     return false;
   }
-}
+};
 
-UnitInput.p.getUnitSelected = function() {
-  if (this.aUnitIsSelected()) {
-    return this.units.get(this.getHexSelected());
-  } else {
-    return false;
-  }
-}
-
-UnitInput.p.getCivSelected = function() {
-  if (this.aCivIsSelected()) {
-    return this.world.getTile(this.getHexSelected()).civ;
-  } else {
-    return false;
-  }
-}
-
-UnitInput.p.clickWithNoSelection = function(hex) {
-  this.selectHex(hex);
-}
+UnitInput.p.clickWithNoSelection = function(target) {
+  this.selectHex(target);
+};
 
 //This is where target-actions should take effect
 //Instant effects will happen when the button is pressed instead
-UnitInput.p.clickWithUnitSelected = function(hex) {
+UnitInput.p.clickWithSelection = function(target) {
   
-  var unit = this.getUnitSelected();
-  if (!unit.hasDefinedRange() ) {
-    this.clickOutsideUnitRange(hex);
+  var actor = this.getActorSelected();
+  if (!actor.range ) {
+    this.clickOutsideUnitRange(target);
     return 0;
   }
 
-  //if you are clicking inside the unit's range
-  if (unit.range && listContainsHex(hex, unit.range) ) {
-    this.clickInsideUnitRange(hex);
+  //if you are clicking inside the actor's range
+  if (actor.range && listContainsHex(target, actor.range) ) {
+    this.clickInsideRange(target);
 
-  //if you are clicking outside the unit's range
+  //if you are clicking outside the actor's range
   } else {
-    this.clickOutsideUnitRange(hex);
+    this.clickOutsideRange(target);
   }
-}
+};
 
-UnitInput.p.clickWithCivSelected = function(hex) {
-  
-  var civ = this.getCivSelected();
-  if (!civ.hasDefinedRange() ) {
-    this.clickOutsideUnitRange(hex);
-    return 0;
-  }
+UnitInput.p.clickInsideRange = function(target) {
 
-  //if you are clicking inside the civ's range
-  if (civ.range && listContainsHex(hex, civ.range) ) {
-    this.clickInsideCivRange(hex);
-
-  //if you are clicking outside the civ's range
-  } else {
-    this.clickOutsideCivRange(hex);
-  }
-}
-
-UnitInput.p.clickInsideUnitRange = function(hex) {
-
+  let origin = this.hex_selected;
   let action = this.getActionSelected();
-  let unit = this.getUnitSelected();
+  let actor = this.getActorSelected();
 
-  if (action.requirement(this.world, this.getUnitSelected(), this.hex_selected))
-    this.doAction(unit, action, this.hex_selected, hex);
-
-}
-
-UnitInput.p.clickInsideCivRange = function(hex) {
-
-  let action = this.getActionSelected();
-  let civ = this.getCivSelected();
-
-  if (action.requirement(this.world, this.getCivSelected(), this.hex_selected))
-    this.doAction(civ, action, this.hex_selected, hex);
-
-}
-
-UnitInput.p.clickOutsideUnitRange = function(hex) {
-  this.selectNothing();
-  this.clickHex(hex);
-}
-
-UnitInput.p.clickOutsideCivRange = function(hex) {
-  this.selectNothing();
-  this.clickHex(hex);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////
-                  // UNIT ACTIONS //
-/////////////////////////////////////////////////////////
-
-UnitInput.p.doAction = function(object, action, position, target) {
-
-  if (this.actionTargetIsOK(action, target)) {
-    
-    //then do the action
-    action.effect(this.world, object, position, target);
-
-    //and select the new location (usually)
+  if (action.requirement(this.world, actor, origin)) {
+    action.doAction(this.world, actor, origin, target);
     if (action.nextSelection == 'target') {
       this.selectHex(target); 
     }
-    this.updateActionRange();
-
-  //else just select that new location
-  } else {
-    object.range = [];
-    this.selectHex(target);
-  }  
-}
-
-UnitInput.p.actionTargetIsOK = function(action, target) {
-  let target_object = this.units.get(target);
-
-  if (action.target == "both")
-    return true;
-  if (!target_object && action.target=="land")
-    return true;
-  if (target_object && action.target=="unit")
-    return true;
-
-  return false;
-}
-
-UnitInput.p.getActionFromId = function(object, action_id) {
-  for (let action of object.actions) {
-    if ('action-'.concat(action.name) == action_id) {
-      return action;
-    }
   }
-}
 
-UnitInput.p.selectActionById = function(action_id) {
-  if (document.getElementById(action_id)) {
-    document.getElementById(action_id).checked = true;
-  }
-}
+};
 
-UnitInput.p.updateActionRange = function() {
-  let hex = this.hex_selected;
-  let civ = this.getCivSelected();
+
+UnitInput.p.clickOutsideRange = function(target) {
+  this.selectNothing();
+  this.clickHex(target);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////
+                  // ACTION MENU AND SELECTION //
+/////////////////////////////////////////////////////////
+
+//uses nothing
+UnitInput.p.updateActionRangeIndirectly = function() {
+
   let action = this.getActionSelected();
+  let world = this.world;
+  let actor = this.getActorSelected();
 
   if (action)
-    civ.range = this.getActionRange(civ, this.getActionSelected() );
+    actor.range = action.getActionRange(world, actor);
   else
-    civ.range = new HexMap();
-}
-
-UnitInput.p.getActionRange = function(civ, action) {
-
-  let pathfinder = action.getPathfinder();
-
-  var max_distance = action.max_distance | 3;
-  var min_distance = action.min_distance | 0;
-  var actionRange = pathfinder.getRange( this.world.world_map, civ.tile_array, max_distance, min_distance );
-  let landRange = actionRange.filter(hex => this.world.getMapValue(hex).elevation > 1 );
-
-  //clear the clouds over the area explored
-  for (hex of landRange) {
-    for (neighbor of hex.getNeighbors())
-      world.world_map.get(neighbor).hidden = false;
-  }
-
-  //remove unsuitable targets
-  let filteredRange = landRange.filter(position => action.targetFilterFunction(this.world, civ, position));
-
-  return filteredRange;
-}
-
-UnitInput.p.getActionPath = function(civ, action, target) {
-
-  let pathfinder = action.getPathfinder();
-
-  var max_distance = action.max_distance | 3;
-  var min_distance = action.min_distance | 0;
-  var actionPath = pathfinder.getPath( this.world.world_map, civ.tile_array, target, max_distance );
-
-  return actionPath;
-}
-
-UnitInput.p.unselectActions = function() {
-  let buttons = document.getElementsByClassName('action-button-input');
-  for (button of buttons) {
-    button.checked = false;
-  }
-}
+    actor.range = new HexMap();
+};
 
 //returns the actual action object
 UnitInput.p.getActionSelected = function() {
-  return this.getActionFromId(this.getCivSelected(), this.getActionSelectedId());
-}
+  return this.getActionFromId(this.getActorSelected(), this.getActionSelectedId());
+};
 
 //Returns the currently selected action_id of the selected unit
 UnitInput.p.getActionSelectedId = function() {
@@ -384,28 +203,28 @@ UnitInput.p.getActionSelectedId = function() {
     return current_action;
   else
     return false;
-}
+};
 
+UnitInput.p.getActionFromId = function(actor, action_id) {
+  for (let action of actor.actions) {
+    if ('action-'.concat(action.name) == action_id) {
+      return action;
+    }
+  }
+};
 
+UnitInput.p.selectActionById = function(action_id) {
+  if (document.getElementById(action_id)) {
+    document.getElementById(action_id).checked = true;
+  }
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+UnitInput.p.unselectActions = function() {
+  let buttons = document.getElementsByClassName('action-button-input');
+  for (button of buttons) {
+    button.checked = false;
+  }
+};
 
 
 

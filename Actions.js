@@ -8,7 +8,7 @@
 
 
 //All actions inherit from this action
-function basicAction() {
+function Action() {
   this.minimum_elevation = 2;
   this.maximum_elevation = 13;
   this.nextSelection = "self";
@@ -50,7 +50,76 @@ function basicAction() {
     return new PathFinder(stepCostFunction, neighborFunction);
   }
 
+  /////////////////////////////////////////////////////////
+                    // ACTION EFFECTS //
+  /////////////////////////////////////////////////////////
+
+  this.doAction = function(world, actor, position, target) {
+
+    if (this.targetIsOK(world, target)) {
+      
+      //then do the action
+      this.effect(world, actor, position, target);
+      this.updateActionRange(world, actor, position);
+
+    //else just select that new location
+    } else {
+      actor.range = [];
+    }  
+  };
+
+  this.targetIsOK = function(world, target) {
+    let target_object = world.units.get(target);
+
+    if (this.target == "both")
+      return true;
+    if (!target_object && this.target=="land")
+      return true;
+    if (target_object && this.target=="unit")
+      return true;
+
+    return false;
+  };
+
+  this.updateActionRange = function(world, actor, position) {
+
+    actor.range = this.getActionRange(world, actor );
+  };
+
+  this.getActionRange = function(world, actor) {
+
+    let pathfinder = this.getPathfinder();
+
+    var max_distance = this.max_distance | 3;
+    var min_distance = this.min_distance | 0;
+    var actionRange = pathfinder.getRange( world.world_map, actor.tile_array, max_distance, min_distance );
+    let landRange = actionRange.filter(hex => world.getMapValue(hex).elevation > 1 );
+
+    //clear the clouds over the area explored
+    for (let hex of landRange) {
+      for (let neighbor of hex.getNeighbors())
+        world.world_map.get(neighbor).hidden = false;
+    }
+
+    //remove unsuitable targets
+    let filteredRange = landRange.filter(position => this.targetFilterFunction(world, actor, position));
+
+    return filteredRange;
+  };
+
+  this.getActionPath = function(world, actor, target) {
+
+    let pathfinder = this.getPathfinder();
+
+    var max_distance = this.max_distance | 3;
+    var min_distance = this.min_distance | 0;
+    var actionPath = pathfinder.getPath( world.world_map, actor.tile_array, target, max_distance );
+
+    return actionPath;
+  };
+
 }
+
 
 
 
@@ -62,7 +131,7 @@ function basicAction() {
 /*
 
 function actionMove() {
-  basicAction.call(this);
+  Action.call(this);
 
   this.name = "move";
   this.type = "target";
@@ -121,7 +190,7 @@ function actionMove() {
 
 //This action transforms the unit into a camp
 function actionBecomeCamp() {
-  basicAction.call(this);
+  Action.call(this);
 
   this.name = "settle";
   this.type = "target";
@@ -163,7 +232,7 @@ function actionBecomeCamp() {
 
 //This action transforms the unit into a camp
 function actionCreateCamp() {
-  basicAction.call(this);
+  Action.call(this);
 
   this.minimum_elevation = 1;
 
@@ -247,7 +316,7 @@ function actionCreateCamp() {
 
 //This action transforms the unit into a camp
 function actionFishermen() {
-  basicAction.call(this);
+  Action.call(this);
 
   this.minimum_elevation = 0;
 
@@ -285,6 +354,23 @@ function actionFishermen() {
       return false;
 
     return true;
+  }
+
+  this.stepCostFunction = function(map, hex, next_hex) {
+    var tile = map.get(hex);
+    var next_tile = map.get(next_hex);
+
+    if (tile.elevation > this.maximum_elevation) 
+      return undefined;
+    if (tile.elevation < this.minimum_elevation) 
+      return undefined;
+    //movement across land forbidden
+    if (tile.elevation > 1 && next_tile.elevation > 1) 
+      return undefined;
+
+    let cost = 1;
+
+    return cost;
   }
 
   this.activation = function(world, civ, position) {
@@ -357,7 +443,7 @@ function actionFishermen() {
 
 //This action transforms the unit into a camp
 function actionRiverlands() {
-  basicAction.call(this);
+  Action.call(this);
 
   this.minimum_elevation = 2;
 
@@ -436,7 +522,7 @@ function actionRiverlands() {
 
 //This action transforms the unit into a camp
 function actionForesters() {
-  basicAction.call(this);
+  Action.call(this);
 
   this.minimum_elevation = 1;
 
@@ -516,7 +602,7 @@ function targetIsSameCiv(civ, target) {
 
 //This action transforms the unit into a camp
 function actionConquer() {
-  basicAction.call(this);
+  Action.call(this);
   this.name = "conquer";
   this.type = "target";
   this.target = "unit";

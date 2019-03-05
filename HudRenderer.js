@@ -45,7 +45,7 @@ HUDRenderer.prototype.civHasRenderableRange = function(civ) {
 
 HUDRenderer.prototype.drawCivRange = function() {
   //draw range of selected civ  
-  var civ = this.unit_input.getCivSelected();
+  var civ = this.unit_input.getActorSelected();
 
   if (this.civHasRenderableRange(civ)) {
     this.hex_renderer.drawHexes(civ.range);
@@ -106,7 +106,7 @@ HUDRenderer.prototype.makeActionButton = function(action) {
 HUDRenderer.prototype.updateActionButtons = function() {
 
   //do nothing if there is no unit to update
-  let civ = this.unit_input.getCivSelected();
+  let civ = this.unit_input.getActorSelected();
   let position = this.unit_input.getHexSelected();
   if (!civ) return;
 
@@ -155,7 +155,7 @@ HUDRenderer.prototype.addClickDetection = function() {
   let self = this;
   //add the click-detection code
   for (let button of document.getElementsByClassName('action-button-input')) {
-    button.addEventListener('click', function(){ self.unit_input.updateActionRange(); });
+    button.addEventListener('click', function(){ self.unit_input.updateActionRangeIndirectly(); });
   }
 }
 
@@ -204,7 +204,7 @@ HUDRenderer.prototype.trackUnitResources = function() {
 
 
 HUDRenderer.prototype.update_function = function() { 
-  let civ = this.unit_input.getCivSelected();
+  let civ = this.unit_input.getActorSelected();
   let pop = this.world.totalPopulation();
   this.writeMessage("World population: "+pop+"/"+world.populationNextGoal(), 'world-resources');
 
