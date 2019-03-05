@@ -118,6 +118,17 @@ function Action() {
     return actionPath;
   };
 
+  this.createPath = function(world, origin, target) {
+
+    let pathfinder = this.getPathfinder();
+
+    var max_distance = this.max_distance | 3;
+    var min_distance = this.min_distance | 0;
+    var actionPath = pathfinder.getPath( world.world_map, origin, target, max_distance );
+
+    if (actionPath instanceof Array)
+      world.buildRoad(actionPath);
+  }
 }
 
 
@@ -273,7 +284,7 @@ function actionCreateCamp() {
       new_unit.civ.setType(civ.type);
 
     new_unit.previous_position = position;     
-    this.createPath(world, civ, target);
+    this.createPath(world, civ.tile_array, target);
 
     world.units.set(target, new_unit);
     world.setCivOnTiles(new_unit.civ, target);
@@ -281,18 +292,13 @@ function actionCreateCamp() {
   }
 
 
-  this.createPath = function(world, civ, target) {
-
-    let pathfinder = this.getPathfinder();
-
-    var max_distance = this.max_distance | 3;
-    var min_distance = this.min_distance | 0;
-    var actionPath = pathfinder.getPath( world.world_map, civ.tile_array, target, max_distance );
-
-    world.buildRoad(actionPath);
-  }
 
 }
+
+
+
+
+
 
 
 
@@ -422,6 +428,8 @@ function actionFishermen() {
       }
       new_unit.capital_position = position;
 
+      this.createPath(world, position, new_position);
+
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -500,6 +508,8 @@ function actionRiverlands() {
 
       new_unit.capital_position = position;
 
+      this.createPath(world, position, new_position);
+
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
       world.clearClouds(target, 5);
@@ -576,6 +586,8 @@ function actionForesters() {
       }
 
       new_unit.capital_position = position;
+
+      this.createPath(world, position, new_position);
 
       world.units.set(new_position, new_unit);
       world.setCivOnTiles(new_unit.civ, target);
