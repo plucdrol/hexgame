@@ -115,7 +115,7 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
 // CALCULATING RECTANGLE FUNCTIONS!?
 HexRenderer.p.getHexRectangleBoundaries = function() {
 
-    var corners = this.renderer.getRenderingCorners();
+    var corners = this.renderer.getViewCorners();
    
     //find the corner hexes
     var toplefthex = Hex.round(this.pointToHex(corners.topleft));

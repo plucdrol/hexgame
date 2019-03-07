@@ -47,7 +47,7 @@ function GameInput(world, view) {
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
     this.view.zoom(zoom);
-  	//drawScreen();
+  	updateWorldRender();
 	}
 	
   //React to dragging across the screen with finger or mouse
@@ -60,16 +60,19 @@ function GameInput(world, view) {
 	  
 	  //shift the view by that movement
 	  this.view.shiftPosition(drag_move);
+
+    render_x += previous_mouse.x-mouse.x;
+    render_y += previous_mouse.y-mouse.y;
 	  
 	  //redraw the screen after moving
-	  //drawScreen();
+	  drawScreen();
 	}
 
 
   //React to the window being resized
 	this.resizeEvent = function(width, height) {
 	  this.view.resizeOutput(width, height);
-	  //drawScreen();
+	  updateWorldRender();
 	}
 
 
@@ -89,6 +92,7 @@ function GameInput(world, view) {
 
     //remember the currently hovered hex
     this.hex_hovered_previous = this.hex_hovered;
+    drawScreen();
   }
 
 
@@ -103,7 +107,7 @@ function GameInput(world, view) {
       //Only reference to unit controller in WorldInterface
       this.unit_input.clickHex(hex_clicked);
       
-      //drawScreen();
+      updateWorldRender();
     }
   }
 }

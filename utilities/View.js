@@ -10,7 +10,7 @@ function Rect(position, size) {
 //input:  universe coordinates
 //output: screen coordinates
 
-function View (initial_zoom_level) {
+function View (canvas, initial_zoom_level) {
 
   if (initial_zoom_level == undefined) {
     var initial_zoom_level = 1;
@@ -52,7 +52,7 @@ function View (initial_zoom_level) {
     var canvas_position = new Point(0,0);
     var canvas_size = new Point(width,height);
 
-    //create the new view in the same position
+    //create the view in the same position
     var view_out = new Rect(canvas_position, canvas_size);
     var view_in = input;
 
@@ -63,7 +63,7 @@ function View (initial_zoom_level) {
     view_in.size.x = view_in.size.x / x_scaling ;
     view_in.size.y = view_in.size.y / y_scaling ;
 
-    //apply the new view to
+    //apply the view to
     input = view_in;
     output = view_out;
   }

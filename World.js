@@ -238,7 +238,7 @@ World.prototype.makeCloudsEverywhere = function() {
 World.prototype.everySecond = function() {
   
   return function(){
-
+    updateWorldRender();
     this.setCityCulture();
     this.spreadCulture();
     this.collectResources();
@@ -416,7 +416,7 @@ World.prototype.countUpCivTiles = function() {
 
 
 World.prototype.clearClouds = function(position, radius) {
-  for (hex of Hex.circle(position, 5)) {
+  for (hex of Hex.circle(position, radius)) {
     if (this.world_map.containsHex(hex))
       this.world_map.get(hex).hidden = false;
   }

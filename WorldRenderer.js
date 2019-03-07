@@ -19,13 +19,11 @@ function WorldRenderer (world, hex_renderer) {
   
   this.hex_renderer = hex_renderer;
   this.world = world;
+  this.render_start = 0;
+  this.render_portions = 10;
 }
 
 WorldRenderer.p = WorldRenderer.prototype;
-
-WorldRenderer.p.clear = function() {
-    this.hex_renderer.renderer.canvas_draw.clear();
-}
 
 WorldRenderer.p.calculateHexesToRender = function() {
   var rectMap = this.hex_renderer.getHexRectangleBoundaries();
@@ -41,8 +39,9 @@ WorldRenderer.p.calculateHexesToRender = function() {
 WorldRenderer.p.drawWorld = function() {
 
   //draw the world to the canvas and to a backupcanvas
-  var hexmap = this.calculateHexesToRender();
-  var hexarray = hexmap.getHexArray();
+  //var hexmap = this.calculateHexesToRender();
+  //var hexarray = hexmap.getHexArray();
+  var hexarray = this.world.world_map.getHexArray();
   
   this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
@@ -71,8 +70,17 @@ WorldRenderer.p.drawBigHex = function(radius) {
 WorldRenderer.p.drawTiles = function(hexarray) {
   //make a tile renderer
   var tile_renderer = new TileRenderer( this.hex_renderer, this.world.getLayout() );
+
+  //keep track of a portion of the world to draw
+  //let start = Math.floor(this.render_start/this.render_portions*hexarray.length);
+  //let stop = Math.floor((this.render_start+1)/this.render_portions*hexarray.length);
+  //this.render_start++;
+  //if (this.render_start >= this.render_portions)
+    //this.render_start = 0;
+
   //draw the land colors
   for (hex of hexarray) {
+
     //clouds if not explored
     if (this.getTile(hex).hidden) {
       tile_renderer.drawTile(hex, {elevation: 21});

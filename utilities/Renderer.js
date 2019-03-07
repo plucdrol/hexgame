@@ -33,9 +33,6 @@ function Renderer(canvas_draw, view) {
 }
 
 //Coordinate transformation
-Renderer.prototype.setWorldToScreen = function(callback) {
-  this.worldToScreen = callback;
-}
 Renderer.prototype.worldToScreen = function(point) {
   return this.view.worldToScreen(point);
 }
@@ -115,7 +112,7 @@ Renderer.prototype.drawRedRenderingRectangle = function() {
     this.drawPolygon(corners,rect_style);
 }
 
-Renderer.prototype.getRenderingCorners = function() {
+Renderer.prototype.getViewCorners = function() {
 
     return this.view.getCorners();
 

@@ -40,13 +40,13 @@ TileRenderer.prototype.drawTile = function(hex,tile) {
   style.fill_color = this.mapColors(height);
 
   //draw ground
-  if (this.actuallyDrawHexes) {
+  //if (this.actuallyDrawHexes) {
     this.hex_renderer.drawHex(hex, style);
-  } else {
-    var point = this.hex_renderer.hexToPoint(hex);
-    this.hex_renderer.renderer.drawDot(point, this.tilesize*1.73, style);
-  }
-  var position = this.hex_renderer.hexToPoint(hex);
+  //} else {
+   // var point = this.hex_renderer.hexToPoint(hex);
+    //this.hex_renderer.renderer.drawDot(point, this.tilesize*1.73, style);
+  //}
+  //var position = this.hex_renderer.hexToPoint(hex);
 }
 
 
