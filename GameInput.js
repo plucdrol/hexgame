@@ -14,6 +14,8 @@
 // Hex
 // Events
 
+var render_update = false;
+
 function GameInput(world, view) {
   this.world = world;
   this.view = view;
@@ -44,13 +46,13 @@ function GameInput(world, view) {
 
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
-
     this.view.zoom(zoom);
-  	drawScreen();
+  	//drawScreen();
 	}
 	
   //React to dragging across the screen with finger or mouse
 	this.dragEvent = function(mouse, previous_mouse) {
+
 	  //get the movement the mouse has moved since last tick
 	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
 	  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
@@ -60,14 +62,14 @@ function GameInput(world, view) {
 	  this.view.shiftPosition(drag_move);
 	  
 	  //redraw the screen after moving
-	  drawScreen();
+	  //drawScreen();
 	}
 
 
   //React to the window being resized
 	this.resizeEvent = function(width, height) {
 	  this.view.resizeOutput(width, height);
-	  drawScreen();
+	  //drawScreen();
 	}
 
 
@@ -82,7 +84,7 @@ function GameInput(world, view) {
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
 
       hud_renderer.updateTooltip(this.hex_hovered);
-      drawScreen();
+      //drawScreen();
     }
 
     //remember the currently hovered hex
@@ -101,7 +103,7 @@ function GameInput(world, view) {
       //Only reference to unit controller in WorldInterface
       this.unit_input.clickHex(hex_clicked);
       
-      drawScreen();
+      //drawScreen();
     }
   }
 }

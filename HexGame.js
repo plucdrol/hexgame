@@ -39,17 +39,29 @@ canv_input.windowResize();
 
 var current_time = Date.now();
 
-function drawScreen() {
-  requestAnimationFrame(drawScreenTimed);
-}
+let start = null;
 
-function drawScreenTimed() {
+function step(timestamp) {
+  if (!start) start = timestamp;
+  var progress = timestamp - start;
+
+  drawScreen();
+
+  //if (progress < 2000) {
+    window.requestAnimationFrame(step);
+  //}
+}
+window.requestAnimationFrame(step);
+
+function drawScreen() {
 
   world_renderer.clear();
 
   //draw the world and HUD
   world_renderer.drawWorld();  
   hud_renderer.drawHUD();
+
+  //drawScreen();
 }
 
 ////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////

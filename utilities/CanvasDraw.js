@@ -25,6 +25,13 @@ function CanvasDraw (canvas) {
   this.canvas = canvas;
   this.saved_polygon = {};
 
+  //this.real_canvas = canvas;
+
+  //create a backup canvas which can be used to draw faster
+  //this.m_canvas = document.createElement('canvas');
+  //m_canvas.width = this.canvas.width;
+  //m_canvas.height = this.canvas.height;
+  
 }
 
   //Returns the Width of the HTML canvas object
@@ -62,14 +69,14 @@ function CanvasDraw (canvas) {
 
     //polygon outline
     line.beginPath();
-    line.moveTo(points[0].x,points[0].y);
+    line.moveTo(Math.floor(points[0].x), Math.floor(points[0].y) );
     for (i=1; i<points.length; i++) {
 
       if (next == "move") {
-        line.moveTo(points[i].x,points[i].y);
+        line.moveTo(Math.floor(points[i].x), Math.floor(points[i].y) );
         next = "";
       } else {
-        line.lineTo(points[i].x,points[i].y);
+        line.lineTo(Math.floor(points[i].x), Math.floor(points[i].y) );
       }
 
       //for complex polygon this breaks the cycle into smaller cycles
@@ -128,7 +135,7 @@ function CanvasDraw (canvas) {
     var height = size;
 
     line.fillStyle = color;
-    line.fillRect(x,y,width,height);
+    line.fillRect(Math.floor(x),Math.floor(y),Math.floor(width),Math.floor(height));
 
   };
 
@@ -164,7 +171,11 @@ function CanvasDraw (canvas) {
 
   //clear the canvas of everything
   CanvasDraw.prototype.clear = function() {
-    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    this.canvas.getContext('2d').clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  CanvasDraw.prototype.blit = function() {
+    this.canvas.getContext('2d').drawImage(this.m_canvas, 0, 0);
   }
 
 

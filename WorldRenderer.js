@@ -40,16 +40,19 @@ WorldRenderer.p.calculateHexesToRender = function() {
 
 WorldRenderer.p.drawWorld = function() {
 
+  //draw the world to the canvas and to a backupcanvas
   var hexmap = this.calculateHexesToRender();
   var hexarray = hexmap.getHexArray();
   
   this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
-  this.drawCivTiles(hexarray);
   this.drawRivers(hexarray);
+  this.drawCivTiles(hexarray);
+
   this.drawRoads(hexarray);
   //this.drawUnits(hexarray);
   this.drawResources(hexarray);
+
 }
 
 WorldRenderer.p.drawBigHex = function(radius) {

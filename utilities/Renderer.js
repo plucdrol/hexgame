@@ -139,5 +139,3 @@ Renderer.prototype.getScale = function() {
 
 
 
-
-
