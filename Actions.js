@@ -254,14 +254,9 @@ function actionCreateCamp() {
   this.min_distance = 6;
   this.max_distance = 8;
 
-  this.targetFilterFunction = function(world, civ, hex) {
-    let food_count = 0;
-    for (neighbor of hex.getNeighbors().concat(hex)) {
-      if (world.getResource(neighbor) && 
-          world.getResource(neighbor).resources.food >= 1)
-        food_count++;
-    }
-    if (food_count == 0) 
+  this.targetFilterFunction = function(world, civ, position) {
+    
+    if (!world.countResources(Hex.circle(position, 1), 'food', 1))
       return false;
 
     return world.noCitiesInArea(hex,5);
@@ -335,28 +330,16 @@ function actionFishermen() {
 
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, civ, position) {
-    if (targetIsSameCiv(civ, position))
+    if (world.positionIsCiv(civ, position))
       return false;
 
     if (!world.world_map.containsHex(position))
       return false;
     
-    let fish_count = 0;
-    for (neighbor of position.getNeighbors()) {
-      if (world.getResource(neighbor) && 
-          world.getResource(neighbor).type == 'fish')
-        fish_count++;
-    }
-    if (fish_count == 0) 
+    if (!world.countResources(Hex.circle(position, 1), 'fish', 1))
       return false;
 
-    let coast_count = 0;
-    for (neighbor of position.getNeighbors()) {
-      if (world.getTile(neighbor) && 
-          world.getTile(neighbor).elevation == 1)
-        coast_count++;
-    }
-    if (coast_count == 0) 
+    if (!world.nearCoast( position))
       return false;
 
     return true;
@@ -384,26 +367,14 @@ function actionFishermen() {
     if (!world.populationUnlock(1))
       return false;
 
-    let fish_count = 0;
-    for (neighbor of position.getNeighbors()) {
-      if (world.getResource(neighbor) && 
-          world.getResource(neighbor).type == 'fish')
-        fish_count++;
-    }
-    if (fish_count == 0) 
+    if (!world.countResources(Hex.circle(position, 1), 'fish', 1))
       return false;
 
     return (civ.resources.food >= 1 && !civ.food_source);
   }
   this.requirement = function(world, civ, position) {
 
-    let fish_count = 0;
-    for (neighbor of position.getNeighbors()) {
-      if (world.getResource(neighbor) && 
-          world.getResource(neighbor).type == 'fish')
-        fish_count++;
-    }
-    if (fish_count == 0) 
+    if (!world.countResources(Hex.circle(position, 1), 'fish', 1))
       return false;
 
     return (civ.resources.food >= 1 && !civ.food_source);
@@ -419,20 +390,7 @@ function actionFishermen() {
 
     for (new_position of civ.range) {
 
-      //Create a unit_type at the target location
-      let new_unit = new Unit(this.new_unit_type);
-      new_unit.civ = civ;
-      new_unit.setGraphic('white',3);
-      if (world.getUnit(new_position)) {
-        new_unit.setGraphic('red',3);
-      }
-      new_unit.capital_position = position;
-
-      this.createPath(world, position, new_position);
-
-      world.units.set(new_position, new_unit);
-      world.setCivOnTiles(new_unit.civ, target);
-      world.clearClouds(target, 5);
+      world.createSubCity(civ, position, target);
     }
 
   }
@@ -464,7 +422,7 @@ function actionRiverlands() {
 
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, civ, position) {
-    if (targetIsSameCiv(civ, position))
+    if (world.positionIsCiv(civ, position))
       return false;
 
     if (!world.world_map.containsHex(position))
@@ -498,26 +456,13 @@ function actionRiverlands() {
     civ.border_growth = true;
 
     for (new_position of civ.range) {
-      //Create a unit_type at the target location
-      let new_unit = new Unit(this.new_unit_type);
-      new_unit.civ = civ;
-      new_unit.setGraphic('white',3);
-      if (world.getUnit(new_position)) {
-        new_unit.setGraphic('red',3);
-      }
-
-      new_unit.capital_position = position;
-
-      this.createPath(world, position, new_position);
-
-      world.units.set(new_position, new_unit);
-      world.setCivOnTiles(new_unit.civ, target);
-      world.clearClouds(target, 5);
+      world.createSubCity(civ, position, target);
     }
 
   }
 
 }
+
 
 
 
@@ -546,7 +491,7 @@ function actionForesters() {
   //return all tiles with fish in range
   this.targetFilterFunction = function(world, civ, position) {
 
-    if (targetIsSameCiv(civ, position))
+    if (world.positionIsCiv(civ, position))
       return false;
 
     if (!world.world_map.containsHex(position))
@@ -577,21 +522,7 @@ function actionForesters() {
     civ.border_growth = true;
 
     for (new_position of civ.range) {
-      //Create a unit_type at the target location
-      let new_unit = new Unit(this.new_unit_type);
-      new_unit.civ = civ;
-      new_unit.setGraphic('white',3);
-      if (world.getUnit(new_position)) {
-        new_unit.setGraphic('red',3);
-      }
-
-      new_unit.capital_position = position;
-
-      this.createPath(world, position, new_position);
-
-      world.units.set(new_position, new_unit);
-      world.setCivOnTiles(new_unit.civ, target);
-      world.clearClouds(target, 5);
+      world.createSubCity(civ, position, target);
     }
 
   }
@@ -605,9 +536,7 @@ function actionForesters() {
 
 
 
-function targetIsSameCiv(civ, target) {
-  return (world.getUnit(target) && world.getUnit(target).civ == civ)
-}
+
 
 
 
@@ -622,7 +551,7 @@ function actionConquer() {
   this.max_distance = 6;
 
   this.targetFilterFunction = function(world, civ, hex) {
-    return (!(world.getUnit(hex) && targetIsSameCiv(civ,hex)));
+    return (!(world.getUnit(hex) && world.positionIsCiv(civ,hex)));
   }
   this.activation = function(world, civ, position) {
     if (!world.populationUnlock(3))

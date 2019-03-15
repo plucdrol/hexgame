@@ -212,6 +212,53 @@ World.prototype.makeCloudsEverywhere = function() {
   }
 }
 
+World.prototype.countResources = function(hexarray, resource_type, minimum_count) {
+  let count = 0;
+
+  for (hex of hexarray) {
+    if (this.getResource(hex) && 
+      this.getResource(hex).resources &&
+        this.getResource(hex).resources[resource_type])
+      count++;
+  }
+
+  return (count >= minimum_count) 
+}
+
+World.prototype.nearCoast = function(position) {
+  let count = 0;
+
+  for (neighbor of position.getNeighbors()) {
+    if (this.getTile(neighbor) && 
+        this.getTile(neighbor).elevation <= 1)
+      count++;
+  }
+
+  return (count >= 1) 
+}
+World.prototype.positionIsCiv = function(civ, target) {
+  return (this.getUnit(target) && this.getUnit(target).civ == civ)
+}
+World.prototype.createSubCity = function( civ, origin, target ) {
+
+  let new_unit_type = 'village';
+  //Create a unit_type at the target location
+  let new_unit = new Unit(new_unit_type);
+  new_unit.civ = civ;
+  new_unit.setGraphic('white',3);
+  if (this.getUnit(new_position)) {
+    new_unit.setGraphic('red',3);
+  }
+
+  new_unit.capital_position = position;
+
+  this.createPath(this, position, new_position);
+
+  this.units.set(new_position, new_unit);
+  this.setCivOnTiles(civ, target);
+  this.clearClouds(target, 5);
+
+}
 
 
 
@@ -238,14 +285,14 @@ World.prototype.makeCloudsEverywhere = function() {
 World.prototype.everySecond = function() {
   
   return function(){
-    updateWorldRender();
+    //updateWorldRender();
     this.setCityCulture();
     this.spreadCulture();
     this.collectResources();
     this.countUpCivTiles();
 
 
-    drawScreen();
+    //drawScreen();
   }
 }
 World.prototype.setCityCulture = function() {
@@ -328,19 +375,20 @@ World.prototype.collectResources = function() {
     if (this.resources.containsHex(hex)) {
       let resource = this.getResource(hex);
 
-      if (resource.resources.wood) {
+      if (resource.resources && resource.resources.wood) {
         tile.civ.resources.wood += resource.resources.wood;
         if (tile.civ.food_source == 'hunting') {
           tile.civ.resources.food += 1;
           total_food += 10;
         }
       }
-      if (resource.resources.stone) 
+      if (resource.resources && resource.resources.stone) 
         tile.civ.resources.stone += resource.resources.stone;
-      if (resource.resources.unknown) 
+      
+      if (resource.resources && resource.resources.unknown) 
         tile.civ.resources.unknown += resource.resources.unknown;
 
-      if (resource.resources.food) {
+      if (resource.resources && resource.resources.food) {
         tile.civ.resources.food += resource.resources.food;
         tile.civ.pop += resource.resources.food*10; 
         total_food += resource.resources.food*10;

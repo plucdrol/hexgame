@@ -20,9 +20,11 @@ function WorldRenderer (world, hex_renderer) {
   this.hex_renderer = hex_renderer;
   this.world = world;
   this.render_start = 0;
-  this.render_portions = 10;
-}
+  this.render_portions = Math.floor(world.radius/3);
 
+  var self = this; 
+  setInterval( self.drawWorld.bind(self), 2 );
+}
 WorldRenderer.p = WorldRenderer.prototype;
 
 WorldRenderer.p.calculateHexesToRender = function() {
@@ -39,16 +41,26 @@ WorldRenderer.p.calculateHexesToRender = function() {
 WorldRenderer.p.drawWorld = function() {
 
   //draw the world to the canvas and to a backupcanvas
-  //var hexmap = this.calculateHexesToRender();
-  //var hexarray = hexmap.getHexArray();
-  var hexarray = this.world.world_map.getHexArray();
+  /*var hexmap = this.calculateHexesToRender();
+  var hexarray = hexmap.getHexArray();
+  */
+
   
-  this.drawBigHex(this.world.radius);
+  var hexarray = this.world.world_map.getHexArray();
+  let section = Math.floor(hexarray.length/this.render_portions);
+  hexarray = hexarray.slice(this.render_start*section, (this.render_start+1)*section );
+  this.render_start++;
+  if (this.render_start >= this.render_portions)
+    this.render_start = 0;
+  
+
+  
+  //this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
   this.drawRivers(hexarray);
   this.drawCivTiles(hexarray);
 
-  this.drawRoads(hexarray);
+  //this.drawRoads(hexarray);
   //this.drawUnits(hexarray);
   this.drawResources(hexarray);
 
@@ -68,27 +80,18 @@ WorldRenderer.p.drawBigHex = function(radius) {
 }
 
 WorldRenderer.p.drawTiles = function(hexarray) {
-  //make a tile renderer
-  var tile_renderer = new TileRenderer( this.hex_renderer, this.world.getLayout() );
-
-  //keep track of a portion of the world to draw
-  //let start = Math.floor(this.render_start/this.render_portions*hexarray.length);
-  //let stop = Math.floor((this.render_start+1)/this.render_portions*hexarray.length);
-  //this.render_start++;
-  //if (this.render_start >= this.render_portions)
-    //this.render_start = 0;
 
   //draw the land colors
   for (hex of hexarray) {
 
     //clouds if not explored
     if (this.getTile(hex).hidden) {
-      tile_renderer.drawTile(hex, {elevation: 21});
+      this.drawTile(hex, {elevation: 21});
       continue;
     }
     //actual tiles
-    if (this.getTile(hex).elevation >= 1)
-      tile_renderer.drawTile(hex, this.getTile(hex));
+    if (this.getTile(hex).elevation >= 0)
+      this.drawTile(hex, this.getTile(hex));
   }
 }
 
@@ -191,14 +194,20 @@ WorldRenderer.p.drawResources = function(hexarray) {
 
 
 
-
-
-
-
 WorldRenderer.p.getTile = function(hex) {
     return this.world.world_map.getValue(hex);
 }
 
+WorldRenderer.p.drawTile = function(hex,tile) {
+  
+  var style = new RenderStyle();  
+
+  //analyze tile
+  var height = Math.floor(tile.elevation);
+  style.fill_color = greenscale_colors(height);
+
+  this.hex_renderer.drawHex(hex, style);
+}
 
 WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
@@ -272,3 +281,54 @@ WorldRenderer.p.drawPath = function(range,destination) {
 }
 
 
+
+
+
+
+
+
+
+
+getWindArrowCharacter = function(direction) {
+
+    switch (direction) {
+        case 0: return 8594; break;
+        case 1: return 8599; break;
+        case 2: return 8598; break;
+        case 3: return 8592; break;
+        case 4: return 8601; break;
+        case 5: return 8600; break;
+        default: return 8635;
+    }
+}
+
+
+//colors of different tiles depending on height
+var greenscale_colors = function (i) {
+
+  var oldgreenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
+                    '#080','#062', //grass 3 4
+                    '#052','#042','#032','#020', //forest 5 6 7 8
+                    '#310','#310','#320', //hills 9 10 11 12 13
+                    '#310','#310',
+                    '#777', '#777','#777', //mountains 14 15 16
+                    '#888','#888','#888', //mountains 17 18 19
+                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF',]; //ice
+
+  var greenscale = [224,190,61, //ocean coast sand 0 1 2
+                    90,100, //grass 3 4
+                    100,105,110,120, //forest 5 6 7 8
+                    34,35,36,37,38];  //hills 9 10 11 12 13
+                    
+ return oldgreenscale[i];
+
+  //ice
+  if (i >= 20)
+    return "hsl(0, 0%, 90%)"; 
+  //mountains
+  if (i >= 14)
+    return "hsl(0, 0%, 50%)"; 
+  //land
+  return "hsl("+greenscale[i]+", 30%, 50%)"; 
+
+}

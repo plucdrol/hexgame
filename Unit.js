@@ -27,14 +27,16 @@ Unit.prototype.setType = function(unit_type) {
   case 'fish':
     this.setGraphic('lightblue',1);
     this.setResource('food',1);
+    this.setResource('fish',1);
     break;
   case 'food':
     this.setGraphic('yellow',2);
     this.setResource('food',1);
     break;
-  case 'wood':
+  case 'forest':
     this.setGraphic('brown',2);
     this.setResource('wood',1);
+    this.setResource('forest',1);
     break;
   case 'stone':
     this.setGraphic('grey',2);
@@ -124,7 +126,7 @@ function Civilization() {
   this.type = Math.floor(Math.random()*5)+1;
   this.id = Math.floor(Math.random()*10000);
   this.name = this.generateName();
-  this.setColors();
+  this.generateColors();
     this.addAction( new actionFishermen());
     this.addAction( new actionRiverlands());
     this.addAction( new actionForesters());
@@ -144,8 +146,20 @@ Civilization.prototype.setType = function(type) {
   this.type = type;
   this.name = this.generateName();
 }
-Civilization.prototype.setColors = function() {
-  this.fill_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.3)"); 
+var color_index = -1;
+Civilization.prototype.generateColors = function() {
+
+  let colors = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', 
+               '#f032e6', '#bfef45', '#fabebe', '#469990', '#e6beff', '#9A6324', '#fffac8', 
+               '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9', '#ffffff', '#000000'];
+
+  color_index++;
+  if (color_index > colors.length)
+    color_index = -1;
+
+  console.log(color_index);
+  this.fill_color = colors[color_index];
+  //this.fill_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,0.3)"); 
   this.line_color = "hsla(".concat(Math.floor(360*Math.random())).concat(",100%,50%,1)");
 }
 

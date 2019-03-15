@@ -46,19 +46,10 @@ canv_input.windowResize();
 
 ////////////////////////// DRAWING TO THE CANVAS //////////////////
 
-var current_time = Date.now();
-
-let start = null;
 
 function step(timestamp) {
-  if (!start) start = timestamp;
-  var progress = timestamp - start;
-
   drawScreen();
-
-  //if (progress < 2000) {
-    window.requestAnimationFrame(step);
-  //}
+  window.requestAnimationFrame(step);
 }
 window.requestAnimationFrame(step);
 
@@ -67,7 +58,7 @@ var render_y = 0;
 
 function updateWorldRender() {
 
-  canv_draw.clear();
+  //canv_draw.clear();
   world_renderer.drawWorld(); 
   render_x = 0;
   render_y = 0;
@@ -75,16 +66,12 @@ function updateWorldRender() {
 
 function drawScreen() {
 
-  //canv_draw.clear();
-
-  //draw the world to a temporary canvas
+  //clear the real canvas
   real_canv_draw.clear();
 
   //copy the temporary canvas to the real canvas
   var screen_context = real_canvas.getContext('2d');
-  screen_context.drawImage(canvas, -render_x, -render_y);
-
-
+  screen_context.drawImage(canvas, 0, 0);
 
   //draw the HUD on top
   hud_renderer.drawHUD();

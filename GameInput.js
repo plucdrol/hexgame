@@ -63,9 +63,13 @@ function GameInput(world, view) {
 
     render_x += previous_mouse.x-mouse.x;
     render_y += previous_mouse.y-mouse.y;
+
+    //shift the image in the temporary canvas
+    var temp_context = canvas.getContext('2d');
+    temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));
 	  
 	  //redraw the screen after moving
-	  drawScreen();
+	  //drawScreen();
 	}
 
 
