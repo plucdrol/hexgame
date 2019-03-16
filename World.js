@@ -236,31 +236,52 @@ World.prototype.nearCoast = function(position) {
 
   return (count >= 1) 
 }
+
 World.prototype.positionIsCiv = function(civ, target) {
   return (this.getUnit(target) && this.getUnit(target).civ == civ)
 }
+
 World.prototype.createSubCity = function( civ, origin, target ) {
 
-  let new_unit_type = 'village';
-  //Create a unit_type at the target location
-  let new_unit = new Unit(new_unit_type);
-  new_unit.civ = civ;
-  new_unit.setGraphic('white',3);
-  if (this.getUnit(new_position)) {
+  //Create a new unit
+  let new_unit = civ.createUnit('village', origin);
+
+  //change color if conquering
+  if (this.getUnit(target))
     new_unit.setGraphic('red',3);
-  }
 
-  new_unit.capital_position = position;
-
-  this.createPath(this, position, new_position);
-
-  this.units.set(new_position, new_unit);
+  //Add it to the world
+  this.units.set(target, new_unit);
   this.setCivOnTiles(civ, target);
   this.clearClouds(target, 5);
 
 }
 
+World.prototype.clearClouds = function(position, radius) {
+  for (hex of Hex.circle(position, radius)) {
+    if (this.world_map.containsHex(hex))
+      this.world_map.get(hex).hidden = false;
+  }
+}
 
+//'unit' is overlooked, leave it undefined to avoid that
+World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) {
+  let area = Hex.circle(position, radius);
+  for (hex of area) {
+    if (this.units.containsHex(hex) ) {
+      //if (hex.equals(position_to_ignore))
+        //continue;
+      return false;
+    }
+  }
+  //no cities
+  return true;
+}
+
+World.prototype.setCivOnTiles = function(civ, position) {
+  this.world_map.get(position).civ = civ;
+  this.world_map.get(position).culture = 3;
+}
 
 
 
@@ -280,19 +301,13 @@ World.prototype.createSubCity = function( civ, origin, target ) {
 //
 ////////////////////////////////////
 
-//This function is created in WORLD for now, because we need access to the map
-//Move it somewhere else where it belongs
 World.prototype.everySecond = function() {
   
   return function(){
-    //updateWorldRender();
     this.setCityCulture();
     this.spreadCulture();
     this.collectResources();
-    this.countUpCivTiles();
-
-
-    //drawScreen();
+    this.getCivTileArrays();
   }
 }
 World.prototype.setCityCulture = function() {
@@ -418,7 +433,7 @@ World.prototype.collectResources = function() {
 
 
 
-World.prototype.countUpCivTiles = function() {
+World.prototype.getCivTileArrays = function() {
   let civ_tile_arrays = [];
 
   //clear the civ tile arrays
@@ -456,39 +471,3 @@ World.prototype.countUpCivTiles = function() {
 
 
 
-///////////////////////////////////////////
-//
-//            HELPER FUNCTIONS FOR THE WORLD
-//
-////////////////////////////////////
-
-
-World.prototype.clearClouds = function(position, radius) {
-  for (hex of Hex.circle(position, radius)) {
-    if (this.world_map.containsHex(hex))
-      this.world_map.get(hex).hidden = false;
-  }
-}
-
-
-
-
-
-//'unit' is overlooked, leave it undefined to avoid that
-World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) {
-  let area = Hex.circle(position, radius);
-  for (hex of area) {
-    if (this.units.containsHex(hex) ) {
-      //if (hex.equals(position_to_ignore))
-        //continue;
-      return false;
-    }
-  }
-  //no cities
-  return true;
-}
-
-World.prototype.setCivOnTiles = function(civ, position) {
-  this.world_map.get(position).civ = civ;
-  this.world_map.get(position).culture = 3;
-}

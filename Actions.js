@@ -390,7 +390,7 @@ function actionFishermen() {
 
     for (new_position of civ.range) {
 
-      world.createSubCity(civ, position, target);
+      world.createSubCity(civ, position, new_position);
     }
 
   }
@@ -456,7 +456,7 @@ function actionRiverlands() {
     civ.border_growth = true;
 
     for (new_position of civ.range) {
-      world.createSubCity(civ, position, target);
+      world.createSubCity(civ, position, new_position);
     }
 
   }
@@ -522,7 +522,7 @@ function actionForesters() {
     civ.border_growth = true;
 
     for (new_position of civ.range) {
-      world.createSubCity(civ, position, target);
+      world.createSubCity(civ, position, new_position);
     }
 
   }

@@ -197,3 +197,13 @@ Civilization.prototype.addAction = function( action ) {
 Civilization.prototype.hasDefinedRange = function() {
   return this.hasOwnProperty('range');
 }
+
+Civilization.prototype.createUnit = function(unit_type, capital_position) {
+  
+  let new_unit = new Unit( unit_type );
+  new_unit.civ = this;
+  new_unit.setGraphic('white',3);
+  new_unit.capital_position = capital_position;
+  return new_unit;
+}
+
