@@ -58,11 +58,11 @@ WorldRenderer.p.drawWorld = function() {
   //this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
   this.drawRivers(hexarray);
-  this.drawCivTiles(hexarray);
+  //this.drawCivTiles(hexarray);
 
   //this.drawRoads(hexarray);
   this.drawUnits(hexarray);
-  this.drawResources(hexarray);
+  //this.drawResources(hexarray);
 
 }
 

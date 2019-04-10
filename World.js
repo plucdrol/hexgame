@@ -304,8 +304,9 @@ World.prototype.setCivOnTiles = function(civ, position) {
 World.prototype.everySecond = function() {
   
   return function(){
+    //this.spreadCities();
     this.setCityCulture();
-    this.spreadCulture();
+    //this.spreadCulture();
     this.collectResources();
     this.getCivTileArrays();
   }

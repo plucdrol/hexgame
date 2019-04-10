@@ -47,7 +47,7 @@ function GameInput(world, view) {
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
     this.view.zoom(zoom);
-  	updateWorldRender();
+  	//updateWorldRender();
 	}
 	
   //React to dragging across the screen with finger or mouse

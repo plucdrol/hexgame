@@ -64,6 +64,12 @@ PerlinConfiguration = function(config_name) {
       this.base =5;
       break;
 
+    case 'bigpatches':
+      this.scales = [ 0.04, 0.1, 0.1];//, 0.1,  0.05, 0.025, 0.012, 0.006, 0.003, 0.001];
+      this.weights = [8 ,   2,   2  ];//,   8,    12,   4,     3,     2,     1,     1,   ];
+      this.base =5;
+      break;
+
     default:
       this.scales = [0.02,0.1,0.2,0.5,1.0,2.0];
       this.weights = [16,8,4,2,1,0.5];
@@ -128,6 +134,10 @@ function PerlinTileGenerator() {
   var config = new PerlinConfiguration('fractal');
   var simplex = new SimplexNoise();  
 
+  var sand_config = new PerlinConfiguration('big_patches');
+  var sand_simplex = new SimplexNoise();  
+
+
   var tile_x;
   var tile_y;
   var tile_weight;
@@ -143,6 +153,17 @@ function PerlinTileGenerator() {
       tile_weight = config.weights[i];
       total += Math.floor(simplex.noise(tile_x, tile_y)*tile_weight);
     }
+
+    //add patches of desert
+    var sand_chance = sand_config.base;
+    for (var i = 0; i < sand_config.getLength(); i++ ) {
+      tile_x = sand_config.scales[i]*x;
+      tile_y = sand_config.scales[i]*y;
+      tile_weight = sand_config.weights[i];
+      sand_chance += Math.floor(sand_simplex.noise(tile_x, tile_y)*tile_weight);
+    }
+    if (sand_chance >= 9 && total > 1 && total < 12)
+      total = 3;
 
     //shallow water for anything between these numbers
     //if (total < 1 && total > -7) 
