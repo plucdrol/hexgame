@@ -251,7 +251,7 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
   //HOVERING OVER THINGS
   this.tooltipUnit(hex_hovered);
   this.tooltipResource(hex_hovered);
-  this.tooltipTile(hex_hovered);
+  //this.tooltipTile(hex_hovered);
 
 }
 
