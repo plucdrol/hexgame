@@ -37,7 +37,7 @@ function World(radius) {
   
   //create land map
   this.world_map = new HexMap();
-  this.world_map = new MapGenerator('perlin').makeMap(radius);
+  this.world_map = new MapGenerator('perlin').makeSystemMap(radius);
   this.makeCloudsEverywhere();
 
   //create units map

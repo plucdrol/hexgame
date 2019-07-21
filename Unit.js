@@ -48,6 +48,14 @@ Unit.prototype.setType = function(unit_type) {
     this.setResource('food',2);
     break;
 
+  case 'sun':
+    this.setGraphic('yellow',5);
+    break;
+
+  case 'asteroid':
+    this.setGraphic('lightgrey',1);
+    break;
+
   case 'terrain':
     this.elevation = 0;
     this.wind = 0;
