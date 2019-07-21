@@ -173,14 +173,13 @@ MapGenerator.prototype.makeSystemMap = function(radius) {
       //put in map
       hex = new Hex(q,r);
       let elevation = this.tile_gen.generateTile(q,r);
-      this.setElevation(hex, elevation);
+      this.setElevation(hex, 1);
       this.setWind(hex,this.tile_gen.generateWind(q,r));
-      //this.setCiv(hex, undefined);
     }
   }
 
   //fine tune the m ap
-  this.roundDown();
+  //this.roundDown();
 
 
   return this.map;

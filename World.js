@@ -42,12 +42,11 @@ function World(radius) {
 
   //create units map
   this.units = new HexMap();
-  this.units.set(new Hex(0,0), new Unit('village'));
-  this.units.get(new Hex(0,0)).civ.resources.food = 300;
+  this.units.set(new Hex(0,0), new Unit('star'));
 
   //create resources map
   this.resources = new HexMap();
-  this.resources = this.generateResources();
+  this.resources = this.generateSystemResources();
   this.generateUnknown();
 
   //Make the center tile into sand
@@ -202,6 +201,42 @@ World.prototype.generateResources = function() {
   }
   return resources;
 }
+
+World.prototype.generateSystemResources = function() {
+  var resources = new HexMap();
+  for (let hex of this.world_map.getHexArray() )  {
+    let terrain = this.getTile(hex);
+
+    //only 20% of the land gets resources
+    if (Math.random() < 0.8) {
+
+      continue;
+    }
+    if (terrain.river && terrain.river.water_level >= 7) {
+      //resources.set(hex, new Unit('fish'));
+      continue;
+    }
+    switch (terrain.elevation) {
+      case 1: //coasts
+        break;
+      case 3: //grass
+      case 4: 
+        break;
+      //forest
+      case 5: 
+      case 6: 
+      case 7: 
+      case 8: 
+        break;
+      case 9: //hills
+      case 10: 
+      case 11: 
+        //resources.set(hex, new Unit('stone'));
+        break;
+    }
+  }
+  return resources;
+  }
 
 World.prototype.makeCloudsEverywhere = function() {
   for (hex of this.world_map.getHexArray()) {

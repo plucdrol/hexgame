@@ -48,7 +48,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setResource('food',2);
     break;
 
-  case 'sun':
+  case 'star':
     this.setGraphic('yellow',5);
     break;
 

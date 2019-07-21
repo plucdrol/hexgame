@@ -57,7 +57,7 @@ WorldRenderer.p.drawWorld = function() {
   
   //this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
-  this.drawRivers(hexarray);
+  //this.drawRivers(hexarray);
   //this.drawCivTiles(hexarray);
 
   //this.drawRoads(hexarray);
@@ -204,7 +204,7 @@ WorldRenderer.p.drawTile = function(hex,tile) {
 
   //analyze tile
   var height = Math.floor(tile.elevation);
-  style.fill_color = greenscale_colors(height);
+  style.fill_color = greenscale_colors(height, 'space');
 
   this.hex_renderer.drawHex(hex, style);
 }
@@ -304,7 +304,7 @@ getWindArrowCharacter = function(direction) {
 
 
 //colors of different tiles depending on height
-var greenscale_colors = function (i) {
+var greenscale_colors = function (i, scale) {
 
   var oldgreenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
                     '#080','#062', //grass 3 4
@@ -319,7 +319,16 @@ var greenscale_colors = function (i) {
                     90,100, //grass 3 4
                     100,105,110,120, //forest 5 6 7 8
                     34,35,36,37,38];  //hills 9 10 11 12 13
-                    
+
+  var spacescale = ['#000','#000','#000', //ocean coast sand 0 1 2
+                    '#000','#000', //grass 3 4
+                    100,105,110,120, //forest 5 6 7 8
+                    34,35,36,37,38];  //hills 9 10 11 12 13
+  
+  if (scale = 'space') {
+    return spacescale[i];
+  }                  
+
  return oldgreenscale[i];
 
   //ice
