@@ -263,7 +263,7 @@ HUDRenderer.prototype.tooltipUnit = function(hex_hovered) {
 
 HUDRenderer.prototype.tooltipResource = function(hex_hovered) {
   let resource = this.world.getResource(hex_hovered);
-  if (resource && resource.resources) 
+  if (resource) 
     writeTooltip(resource.type+", ");
 }
 

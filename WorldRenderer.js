@@ -20,7 +20,7 @@ function WorldRenderer (world, hex_renderer) {
   this.hex_renderer = hex_renderer;
   this.world = world;
   this.render_start = 0;
-  this.render_portions = Math.floor(world.radius/3);
+  this.render_portions = 1;//Math.floor(world.radius/3);
 
   var self = this; 
   setInterval( self.drawWorld.bind(self), 2 );
@@ -54,17 +54,18 @@ WorldRenderer.p.drawWorld = function() {
     this.render_start = 0;
   
 
-  
+
   //this.drawBigHex(this.world.radius);
-  this.drawTiles(hexarray);
+  //this.drawTiles(hexarray);
   //this.drawRivers(hexarray);
   //this.drawCivTiles(hexarray);
 
   //this.drawRoads(hexarray);
   this.drawUnits(hexarray);
-  //this.drawResources(hexarray);
+  this.drawResources(hexarray);
 
 }
+
 
 WorldRenderer.p.drawBigHex = function(radius) {
 
@@ -75,7 +76,7 @@ WorldRenderer.p.drawBigHex = function(radius) {
   }
 
   let style = new RenderStyle();
-  style.fill_color = "#005";
+  style.fill_color = "#000";
   this.hex_renderer.renderer.drawPolygon(big_corners, style);
 }
 

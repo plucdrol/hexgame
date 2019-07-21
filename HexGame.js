@@ -58,7 +58,7 @@ var render_y = 0;
 
 function updateWorldRender() {
 
-  //canv_draw.clear();
+  canv_draw.clear();
   world_renderer.drawWorld(); 
   render_x = 0;
   render_y = 0;

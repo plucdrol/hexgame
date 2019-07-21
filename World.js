@@ -47,7 +47,7 @@ function World(radius) {
   //create resources map
   this.resources = new HexMap();
   this.resources = this.generateSystemResources();
-  this.generateUnknown();
+  //this.generateUnknown();
 
   //Make the center tile into sand
   let land_tile = new Unit('terrain');
@@ -206,34 +206,39 @@ World.prototype.generateSystemResources = function() {
   var resources = new HexMap();
   for (let hex of this.world_map.getHexArray() )  {
     let terrain = this.getTile(hex);
-
-    //only 20% of the land gets resources
+    
+    //only 20% of the land gets these resources
     if (Math.random() < 0.8) {
+      continue;
+    }
+    if ((Hex.distanceToCenter(hex) >= this.radius*0.4) && (Hex.distanceToCenter(hex) <= this.radius*0.5) 
+    || (Hex.distanceToCenter(hex) >= this.radius*0.9)) {
+      resources.set(hex, new Unit('asteroid'));
+    }
 
+
+    //only 1% of land gets these resources
+    if (Math.random() < 0.97) {
       continue;
     }
-    if (terrain.river && terrain.river.water_level >= 7) {
-      //resources.set(hex, new Unit('fish'));
+    if (Math.random() < Hex.distanceToCenter(hex)/(this.radius)) {
       continue;
     }
-    switch (terrain.elevation) {
-      case 1: //coasts
-        break;
-      case 3: //grass
-      case 4: 
-        break;
-      //forest
-      case 5: 
-      case 6: 
-      case 7: 
-      case 8: 
-        break;
-      case 9: //hills
-      case 10: 
-      case 11: 
-        //resources.set(hex, new Unit('stone'));
-        break;
+
+    //sometimes a gas giant
+    if (Math.random() < 0.3) {
+      resources.set(hex, new Unit('giant'));
+      for (let neighbor of hex.getNeighbors()) {
+        if (Math.random() < 0.3) {
+          resources.set(neighbor, new Unit('planet'));
+        }
+      }
+      continue;
     }
+
+    //otherwise a rocky planet
+    resources.set(hex, new Unit('planet'));
+    
   }
   return resources;
   }

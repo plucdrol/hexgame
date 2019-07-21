@@ -47,7 +47,7 @@ function GameInput(world, view) {
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
     this.view.zoom(zoom);
-  	//updateWorldRender();
+  	updateWorldRender();
 	}
 	
   //React to dragging across the screen with finger or mouse
@@ -69,7 +69,7 @@ function GameInput(world, view) {
     temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));
 	  
 	  //redraw the screen after moving
-	  //drawScreen();
+	  updateWorldRender();
 	}
 
 
