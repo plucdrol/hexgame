@@ -29,7 +29,7 @@ var real_renderer = new Renderer(real_canv_draw, view);
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
-var world = new World(35);// <-- model
+var world = new World(35, 'system');// <-- model
 //Has functions for drawing hexes to the screen
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );

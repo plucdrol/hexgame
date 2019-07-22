@@ -157,8 +157,6 @@ MapGenerator.prototype.makeSystemMap = function(radius) {
   var hex = new Hex(0,0);
   //contains the position and content of each tile
   var value = {}; 
-  this.tile_gen = this.makeTileGenerator(type);
-
 
   // Iterates over the giant hexagon
   var qmin = -radius;
@@ -169,18 +167,11 @@ MapGenerator.prototype.makeSystemMap = function(radius) {
 
     for (var r = rmin; r <= rmax; r++) {
       
-              
       //put in map
       hex = new Hex(q,r);
-      let elevation = this.tile_gen.generateTile(q,r);
       this.setElevation(hex, 1);
-      this.setWind(hex,this.tile_gen.generateWind(q,r));
     }
   }
-
-  //fine tune the m ap
-  //this.roundDown();
-
 
   return this.map;
 }

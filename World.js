@@ -26,7 +26,7 @@ var land_tiles = [
 'ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice'
 ];
 
-function World(radius) {
+function World(radius, type) {
 
   this.radius = radius;
   
@@ -34,28 +34,43 @@ function World(radius) {
   var tile_size = new Point(35, 35);
   var origin = new Point(0,0);
   this.layout = new HexLayout('pointy', tile_size, origin);
-  
-  //create land map
+
+  //create tile map
   this.world_map = new HexMap();
-  this.world_map = new MapGenerator('perlin').makeSystemMap(radius);
-  this.makeCloudsEverywhere();
 
-  //create units map
-  this.units = new HexMap();
-  this.units.set(new Hex(0,0), new Unit('star'));
+  if (type == 'system') {
+    
+    this.world_map = new MapGenerator('space').makeSystemMap(radius);
+    //create units map
+    this.units = new HexMap();
+    this.units.set(new Hex(0,0), new Unit('star'));
+    //create resources map
+    this.resources = new HexMap();
+    this.resources = this.generateSystemResources();
 
-  //create resources map
-  this.resources = new HexMap();
-  this.resources = this.generateSystemResources();
-  //this.generateUnknown();
+  } else {
 
-  //Make the center tile into sand
-  let land_tile = new Unit('terrain');
-  land_tile.elevation = 2;
-  this.setHex(new Hex(0,0), land_tile);
+    this.world_map = new MapGenerator('perlin').makeMap(radius);
+    this.makeCloudsEverywhere();
+    //create units map
+    this.units = new HexMap();
+    this.units.set(new Hex(0,0), new Unit('village'));
+    //create resources map
+    this.resources = new HexMap();
+    this.resources = this.generateResources();
+    this.generateUnknown();
 
-  this.total_population = 0;
-  this.population_unlocks = [100,500,1000,5000];
+    //Make the center tile into sand
+    let land_tile = new Unit('terrain');
+    land_tile.elevation = 2;
+    this.setHex(new Hex(0,0), land_tile);
+
+    this.total_population = 0;
+    this.population_unlocks = [100,500,1000,5000];
+
+  }
+
+
 
 
   //start the 1-second counter which gathers resources for cities
