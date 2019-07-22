@@ -52,6 +52,9 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('yellow',8);
     break;
 
+    case 'earth':
+    this.setGraphic('blue',3);
+    break;
   case 'asteroid':
     this.setGraphic('grey',1);
     break;

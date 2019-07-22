@@ -29,18 +29,28 @@ var real_renderer = new Renderer(real_canv_draw, view);
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
-var world = new World(35, 'system');// <-- model
+var space = new World(35, 'system');// <-- model
+var world = new World(20, 'earth');// <-- model
+
 //Has functions for drawing hexes to the screen
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
+var space_hex_renderer = new HexRenderer(renderer, space.getLayout() );
+
 var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
+var real_space_hex_renderer = new HexRenderer(real_renderer, space.getLayout() );
 
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
+var space_renderer = new WorldRenderer(space, space_hex_renderer);    //<---view  
+
 //Receives input for the game
 var game_input = new GameInput(world, view);     //<--controller
+var space_game_input = new GameInput(space, view);     //<--controller
+
 //draws mouse interactions
 var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
+var space_hud_renderer = new HUDRenderer(space, space_game_input, real_space_hex_renderer);
 
-world.clearClouds(new Hex(0,0), 33);
+world.clearClouds(new Hex(0,0), 19);
 
 canv_input.windowResize();
 
@@ -59,7 +69,9 @@ var render_y = 0;
 function updateWorldRender() {
 
   canv_draw.clear();
+  space_renderer.drawWorld(); 
   world_renderer.drawWorld(); 
+  
   render_x = 0;
   render_y = 0;
 }
@@ -75,6 +87,9 @@ function drawScreen() {
 
   //draw the HUD on top
   hud_renderer.drawHUD();
+  if (view.getZoom() <= 0.08)
+    space_hud_renderer.drawHUD();
+
 
 }
 

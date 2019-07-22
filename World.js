@@ -29,10 +29,21 @@ var land_tiles = [
 function World(radius, type) {
 
   this.radius = radius;
+  this.type = type;
   
   //configure world dimensions
-  var tile_size = new Point(35, 35);
-  var origin = new Point(0,0);
+  if (type == 'system') {
+    this.zoom = 35*80;
+    var tile_size = new Point(this.zoom, this.zoom);  
+    var origin = new Point(0,0);
+  } else {
+    this.zoom = 35;
+    var tile_size = new Point(this.zoom, this.zoom);  
+    var origin = new Point(35*64*15.1,0);
+  }
+  
+
+  
   this.layout = new HexLayout('pointy', tile_size, origin);
 
   //create tile map
@@ -83,6 +94,10 @@ function World(radius, type) {
 
 
   
+}
+
+World.prototype.getZoom = function() {
+  return this.zoom/35;
 }
 World.prototype.totalPopulation = function() {
   return Math.floor(this.total_population);
@@ -219,6 +234,7 @@ World.prototype.generateResources = function() {
 
 World.prototype.generateSystemResources = function() {
   var resources = new HexMap();
+
   for (let hex of this.world_map.getHexArray() )  {
     let terrain = this.getTile(hex);
     
@@ -255,6 +271,8 @@ World.prototype.generateSystemResources = function() {
     resources.set(hex, new Unit('planet'));
     
   }
+
+  //resources.set(new Hex(7,0), new Unit('earth'));
   return resources;
   }
 

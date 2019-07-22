@@ -253,6 +253,8 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
   this.tooltipResource(hex_hovered);
   //this.tooltipTile(hex_hovered);
 
+  writeTooltip(view.getZoom()+", ");
+
 }
 
 HUDRenderer.prototype.tooltipUnit = function(hex_hovered) {

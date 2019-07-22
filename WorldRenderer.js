@@ -20,7 +20,9 @@ function WorldRenderer (world, hex_renderer) {
   this.hex_renderer = hex_renderer;
   this.world = world;
   this.render_start = 0;
-  this.render_portions = 1;//Math.floor(world.radius/3);
+  this.render_portions = Math.floor(world.radius/3);
+  if (world.type == 'system')
+    this.render_portions = 1;
 
   var self = this; 
   setInterval( self.drawWorld.bind(self), 2 );
@@ -56,8 +58,10 @@ WorldRenderer.p.drawWorld = function() {
 
 
   //this.drawBigHex(this.world.radius);
-  //this.drawTiles(hexarray);
-  //this.drawRivers(hexarray);
+  if (this.world.type != 'system') {
+    this.drawTiles(hexarray);
+    this.drawRivers(hexarray);
+  }
   //this.drawCivTiles(hexarray);
 
   //this.drawRoads(hexarray);
@@ -205,7 +209,7 @@ WorldRenderer.p.drawTile = function(hex,tile) {
 
   //analyze tile
   var height = Math.floor(tile.elevation);
-  style.fill_color = greenscale_colors(height, 'space');
+  style.fill_color = greenscale_colors(height, this.world.type);
 
   this.hex_renderer.drawHex(hex, style);
 }
@@ -217,7 +221,7 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
  
   var unit_style = new RenderStyle();
   unit_style.fill_color = unit.color;
-  let size = 10*unit.size;
+  let size = 10*unit.size*this.world.getZoom();
   this.hex_renderer.renderer.drawDot(position, size, unit_style);
   
   if (unit.population) {
@@ -326,7 +330,7 @@ var greenscale_colors = function (i, scale) {
                     100,105,110,120, //forest 5 6 7 8
                     34,35,36,37,38];  //hills 9 10 11 12 13
   
-  if (scale = 'space') {
+  if (scale == 'space') {
     return spacescale[i];
   }                  
 
