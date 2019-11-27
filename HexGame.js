@@ -29,17 +29,16 @@ var real_renderer = new Renderer(real_canv_draw, view);
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
-var space = new World(35, 'system');// <-- model
-var world = new World(20, 'earth');// <-- model
 
+var world = new World(20, 'earth');// <-- model
 //Has functions for drawing hexes to the screen
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
-var space_hex_renderer = new HexRenderer(renderer, space.getLayout() );
-
 var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
-var real_space_hex_renderer = new HexRenderer(real_renderer, space.getLayout() );
+var world_renderer = new WorldRenderer(world, hex_renderer);    //<---view  
 
-var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
+var space = new World(35, 'system');// <-- model
+var space_hex_renderer = new HexRenderer(renderer, space.getLayout() );
+var real_space_hex_renderer = new HexRenderer(real_renderer, space.getLayout() );
 var space_renderer = new WorldRenderer(space, space_hex_renderer);    //<---view  
 
 //Receives input for the game
