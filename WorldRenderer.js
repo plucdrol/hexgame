@@ -62,7 +62,7 @@ WorldRenderer.p.drawWorld = function() {
 
   //this.drawRoads(hexarray);
   this.drawUnits(hexarray);
-  //this.drawResources(hexarray);
+  this.drawResources(hexarray);
 
 }
 
