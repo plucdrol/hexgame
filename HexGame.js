@@ -43,12 +43,13 @@ var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view
 var space_renderer = new WorldRenderer(space, space_hex_renderer);    //<---view  
 
 //Receives input for the game
+//var space_game_input = new GameInput(space, view);     //<--controller
 var game_input = new GameInput(world, view);     //<--controller
-var space_game_input = new GameInput(space, view);     //<--controller
+
 
 //draws mouse interactions
 var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
-var space_hud_renderer = new HUDRenderer(space, space_game_input, real_space_hex_renderer);
+//var space_hud_renderer = new HUDRenderer(space, space_game_input, real_space_hex_renderer);
 
 world.clearClouds(new Hex(0,0), 19);
 
@@ -87,8 +88,8 @@ function drawScreen() {
 
   //draw the HUD on top
   hud_renderer.drawHUD();
-  if (view.getZoom() <= 0.08)
-    space_hud_renderer.drawHUD();
+  //if (view.getZoom() <= 0.08)
+    //space_hud_renderer.drawHUD();
 
 
 }
