@@ -245,7 +245,7 @@ function actionBecomeCamp() {
 function actionCreateCamp() {
   Action.call(this);
 
-  this.minimum_elevation = 1;
+  this.minimum_elevation = 2;
 
   this.name = "resettlement";
   this.type = "target";
@@ -302,7 +302,47 @@ function actionCreateCamp() {
 
 
 
+//This action transforms the unit into a camp
+function actionGetResource() {
+  Action.call(this);
 
+  this.minimum_elevation = 1;
+
+  this.name = "get";
+  this.type = "target";
+  this.target = "land";
+  this.min_distance = 0;
+  this.max_distance = 3;
+
+  this.targetFilterFunction = function(world, civ, position) {
+    
+    if (world.countResources(Hex.circle(position, 0), 'food', 1))
+      return true;
+
+    return false;
+  }
+  this.activation = function(world, civ, position) {
+    return true;
+  }
+  this.requirement = function(world, civ, position) {
+    return true;
+  }
+
+  this.description = function() {
+    return "Collect resource";
+  }
+  this.effect = function(world, civ, position, target) {
+    
+    //Build a road to the ressource
+    let pathfinder = this.getPathfinder();
+    let tile_array = pathfinder.getPath(world.world_map, position, target, 15);   
+
+    world.buildRoad(tile_array);
+  }
+
+
+
+}
 
 
 

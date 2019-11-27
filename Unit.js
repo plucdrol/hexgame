@@ -132,6 +132,7 @@ function Civilization() {
     this.addAction( new actionForesters());
     this.addAction( new actionCreateCamp());
     this.addAction( new actionConquer());
+    this.addAction( new actionGetResource());
     //this.addAction( new actionMove() );
 
 }

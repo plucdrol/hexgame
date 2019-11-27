@@ -60,7 +60,7 @@ WorldRenderer.p.drawWorld = function() {
   this.drawRivers(hexarray);
   //this.drawCivTiles(hexarray);
 
-  //this.drawRoads(hexarray);
+  this.drawRoads(hexarray);
   this.drawUnits(hexarray);
   this.drawResources(hexarray);
 
