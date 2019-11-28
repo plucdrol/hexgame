@@ -26,7 +26,7 @@ HUDRenderer.prototype.drawHUD = function() {
   //this.drawCityConnections();
 
   if (hex_selected) {
-    this.drawCivRange();
+    this.drawActorRange();
     this.drawSelectionHex(hex_selected);
   }
 
@@ -38,17 +38,17 @@ HUDRenderer.prototype.drawHUD = function() {
 }
 
 
-HUDRenderer.prototype.civHasRenderableRange = function(civ) {
-  return (civ && civ instanceof Civilization && civ.range.length > 0)
+HUDRenderer.prototype.actorHasRenderableRange = function(actor) {
+  return (actor && actor.selectable && actor.range.length > 0)
 }
 
 
-HUDRenderer.prototype.drawCivRange = function() {
-  //draw range of selected civ  
-  var civ = this.unit_input.getActorSelected();
+HUDRenderer.prototype.drawActorRange = function() {
+  //draw range of selected actor
+  var actor = this.unit_input.getActorSelected();
 
-  if (this.civHasRenderableRange(civ)) {
-    this.hex_renderer.drawHexes(civ.range);
+  if (this.actorHasRenderableRange(actor)) {
+    this.hex_renderer.drawHexes(actor.range);
 
   }
 }
@@ -106,15 +106,15 @@ HUDRenderer.prototype.makeActionButton = function(action) {
 HUDRenderer.prototype.updateActionButtons = function() {
 
   //do nothing if there is no unit to update
-  let civ = this.unit_input.getActorSelected();
+  let actor = this.unit_input.getActorSelected();
   let position = this.unit_input.getHexSelected();
-  if (!civ) return;
+  if (!actor) return;
 
   //remember previous action
   var current_action = this.unit_input.getActionSelectedId();
 
   //generate new button list
-  this.generateButtons(civ, position);
+  this.generateButtons(actor, position);
   this.addClickDetection();
 
   //reselect the previously selected action
@@ -123,29 +123,29 @@ HUDRenderer.prototype.updateActionButtons = function() {
   }
 }
 
-HUDRenderer.prototype.generateButtons = function(civ, position) {
+HUDRenderer.prototype.generateButtons = function(actor, position) {
 
   //get button-list HTML element
   var action_buttons = document.getElementById('action-buttons');
   action_buttons.innerHTML = "";
 
   //display simple message if no unit is selected
-  if (!civ.actions || civ.actions.length == 0) {
+  if (!actor.actions || actor.actions.length == 0) {
     action_buttons.innerHTML = "Click a village";
     return;
   }
 
-  for (let action of civ.actions) {
+  for (let action of actor.actions) {
     
     //only show actions whose activation is met
-    if (!action.activation(this.world, civ, position)) 
+    if (!action.activation(this.world, actor, position)) 
       continue;
 
     let new_button = this.makeActionButton(action);
     action_buttons.innerHTML += new_button;
     
     //Show actions in grey if their requirements are not met
-    if (!action.requirement(this.world, civ, position)) {
+    if (!action.requirement(this.world, actor, position)) {
       document.getElementById("action-".concat(action.name)).disabled = true;
     }
   }
@@ -183,15 +183,6 @@ HUDRenderer.prototype.writeMessage = function(message, element) {
   document.getElementById(element).innerHTML = message;
 }
 
-HUDRenderer.prototype.writeResources = function(civ) {
-  var message = "Food:".concat(civ.resources.food)
-                 .concat(" Wood:").concat(civ.resources.wood)
-                 .concat(" Stone:").concat(civ.resources.stone);
-  if (civ.resources.unknown > 0)
-    message = message.concat(" Unknown:").concat(civ.resources.unknown);
-  this.writeMessage(message);
-}
-
 //starts an every-second screen update of city resources
 HUDRenderer.prototype.trackUnitResources = function() {
   
@@ -209,7 +200,6 @@ HUDRenderer.prototype.update_function = function() {
   this.writeMessage("World population: "+pop+"/"+world.populationNextGoal(), 'world-resources');
 
   if (civ && civ.resources) {
-    this.writeResources(civ); 
     this.updateActionButtons();
   } else {
     this.clearButtons();
