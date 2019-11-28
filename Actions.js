@@ -209,25 +209,24 @@ function actionBecomeCamp() {
   this.min_distance = 0;
   this.max_distance = 0;
   
-  this.targetFilterFunction = function(world, civ, hex) {
+  this.targetFilterFunction = function(world, actor, hex) {
     return world.noCitiesInArea(hex, 5);
   }
-  this.activation = function(world, civ, position) {
-    return civ.resources.food >= 1;
+  this.activation = function(world, actor, position) {
+    return true;
   }
-  this.requirement = function(world, civ, position) {
-    return civ.resources.food >= 1;
+  this.requirement = function(world, actor, position) {
+    return true;
   };
 
   this.description = function() {
     return "Found a <br/> camp here";
   }
-  this.effect = function(world, civ, position, target) {
+  this.effect = function(world, actor, position, target) {
  
     //replace the unit
     world.units.remove( position );
     world.units.set( position, new Unit('village') );
-    new_unit = world.units.get( position );
   }
 }
 
