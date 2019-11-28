@@ -60,14 +60,6 @@ function World(radius) {
   this.total_population = 0;
   this.population_unlocks = [100,500,1000,5000];
 
-
-  //start the 1-second counter which gathers resources for cities
-  this.startGathering = function() {
-    var self = this; 
-    setInterval( self.everySecond().bind(self), 1000 );
-  }
-  this.startGathering();
-
 }
 
 ////////////////////////////////////////////////////
