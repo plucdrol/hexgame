@@ -417,6 +417,9 @@ function actionFishermen() {
   }
   this.effect = function(world, actor, position, target) {
 
+    
+    let pathfinder = this.getPathfinder();
+
     for (new_position of actor.range) {
 
       world.createSubCity(position, new_position);
@@ -477,9 +480,13 @@ function actionRiverlands() {
     return "Become farmers";
   }
   this.effect = function(world, actor, position, target) {
-
+    
+    let pathfinder = this.getPathfinder();
     for (new_position of actor.range) {
       world.createSubCity(position, new_position);
+      //Build a road to the sub-city
+      let tile_array = pathfinder.getPath(world.world_map, position, new_position, 15);   
+      world.buildRoad(tile_array);
     }
 
   }
@@ -537,9 +544,13 @@ function actionForesters() {
   }
   this.effect = function(world, actor, position, target) {
     
-
+    let pathfinder = this.getPathfinder();
     for (new_position of actor.range) {
       world.createSubCity(position, new_position);
+
+      //Build a road to the sub-city
+      let tile_array = pathfinder.getPath(world.world_map, position, new_position, 15);   
+      world.buildRoad(tile_array);
     }
 
   }
