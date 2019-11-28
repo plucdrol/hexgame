@@ -4,9 +4,6 @@ function HUDRenderer(world, game_input, hex_renderer) {
   this.game_input = game_input;
   this.world = world;
   this.unit_input = game_input.unit_input;
-  
-  //start tracking
-  this.trackUnitResources();
   this.hex_renderer = hex_renderer;
 }
 
@@ -182,17 +179,6 @@ HUDRenderer.prototype.writeMessage = function(message, element) {
     var element = 'city-resources';
   document.getElementById(element).innerHTML = message;
 }
-
-//starts an every-second screen update of city resources
-HUDRenderer.prototype.trackUnitResources = function() {
-  
-  if (this.stop_city_interval_number != 0)
-    clearInterval(this.stop_city_interval_number);
-
-  let self = this;
-  this.stop_city_interval_number = setInterval(self.update_function.bind(self), 1000);
-}
-
 
 HUDRenderer.prototype.update_function = function() { 
   let actor = this.unit_input.getActorSelected();

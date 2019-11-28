@@ -110,6 +110,7 @@ function GameInput(world, view) {
 
       //Only reference to unit controller in WorldInterface
       this.unit_input.clickHex(hex_clicked);
+      hud_renderer.update_function();
       
       updateWorldRender();
     }
