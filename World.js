@@ -143,7 +143,7 @@ World.prototype.getMapValue = function(hex) {
 World.prototype.getTile = World.prototype.getMapValue;
 
 World.prototype.getActor = function(hex) {
-  return this.getTile(hex).civ;
+  return this.getUnit(hex);
 }
 
 World.prototype.getRandomHex = function() {
@@ -405,8 +405,8 @@ World.prototype.everySecond = function() {
     //this.spreadCities();
     this.setCityCulture();
     //this.spreadCulture();
-    this.collectResources();
-    this.getCivTileArrays();
+    //this.collectResources();
+    //this.getCivTileArrays();
   }
 }
 World.prototype.setCityCulture = function() {
