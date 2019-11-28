@@ -567,24 +567,21 @@ function actionConquer() {
   this.min_distance = 1;
   this.max_distance = 6;
 
-  this.targetFilterFunction = function(world, civ, hex) {
-    return (!(world.getUnit(hex) && world.positionIsCiv(civ,hex)));
+  this.targetFilterFunction = function(world, actor, hex) {
+    return (!(world.getUnit(hex) ));
   }
-  this.activation = function(world, civ, position) {
-    if (!world.populationUnlock(3))
-      return false;
-    return (civ.resources.wood >= 1 && civ.resources.stone >= 1);
+  this.activation = function(world, actor, position) {
+    return (true);
   }
-  this.requirement = function(world, civ, position) {
-    return (civ.resources.wood >= 2 && civ.resources.stone >= 2);
+  this.requirement = function(world, actor, position) {
+    return (true);
   };
   this.description = function() {
     return "Conquer a city";
   }
-  this.effect = function(world, civ, position, target) {
+  this.effect = function(world, actor, position, target) {
     //Make the other city part of this civilization
     let enemy = world.units.get(target);
-    enemy.civ = civ;
   }
 }
 
