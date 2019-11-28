@@ -265,7 +265,4 @@ HUDRenderer.prototype.tooltipTile = function(hex_hovered) {
   if (tile && tile.river && tile.river.water_level >= 7) {
     writeTooltip('river '+tile.river.name+', ');
   }
-  if (tile && this.world.getTile(hex_hovered).civ ) {
-    writeTooltip(this.world.getTile(hex_hovered).civ.name);
-  }
 }
