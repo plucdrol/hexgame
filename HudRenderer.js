@@ -192,7 +192,7 @@ function clearTooltip() {
   document.getElementById('tooltip').innerHTML = "";
 }
 
-function writeTooltip(message) {
+function addTooltip(message) {
   document.getElementById('tooltip').innerHTML += message;
 }
 
@@ -203,35 +203,35 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
   if (!hex_hovered) 
     return;
   if (!this.world.tileIsRevealed(hex_hovered)) {
-    writeTooltip("clouds");
+    addTooltip("clouds");
     return;
   }
 
   //HOVERING OVER THINGS
-  this.tooltipUnit(hex_hovered);
-  this.tooltipResource(hex_hovered);
-  this.tooltipTile(hex_hovered);
+  this.addTooltipUnit(hex_hovered);
+  this.addTooltipResource(hex_hovered);
+  this.addTooltipTile(hex_hovered);
 
 }
 
-HUDRenderer.prototype.tooltipUnit = function(hex_hovered) {
+HUDRenderer.prototype.addTooltipUnit = function(hex_hovered) {
   let unit = this.world.getUnit(hex_hovered);
   if (unit && unit.hasOwnProperty('size'))
-    writeTooltip(unit.type+", ");
+    addTooltip(unit.type+", ");
 }
 
-HUDRenderer.prototype.tooltipResource = function(hex_hovered) {
+HUDRenderer.prototype.addTooltipResource = function(hex_hovered) {
   let resource = this.world.getResource(hex_hovered);
   if (resource && resource.resources) 
-    writeTooltip(resource.type+", ");
+    addTooltip(resource.type+", ");
 }
 
-HUDRenderer.prototype.tooltipTile = function(hex_hovered) {
+HUDRenderer.prototype.addTooltipTile = function(hex_hovered) {
   let tile = this.world.getTile(hex_hovered);
   if (tile && tile.hasOwnProperty('elevation')) {
-    writeTooltip(land_tiles[tile.elevation]+", ");
+    addTooltip(land_tiles[tile.elevation]+", ");
   }
   if (tile && tile.river && tile.river.water_level >= 7) {
-    writeTooltip('river '+tile.river.name+', ');
+    addTooltip('river '+tile.river.name+', ');
   }
 }
