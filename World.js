@@ -45,7 +45,7 @@ function World(radius) {
   //create units map
   this.units = new HexMap();
   this.units.set(new Hex(0,0), new Unit('village'));
-  this.units.get(new Hex(0,0)).civ.resources.food = 300;
+  this.units.get(new Hex(0,0)).resources.food = 300;
 
   //create resources map
   this.resources = new HexMap();

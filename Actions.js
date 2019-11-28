@@ -139,61 +139,6 @@ function Action() {
 
 
 
-/*
-
-function actionMove() {
-  Action.call(this);
-
-  this.name = "move";
-  this.type = "target";
-  this.target = "land";
-  this.nextSelection = "target";
-  this.min_distance = 0;
-  this.max_distance = 5;
-  this.minimum_elevation = 2;
-  this.maximum_elevation = 13;
-  var action = this;
-
-  this.targetFilterFunction = function(world, civ, hex) {
-    let food_count = 0;
-
-    for (neighbor of hex.getNeighbors().concat(hex) ) {
-      if (world.getResource(neighbor) && 
-          world.getResource(neighbor).resources.food >= 1)
-        food_count++;
-    }
-    if (food_count == 0) 
-      return false;
-
-    return world.noCitiesInArea(hex,5);
-  }
-  this.activation = function(world, civ, position) {
-    return civ.resources.food < 1;
-  }
-  this.requirement = function(world, civ, position) {
-    return civ.resources.food < 1;
-  };
-
-  this.description = function() {
-    return "Move somewhere<br/> with more food";
-  }
-
-  this.effect = function(world, civ, position, target) {
-    
-    //move the unit
-    world.units.remove(position);
-    world.units.set(target, unit);
-    //unit.civ.resources.wood = 0;
-    //unit.civ.resources.stone = 0;
-    world.clearClouds(target, 5);
-  };
-
-}*/
-
-
-
-
-
 
 
 
@@ -404,7 +349,7 @@ function actionFishermen() {
 
     return (true);
   }
-  this.requirement = function(world, civ, position) {
+  this.requirement = function(world, actor, position) {
 
     if (!world.countResources(Hex.circle(position, 1), 'fish', 1))
       return false;
@@ -470,7 +415,7 @@ function actionRiverlands() {
       return false;
     return (true);
   }
-  this.requirement = function(world, civ, position) {
+  this.requirement = function(world, actor, position) {
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
     return (true);
@@ -535,7 +480,7 @@ function actionForesters() {
 
     return (true);
   }
-  this.requirement = function(world, civ, position) {
+  this.requirement = function(world, actor, position) {
     return (true);
   }
 
@@ -591,7 +536,6 @@ function actionConquer() {
     return "Conquer a city";
   }
   this.effect = function(world, actor, position, target) {
-    //Make the other city part of this civilization
     let enemy = world.units.get(target);
   }
 }
