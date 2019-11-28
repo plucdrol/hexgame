@@ -55,8 +55,10 @@ WorldRenderer.p.drawWorld = function() {
   
 
   
+  //this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
   this.drawRivers(hexarray);
+
   this.drawRoads(hexarray);
   this.drawUnits(hexarray);
   this.drawResources(hexarray);
@@ -91,6 +93,8 @@ WorldRenderer.p.drawTiles = function(hexarray) {
       this.drawTile(hex, this.getTile(hex));
   }
 }
+
+
 
 WorldRenderer.p.drawRivers = function(hexarray) {
   //draw the rivers
@@ -192,7 +196,6 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
     //this.drawCityRadius(hex, unit);
   }
 };
-
 
 
 WorldRenderer.p.drawPath = function(range,destination) {
