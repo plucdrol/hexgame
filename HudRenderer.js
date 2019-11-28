@@ -195,11 +195,11 @@ HUDRenderer.prototype.trackUnitResources = function() {
 
 
 HUDRenderer.prototype.update_function = function() { 
-  let civ = this.unit_input.getActorSelected();
+  let actor = this.unit_input.getActorSelected();
   let pop = this.world.totalPopulation();
   this.writeMessage("World population: "+pop+"/"+world.populationNextGoal(), 'world-resources');
 
-  if (civ && civ.resources) {
+  if (actor && actor.selectable) {
     this.updateActionButtons();
   } else {
     this.clearButtons();

@@ -83,16 +83,16 @@ function Action() {
 
   this.updateActionRange = function(world, actor, position) {
 
-    actor.range = this.getActionRange(world, actor );
+    actor.range = this.getActionRange(world, actor, position );
   };
 
-  this.getActionRange = function(world, actor) {
+  this.getActionRange = function(world, actor, position) {
 
     let pathfinder = this.getPathfinder();
 
     var max_distance = this.max_distance | 3;
     var min_distance = this.min_distance | 0;
-    var actionRange = pathfinder.getRange( world.world_map, actor.tile_array, max_distance, min_distance );
+    var actionRange = pathfinder.getRange( world.world_map, position, max_distance, min_distance );
     let landRange = actionRange.filter(hex => world.getMapValue(hex).elevation > 1 );
 
     //clear the clouds over the area explored
@@ -107,13 +107,13 @@ function Action() {
     return filteredRange;
   };
 
-  this.getActionPath = function(world, actor, target) {
+  this.getActionPath = function(world, actor, position, target) {
 
     let pathfinder = this.getPathfinder();
 
     var max_distance = this.max_distance | 3;
     var min_distance = this.min_distance | 0;
-    var actionPath = pathfinder.getPath( world.world_map, actor.tile_array, target, max_distance );
+    var actionPath = pathfinder.getPath( world.world_map, position, target, max_distance );
 
     return actionPath;
   };

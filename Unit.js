@@ -11,6 +11,13 @@ function Unit(unit_type) {
 
 };
 
+Unit.prototype.addAction = function( action ) {
+  if (!this.actions) {
+    this.actions = [];
+  }
+  this.actions.push( action );
+}
+
 Unit.prototype.setType = function(unit_type) {
   this.type = unit_type;
 
@@ -21,6 +28,14 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('white',5);
     this.setCitySize(1);
     this.civ.setResourceStores(35,0,0);
+
+    this.addAction( new actionFishermen());
+    this.addAction( new actionRiverlands());
+    this.addAction( new actionForesters());
+    this.addAction( new actionCreateCamp());
+    this.addAction( new actionConquer());
+    this.addAction( new actionGetResource());
+
     break;
 
 
@@ -129,12 +144,7 @@ function Civilization() {
   this.id = Math.floor(Math.random()*10000);
   this.name = this.generateName();
   this.generateColors();
-    this.addAction( new actionFishermen());
-    this.addAction( new actionRiverlands());
-    this.addAction( new actionForesters());
-    this.addAction( new actionCreateCamp());
-    this.addAction( new actionConquer());
-    this.addAction( new actionGetResource());
+
     //this.addAction( new actionMove() );
 
 }

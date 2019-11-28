@@ -80,6 +80,7 @@ UnitInput.p.getHexSelected = function()  {
 };
 
 UnitInput.p.anActorIsSelected = function() {
+  
   if (!this.aHexIsSelected()) 
     return false;
 
@@ -178,7 +179,7 @@ UnitInput.p.updateActionRangeIndirectly = function() {
   let actor = this.getActorSelected();
 
   if (action)
-    actor.range = action.getActionRange(world, actor);
+    actor.range = action.getActionRange(world, actor, this.hex_selected);
   else
     actor.range = new HexMap();
 };
