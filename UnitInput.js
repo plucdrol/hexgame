@@ -18,7 +18,6 @@ function UnitInput(world) {
   this.hex_selected = undefined;
   this.units = world.units;
   this.action_selected = undefined;
-  this.civ_selected = undefined;
 
 
 }
@@ -37,7 +36,7 @@ UnitInput.p.clickHex = function(hex) {
   this.clickWithNoSelection(hex);
 };
 
-//civ style
+//selecting a tile
 UnitInput.p.selectHex = function(hex) {
 
   this.unselectActions();
@@ -86,7 +85,7 @@ UnitInput.p.anActorIsSelected = function() {
 
   var maybe_actor = this.world.getActor(this.getHexSelected());
   if (maybe_actor) {
-    return (maybe_actor instanceof Civilization);
+    return (maybe_actor.selectable);
   } else {
     return false;
   }

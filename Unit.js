@@ -7,6 +7,7 @@
 function Unit(unit_type) {
   
   this.setType(unit_type);
+  this.selectable = true;
 
 };
 
@@ -123,6 +124,7 @@ Unit.prototype.setCiv = function(civilization) {
 /////////////////////////////////////////////
 
 function Civilization() {
+  this.selectable = true;
   this.type = Math.floor(Math.random()*5)+1;
   this.id = Math.floor(Math.random()*10000);
   this.name = this.generateName();
