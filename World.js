@@ -310,12 +310,6 @@ World.prototype.makeCloudsEverywhere = function() {
   }
 }
 
-
-
-
-
-
-
 World.prototype.createSubCity = function( origin, target ) {
 
   //Create a new unit
@@ -328,9 +322,6 @@ World.prototype.createSubCity = function( origin, target ) {
   //Add it to the world
   this.units.set(target, new_unit);
   this.clearClouds(target, 5);
-
-
-
 }
 
 World.prototype.clearClouds = function(position, radius) {
