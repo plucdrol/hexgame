@@ -68,3 +68,58 @@ Civilization.prototype.createUnit = function(unit_type, capital_position) {
   return new_unit;
 }
 
+
+
+
+WorldRenderer.p.drawCivTiles = function(hexarray) {
+  let civ_tile_arrays = [];
+    
+  //collect all civ tiles into arrays for each civilization
+  for (hex of hexarray) {
+    if (this.getTile(hex).hidden) continue;
+    if (!this.getTile(hex).civ) continue;
+    if (!civ_tile_arrays[this.getTile(hex).civ.id])
+      civ_tile_arrays[this.getTile(hex).civ.id] = [];
+    civ_tile_arrays[this.getTile(hex).civ.id].push(hex);
+  }
+
+  //draw tile arrays
+  if (!civ_tile_arrays)
+    return;
+  for (culture of civ_tile_arrays) {
+    if (!(culture instanceof Array))
+      continue;
+    let civ = this.getTile(culture[0]).civ;    
+
+
+    //draw the selected civ as yellow
+    let selected_civ = game_input.unit_input.getActorSelected();
+    if (selected_civ && selected_civ.name == civ.name) {
+        let golden_civ = new RenderStyle();
+        golden_civ.fill_color = "rgba(150,150,50,0.8)";
+        golden_civ.line_color = "black";
+        this.drawCivHexes(culture, golden_civ);
+    } else {
+        this.drawCivHexes(culture, civ);
+    }
+
+  }
+  
+}
+
+
+
+WorldRenderer.p.drawCivTile = function(hex, tile) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = tile.civ.fill_color;
+  radius_style.line_color = tile.civ.line_color;
+  this.hex_renderer.drawHex(hex, radius_style);
+}
+WorldRenderer.p.drawCivHexes = function(hexes, civ) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = civ.fill_color;
+  radius_style.line_color = civ.line_color;
+  this.hex_renderer.drawHexes(hexes, radius_style);
+}
