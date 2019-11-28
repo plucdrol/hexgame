@@ -93,6 +93,10 @@ World.prototype.getHex = function(world_position) {
   return hex;
 }
 
+World.prototype.getHexArray = function() {
+  return this.world_map.getHexArray();
+}
+
 World.prototype.getPoint = function(hex) {
   return this.layout.hexToPoint(hex);
 }
@@ -282,6 +286,13 @@ World.prototype.setCivOnTiles = function(civ, position) {
   this.world_map.get(position).civ = civ;
   this.world_map.get(position).culture = 3;
 }
+
+World.getRectangleSubMap(qmin, qmax,rmin, rmax) {
+  return this.world_map.getRectangleSubMap( qmin, qmax,rmin, rmax);
+}
+
+
+
 
 
 

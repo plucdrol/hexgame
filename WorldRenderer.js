@@ -30,7 +30,7 @@ WorldRenderer.p = WorldRenderer.prototype;
 WorldRenderer.p.calculateHexesToRender = function() {
   var rectMap = this.hex_renderer.getHexRectangleBoundaries();
   //get the rectangular array of hex tiles
-  let hexmap = this.world.world_map.getRectangleSubMap( rectMap.qmin,
+  let hexmap = this.world.getRectangleSubMap( rectMap.qmin,
                                                   rectMap.qmax,
                                                   rectMap.rmin, 
                                                   rectMap.rmax);
@@ -46,7 +46,7 @@ WorldRenderer.p.drawWorld = function() {
   */
 
   
-  var hexarray = this.world.world_map.getHexArray();
+  var hexarray = this.world.getHexArray();
   let section = Math.floor(hexarray.length/this.render_portions);
   hexarray = hexarray.slice(this.render_start*section, (this.render_start+1)*section );
   this.render_start++;
@@ -195,7 +195,7 @@ WorldRenderer.p.drawResources = function(hexarray) {
 
 
 WorldRenderer.p.getTile = function(hex) {
-    return this.world.world_map.getValue(hex);
+    return this.world.getTile(hex);
 }
 
 WorldRenderer.p.drawTile = function(hex,tile) {
