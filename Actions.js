@@ -268,7 +268,7 @@ function actionCreateCamp() {
   }
 
   this.description = function() {
-    return "Send settlers to<br/> found a new village";
+    return "Send settlers";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
@@ -397,8 +397,7 @@ function actionFishermen() {
 
   this.activation = function(world, actor, position) {
 
-    if (!world.populationUnlock(1))
-      return false;
+
 
     if (!world.countResources(Hex.circle(position, 1), 'fish', 1))
       return false;
@@ -414,12 +413,9 @@ function actionFishermen() {
   }
 
   this.description = function() {
-    return "Become fishermen<br/> requires fish";
+    return "Become fishermen";
   }
   this.effect = function(world, actor, position, target) {
-    
-    civ.food_source = 'fishing';
-    civ.border_growth = true;
 
     for (new_position of actor.range) {
 
@@ -466,8 +462,7 @@ function actionRiverlands() {
   }
 
   this.activation = function(world, actor, position) {
-    if (!world.populationUnlock(1))
-      return false;
+
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
     return (true);
@@ -479,12 +474,9 @@ function actionRiverlands() {
   }
 
   this.description = function() {
-    return "Become farmers<br/> must be on river";
+    return "Become farmers";
   }
   this.effect = function(world, actor, position, target) {
-    
-    civ.food_source = 'farming';
-    civ.border_growth = true;
 
     for (new_position of actor.range) {
       world.createSubCity(position, new_position);
@@ -533,8 +525,7 @@ function actionForesters() {
   }
 
   this.activation = function(world, actor, position) {
-    if (!world.populationUnlock(1))
-      return false;
+
     return (true);
   }
   this.requirement = function(world, civ, position) {
@@ -542,12 +533,10 @@ function actionForesters() {
   }
 
   this.description = function() {
-    return "Become hunters</br> must be near forests";
+    return "Become hunters";
   }
   this.effect = function(world, actor, position, target) {
     
-    civ.food_source = 'hunting';
-    civ.border_growth = true;
 
     for (new_position of actor.range) {
       world.createSubCity(position, new_position);
