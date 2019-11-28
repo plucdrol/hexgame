@@ -253,35 +253,31 @@ function actionCreateCamp() {
   this.min_distance = 6;
   this.max_distance = 8;
 
-  this.targetFilterFunction = function(world, civ, position) {
+  this.targetFilterFunction = function(world, actor, position) {
     
     if (!world.countResources(Hex.circle(position, 1), 'food', 1))
       return false;
 
     return world.noCitiesInArea(hex,5);
   }
-  this.activation = function(world, civ, position) {
+  this.activation = function(world, actor, position) {
     return true;
   }
-  this.requirement = function(world, civ, position) {
+  this.requirement = function(world, actor, position) {
     return true;
   }
 
   this.description = function() {
     return "Send settlers to<br/> found a new village";
   }
-  this.effect = function(world, civ, position, target) {
+  this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
     let new_unit = new Unit(this.new_unit_type);
-    //most of the time, keep the same civilization style
-    if (Math.random() < 0.7) 
-      new_unit.civ.setType(civ.type);
 
     new_unit.previous_position = position;     
-    this.createPath(world, civ.tile_array, target);
+    this.createPath(world, actor, target);
 
     world.units.set(target, new_unit);
-    world.setCivOnTiles(new_unit.civ, target);
     world.clearClouds(target, 5);
   }
 
