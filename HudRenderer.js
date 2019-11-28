@@ -1,6 +1,5 @@
 function HUDRenderer(world, game_input, hex_renderer) {
 
-  this.stop_city_interval_number = 0;
   this.game_input = game_input;
   this.world = world;
   this.unit_input = game_input.unit_input;
@@ -19,8 +18,6 @@ HUDRenderer.prototype.drawHUD = function() {
 
   var hex_hovered = this.game_input.hex_hovered;
   var hex_selected = this.unit_input.hex_selected;
-
-  //this.drawCityConnections();
 
   if (hex_selected) {
     this.drawActorRange();
@@ -65,20 +62,6 @@ HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
     select_style.line_width = 2;
     this.hex_renderer.drawHex(hex_selected, select_style);
 }
-
-HUDRenderer.prototype.drawCityConnections = function() {
-  for (hex of this.world.units.getHexArray()) {
-    let unit = this.world.getUnit(hex);
-    if (!unit)
-      continue;
-
-    if (!unit.previous_position)
-      continue;
-
-    this.hex_renderer.drawCenterLine(hex, unit.previous_position, 2, 'white' );
-  }
-}
-
 
 
 
@@ -219,7 +202,7 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
   //skip hidden and out-of-bounds hexes
   if (!hex_hovered) 
     return;
-  if (this.world.tileIsRevealed(hex_hovered)) {
+  if (!this.world.tileIsRevealed(hex_hovered)) {
     writeTooltip("clouds");
     return;
   }
