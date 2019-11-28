@@ -13,11 +13,11 @@ function Action() {
   this.maximum_elevation = 13;
   this.nextSelection = "self";
 
-  this.activation = function(world, civ, position) {
+  this.activation = function(world, actor, position) {
     return true;
   }
 
-  this.targetFilterFunction = function(world, civ, hex) {
+  this.targetFilterFunction = function(world, actor, hex) {
     return world.noCitiesInArea(hex,5);
   }
 
