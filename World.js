@@ -157,11 +157,6 @@ World.prototype.getUnit = function(hex) {
   return this.units.get(hex);
 }
 
-World.prototype.getCiv = function(hex) {
-  let tile = this.getTile(hex);
-  if (tile)
-    return tile.civ;
-}
 
 World.prototype.buildRoad = function(hexarray) {
   let previous_hex;
@@ -189,10 +184,6 @@ World.prototype.tileIsRevealed = function(hex) {
   return (this.world_map.containsHex(hex) && !this.getTile(hex).hidden);
 }
 
-World.prototype.setCivOnTiles = function(civ, position) {
-  this.world_map.get(position).civ = civ;
-  this.world_map.get(position).culture = 3;
-}
 
 World.prototype.getRectangleSubMap = function(qmin, qmax,rmin, rmax) {
   return this.world_map.getRectangleSubMap( qmin, qmax,rmin, rmax);
@@ -241,10 +232,6 @@ World.prototype.nearCoast = function(position) {
   return (count >= 1) 
 }
 
-World.prototype.positionIsCiv = function(civ, target) {
-  return (this.getUnit(target) && this.getUnit(target).civ == civ)
-}
-
 //'unit' is overlooked, leave it undefined to avoid that
 World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) {
   let area = Hex.circle(position, radius);
@@ -259,23 +246,6 @@ World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) 
   return true;
 }
 
-World.prototype.getCivTileArrays = function() {
-  let civ_tile_arrays = [];
-
-  //clear the civ tile arrays
-  for (hex of this.world_map.getHexArray()) {
-    if (this.getTile(hex).civ)
-      this.getTile(hex).civ.tile_array = [];
-  }
-    
-  //collect all civ tiles into arrays for each civilization
-  for (hex of this.world_map.getHexArray()) {
-    if (this.getTile(hex).hidden) continue;
-    if (!this.getTile(hex).civ) continue;
-
-    this.getTile(hex).civ.tile_array.push(hex);
-  }
-}
 
 
 
@@ -377,172 +347,6 @@ World.prototype.clearClouds = function(position, radius) {
       this.world_map.get(hex).hidden = false;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////
-//
-//            FUNCTION RUN EVERY SECOND ON THE WORLD
-//
-/////////////////////////////////////////////////////////
-
-World.prototype.everySecond = function() {
-  
-  return function(){
-    //this.spreadCities();
-    this.setCityCulture();
-    //this.spreadCulture();
-    //this.collectResources();
-    //this.getCivTileArrays();
-  }
-}
-World.prototype.setCityCulture = function() {
-
-  //set the culture of the city and surrounding tiles
-  for (let hex of this.units.getHexArray() )  {
-    if (!this.getUnit(hex).civ)
-      continue;
-
-    let tile = this.getTile(hex);
-    tile.civ = this.getUnit(hex).civ;
-    tile.culture = this.getUnit(hex).cityRadius+2;
-
-  }
-}
-
-
-World.prototype.spreadCulture = function() {
-  for (let hex of this.world_map.getHexArray() )  {
-    let tile = this.getTile(hex);
-    //ignore tiles with no civilization already
-    if (!tile.civ) 
-      continue;
-
-    //reduce culture value of 1 per second
-    if (tile.culture < 1) {
-      tile.civ = undefined;
-      tile.culture = 0;
-    } else {
-        tile.culture = tile.culture-1;
-    }
-
-    //spread that civ to all neighbor tiles
-    for (let neighbor_hex of hex.getNeighbors()) {
-      //skip tiles outside the map
-      if (!this.world_map.containsHex(neighbor_hex))
-        continue;
-
-      if (tile.culture < 1)
-          continue;
-
-
-      //check the neighbor tile
-      let neighbor_tile = this.getTile(neighbor_hex);
-      if ((neighbor_tile.elevation < 14) || neighbor_tile.civ) {
-        if (neighbor_tile.culture >= tile.culture)
-          continue;
-
-        //spready to neighbors
-        neighbor_tile.civ = tile.civ;
-        neighbor_tile.culture = tile.culture-1;
-        neighbor_tile.hidden = false;
-      }
-    }
-
-  }
-}
-
-
-//counts up resources once per second
-World.prototype.collectResources = function() {
-  let total_food = 0;
-
-  //set resource total to 0 to start counting
-  for (let unit_hex of this.units.getHexArray() ) {
-    let unit = this.units.get(unit_hex);
-    if (unit.civ && unit.civ.resources) {
-      unit.civ.startCount();
-    }
-  }
-
-  //add up all the food in civ tiles
-  for (let hex of this.world_map.getHexArray() ) {
-
-    //for each tile with a civilization
-    let tile = this.getTile(hex);
-    if (!tile.civ)
-      continue;
-
-    //add resources from tiles
-    if (this.resources.containsHex(hex)) {
-      let resource = this.getResource(hex);
-
-      if (resource.resources && resource.resources.wood) {
-        tile.civ.resources.wood += resource.resources.wood;
-        if (tile.civ.food_source == 'hunting') {
-          tile.civ.resources.food += 1;
-          total_food += 10;
-        }
-      }
-      if (resource.resources && resource.resources.stone) 
-        tile.civ.resources.stone += resource.resources.stone;
-      
-      if (resource.resources && resource.resources.unknown) 
-        tile.civ.resources.unknown += resource.resources.unknown;
-
-      if (resource.resources && resource.resources.food) {
-        tile.civ.resources.food += resource.resources.food;
-        tile.civ.pop += resource.resources.food*10; 
-        total_food += resource.resources.food*10;
-      }
-    }
-
-    //add food for rivers
-    if (this.world_map.containsHex(hex)) {
-      let river = this.getTile(hex).river;
-      if (river && river.water_level >= 7 && tile.civ.food_source == 'farming') {
-        tile.civ.resources.food += 1;
-        total_food += 10;
-      }
-    }
-
-    //remove 1 food for each from cities
-    if (this.units.containsHex(hex)) {
-      if (this.getUnit(hex).type='camp') {
-        //this.getUnit(hex).civ.resources.food -= 1;
-      }
-      //total_food -= 10;
-    }
-  }
-
-  this.total_population = total_food;
-}
-
-
-
-
-
-
-
-
-
-
-
 
 
 
