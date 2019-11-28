@@ -8,6 +8,9 @@
 //////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////
 
+
+//Receives input and affects actors inside a single World
+
 //Dependencies
 //  Hex.js
 //  PathFinder.js 
@@ -16,8 +19,6 @@
 function UnitInput(world) {
   this.world = world;
   this.hex_selected = undefined;
-  this.units = world.units;
-  this.action_selected = undefined;
 
 
 }
