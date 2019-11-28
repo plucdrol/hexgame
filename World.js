@@ -354,10 +354,10 @@ World.prototype.makeCloudsEverywhere = function() {
 
 
 
-World.prototype.createSubCity = function( civ, origin, target ) {
+World.prototype.createSubCity = function( origin, target ) {
 
   //Create a new unit
-  let new_unit = civ.createUnit('village', origin);
+  let new_unit = new Unit('village');
 
   //change color if conquering
   if (this.getUnit(target))
@@ -365,7 +365,6 @@ World.prototype.createSubCity = function( civ, origin, target ) {
 
   //Add it to the world
   this.units.set(target, new_unit);
-  this.setCivOnTiles(civ, target);
   this.clearClouds(target, 5);
 
 }

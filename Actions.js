@@ -275,7 +275,7 @@ function actionCreateCamp() {
     let new_unit = new Unit(this.new_unit_type);
 
     new_unit.previous_position = position;     
-    this.createPath(world, actor, target);
+    this.createPath(world, position, target);
 
     world.units.set(target, new_unit);
     world.clearClouds(target, 5);
@@ -309,24 +309,24 @@ function actionGetResource() {
   this.min_distance = 0;
   this.max_distance = 3;
 
-  this.targetFilterFunction = function(world, civ, position) {
+  this.targetFilterFunction = function(world, actor, position) {
     
     if (world.countResources(Hex.circle(position, 0), 'food', 1))
       return true;
 
     return false;
   }
-  this.activation = function(world, civ, position) {
+  this.activation = function(world, actor, position) {
     return true;
   }
-  this.requirement = function(world, civ, position) {
+  this.requirement = function(world, actor, position) {
     return true;
   }
 
   this.description = function() {
     return "Collect resource";
   }
-  this.effect = function(world, civ, position, target) {
+  this.effect = function(world, actor, position, target) {
     
     //Build a road to the ressource
     let pathfinder = this.getPathfinder();
@@ -364,9 +364,7 @@ function actionFishermen() {
   this.max_distance = 6;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, civ, position) {
-    if (world.positionIsCiv(civ, position))
-      return false;
+  this.targetFilterFunction = function(world, actor, position) {
 
     if (!world.world_map.containsHex(position))
       return false;
@@ -397,7 +395,7 @@ function actionFishermen() {
     return cost;
   }
 
-  this.activation = function(world, civ, position) {
+  this.activation = function(world, actor, position) {
 
     if (!world.populationUnlock(1))
       return false;
@@ -405,27 +403,27 @@ function actionFishermen() {
     if (!world.countResources(Hex.circle(position, 1), 'fish', 1))
       return false;
 
-    return (civ.resources.food >= 1 && !civ.food_source);
+    return (true);
   }
   this.requirement = function(world, civ, position) {
 
     if (!world.countResources(Hex.circle(position, 1), 'fish', 1))
       return false;
 
-    return (civ.resources.food >= 1 && !civ.food_source);
+    return (true);
   }
 
   this.description = function() {
     return "Become fishermen<br/> requires fish";
   }
-  this.effect = function(world, civ, position, target) {
+  this.effect = function(world, actor, position, target) {
     
     civ.food_source = 'fishing';
     civ.border_growth = true;
 
-    for (new_position of civ.range) {
+    for (new_position of actor.range) {
 
-      world.createSubCity(civ, position, new_position);
+      world.createSubCity(position, new_position);
     }
 
   }
@@ -456,9 +454,7 @@ function actionRiverlands() {
   this.max_distance = 5;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, civ, position) {
-    if (world.positionIsCiv(civ, position))
-      return false;
+  this.targetFilterFunction = function(world, actor, position) {
 
     if (!world.world_map.containsHex(position))
       return false;
@@ -469,29 +465,29 @@ function actionRiverlands() {
     return false;
   }
 
-  this.activation = function(world, civ, position) {
+  this.activation = function(world, actor, position) {
     if (!world.populationUnlock(1))
       return false;
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
-    return (!civ.food_source);
+    return (true);
   }
   this.requirement = function(world, civ, position) {
     if (!(world.getTile(position).river && world.getTile(position).river.water_level >= 9))
       return false;
-    return (!civ.food_source);
+    return (true);
   }
 
   this.description = function() {
     return "Become farmers<br/> must be on river";
   }
-  this.effect = function(world, civ, position, target) {
+  this.effect = function(world, actor, position, target) {
     
     civ.food_source = 'farming';
     civ.border_growth = true;
 
-    for (new_position of civ.range) {
-      world.createSubCity(civ, position, new_position);
+    for (new_position of actor.range) {
+      world.createSubCity(position, new_position);
     }
 
   }
@@ -524,10 +520,7 @@ function actionForesters() {
   this.max_distance = 6;
 
   //return all tiles with fish in range
-  this.targetFilterFunction = function(world, civ, position) {
-
-    if (world.positionIsCiv(civ, position))
-      return false;
+  this.targetFilterFunction = function(world, actor, position) {
 
     if (!world.world_map.containsHex(position))
       return false;
@@ -539,25 +532,25 @@ function actionForesters() {
 
   }
 
-  this.activation = function(world, civ, position) {
+  this.activation = function(world, actor, position) {
     if (!world.populationUnlock(1))
       return false;
-    return (civ.resources.wood >= 1 && !civ.food_source);
+    return (true);
   }
   this.requirement = function(world, civ, position) {
-    return (civ.resources.food >= 1 && !civ.food_source);
+    return (true);
   }
 
   this.description = function() {
     return "Become hunters</br> must be near forests";
   }
-  this.effect = function(world, civ, position, target) {
+  this.effect = function(world, actor, position, target) {
     
     civ.food_source = 'hunting';
     civ.border_growth = true;
 
-    for (new_position of civ.range) {
-      world.createSubCity(civ, position, new_position);
+    for (new_position of actor.range) {
+      world.createSubCity(position, new_position);
     }
 
   }
