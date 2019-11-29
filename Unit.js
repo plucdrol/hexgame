@@ -30,19 +30,20 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'village':
     this.setGraphic('white',5);
-    this.setCitySize(1);
-    this.setResourceStores(35,0,0);
-
-    //this.addAction( new actionFishermen());
-    //this.addAction( new actionRiverlands());
-    //this.addAction( new actionForesters());
-    this.addAction( new actionCreateCamp());
-    //this.addAction( new actionConquer());
     this.addAction( new actionGetResource());
-    this.addAction( new actionGoFishing());
-
+    this.addAction( new actionCreateQueensChamber());
+    this.addAction( new actionCreateFishingCenter());
     break;
 
+  case 'queens-chamber':
+    this.setGraphic('white',3);
+    this.addAction( new actionCreateCamp());
+    break;
+
+  case 'fishing-center':
+    this.setGraphic('lightblue',3);
+    this.addAction( new actionGoFishing());
+    break;
 
 
   case 'fish':

@@ -45,7 +45,6 @@ function World(radius) {
   //create units map
   this.units = new HexMap();
   this.units.set(new Hex(0,0), new Unit('village'));
-  this.units.get(new Hex(0,0)).resources.food = 300;
 
   //create resources map
   this.resources = new HexMap();
@@ -142,6 +141,12 @@ World.prototype.getUnit = function(hex) {
   return this.units.get(hex);
 }
 
+World.prototype.addUnit = function(hex, unit_type) {
+
+    let new_unit = new Unit(unit_type);
+    this.units.set(hex, new_unit);
+}
+
 
 World.prototype.buildRoad = function(hexarray) {
   let previous_hex;
@@ -192,6 +197,15 @@ World.prototype.getRectangleSubMap = function(qmin, qmax,rmin, rmax) {
 //
 ///////////////////////////////////////////////////
 
+World.prototype.unitAtLocation = function(hex) {
+  if (this.getUnit(hex) instanceof Unit) {
+    return true;
+  }
+
+  return false
+
+}
+
 World.prototype.countResources = function(hexarray, resource_type, minimum_count) {
   let count = 0;
 
@@ -222,9 +236,8 @@ World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) 
   let area = Hex.circle(position, radius);
   for (hex of area) {
     if (this.units.containsHex(hex) ) {
-      //if (hex.equals(position_to_ignore))
-        //continue;
-      return false;
+      if (this.getUnit(hex).type=='village')
+        return false;
     }
   }
   //no cities
@@ -291,7 +304,7 @@ World.prototype.generateResources = function() {
       case 9: //hills
       case 10: 
       case 11: 
-        resources.set(hex, new Unit('stone'));
+        //resources.set(hex, new Unit('stone'));
         break;
     }
   }

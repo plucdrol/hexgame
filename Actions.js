@@ -148,44 +148,6 @@ function Action() {
 
 
 
-//This action transforms the unit into a camp
-function actionBecomeCamp() {
-  Action.call(this);
-
-  this.name = "settle";
-  this.type = "target";
-  this.target = "target";
-  this.min_distance = 0;
-  this.max_distance = 0;
-  
-  this.targetFilterFunction = function(world, actor, hex) {
-    return world.noCitiesInArea(hex, 5);
-  }
-  this.activation = function(world, actor, position) {
-    return true;
-  }
-  this.requirement = function(world, actor, position) {
-    return true;
-  };
-
-  this.description = function() {
-    return "Found a <br/> camp here";
-  }
-  this.effect = function(world, actor, position, target) {
- 
-    //replace the unit
-    world.units.remove( position );
-    world.units.set( position, new Unit('village') );
-  }
-}
-
-
-
-
-
-
-
-
 
 
 
@@ -209,7 +171,7 @@ function actionCreateCamp() {
     if (!world.countResources(Hex.circle(position, 1), 'food', 1))
       return false;
 
-    return world.noCitiesInArea(hex,5);
+    return world.noCitiesInArea(position,5);
   }
   this.activation = function(world, actor, position) {
     return true;
@@ -226,12 +188,10 @@ function actionCreateCamp() {
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
-    let new_unit = new Unit(this.new_unit_type);
 
-    new_unit.previous_position = position;     
     this.createPath(world, position, target);
 
-    world.units.set(target, new_unit);
+    world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 5);
     world.population -= 4;
   }
@@ -244,6 +204,107 @@ function actionCreateCamp() {
 
 
 
+
+
+//This action transforms the unit into a camp
+function actionCreateQueensChamber() {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "queenschamber";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'queens-chamber';
+
+  this.nextSelection = "target";
+  this.min_distance = 1;
+  this.max_distance = 1;
+
+  this.targetFilterFunction = function(world, actor, position) {
+
+    return !world.noCitiesInArea(position,1);
+  }
+  this.activation = function(world, actor, position) {
+    return true;
+  }
+  this.requirement = function(world, actor, position) {
+
+    if (world.getPopulation() >= 4)
+      return true;
+    return false;
+  }
+
+  this.description = function() {
+    return "Queen's chamber (4 ants)<br>Creates new colonies";
+  }
+  this.effect = function(world, actor, position, target) {
+    //Create a unit_type at the target location
+ 
+    this.createPath(world, position, target);
+
+    world.addUnit(target, this.new_unit_type);
+    world.clearClouds(target, 5);
+    world.population -= 4;
+  }
+
+
+
+}
+
+
+
+
+
+
+
+//This action transforms the unit into a camp
+function actionCreateFishingCenter() {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+  this.maximum_elevation = 4;
+
+  this.name = "fishing-center";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'fishing-center';
+
+  this.nextSelection = "target";
+  this.min_distance = 1;
+  this.max_distance = 2;
+
+  this.targetFilterFunction = function(world, actor, position) {
+
+    if (!world.nearCoast(position))
+      return false;
+
+    //if (world.countResources(Hex.circle(position, 1), 'fish', 1))
+      return true;
+  }
+  this.activation = function(world, actor, position) {
+    return true;
+  }
+  this.requirement = function(world, actor, position) {
+
+    return true;
+  }
+
+  this.description = function() {
+    return "Fishing center (2 ants)<br>Can collect fish";
+  }
+  this.effect = function(world, actor, position, target) {
+    //Create a unit_type at the target location
+  
+    this.createPath(world, position, target);
+    world.addUnit(target, this.new_unit_type);
+    world.clearClouds(target, 5);
+    world.population -= 2;
+  }
+
+
+
+}
 
 
 
@@ -264,7 +325,12 @@ function actionGetResource() {
   this.min_distance = 0;
   this.max_distance = 3;
 
+  this.new_unit_type = 'route';
+
   this.targetFilterFunction = function(world, actor, position) {
+
+    if (world.unitAtLocation(position))
+      return false;
 
     if (world.countResources(Hex.circle(position, 0), 'food', 1))
       return true;
@@ -287,12 +353,10 @@ function actionGetResource() {
 
   this.effect = function(world, actor, position, target) {
     
-    //Build a road to the resource
-    let pathfinder = this.getPathfinder();
-    let tile_array = pathfinder.getPath(world.world_map, position, target, 15);   
+    //Build a road to the resource 
+    this.createPath(world, position, target);
 
-    world.addResource(target, 'route');
-    world.buildRoad(tile_array);
+    world.addUnit(target, this.new_unit_type);
     world.population += 1;
     world.total_population += 1
   }
@@ -324,14 +388,14 @@ function actionGoFishing() {
     return false;
   }
   this.activation = function(world, actor, position) {
-    if (world.total_population >= 20)
+    //if (world.total_population >= 20)
       return true;
-    else
-      return false;
+    //else
+      //return false;
   }
   this.requirement = function(world, actor, position) {
-    if (world.total_population < 20)
-      return false;
+    //if (world.total_population < 20)
+      //return false;
 
     if (!world.nearCoast(position))
       return false;
@@ -346,13 +410,11 @@ function actionGoFishing() {
   this.effect = function(world, actor, position, target) {
     
     //Build a road to the resource
-    let pathfinder = this.getPathfinder();
-    let tile_array = pathfinder.getPath(world.world_map, position, target, 15);   
+    this.createPath(world,position,target);
 
     world.addResource(target, 'route');
-    world.buildRoad(tile_array);
-    world.population += 2;
-    world.total_population += 2;
+    world.population += 1;
+    world.total_population += 1;
   }
 
 
