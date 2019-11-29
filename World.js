@@ -57,8 +57,10 @@ function World(radius) {
   land_tile.elevation = 2;
   this.setHex(new Hex(0,0), land_tile);
 
-  this.total_population = 0;
-  this.population_unlocks = [100,500,1000,5000];
+  this.population = 8;
+  this.total_population = 8;
+
+
 
 }
 
@@ -67,19 +69,10 @@ function World(radius) {
 ////////////////////////////////////////////////////
 
 
-World.prototype.totalPopulation = function() {
-  return Math.floor(this.total_population);
+World.prototype.getPopulation = function() {
+  return Math.floor(this.population);
 }
 
-World.prototype.populationNextGoal = function() {
-  let n = 0;
-  while (this.totalPopulation() > this.population_unlocks[n])
-    n++;
-  return this.population_unlocks[n];
-}
-World.prototype.populationUnlock = function(n) {
-  return (this.totalPopulation() > this.population_unlocks[n-1])
-}
 
 World.prototype.getLayout = function() {
   return this.layout;
@@ -262,6 +255,10 @@ World.prototype.generateUnknown = function() {
   }
 }
 
+World.prototype.addResource = function(hex, type) {
+  this.resources.set(hex, new Unit(type) );
+}
+
 World.prototype.generateResources = function() {
   var resources = new HexMap();
   for (let hex of this.world_map.getHexArray() )  {
@@ -322,6 +319,9 @@ World.prototype.createSubCity = function( origin, target ) {
   //Add it to the world
   this.units.set(target, new_unit);
   this.clearClouds(target, 5);
+
+  //add new
+  new_unit.colony = this.getUnit(origin).colony;
 }
 
 World.prototype.clearClouds = function(position, radius) {

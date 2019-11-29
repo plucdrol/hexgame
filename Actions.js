@@ -94,16 +94,19 @@ function Action() {
     var max_distance = this.max_distance | 3;
     var min_distance = this.min_distance | 0;
     var actionRange = pathfinder.getRange( world.world_map, position, max_distance, min_distance );
-    let landRange = actionRange.filter(hex => world.getMapValue(hex).elevation > 1 );
+
+    //limit range to elevations
+    let upperRange = actionRange.filter(hex => world.getMapValue(hex).elevation >= this.minimum_elevation );
+    let middleRange = actionRange.filter(hex => world.getMapValue(hex).elevation <= this.maximum_elevation );
 
     //clear the clouds over the area explored
-    for (let hex of landRange) {
+    for (let hex of middleRange) {
       for (let neighbor of hex.getNeighbors())
         world.world_map.get(neighbor).hidden = false;
     }
 
     //remove unsuitable targets
-    let filteredRange = landRange.filter(position => this.targetFilterFunction(world, actor, position));
+    let filteredRange = middleRange.filter(position => this.targetFilterFunction(world, actor, position));
 
     return filteredRange;
   };
@@ -196,6 +199,8 @@ function actionCreateCamp() {
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'village';
+
+  this.nextSelection = "target";
   this.min_distance = 6;
   this.max_distance = 8;
 
@@ -210,11 +215,14 @@ function actionCreateCamp() {
     return true;
   }
   this.requirement = function(world, actor, position) {
-    return true;
+
+    if (world.getPopulation() >= 4)
+      return true;
+    return false;
   }
 
   this.description = function() {
-    return "Send settlers";
+    return "New colony (4 ants)";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
@@ -225,6 +233,7 @@ function actionCreateCamp() {
 
     world.units.set(target, new_unit);
     world.clearClouds(target, 5);
+    world.population -= 4;
   }
 
 
@@ -247,7 +256,7 @@ function actionCreateCamp() {
 function actionGetResource() {
   Action.call(this);
 
-  this.minimum_elevation = 1;
+  this.minimum_elevation = 2;
 
   this.name = "get";
   this.type = "target";
@@ -256,8 +265,11 @@ function actionGetResource() {
   this.max_distance = 3;
 
   this.targetFilterFunction = function(world, actor, position) {
-    
+
     if (world.countResources(Hex.circle(position, 0), 'food', 1))
+      return true;
+
+    if (world.countResources(Hex.circle(position, 0), 'wood', 1))
       return true;
 
     return false;
@@ -272,19 +284,80 @@ function actionGetResource() {
   this.description = function() {
     return "Collect resource";
   }
+
   this.effect = function(world, actor, position, target) {
     
-    //Build a road to the ressource
+    //Build a road to the resource
     let pathfinder = this.getPathfinder();
     let tile_array = pathfinder.getPath(world.world_map, position, target, 15);   
 
+    world.addResource(target, 'route');
     world.buildRoad(tile_array);
+    world.population += 1;
+    world.total_population += 1
   }
 
 
 
 }
 
+
+
+//This action transforms the unit into a camp
+function actionGoFishing() {
+  Action.call(this);
+
+  this.minimum_elevation = 1;
+  this.maximum_elevation = 1;
+
+  this.name = "fishing";
+  this.type = "target";
+  this.target = "land";
+  this.min_distance = 1;
+  this.max_distance = 5;
+
+  this.targetFilterFunction = function(world, actor, position) {
+
+    if (world.countResources(Hex.circle(position, 0), 'fish', 1))
+      return true;
+
+    return false;
+  }
+  this.activation = function(world, actor, position) {
+    if (world.total_population >= 20)
+      return true;
+    else
+      return false;
+  }
+  this.requirement = function(world, actor, position) {
+    if (world.total_population < 20)
+      return false;
+
+    if (!world.nearCoast(position))
+      return false;
+
+    return true;
+  }
+
+  this.description = function() {
+    return "Go fishing";
+  }
+
+  this.effect = function(world, actor, position, target) {
+    
+    //Build a road to the resource
+    let pathfinder = this.getPathfinder();
+    let tile_array = pathfinder.getPath(world.world_map, position, target, 15);   
+
+    world.addResource(target, 'route');
+    world.buildRoad(tile_array);
+    world.population += 2;
+    world.total_population += 2;
+  }
+
+
+
+}
 
 
 

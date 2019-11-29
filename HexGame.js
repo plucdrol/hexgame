@@ -40,7 +40,7 @@ var game_input = new GameInput(world, view);     //<--controller
 //draws mouse interactions
 var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
 
-world.clearClouds(new Hex(0,0), 33);
+//world.clearClouds(new Hex(0,0), 33);
 
 canv_input.windowResize();
 

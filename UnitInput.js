@@ -135,9 +135,7 @@ UnitInput.p.clickInsideRange = function(target) {
     action.doAction(this.world, actor, origin, target);
     if (action.nextSelection == 'target') {
       this.selectHex(target); 
-    } else {
-      this.selectNothing();
-    }
+    } 
   }
 
 };

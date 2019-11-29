@@ -33,12 +33,13 @@ Unit.prototype.setType = function(unit_type) {
     this.setCitySize(1);
     this.setResourceStores(35,0,0);
 
-    this.addAction( new actionFishermen());
-    this.addAction( new actionRiverlands());
-    this.addAction( new actionForesters());
+    //this.addAction( new actionFishermen());
+    //this.addAction( new actionRiverlands());
+    //this.addAction( new actionForesters());
     this.addAction( new actionCreateCamp());
-    this.addAction( new actionConquer());
+    //this.addAction( new actionConquer());
     this.addAction( new actionGetResource());
+    this.addAction( new actionGoFishing());
 
     break;
 
@@ -61,6 +62,10 @@ Unit.prototype.setType = function(unit_type) {
   case 'stone':
     this.setGraphic('grey',2);
     this.setResource('stone',1);
+    break;
+  case 'route':
+    this.setGraphic('green',3);
+    this.setResource('route',1);
     break;
   case 'unknown':
     this.setGraphic('purple',2);
@@ -112,6 +117,8 @@ Unit.prototype.setGraphic = function(color,size) {
 Unit.prototype.setCitySize = function(size) {
   this.cityRadius = size;
 }
+
+
 
 
 
