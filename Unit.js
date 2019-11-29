@@ -45,6 +45,11 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionGoFishing());
     break;
 
+  case 'route':
+    this.setGraphic('white',3);
+    this.setResource('route',1);
+    break;
+
 
   case 'fish':
     this.setGraphic('lightblue',1);
@@ -64,10 +69,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('grey',2);
     this.setResource('stone',1);
     break;
-  case 'route':
-    this.setGraphic('green',3);
-    this.setResource('route',1);
-    break;
+
   case 'unknown':
     this.setGraphic('purple',2);
     this.setResource('unknown',1);
