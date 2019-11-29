@@ -49,10 +49,7 @@ Unit.prototype.setType = function(unit_type) {
   case 'sea-expedition':
     this.setGraphic('lightblue',5);
     
-    let expedition = new actionCreateCamp();
-    expedition.minimum_elevation = 0;
-    expedition.maximum_elevation = 3;
-    expedition.max_distance = 15;
+    let expedition = new actionCreateCampBySea();
     this.addAction( expedition );
     break;
 

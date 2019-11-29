@@ -166,6 +166,8 @@ function actionCreateCamp() {
   this.min_distance = 6;
   this.max_distance = 8;
 
+  this.also_build_road = true;
+
   this.targetFilterFunction = function(world, actor, position) {
     
     //if (!world.countResources(Hex.circle(position, 1), 'food', 1))
@@ -192,7 +194,8 @@ function actionCreateCamp() {
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
 
-    this.createPath(world, position, target);
+    if (this.also_build_road)
+      this.createPath(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 5);
@@ -203,7 +206,13 @@ function actionCreateCamp() {
 
 }
 
-
+function actionCreateCampBySea() {
+  actionCreateCamp.call(this);
+  this.minimum_elevation = 0;
+  this.maximum_elevation = 3;
+  this.max_distance = 15;
+  this.also_build_road = false;
+}
 
 
 
@@ -269,7 +278,6 @@ function actionCreateSeaExpeditionCenter() {
   Action.call(this);
 
   this.minimum_elevation = 2;
-  this.maximum_elevation = 4;
 
   this.name = "sea-expedition-center";
   this.type = "target";
@@ -327,7 +335,6 @@ function actionCreateFishingCenter() {
   Action.call(this);
 
   this.minimum_elevation = 2;
-  this.maximum_elevation = 4;
 
   this.name = "fishing-center";
   this.type = "target";
