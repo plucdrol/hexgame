@@ -53,7 +53,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('yellow',2);
     this.setResource('food',1);
     break;
-  case 'forest':
+  case 'wood':
     this.setGraphic('brown',2);
     this.setResource('wood',1);
     this.setResource('forest',1);

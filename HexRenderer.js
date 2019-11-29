@@ -8,7 +8,7 @@
 
 
 
-// Sole responsibility: drawing hexagons using the Renderer 
+// Sole responsibility: drawing hexagons on a regular grid using the Renderer 
 
 // CanvasDraw
 // Hex

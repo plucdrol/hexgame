@@ -21,10 +21,11 @@ function Action() {
     return world.noCitiesInArea(hex,5);
   }
 
+  //NEIGHBORS FUNCTION (for pathfinder)
   this.getNeighborsFunction = function(map,hex) {
     return map.getNeighbors(hex);
   }
-  //STEP COST FUNCTION
+  //STEP COST FUNCTION (for pathfinder)
   this.stepCostFunction = function(map, hex, next_hex) {
     var tile = map.get(next_hex);
     if (tile.elevation > this.maximum_elevation) 
