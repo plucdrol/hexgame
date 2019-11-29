@@ -100,6 +100,8 @@ HUDRenderer.prototype.updateActionButtons = function() {
   //reselect the previously selected action
   if (current_action) {
     this.unit_input.selectActionById(current_action);
+  } else {
+    this.selectFirstActionIfNoneSelected();
   }
 }
 
@@ -129,6 +131,25 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
       document.getElementById("action-".concat(action.name)).disabled = true;
     }
   }
+}
+
+HUDRenderer.prototype.selectFirstActionIfNoneSelected = function() {
+
+  //test if an action is already selected
+  let radio_elements = document.getElementById('action-buttons').getElementsByClassName('action-button-input');
+  for (radio of radio_elements) {
+    if (radio.checked) 
+      return;
+  }
+
+  //if none were selected, select the first one
+  let first_action = radio_elements[0];
+  if (!first_action.disabled) {
+    first_action.checked = true;
+    this.unit_input.updateActionRangeIndirectly();
+  }
+
+
 }
 
 HUDRenderer.prototype.addClickDetection = function() {
