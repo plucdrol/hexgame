@@ -166,7 +166,8 @@ HUDRenderer.prototype.writeMessage = function(message, element) {
 HUDRenderer.prototype.update_function = function() { 
   let actor = this.unit_input.getActorSelected();
   let pop = this.world.getPopulation();
-  this.writeMessage("Ants: "+pop+"/"+'20', 'world-resources');
+  let total_pop = this.world.total_population;
+  this.writeMessage("Ants: "+pop+" free, "+total_pop+" total", 'world-resources');
 
   if (actor && actor.selectable) {
     this.updateActionButtons();
