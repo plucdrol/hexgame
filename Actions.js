@@ -168,7 +168,10 @@ function actionCreateCamp() {
 
   this.targetFilterFunction = function(world, actor, position) {
     
-    if (!world.countResources(Hex.circle(position, 1), 'food', 1))
+    //if (!world.countResources(Hex.circle(position, 1), 'food', 1))
+      //return false;
+
+    if (world.getTile(position).elevation < 2)
       return false;
 
     return world.noCitiesInArea(position,5);
@@ -243,6 +246,67 @@ function actionCreateQueensChamber() {
  
     this.createPath(world, position, target);
 
+    world.addUnit(target, this.new_unit_type);
+    world.clearClouds(target, 5);
+    world.population -= 4;
+  }
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+//This action transforms the unit into a camp
+function actionCreateSeaExpeditionCenter() {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+  this.maximum_elevation = 4;
+
+  this.name = "sea-expedition-center";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'sea-expedition';
+
+  this.nextSelection = "target";
+  this.min_distance = 1;
+  this.max_distance = 2;
+
+  this.targetFilterFunction = function(world, actor, target) {
+
+    if (!world.nearCoast(target))
+      return false;
+
+    return true;
+  }
+  this.activation = function(world, actor, position) {
+    if (world.countUnits(Hex.circle(position, 2), 'fishing-center', 1))
+      return true;
+    else
+      return false;
+  }
+  this.requirement = function(world, actor, position) {
+    if (world.countUnits(Hex.circle(position, 2), 'fishing-center', 1))
+      return true;
+    else
+      return false;
+  }
+
+  this.description = function() {
+    return "Sea Expeditions (4 ants)<br>Can settle overseas";
+  }
+  this.effect = function(world, actor, position, target) {
+    //Create a unit_type at the target location
+  
+    this.createPath(world, position, target);
     world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 5);
     world.population -= 4;

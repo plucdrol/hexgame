@@ -205,6 +205,18 @@ World.prototype.unitAtLocation = function(hex) {
   return false
 
 }
+World.prototype.countUnits = function(hexarray, unit_type, minimum_count) {
+
+  let count = 0;
+
+  for (hex of hexarray) {
+    if (this.getUnit(hex) && this.getUnit(hex).type == unit_type)
+      count++;
+  }
+
+  return (count >= minimum_count) 
+
+}
 
 World.prototype.countResources = function(hexarray, resource_type, minimum_count) {
   let count = 0;

@@ -33,6 +33,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionGetResource());
     this.addAction( new actionCreateQueensChamber());
     this.addAction( new actionCreateFishingCenter());
+    this.addAction( new actionCreateSeaExpeditionCenter());
     break;
 
   case 'queens-chamber':
@@ -43,6 +44,16 @@ Unit.prototype.setType = function(unit_type) {
   case 'fishing-center':
     this.setGraphic('lightblue',3);
     this.addAction( new actionGoFishing());
+    break;
+
+  case 'sea-expedition':
+    this.setGraphic('lightblue',5);
+    
+    let expedition = new actionCreateCamp();
+    expedition.minimum_elevation = 0;
+    expedition.maximum_elevation = 3;
+    expedition.max_distance = 15;
+    this.addAction( expedition );
     break;
 
   case 'route':
