@@ -11,6 +11,8 @@
 function Action() {
   this.minimum_elevation = 2;
   this.maximum_elevation = 13;
+  this.min_distance = 1;
+  this.max_distance = 1;
   this.nextSelection = "self";
 
   this.activation = function(world, actor, position) {
@@ -91,13 +93,13 @@ function Action() {
 
     let pathfinder = this.getPathfinder();
 
-    var max_distance = this.max_distance | 3;
-    var min_distance = this.min_distance | 0;
+    var max_distance = this.max_distance;
+    var min_distance = this.min_distance;
     var actionRange = pathfinder.getRange( world.world_map, position, max_distance, min_distance );
 
     //limit range to elevations
     let upperRange = actionRange.filter(hex => world.getMapValue(hex).elevation >= this.minimum_elevation );
-    let middleRange = actionRange.filter(hex => world.getMapValue(hex).elevation <= this.maximum_elevation );
+    let middleRange = upperRange.filter(hex => world.getMapValue(hex).elevation <= this.maximum_elevation );
 
     //clear the clouds over the area explored
     for (let hex of middleRange) {
@@ -164,7 +166,7 @@ function actionCreateCamp() {
 
   this.nextSelection = "target";
   this.min_distance = 6;
-  this.max_distance = 8;
+  this.max_distance = 10;
 
   this.also_build_road = true;
 
@@ -343,7 +345,7 @@ function actionCreateFishingCenter() {
 
   this.nextSelection = "target";
   this.min_distance = 1;
-  this.max_distance = 2;
+  this.max_distance = 3;
 
   this.targetFilterFunction = function(world, actor, position) {
 
@@ -393,7 +395,7 @@ function actionGetResource() {
   this.name = "get";
   this.type = "target";
   this.target = "land";
-  this.min_distance = 0;
+  this.min_distance = 1;
   this.max_distance = 3;
 
   this.new_unit_type = 'route';
@@ -483,7 +485,7 @@ function actionGoFishing() {
     //Build a road to the resource
     this.createPath(world,position,target);
 
-    world.addResource(target, 'route');
+    world.addUnit(target, 'route');
     world.population += 1;
     world.total_population += 1;
   }

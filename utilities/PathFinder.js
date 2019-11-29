@@ -193,11 +193,12 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
   }
 
   //Returns an array of coordinates of each cell that was visited 
-  this.getRangeArray = function(min_cost) {
+  this.getRangeArray = function(min_cost, max_cost) {
     var coord_array = [];
     for (cell of this.visited.values()) {
-      if (cell.path_cost >= min_cost)
+      if (cell.path_cost >= min_cost && cell.path_cost <= max_cost) {
         coord_array.push(this.getCoord(cell)); 
+      }
     }
     return coord_array;
   }
@@ -261,7 +262,7 @@ function PathFinder(stepCostFunction, getNeighborFunction) {
   //Returns a function which can be used many times to find range 
   this.getRange = function(map, origin, max_cost, min_cost) {
     this.exploreArea(map, origin, max_cost);
-    return this.getRangeArray(min_cost);
+    return this.getRangeArray(min_cost, max_cost);
   }
 }
 
