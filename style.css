@@ -46,10 +46,21 @@ body,p {
   border-bottom-color: black;
   border-right-color: black;
   font-size: 1.5em;	
+  max-width: 12em;
+      
+  height: 1.2em;
+	overflow: hidden;
 }
+
+.extra-information {
+	font-size: 0.7em;
+}
+
 input [type="radio" i] {
 	display: none;
 }
+
+
 input[type="radio"]:checked + .action-button {
     background: #4a4949;
     border-bottom-color: darkgrey;
@@ -57,7 +68,12 @@ input[type="radio"]:checked + .action-button {
     border-top-color: black;
     border-left-color: black;
     color: lightgrey;
+
+    height: auto;
+
+		overflow: normal;
 }
+
 
 input[type="radio"] {
     display: none;

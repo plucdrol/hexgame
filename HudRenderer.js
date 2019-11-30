@@ -86,10 +86,13 @@ HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
 /////////////////////////////////////////////////////
 
 HUDRenderer.prototype.makeActionButton = function(action) {
+
+  let extra_description = "<br><span class='extra-description'>" + action.extra_description+"</span>";
+
   return "<label><input class='action-button-input' name='actions' type='radio' "
            +" id='action-" + action.name + "'"
            +" value='" + action.name + "'><div class='action-button'>"
-           + action.description() + "</div></label></input>";
+           + action.description() + extra_description + "</div></label></input>";
 }
 
 HUDRenderer.prototype.updateActionButtons = function() {
@@ -196,8 +199,8 @@ HUDRenderer.prototype.writeMessage = function(message, element) {
 HUDRenderer.prototype.update_function = function() { 
   let actor = this.unit_input.getActorSelected();
   let pop = this.world.getPopulation();
-  let total_pop = this.world.total_population;
-  this.writeMessage("Ants: "+total_pop+",    "+pop+" are jobless", 'world-resources');
+  let busy_pop = this.world.total_population-pop;
+  this.writeMessage("Ants: "+busy_pop+" busy,    "+pop+" waiting", 'world-resources');
 
   if (actor && actor.selectable) {
     this.updateActionButtons();

@@ -284,6 +284,10 @@ World.prototype.addResource = function(hex, type) {
   this.resources.set(hex, new Unit(type) );
 }
 
+World.prototype.destroyResource = function(hex) {
+  this.resources.remove(hex);
+}
+
 World.prototype.generateResources = function() {
   var resources = new HexMap();
   for (let hex of this.world_map.getHexArray() )  {

@@ -199,6 +199,16 @@ UnitInput.prototype.getActionHoverRadius = function() {
   }
 }
 
+UnitInput.prototype.getActionId = function(action) {
+  return 'action-'.concat(action.name);
+}
+
+UnitInput.prototype.actionIsSelected = function(action) {
+  console.log(this.getActionId(action));
+  console.log(this.getActionSelectedId());
+  return this.getActionId(action) == this.getActionSelectedId();
+}
+
 //Returns the currently selected action_id of the selected unit
 UnitInput.p.getActionSelectedId = function() {
   var action_buttons = document.getElementsByClassName('action-button-input');
