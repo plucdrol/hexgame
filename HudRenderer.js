@@ -49,9 +49,14 @@ HUDRenderer.prototype.actorHasRenderableRange = function(actor) {
 HUDRenderer.prototype.drawActorRange = function() {
   //draw range of selected actor
   var actor = this.unit_input.getActorSelected();
+  
+  //range style
+  var range_style = new RenderStyle();
+  range_style.fill_color = "rgba(255,255,150, "+this.ocillate(900)+")";
+  range_style.line_color = "rgba(255,255,100,"+(0.5+0.5*this.ocillate(900))+")";
 
   if (this.actorHasRenderableRange(actor)) {
-    this.hex_renderer.drawHexes(actor.range);
+    this.hex_renderer.drawHexes(actor.range, range_style);
 
   }
 }
@@ -67,12 +72,17 @@ HUDRenderer.prototype.drawHoveredHex = function(hex_hovered) {
 HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
     //draw selection hex
     var select_style = new RenderStyle();
-    select_style.fill_color = "rgba(200,200,0,0.5)";
+
+    select_style.fill_color = "rgba(200,200,0,"+this.ocillate(500)+")";
     select_style.line_width = 2;
     this.hex_renderer.drawHex(hex_selected, select_style);
 }
 
-
+HUDRenderer.prototype.ocillate = function(length) {
+  let time = new Date().getTime()%length;
+  let opacity = Math.abs(time/length-0.5);
+  return opacity
+}
 
 
 
