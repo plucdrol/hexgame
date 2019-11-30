@@ -272,7 +272,7 @@ function actionCreateCampBySea() {
   this.minimum_elevation = 0;
   this.maximum_elevation = 3;
   this.max_distance = 15;
-  this.also_build_road = true;
+  this.also_build_road = false;
   this.stop_elevation = 2;
 }
 

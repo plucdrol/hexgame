@@ -116,8 +116,12 @@ WorldRenderer.p.drawRoads = function(hexarray) {
     if (!tile) continue;
     if (tile.hidden) continue;
     if (tile.road_from) {
-      for (from of tile.road_from)
-      this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0' );
+      for (from of tile.road_from) {
+        if (tile.elevation >= 2)
+          this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0' );
+        else 
+          this.hex_renderer.drawCenterLine(hex, from, 6, '#0DD' );
+      }
     }
   }
 }
