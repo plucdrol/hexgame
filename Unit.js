@@ -40,7 +40,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'outpost':
     this.setGraphic('white',4);
-    this.addAction( new actionGetResource(1));
+    this.addAction( new actionGetResource(15));
     this.addAction( new actionExpedition());
     break;
 
@@ -51,13 +51,13 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'fishing-center':
     this.setGraphic('lightblue',3);
-    this.addAction( new actionGoFishing());
+    this.addAction( new actionGoFishing(15));
     break;
 
   case 'harbor':
     this.setGraphic('lightblue',5);
     this.addAction( new actionCreateCampBySea());
-    this.addAction( new actionCreateFishingCenter());
+    this.addAction( new actionCreateFishingCenter('shallow-water'));
     this.addAction( new actionExpedition());
     
 

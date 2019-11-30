@@ -369,14 +369,13 @@ function actionExpedition() {
   }
 
   this.description = function() {
-    return "Expedition (-1 ants)";
+    return "Expedition (free)";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
 
     this.createPath(world, position, target);
     world.clearClouds(target, 5);
-    world.population -= 1;
   }
 
 
@@ -447,10 +446,13 @@ function actionCreateHarbor() {
 
 
 //This action transforms the unit into a camp
-function actionCreateFishingCenter() {
+function actionCreateFishingCenter(thing) {
   Action.call(this);
 
   this.minimum_elevation = 2;
+
+  if (thing && thing == 'shallow-water')
+    this.minimum_elevation = 1;
 
   this.name = "fishing-center";
   this.type = "target";
@@ -465,6 +467,10 @@ function actionCreateFishingCenter() {
   this.targetFilterFunction = function(world, actor, position) {
 
     if (!world.nearCoast(position))
+      return false;
+
+    //targets not underwater
+    if (world.getTile(position).elevation < 2)
       return false;
 
     //if (world.countResources(Hex.circle(position, 1), 'fish', 1))
@@ -563,7 +569,7 @@ function actionGetResource(max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionGoFishing() {
+function actionGoFishing(max_distance) {
   Action.call(this);
 
   this.minimum_elevation = 1;
@@ -573,7 +579,7 @@ function actionGoFishing() {
   this.type = "target";
   this.target = "land";
   this.min_distance = 1;
-  this.max_distance = 5;
+  this.max_distance = max_distance;
   this.hover_radius = 0;
 
   this.targetFilterFunction = function(world, actor, position) {
