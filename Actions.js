@@ -17,6 +17,7 @@ function Action() {
   this.stop_elevation = 100;
   this.extra_description = "";
   this.also_build_road = true;
+  this.cloud_clear = 0;
 
   this.targetFilterFunction = function(world, actor, target) {    return true;  }
 
@@ -73,6 +74,7 @@ function Action() {
       //then do the action
       this.effect(world, actor, position, target);
       this.updateActionRange(world, actor, position);
+      world.clearClouds(target, this.cloud_clear);
 
     //else just select that new location
     } else {
@@ -191,13 +193,12 @@ function actionCreateCamp() {
   this.also_build_road = true;
   this.hover_radius = 3;
 
+  this.cloud_clear = 5;
+
   this.description = "New colony (-4 ants)";
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position) {
-    
-    //if (!world.countResources(Hex.circle(position, 1), 'food', 1))
-      //return false;
 
     if (world.getTile(position).elevation < 2)
       return false;
@@ -219,7 +220,6 @@ function actionCreateCamp() {
       this.createRoad(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
-    world.clearClouds(target, 5);
     world.population -= 4;
   }
 
@@ -246,6 +246,8 @@ function actionCreateOutpost() {
   this.also_build_road = true;
   this.hover_radius = 1;
 
+  this.cloud_clear = 3;
+
   this.description = "Storage hole (-2 ants)";
   this.extra_description = "Create an outpost to collect some more resources";
 
@@ -271,7 +273,6 @@ function actionCreateOutpost() {
       this.createRoad(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
-    world.clearClouds(target, 3);
     world.population -= 2;
 
     world.destroyResource(target);
@@ -312,6 +313,8 @@ function actionCreateQueensChamber() {
   this.max_distance = 1;
   this.hover_radius = 0;
 
+  this.cloud_clear = 5;
+
   this.description = "Queen's chamber (-4 ants)";
   this.extra_description = "Create a base for making settlers";
 
@@ -338,7 +341,6 @@ function actionCreateQueensChamber() {
     this.createRoad(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
-    world.clearClouds(target, 5);
     world.population -= 4;
     world.destroyResource(target);
   }
@@ -370,6 +372,7 @@ function actionExpedition() {
   this.min_distance = 1;
   this.max_distance = 5;
   this.hover_radius = 4;
+  this.cloud_clear = 5;
 
   this.description = "Expedition (free)";
   this.extra_description = "Explore the area around your click";
@@ -385,9 +388,7 @@ function actionExpedition() {
 
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
-
     this.createRoad(world, position, target);
-    world.clearClouds(target, 5);
   }
 
 
@@ -414,6 +415,8 @@ function actionCreateHarbor() {
   this.min_distance = 1;
   this.max_distance = 2;
   this.hover_radius = 14;
+
+  this.cloud_clear = 5;
 
   this.description = "Harbor (-4 ants)";
   this.extra_description = "Create a base for sending settlers by sea";
@@ -443,7 +446,6 @@ function actionCreateHarbor() {
   
     this.createRoad(world, position, target);
     world.addUnit(target, this.new_unit_type);
-    world.clearClouds(target, 5);
     world.population -= 4;
     world.destroyResource(target);
   }
@@ -477,6 +479,8 @@ function actionCreateFishingCenter(thing) {
   this.max_distance = 3;
   this.hover_radius = 5;
 
+  this.cloud_clear = 5;
+
   this.description = "Fishing boats (-2 ants)";
   this.extra_description = "Fish collection agency";
 
@@ -498,7 +502,6 @@ function actionCreateFishingCenter(thing) {
   
     this.createRoad(world, position, target);
     world.addUnit(target, this.new_unit_type);
-    world.clearClouds(target, 5);
     world.population -= 2;
     world.destroyResource(target);
   }
@@ -526,6 +529,8 @@ function actionGetResource(max_distance) {
   this.min_distance = 1;
   this.max_distance = max_distance;
   this.hover_radius = 0;
+
+  this.cloud_clear = 0;
 
   this.new_unit_type = 'route';
 
@@ -578,6 +583,7 @@ function actionGoFishing(max_distance) {
   this.min_distance = 1;
   this.max_distance = max_distance;
   this.hover_radius = 0;
+  this.cloud_clear = 0;
 
   this.description = "Go fishing";
   this.extra_description = "Get all the sea resources nearby";
