@@ -97,12 +97,12 @@ HUDRenderer.prototype.ocillate = function(length) {
 
 HUDRenderer.prototype.makeActionButton = function(action) {
 
-  let extra_description = "<br><span class='extra-description'>" + action.extra_description+"</span>";
+  let extra_description = "<br><span class='extra-description'>" + action.getExtraDescription()+"</span>";
 
   return "<label><input class='action-button-input' name='actions' type='radio' "
            +" id='action-" + action.name + "'"
            +" value='" + action.name + "'><div class='action-button'>"
-           + action.description() + extra_description + "</div></label></input>";
+           + action.getDescription() + extra_description + "</div></label></input>";
 }
 
 HUDRenderer.prototype.updateActionButtons = function() {

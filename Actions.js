@@ -17,13 +17,17 @@ function Action() {
   this.stop_elevation = 100;
   this.extra_description = "";
 
-  this.activation = function(world, actor, position) {
-    return true;
-  }
+  this.targetFilterFunction = function(world, actor, target) {    return true;  }
 
-  this.targetFilterFunction = function(world, actor, hex) {
-    return world.noCitiesInArea(hex,5);
-  }
+  this.activation = function(world, actor, position) {    return true;  }
+
+  this.requirement = function(world, actor, position) {    return true;  }
+
+  this.getDescription = function() {    return this.description;  }
+
+  this.getExtraDescription = function() {    return this.extra_description;  }
+
+
 
   //NEIGHBORS FUNCTION (for pathfinder)
   this.getNeighborsFunction = function(map,hex) {
@@ -128,7 +132,7 @@ function Action() {
     return actionPath;
   };
 
-  this.createPath = function(world, origin, target) {
+  this.createRoad = function(world, origin, target) {
 
     let pathfinder = this.getPathfinder();
 
@@ -174,6 +178,7 @@ function actionCreateCamp() {
   this.also_build_road = true;
   this.hover_radius = 3;
 
+  this.description = "New colony (-4 ants)";
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -186,9 +191,7 @@ function actionCreateCamp() {
 
     return world.noCitiesInArea(position,5);
   }
-  this.activation = function(world, actor, position) {
-    return true;
-  }
+
   this.requirement = function(world, actor, position) {
 
     if (world.getPopulation() >= 4)
@@ -196,14 +199,11 @@ function actionCreateCamp() {
     return false;
   }
 
-  this.description = function() {
-    return "New colony (-4 ants)";
-  }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
 
     if (this.also_build_road)
-      this.createPath(world, position, target);
+      this.createRoad(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 5);
@@ -233,6 +233,7 @@ function actionCreateOutpost() {
   this.also_build_road = true;
   this.hover_radius = 1;
 
+  this.description = "Storage hole (-2 ants)";
   this.extra_description = "Create an outpost to collect some more resources";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -242,9 +243,7 @@ function actionCreateOutpost() {
 
     return world.noCitiesInArea(position,1);
   }
-  this.activation = function(world, actor, position) {
-    return true;
-  }
+
   this.requirement = function(world, actor, position) {
 
     if (world.getPopulation() >= 2)
@@ -252,14 +251,11 @@ function actionCreateOutpost() {
     return false;
   }
 
-  this.description = function() {
-    return "Storage hole (-2 ants)";
-  }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
 
     if (this.also_build_road)
-      this.createPath(world, position, target);
+      this.createRoad(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 3);
@@ -303,6 +299,7 @@ function actionCreateQueensChamber() {
   this.max_distance = 1;
   this.hover_radius = 0;
 
+  this.description = "Queen's chamber (-4 ants)";
   this.extra_description = "Create a base for making settlers";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -322,13 +319,10 @@ function actionCreateQueensChamber() {
     return false;
   }
 
-  this.description = function() {
-    return "Queen's chamber (-4 ants)";
-  }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
  
-    this.createPath(world, position, target);
+    this.createRoad(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 5);
@@ -364,16 +358,10 @@ function actionExpedition() {
   this.max_distance = 5;
   this.hover_radius = 4;
 
-
+  this.description = "Expedition (free)";
   this.extra_description = "Explore the area around your click";
 
-  this.targetFilterFunction = function(world, actor, position) {
 
-    return true;
-  }
-  this.activation = function(world, actor, position) {
-    return true;
-  }
   this.requirement = function(world, actor, position) {
 
     if (world.getPopulation() >= 1)
@@ -381,13 +369,11 @@ function actionExpedition() {
     return false;
   }
 
-  this.description = function() {
-    return "Expedition (free)";
-  }
+
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
 
-    this.createPath(world, position, target);
+    this.createRoad(world, position, target);
     world.clearClouds(target, 5);
   }
 
@@ -416,7 +402,7 @@ function actionCreateHarbor() {
   this.max_distance = 2;
   this.hover_radius = 14;
 
-
+  this.description = "Harbor (-4 ants)";
   this.extra_description = "Create a base for sending settlers by sea";
 
   this.targetFilterFunction = function(world, actor, target) {
@@ -439,13 +425,10 @@ function actionCreateHarbor() {
       return false;
   }
 
-  this.description = function() {
-    return "Harbor (-4 ants)";
-  }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
   
-    this.createPath(world, position, target);
+    this.createRoad(world, position, target);
     world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 5);
     world.population -= 4;
@@ -481,7 +464,7 @@ function actionCreateFishingCenter(thing) {
   this.max_distance = 3;
   this.hover_radius = 5;
 
-
+  this.description = "Fishing boats (-2 ants)";
   this.extra_description = "Fish collection agency";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -496,21 +479,11 @@ function actionCreateFishingCenter(thing) {
     //if (world.countResources(Hex.circle(position, 1), 'fish', 1))
       return true;
   }
-  this.activation = function(world, actor, position) {
-    return true;
-  }
-  this.requirement = function(world, actor, position) {
 
-    return true;
-  }
-
-  this.description = function() {
-    return "Fishing boats (2 ants)";
-  }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
   
-    this.createPath(world, position, target);
+    this.createRoad(world, position, target);
     world.addUnit(target, this.new_unit_type);
     world.clearClouds(target, 5);
     world.population -= 2;
@@ -543,7 +516,7 @@ function actionGetResource(max_distance) {
 
   this.new_unit_type = 'route';
 
-
+  this.description = "Collect resources";
   this.extra_description = "Get all the resources nearby";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -556,16 +529,6 @@ function actionGetResource(max_distance) {
 
     return false;
   }
-  this.activation = function(world, actor, position) {
-    return true;
-  }
-  this.requirement = function(world, actor, position) {
-    return true;
-  }
-
-  this.description = function() {
-    return "Collect resource";
-  }
 
   this.effect = function(world, actor, position, target) {
     for (hex of actor.range) {
@@ -576,7 +539,7 @@ function actionGetResource(max_distance) {
   this.effectOne = function(world, actor, position, target) {
     
     //Build a road to the resource 
-    this.createPath(world, position, target);
+    this.createRoad(world, position, target);
 
     world.addUnit(target, this.new_unit_type);
     world.population += 1;
@@ -603,7 +566,7 @@ function actionGoFishing(max_distance) {
   this.max_distance = max_distance;
   this.hover_radius = 0;
 
-
+  this.description = "Go fishing";
   this.extra_description = "Get all the sea resources nearby";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -616,30 +579,18 @@ function actionGoFishing(max_distance) {
 
     return false;
   }
-  this.activation = function(world, actor, position) {
-    //if (world.total_population >= 20)
-      return true;
-    //else
-      //return false;
-  }
-  this.requirement = function(world, actor, position) {
-    //if (world.total_population < 20)
-      //return false;
 
+  this.requirement = function(world, actor, position) {
     if (!world.nearCoast(position))
       return false;
 
     return true;
   }
 
-  this.description = function() {
-    return "Go fishing";
-  }
-
   this.effectOne = function(world, actor, position, target) {
     
     //Build a road to the resource
-    this.createPath(world,position,target);
+    this.createRoad(world,position,target);
 
     world.addUnit(target, 'route');
     world.population += 1;
