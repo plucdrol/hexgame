@@ -152,7 +152,6 @@ function Action() {
 
 
 
-
 //This action transforms the unit into a camp
 function actionCreateCamp() {
   Action.call(this);
@@ -169,6 +168,7 @@ function actionCreateCamp() {
   this.max_distance = 10;
 
   this.also_build_road = true;
+  this.hover_radius = 2;
 
   this.targetFilterFunction = function(world, actor, position) {
     
@@ -226,7 +226,7 @@ function actionCreateQueensChamber() {
 
   this.minimum_elevation = 2;
 
-  this.name = "queenschamber";
+  this.name = "queens-chamber";
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'queens-chamber';
@@ -234,6 +234,7 @@ function actionCreateQueensChamber() {
   this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 1;
+  this.hover_radius = 9;
 
   this.targetFilterFunction = function(world, actor, position) {
 
@@ -289,6 +290,7 @@ function actionCreateSeaExpeditionCenter() {
   this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 2;
+  this.hover_radius = 14;
 
   this.targetFilterFunction = function(world, actor, target) {
 
@@ -346,6 +348,7 @@ function actionCreateFishingCenter() {
   this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 3;
+  this.hover_radius = 4;
 
   this.targetFilterFunction = function(world, actor, position) {
 
@@ -397,6 +400,7 @@ function actionGetResource() {
   this.target = "land";
   this.min_distance = 1;
   this.max_distance = 3;
+  this.hover_radius = 0;
 
   this.new_unit_type = 'route';
 
@@ -425,6 +429,12 @@ function actionGetResource() {
   }
 
   this.effect = function(world, actor, position, target) {
+    for (hex of actor.range) {
+      this.effectOne(world,actor,position,hex);
+    }
+  }
+
+  this.effectOne = function(world, actor, position, target) {
     
     //Build a road to the resource 
     this.createPath(world, position, target);
@@ -434,9 +444,9 @@ function actionGetResource() {
     world.total_population += 1
   }
 
-
-
 }
+
+
 
 
 
@@ -452,6 +462,7 @@ function actionGoFishing() {
   this.target = "land";
   this.min_distance = 1;
   this.max_distance = 5;
+  this.hover_radius = 0;
 
   this.targetFilterFunction = function(world, actor, position) {
 

@@ -190,6 +190,15 @@ UnitInput.p.getActionSelected = function() {
   return this.getActionFromId(this.getActorSelected(), this.getActionSelectedId());
 };
 
+UnitInput.prototype.getActionHoverRadius = function() {
+  let action_selected = this.getActionSelected();
+  if (action_selected) {
+    return action_selected.hover_radius;
+  } else {
+    return 1;
+  }
+}
+
 //Returns the currently selected action_id of the selected unit
 UnitInput.p.getActionSelectedId = function() {
   var action_buttons = document.getElementsByClassName('action-button-input');

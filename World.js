@@ -56,8 +56,8 @@ function World(radius) {
   land_tile.elevation = 2;
   this.setHex(new Hex(0,0), land_tile);
 
-  this.population = 8;
-  this.total_population = 8;
+  this.population = 12;
+  this.total_population = 12;
 
 
 

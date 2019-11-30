@@ -22,11 +22,19 @@ HUDRenderer.prototype.drawHUD = function() {
   if (hex_selected) {
     this.drawActorRange();
     this.drawSelectionHex(hex_selected);
+
+    if (hex_hovered) {
+      for (hex of Hex.circle(hex_hovered, this.unit_input.getActionHoverRadius()))
+        this.drawHoveredHex(hex);
+      this.drawHoveredHex(hex_hovered);
+    }
+
+  } else {
+    if (hex_hovered ) {
+      this.drawHoveredHex(hex_hovered);
+    }
   }
 
-  if (hex_hovered) {
-    this.drawHoveredHex(hex_hovered);
-  }
 
 
 }
