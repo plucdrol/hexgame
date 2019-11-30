@@ -45,6 +45,7 @@ HUDRenderer.prototype.actorHasRenderableRange = function(actor) {
 }
 
 
+
 HUDRenderer.prototype.drawActorRange = function() {
   //draw range of selected actor
   var actor = this.unit_input.getActorSelected();
@@ -196,7 +197,7 @@ HUDRenderer.prototype.update_function = function() {
   let actor = this.unit_input.getActorSelected();
   let pop = this.world.getPopulation();
   let total_pop = this.world.total_population;
-  this.writeMessage("Ants: "+pop+" free, "+total_pop+" total", 'world-resources');
+  this.writeMessage("Ants: "+total_pop+",    "+pop+" are jobless", 'world-resources');
 
   if (actor && actor.selectable) {
     this.updateActionButtons();

@@ -22,7 +22,7 @@ body,p {
 	color: darkgreen;
 }
 #world-resources {
-	float: right;
+	/*float: right;*/
 }
 #mycanvas{
 	background: black;

@@ -14,6 +14,7 @@ function Action() {
   this.min_distance = 1;
   this.max_distance = 1;
   this.nextSelection = "self";
+  this.stop_elevation = 100;
 
   this.activation = function(world, actor, position) {
     return true;
@@ -29,10 +30,12 @@ function Action() {
   }
   //STEP COST FUNCTION (for pathfinder)
   this.stepCostFunction = function(map, hex, next_hex) {
-    var tile = map.get(next_hex);
-    if (tile.elevation > this.maximum_elevation) 
+    var next_tile = map.get(next_hex);
+    var this_tile = map.get(hex);
+
+    if (next_tile.elevation > this.maximum_elevation) 
       return undefined;
-    if (tile.elevation < this.minimum_elevation) 
+    if (next_tile.elevation < this.minimum_elevation) 
       return undefined;
 
     let cost = 1;
@@ -222,7 +225,7 @@ function actionCreateOutpost() {
 
   this.nextSelection = "target";
   this.min_distance = 2;
-  this.max_distance = 4;
+  this.max_distance = 5;
 
   this.also_build_road = true;
   this.hover_radius = 1;
@@ -269,7 +272,8 @@ function actionCreateCampBySea() {
   this.minimum_elevation = 0;
   this.maximum_elevation = 3;
   this.max_distance = 15;
-  this.also_build_road = false;
+  this.also_build_road = true;
+  this.stop_elevation = 2;
 }
 
 
@@ -297,7 +301,10 @@ function actionCreateQueensChamber() {
     return !world.noCitiesInArea(position,1);
   }
   this.activation = function(world, actor, position) {
-    return true;
+    if (world.countUnits(Hex.circle(position, 1), 'queens-chamber', 1))
+      return false;
+    else
+      return true;
   }
   this.requirement = function(world, actor, position) {
 
@@ -366,6 +373,8 @@ function actionExpedition() {
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
+
+    this.createPath(world, position, target);
     world.clearClouds(target, 5);
     world.population -= 1;
   }
@@ -403,20 +412,20 @@ function actionCreateHarbor() {
     return true;
   }
   this.activation = function(world, actor, position) {
-    if (world.countUnits(Hex.circle(position, 2), 'fishing-center', 1))
+    if (world.countUnits(Hex.circle(position, 3), 'fishing-center', 1))
       return true;
     else
       return false;
   }
   this.requirement = function(world, actor, position) {
-    if (world.countUnits(Hex.circle(position, 2), 'fishing-center', 1))
+    if (world.countUnits(Hex.circle(position, 3), 'fishing-center', 1))
       return true;
     else
       return false;
   }
 
   this.description = function() {
-    return "Sea Expedition Center (-4 ants)";
+    return "Harbor (-4 ants)";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
@@ -451,7 +460,7 @@ function actionCreateFishingCenter() {
   this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 3;
-  this.hover_radius = 4;
+  this.hover_radius = 5;
 
   this.targetFilterFunction = function(world, actor, position) {
 
@@ -470,7 +479,7 @@ function actionCreateFishingCenter() {
   }
 
   this.description = function() {
-    return "Fishing center (2 ants)<br>Can collect fish";
+    return "Fishing boats (2 ants)";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
@@ -569,6 +578,9 @@ function actionGoFishing() {
 
   this.targetFilterFunction = function(world, actor, position) {
 
+    if (world.unitAtLocation(position))
+      return false;
+
     if (world.countResources(Hex.circle(position, 0), 'food', 1))
       return true;
 
@@ -594,7 +606,7 @@ function actionGoFishing() {
     return "Go fishing";
   }
 
-  this.effect = function(world, actor, position, target) {
+  this.effectOne = function(world, actor, position, target) {
     
     //Build a road to the resource
     this.createPath(world,position,target);
@@ -602,6 +614,12 @@ function actionGoFishing() {
     world.addUnit(target, 'route');
     world.population += 1;
     world.total_population += 1;
+  }
+
+    this.effect = function(world, actor, position, target) {
+    for (hex of actor.range) {
+      this.effectOne(world,actor,position,hex);
+    }
   }
 
 
