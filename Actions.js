@@ -97,6 +97,9 @@ function Action() {
 
     if (this.also_build_road)
       this.createRoad(world, position, target);
+
+    if (this.new_unit_type)
+      world.addUnit(target, this.new_unit_type);
   }
 
   this.targetIsOK = function(world, target) {
@@ -217,10 +220,7 @@ function actionCreateCamp() {
 
   this.targetFilterFunction = function(world, actor, position) {
 
-    if (world.getTile(position).elevation < 2)
-      return false;
-
-    return world.noCitiesInArea(position,5);
+    return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,5);
   }
 
   this.requirement = function(world, actor, position) {
@@ -228,8 +228,6 @@ function actionCreateCamp() {
   }
 
   this.effect = function(world, actor, position, target) {
-
-    world.addUnit(target, this.new_unit_type);
     world.population -= 4;
   }
 }
@@ -262,23 +260,15 @@ function actionCreateOutpost() {
   this.extra_description = "Create an outpost to collect some more resources";
 
   this.targetFilterFunction = function(world, actor, position) {
-
-    if (world.getTile(position).elevation < 2)
-      return false;
-
-    return world.noCitiesInArea(position,1);
+    return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,1);
   }
 
   this.requirement = function(world, actor, position) {
-
-    if (world.getPopulation() >= 2)
-      return true;
-    return false;
+    return world.getPopulation() >= 2;
   }
 
   this.effect = function(world, actor, position, target) {
 
-    world.addUnit(target, this.new_unit_type);
     world.population -= 2;
 
     world.destroyResource(target);
@@ -343,8 +333,6 @@ function actionCreateQueensChamber() {
 
   this.effect = function(world, actor, position, target) {
 
-
-    world.addUnit(target, this.new_unit_type);
     world.population -= 4;
     world.destroyResource(target);
   }
@@ -446,7 +434,6 @@ function actionCreateHarbor() {
 
   this.effect = function(world, actor, position, target) {
 
-    world.addUnit(target, this.new_unit_type);
     world.population -= 4;
     world.destroyResource(target);
   }
@@ -500,7 +487,6 @@ function actionCreateFishingCenter(thing) {
 
   this.effect = function(world, actor, position, target) {
 
-    world.addUnit(target, this.new_unit_type);
     world.population -= 2;
     world.destroyResource(target);
   }
@@ -550,7 +536,6 @@ function actionGetResource(max_distance) {
 
   this.effect = function(world, actor, position, target) {
   
-    world.addUnit(target, this.new_unit_type);
     world.population += 1;
     world.total_population += 1
   }
@@ -577,6 +562,7 @@ function actionGoFishing(max_distance) {
   this.cloud_clear = 0;
 
   this.multi_target = true;
+  this.new_unit_type = 'route';
 
   this.description = "Go fishing";
   this.extra_description = "Get all the sea resources nearby";
@@ -601,7 +587,6 @@ function actionGoFishing(max_distance) {
 
   this.effect = function(world, actor, position, target) {
     
-    world.addUnit(target, 'route');
     world.population += 1;
     world.total_population += 1;
   }
