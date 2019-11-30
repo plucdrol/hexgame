@@ -168,7 +168,7 @@ function actionCreateCamp() {
   this.max_distance = 10;
 
   this.also_build_road = true;
-  this.hover_radius = 2;
+  this.hover_radius = 3;
 
   this.targetFilterFunction = function(world, actor, position) {
     
@@ -191,7 +191,7 @@ function actionCreateCamp() {
   }
 
   this.description = function() {
-    return "New colony (4 ants)";
+    return "New colony (-4 ants)";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
@@ -207,6 +207,62 @@ function actionCreateCamp() {
 
 
 }
+
+
+//This action transforms the unit into a camp
+function actionCreateOutpost() {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "outpost";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'outpost';
+
+  this.nextSelection = "target";
+  this.min_distance = 2;
+  this.max_distance = 4;
+
+  this.also_build_road = true;
+  this.hover_radius = 1;
+
+  this.targetFilterFunction = function(world, actor, position) {
+
+    if (world.getTile(position).elevation < 2)
+      return false;
+
+    return world.noCitiesInArea(position,1);
+  }
+  this.activation = function(world, actor, position) {
+    return true;
+  }
+  this.requirement = function(world, actor, position) {
+
+    if (world.getPopulation() >= 2)
+      return true;
+    return false;
+  }
+
+  this.description = function() {
+    return "Storage hole (-2 ants)";
+  }
+  this.effect = function(world, actor, position, target) {
+    //Create a unit_type at the target location
+
+    if (this.also_build_road)
+      this.createPath(world, position, target);
+
+    world.addUnit(target, this.new_unit_type);
+    world.clearClouds(target, 5);
+    world.population -= 2;
+  }
+
+
+
+}
+
+
 
 function actionCreateCampBySea() {
   actionCreateCamp.call(this);
@@ -234,7 +290,7 @@ function actionCreateQueensChamber() {
   this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 1;
-  this.hover_radius = 9;
+  this.hover_radius = 0;
 
   this.targetFilterFunction = function(world, actor, position) {
 
@@ -251,7 +307,7 @@ function actionCreateQueensChamber() {
   }
 
   this.description = function() {
-    return "Queen's chamber (4 ants)<br>Creates new colonies";
+    return "Queen's chamber (-4 ants)<br>Creates new colonies";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
@@ -275,17 +331,64 @@ function actionCreateQueensChamber() {
 
 
 
-
 //This action transforms the unit into a camp
-function actionCreateSeaExpeditionCenter() {
+function actionExpedition() {
   Action.call(this);
 
   this.minimum_elevation = 2;
 
-  this.name = "sea-expedition-center";
+  this.name = "expedition";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'sea-expedition';
+  this.new_unit_type = 'expedition';
+
+  this.nextSelection = "self";
+  this.min_distance = 1;
+  this.max_distance = 5;
+  this.hover_radius = 4;
+
+  this.targetFilterFunction = function(world, actor, position) {
+
+    return true;
+  }
+  this.activation = function(world, actor, position) {
+    return true;
+  }
+  this.requirement = function(world, actor, position) {
+
+    if (world.getPopulation() >= 1)
+      return true;
+    return false;
+  }
+
+  this.description = function() {
+    return "Expedition (-1 ants)";
+  }
+  this.effect = function(world, actor, position, target) {
+    //Create a unit_type at the target location
+    world.clearClouds(target, 5);
+    world.population -= 1;
+  }
+
+
+
+}
+
+
+
+
+
+
+//This action transforms the unit into a camp
+function actionCreateHarbor() {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "harbor";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'harbor';
 
   this.nextSelection = "target";
   this.min_distance = 1;
@@ -313,7 +416,7 @@ function actionCreateSeaExpeditionCenter() {
   }
 
   this.description = function() {
-    return "Sea Expeditions (4 ants)<br>Can settle overseas";
+    return "Sea Expedition Center (-4 ants)";
   }
   this.effect = function(world, actor, position, target) {
     //Create a unit_type at the target location
@@ -390,7 +493,7 @@ function actionCreateFishingCenter() {
 
 
 //This action transforms the unit into a camp
-function actionGetResource() {
+function actionGetResource(max_distance) {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -399,7 +502,7 @@ function actionGetResource() {
   this.type = "target";
   this.target = "land";
   this.min_distance = 1;
-  this.max_distance = 3;
+  this.max_distance = max_distance;
   this.hover_radius = 0;
 
   this.new_unit_type = 'route';
@@ -466,7 +569,7 @@ function actionGoFishing() {
 
   this.targetFilterFunction = function(world, actor, position) {
 
-    if (world.countResources(Hex.circle(position, 0), 'fish', 1))
+    if (world.countResources(Hex.circle(position, 0), 'food', 1))
       return true;
 
     return false;

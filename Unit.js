@@ -30,10 +30,18 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'village':
     this.setGraphic('white',5);
-    this.addAction( new actionGetResource());
+    this.addAction( new actionGetResource(3));
     this.addAction( new actionCreateQueensChamber());
     this.addAction( new actionCreateFishingCenter());
-    this.addAction( new actionCreateSeaExpeditionCenter());
+    this.addAction( new actionCreateHarbor());
+    this.addAction( new actionCreateOutpost());
+    this.addAction( new actionExpedition());
+    break;
+
+  case 'outpost':
+    this.setGraphic('white',3);
+    this.addAction( new actionGetResource(1));
+    this.addAction( new actionExpedition());
     break;
 
   case 'queens-chamber':
@@ -46,8 +54,9 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionGoFishing());
     break;
 
-  case 'sea-expedition':
+  case 'harbor':
     this.setGraphic('lightblue',5);
+    this.addAction( new actionExpedition());
     
     let expedition = new actionCreateCampBySea();
     this.addAction( expedition );
