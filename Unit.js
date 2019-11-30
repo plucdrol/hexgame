@@ -45,7 +45,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'queens-chamber':
-    this.setGraphic('pink',3);
+    this.setGraphic('pink',6);
     this.addAction( new actionCreateCamp());
     break;
 

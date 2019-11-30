@@ -19,12 +19,15 @@ function Action() {
   this.also_build_road = true;
   this.cloud_clear = 0;
   this.multi_target = false;
+  this.destroy_resource = true;
 
   this.targetFilterFunction = function(world, actor, target) {    return true;  }
 
   this.activation = function(world, actor, position) {    return true;  }
 
   this.requirement = function(world, actor, position) {    return true;  }
+
+  this.effect = function(world, actor, position, target) {  }
 
   this.getDescription = function() {    return this.description;  }
 
@@ -64,6 +67,14 @@ function Action() {
     return new PathFinder(stepCostFunction, neighborFunction);
   }
 
+
+
+
+
+
+
+
+
   /////////////////////////////////////////////////////////
                     // ACTION EFFECTS //
   /////////////////////////////////////////////////////////
@@ -81,6 +92,9 @@ function Action() {
       }
 
 
+      this.updateActionRange(world, actor, position);
+
+
     //else just select that new location
     } else {
       actor.range = [];
@@ -92,7 +106,6 @@ function Action() {
   this.doSingleAction = function(world, actor, position, target) {
     //then do the action
     this.effect(world, actor, position, target);
-    this.updateActionRange(world, actor, position);
     world.clearClouds(target, this.cloud_clear);
 
     if (this.also_build_road)
@@ -100,6 +113,15 @@ function Action() {
 
     if (this.new_unit_type)
       world.addUnit(target, this.new_unit_type);
+
+    if (this.pop_cost)
+      world.population -= this.pop_cost;
+
+    if (this.total_pop_cost)
+      world.total_population -= this.total_pop_cost;
+
+    if (this.destroy_resource)
+      world.destroyResource(target);
   }
 
   this.targetIsOK = function(world, target) {
@@ -215,11 +237,12 @@ function actionCreateCamp() {
 
   this.cloud_clear = 5;
 
+  this.pop_cost = 4;
+
   this.description = "New colony (-4 ants)";
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position) {
-
     return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,5);
   }
 
@@ -227,9 +250,8 @@ function actionCreateCamp() {
     return world.getPopulation() >= 4;
   }
 
-  this.effect = function(world, actor, position, target) {
-    world.population -= 4;
-  }
+
+
 }
 
 
@@ -255,6 +277,7 @@ function actionCreateOutpost() {
   this.hover_radius = 1;
 
   this.cloud_clear = 3;
+  this.pop_cost = 2;
 
   this.description = "Storage hole (-2 ants)";
   this.extra_description = "Create an outpost to collect some more resources";
@@ -267,12 +290,6 @@ function actionCreateOutpost() {
     return world.getPopulation() >= 2;
   }
 
-  this.effect = function(world, actor, position, target) {
-
-    world.population -= 2;
-
-    world.destroyResource(target);
-  }
 
 
 
@@ -309,36 +326,22 @@ function actionCreateQueensChamber() {
   this.max_distance = 1;
   this.hover_radius = 0;
 
+  this.pop_cost = 4;
+
   this.cloud_clear = 5;
 
   this.description = "Queen's chamber (-4 ants)";
   this.extra_description = "Create a base for making settlers";
 
   this.targetFilterFunction = function(world, actor, position) {
-
     return !world.noCitiesInArea(position,1);
   }
   this.activation = function(world, actor, position) {
-    if (world.countUnits(Hex.circle(position, 1), 'queens-chamber', 1))
-      return false;
-    else
-      return true;
+    return !world.countUnits(Hex.circle(position, 1), 'queens-chamber', 1);
   }
   this.requirement = function(world, actor, position) {
-
-    if (world.getPopulation() >= 4)
-      return true;
-    return false;
+    return world.getPopulation() >= 4;
   }
-
-  this.effect = function(world, actor, position, target) {
-
-    world.population -= 4;
-    world.destroyResource(target);
-  }
-
-
-
 }
 
 
@@ -366,23 +369,10 @@ function actionExpedition() {
   this.hover_radius = 4;
   this.cloud_clear = 5;
 
+  this.destroy_resource = false;
+
   this.description = "Expedition (free)";
   this.extra_description = "Explore the area around your click";
-
-
-  this.requirement = function(world, actor, position) {
-
-    if (world.getPopulation() >= 1)
-      return true;
-    return false;
-  }
-
-
-  this.effect = function(world, actor, position, target) {
-
-  }
-
-
 
 }
 
@@ -408,38 +398,20 @@ function actionCreateHarbor() {
   this.hover_radius = 14;
 
   this.cloud_clear = 5;
+  this.pop_cost = 4;
 
   this.description = "Harbor (-4 ants)";
   this.extra_description = "Create a base for sending settlers by sea";
 
   this.targetFilterFunction = function(world, actor, target) {
-
-    if (!world.nearCoast(target))
-      return false;
-
-    return true;
+    return world.nearCoast(target);
   }
   this.activation = function(world, actor, position) {
-    if (world.countUnits(Hex.circle(position, 3), 'fishing-center', 1))
-      return true;
-    else
-      return false;
+    return world.countUnits(Hex.circle(position, 3), 'fishing-center', 1);
   }
   this.requirement = function(world, actor, position) {
-    if (world.countUnits(Hex.circle(position, 3), 'fishing-center', 1))
-      return true;
-    else
-      return false;
+    return world.countUnits(Hex.circle(position, 3), 'fishing-center', 1);
   }
-
-  this.effect = function(world, actor, position, target) {
-
-    world.population -= 4;
-    world.destroyResource(target);
-  }
-
-
-
 }
 
 
@@ -468,31 +440,14 @@ function actionCreateFishingCenter(thing) {
   this.hover_radius = 5;
 
   this.cloud_clear = 5;
+  this.pop_cost = 2;
 
   this.description = "Fishing boats (-2 ants)";
   this.extra_description = "Fish collection agency";
 
   this.targetFilterFunction = function(world, actor, position) {
-
-    if (!world.nearCoast(position))
-      return false;
-
-    //targets not underwater
-    if (world.getTile(position).elevation < 2)
-      return false;
-
-    //if (world.countResources(Hex.circle(position, 1), 'fish', 1))
-      return true;
+    return (world.nearCoast(position) && world.getTile(position).elevation >= 2)
   }
-
-  this.effect = function(world, actor, position, target) {
-
-    world.population -= 2;
-    world.destroyResource(target);
-  }
-
-
-
 }
 
 
@@ -519,26 +474,20 @@ function actionGetResource(max_distance) {
   this.multi_target = true;
 
   this.new_unit_type = 'route';
+  this.pop_cost = -1;
+  this.total_pop_cost = -1;
+
+    this.destroy_resource = false;
 
   this.description = "Collect resources";
   this.extra_description = "Get all the resources nearby";
 
   this.targetFilterFunction = function(world, actor, position) {
 
-    if (world.unitAtLocation(position))
-      return false;
-
-    if (world.countResources(Hex.circle(position, 0), 'food', 1))
-      return true;
-
-    return false;
+    return !world.unitAtLocation(position) && world.countResources(Hex.circle(position, 0), 'food', 1);
   }
 
-  this.effect = function(world, actor, position, target) {
-  
-    world.population += 1;
-    world.total_population += 1
-  }
+
 
 }
 
@@ -561,6 +510,11 @@ function actionGoFishing(max_distance) {
   this.hover_radius = 0;
   this.cloud_clear = 0;
 
+  this.destroy_resource = false;
+
+  this.pop_cost = -1;
+  this.total_pop_cost = -1;
+
   this.multi_target = true;
   this.new_unit_type = 'route';
 
@@ -568,29 +522,12 @@ function actionGoFishing(max_distance) {
   this.extra_description = "Get all the sea resources nearby";
 
   this.targetFilterFunction = function(world, actor, position) {
-
-    if (world.unitAtLocation(position))
-      return false;
-
-    if (world.countResources(Hex.circle(position, 0), 'food', 1))
-      return true;
-
-    return false;
+    return !world.unitAtLocation(position) && world.countResources(Hex.circle(position, 0), 'food', 1);
   }
 
   this.requirement = function(world, actor, position) {
-    if (!world.nearCoast(position))
-      return false;
-
-    return true;
+    return world.nearCoast(position);
   }
-
-  this.effect = function(world, actor, position, target) {
-    
-    world.population += 1;
-    world.total_population += 1;
-  }
-
 }
 
 
