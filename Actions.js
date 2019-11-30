@@ -16,6 +16,7 @@ function Action() {
   this.nextSelection = "self";
   this.stop_elevation = 100;
   this.extra_description = "";
+  this.also_build_road = true;
 
   this.targetFilterFunction = function(world, actor, target) {    return true;  }
 
@@ -144,6 +145,18 @@ function Action() {
       world.buildRoad(actionPath);
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
