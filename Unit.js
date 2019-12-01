@@ -35,18 +35,25 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateFishingCenter());
     this.addAction( new actionCreateHarbor());
     this.addAction( new actionCreateOutpost());
-    this.addAction( new actionExpedition());
+    //this.addAction( new actionExpedition());
     break;
 
   case 'outpost':
     this.setGraphic('white',4);
     this.addAction( new actionGetResource(1));
-    this.addAction( new actionExpedition());
+    //this.addAction( new actionExpedition());
     break;
 
   case 'queens-chamber':
     this.setGraphic('pink',6);
     this.addAction( new actionCreateCamp());
+    this.addAction( new actionCreateCouncilOfQueens());
+    this.council_connected = false;
+    break;
+
+  case 'council-of-queens':
+    this.setGraphic('red',5);
+    this.addAction( new actionConnectQueensChambers());
     break;
 
   case 'fishing-center':

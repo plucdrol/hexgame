@@ -25,7 +25,8 @@ var land_tiles = [
 'forest','forest','forest','forest',
 'hills','hills','hills','hills','hills',
 'mountains','mountains','mountains','mountains','mountains','mountains',
-'ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice'
+'ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice',
+'clouds'
 ];
 
 function World(radius) {
@@ -47,8 +48,11 @@ function World(radius) {
   this.units.set(new Hex(0,0), new Unit('village'));
 
   //create resources map
+  this.resources_gotten = 0;
+  this.total_resources = 0;
+
   this.resources = new HexMap();
-  this.resources = this.generateResources();
+  this.generateResources();
   this.generateUnknown();
 
   //Make the center tile into sand
@@ -58,6 +62,8 @@ function World(radius) {
 
   this.population = 12;
   this.total_population = 12;
+
+
 
 
 
@@ -231,8 +237,12 @@ World.prototype.countResources = function(hexarray, resource_type, minimum_count
   return (count >= minimum_count) 
 }
 
-World.prototype.nearCoast = function(position) {
+World.prototype.nearCoast = function(position, max_tiles) {
   let count = 0;
+  let max = 6;
+
+  if (max_tiles)
+    max = max_tiles;
 
   for (neighbor of position.getNeighbors()) {
     if (this.getTile(neighbor) && 
@@ -240,7 +250,7 @@ World.prototype.nearCoast = function(position) {
       count++;
   }
 
-  return (count >= 1) 
+  return (count >= 1 && count <= max) 
 }
 
 //'unit' is overlooked, leave it undefined to avoid that
@@ -275,21 +285,23 @@ World.prototype.generateUnknown = function() {
     let random_hex = this.getRandomHex();
     if (this.getTile(random_hex).elevation < 1)
       continue;
-    this.resources.set(random_hex, new Unit('unknown'));
+    this.addResource(random_hex, 'unknown');
     count--;
   }
 }
 
 World.prototype.addResource = function(hex, type) {
   this.resources.set(hex, new Unit(type) );
+  this.total_resources += 1;
 }
 
 World.prototype.destroyResource = function(hex) {
   this.resources.remove(hex);
+  if (this.getResource(hex))
+    this.total_resources -= 1;
 }
 
 World.prototype.generateResources = function() {
-  var resources = new HexMap();
   for (let hex of this.world_map.getHexArray() )  {
     let terrain = this.getTile(hex);
 
@@ -299,23 +311,23 @@ World.prototype.generateResources = function() {
       continue;
     }
     if (terrain.river && terrain.river.water_level >= 7) {
-      resources.set(hex, new Unit('fish'));
+      this.addResource(hex, 'fish' );
       continue;
     }
     switch (terrain.elevation) {
       case 1: //coasts
-        resources.set(hex, new Unit('fish') );
+        this.addResource(hex, 'fish' );
         break;
       case 3: //grass
       case 4: 
-        resources.set(hex, new Unit('food'));
+        this.addResource(hex, 'food');
         break;
       //forest
       case 5: 
       case 6: 
       case 7: 
       case 8: 
-        resources.set(hex, new Unit('wood'));
+        this.addResource(hex, 'wood');
         break;
       case 9: //hills
       case 10: 
@@ -324,7 +336,6 @@ World.prototype.generateResources = function() {
         break;
     }
   }
-  return resources;
 }
 
 World.prototype.makeCloudsEverywhere = function() {

@@ -85,7 +85,7 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 
     //clouds if not explored
     if (this.getTile(hex).hidden) {
-      this.drawTile(hex, {elevation: 21});
+      this.drawTile(hex, {elevation: 32});
       continue;
     }
     //actual tiles
@@ -258,7 +258,8 @@ var greenscale_colors = function (i) {
                     '#310','#310',
                     '#777', '#777','#777', //mountains 14 15 16
                     '#888','#888','#888', //mountains 17 18 19
-                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF',]; //ice
+                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
+                    '#CCC']; //clouds
 
   var greenscale = [224,190,61, //ocean coast sand 0 1 2
                     90,100, //grass 3 4

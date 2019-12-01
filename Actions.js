@@ -9,6 +9,8 @@
 
 //All actions inherit from this action
 function Action() {
+
+  //default action settings
   this.minimum_elevation = 2;
   this.maximum_elevation = 13;
   this.min_distance = 1;
@@ -21,12 +23,16 @@ function Action() {
   this.multi_target = false;
   this.destroy_resource = true;
 
+  //evaluates if a target can receive an action
   this.targetFilterFunction = function(world, actor, target) {    return true;  }
 
+  //evaluates if the action will be displayed in the list
   this.activation = function(world, actor, position) {    return true;  }
 
+  //evaluates if the action will be enabled in the list
   this.requirement = function(world, actor, position) {    return true;  }
 
+  //additional effects of the action, which happen after the default ones
   this.effect = function(world, actor, position, target) {  }
 
   this.getDescription = function() {    return this.description;  }
@@ -235,7 +241,7 @@ function actionCreateCamp() {
   this.also_build_road = true;
   this.hover_radius = 3;
 
-  this.cloud_clear = 5;
+  this.cloud_clear = 6;
 
   this.pop_cost = 4;
 
@@ -331,7 +337,7 @@ function actionCreateQueensChamber() {
   this.cloud_clear = 5;
 
   this.description = "Queen's chamber (-4 ants)";
-  this.extra_description = "Create a base for making settlers";
+  this.extra_description = "Needed to make settlers";
 
   this.targetFilterFunction = function(world, actor, position) {
     return !world.noCitiesInArea(position,1);
@@ -394,17 +400,17 @@ function actionCreateHarbor() {
 
   this.nextSelection = "target";
   this.min_distance = 1;
-  this.max_distance = 2;
-  this.hover_radius = 14;
+  this.max_distance = 3;
+  this.hover_radius = 0;
 
   this.cloud_clear = 5;
   this.pop_cost = 4;
 
   this.description = "Harbor (-4 ants)";
-  this.extra_description = "Create a base for sending settlers by sea";
+  this.extra_description = "Explore and settle the sea.";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.nearCoast(target);
+    return world.nearCoast(target, 1);
   }
   this.activation = function(world, actor, position) {
     return world.countUnits(Hex.circle(position, 3), 'fishing-center', 1);
@@ -530,6 +536,81 @@ function actionGoFishing(max_distance) {
   }
 }
 
+
+
+
+
+
+
+//This action transforms the unit into a camp
+function actionCreateCouncilOfQueens() {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "council-of-queens";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'council-of-queens';
+
+  this.nextSelection = "target";
+  this.min_distance = 1;
+  this.max_distance = 10;
+  this.hover_radius = 10;
+
+  this.cloud_clear = 5;
+  this.pop_cost = 4;
+
+  this.description = "Council of queens (-4 ants)";
+  this.extra_description = "Get more ants if more queens chambers are nearby";
+
+  this.targetFilterFunction = function(world, actor, position) {
+    return (world.nearCoast(position) && world.getTile(position).elevation >= 2)
+  }
+
+
+  this.effect = function(world, actor, position, target) {  
+      actor.council_connected = true;
+      actor.setGraphic('red',6);
+  }
+}
+
+
+
+//This action transforms the unit into a camp
+function actionConnectQueensChambers() {
+  Action.call(this);
+
+  this.name = "connect-queens-chambers";
+  this.type = "target";
+  this.target = "unit";
+  this.min_distance = 1;
+  this.max_distance = 10;
+  this.hover_radius = 0;
+  this.cloud_clear = 0;
+
+  this.destroy_resource = false;
+
+  this.pop_cost = -4;
+  this.total_pop_cost = -4;
+
+  this.also_build_road = true;
+  this.multi_target = false;
+
+  this.description = "Connect to a Queen's Chamber";
+  this.extra_description = "Get more ants for each Queens Chamber nearby";
+
+  this.targetFilterFunction = function(world, actor, position) {
+    return world.countUnits(Hex.circle(position, 0), 'queens-chamber', 1) && !world.getUnit(position).council_connected;
+  }
+
+
+  this.effect = function(world, actor, position, target) { 
+    world.getUnit(target).council_connected = true;
+    world.getUnit(target).setGraphic('red',6);
+  }
+
+}
 
 
 
