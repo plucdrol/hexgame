@@ -24,8 +24,9 @@ HUDRenderer.prototype.drawHUD = function() {
     this.drawSelectionHex(hex_selected);
 
     if (hex_hovered) {
-      for (hex of Hex.circle(hex_hovered, this.unit_input.getActionHoverRadius()))
+      for (var hex of Hex.circle(hex_hovered, this.unit_input.getActionHoverRadius()))
         this.drawHoveredHex(hex);
+
       this.drawHoveredHex(hex_hovered);
     }
 
@@ -39,6 +40,30 @@ HUDRenderer.prototype.drawHUD = function() {
 
 }
 
+HUDRenderer.prototype.drawActionLine = function (hex_hovered, hex_selected) {
+
+  //draw a line from actor to target
+  let action = this.unit_input.getActionSelected();
+  let actor = this.unit_input.getActorSelected();
+
+  if (action && actor) {
+    let path = action.getActionPath(world, actor, hex_selected, hex_hovered, 15);
+
+    let color = '#C50';
+    if ( action.targetFilterFunction(this.world, actor, hex_hovered) )
+      color = '#5C0';
+
+    this.drawPath(path, color);
+  }
+}
+
+HUDRenderer.prototype.drawPath = function(hexarray, color) {
+  var previous = hexarray[0];
+  for (hex of hexarray) {
+    this.hex_renderer.drawCenterLine(hex, previous, 6, color );
+    previous = hex;
+  }
+}
 
 HUDRenderer.prototype.actorHasRenderableRange = function(actor) {
   return (actor && actor.selectable && actor.range.length > 0)

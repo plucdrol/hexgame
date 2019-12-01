@@ -110,15 +110,21 @@ function Action() {
 
   //Trigger the effects of the action
   this.doSingleAction = function(world, actor, position, target) {
-    //then do the action
-    this.effect(world, actor, position, target);
+
     world.clearClouds(target, this.cloud_clear);
 
     if (this.also_build_road)
       this.createRoad(world, position, target);
 
     if (this.new_unit_type)
-      world.addUnit(target, this.new_unit_type);
+      world.addUnit(target, this.new_unit_type, actor);
+
+    if (this.add_pop) {
+      if (actor.transfer_pop)
+        actor.owner.pop += 1;
+      else
+        actor.pop += 1;
+    }
 
     if (this.pop_cost)
       world.population -= this.pop_cost;
@@ -128,6 +134,9 @@ function Action() {
 
     if (this.destroy_resource)
       world.destroyResource(target);
+
+    //then do the action
+    this.effect(world, actor, position, target);
   }
 
   this.targetIsOK = function(world, target) {
@@ -172,12 +181,15 @@ function Action() {
     return filteredRange;
   };
 
-  this.getActionPath = function(world, actor, position, target) {
+  this.getActionPath = function(world, actor, position, target, extra_max_distance) {
 
     let pathfinder = this.getPathfinder();
 
-    var max_distance = this.max_distance | 3;
-    var min_distance = this.min_distance | 0;
+    var max_distance = this.max_distance;
+    if (extra_max_distance)
+      max_distance = extra_max_distance;
+
+    var min_distance = this.min_distance;
     var actionPath = pathfinder.getPath( world.world_map, position, target, max_distance );
 
     return actionPath;
@@ -187,8 +199,8 @@ function Action() {
 
     let pathfinder = this.getPathfinder();
 
-    var max_distance = this.max_distance | 3;
-    var min_distance = this.min_distance | 0;
+    var max_distance = this.max_distance;
+    var min_distance = this.min_distance;
     var actionPath = pathfinder.getPath( world.world_map, origin, target, max_distance );
 
     if (actionPath instanceof Array)
@@ -298,7 +310,6 @@ function actionCreateOutpost() {
 
 
 
-
 }
 
 
@@ -306,10 +317,13 @@ function actionCreateOutpost() {
 function actionCreateCampBySea() {
   actionCreateCamp.call(this);
   this.minimum_elevation = 0;
-  this.maximum_elevation = 3;
   this.max_distance = 15;
   this.also_build_road = false;
   this.stop_elevation = 2;
+
+  this.targetFilterFunction = function(world, actor, position) {
+    return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,5) && world.nearCoast(position);
+  }
 }
 
 
@@ -483,6 +497,8 @@ function actionGetResource(max_distance) {
   this.pop_cost = -1;
   this.total_pop_cost = -1;
 
+  this.add_pop = true;
+
     this.destroy_resource = false;
 
   this.description = "Collect resources";
@@ -492,6 +508,8 @@ function actionGetResource(max_distance) {
 
     return !world.unitAtLocation(position) && world.countResources(Hex.circle(position, 0), 'food', 1);
   }
+
+
 
 
 
@@ -522,7 +540,9 @@ function actionGoFishing(max_distance) {
   this.total_pop_cost = -1;
 
   this.multi_target = true;
-  this.new_unit_type = 'route';
+  this.new_unit_type = 'fishing-boat';
+
+  this.add_pop = true;
 
   this.description = "Go fishing";
   this.extra_description = "Get all the sea resources nearby";

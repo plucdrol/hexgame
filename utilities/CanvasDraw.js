@@ -140,7 +140,7 @@ function CanvasDraw (canvas) {
   };
 
   //draw text on the canvas at the specified position, with optional color and fontsize
-  CanvasDraw.prototype.drawText = function(text,position,color,fontsize) {
+  CanvasDraw.prototype.drawText = function(text,position,color,fontsize,center) {
 
     //default fontsize value
     if (typeof fontsize === "undefined") {
@@ -159,6 +159,11 @@ function CanvasDraw (canvas) {
     
     //select the color
     context.fillStyle = color;
+
+    if (center) {
+      context.textBaseline = 'middle';
+      context.textAlign = "center";
+    }
 
     //write the text
     context.fillText(text,position.x,position.y);

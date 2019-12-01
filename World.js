@@ -147,9 +147,10 @@ World.prototype.getUnit = function(hex) {
   return this.units.get(hex);
 }
 
-World.prototype.addUnit = function(hex, unit_type) {
+World.prototype.addUnit = function(hex, unit_type, owner) {
 
     let new_unit = new Unit(unit_type);
+    new_unit.owner = owner;
     this.units.set(hex, new_unit);
 }
 

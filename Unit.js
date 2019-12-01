@@ -25,10 +25,12 @@ Unit.prototype.setResourceStores = function(food, wood, stone) {
 
 Unit.prototype.setType = function(unit_type) {
   this.type = unit_type;
+  this.owner = null;
 
   switch (unit_type) {
 
   case 'village':
+    this.pop = 0;
     this.setGraphic('white',6);
     this.addAction( new actionGetResource(3));
     this.addAction( new actionCreateQueensChamber());
@@ -39,6 +41,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'outpost':
+    this.transfer_pop = true;
     this.setGraphic('white',4);
     this.addAction( new actionGetResource(1));
     //this.addAction( new actionExpedition());
@@ -57,6 +60,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'fishing-center':
+    this.transfer_pop = true;
     this.setGraphic('lightblue',3);
     this.addAction( new actionGoFishing(5));
     break;
@@ -74,6 +78,14 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('white',3);
     this.setResource('route',1);
     break;
+
+  case 'fishing-boat':
+    this.setGraphic('white',3);
+    this.setResource('route',1);
+    break;
+
+
+
 
 
   case 'fish':

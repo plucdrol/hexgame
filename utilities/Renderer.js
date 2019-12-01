@@ -80,12 +80,13 @@ Renderer.prototype.drawPolygon = function(points,style) {
 };
 
 //Transform coordinatess and draw text using CanvasDraw
-Renderer.prototype.drawText = function(text,position,style) {
+Renderer.prototype.drawText = function(text,position,style,center) {
   var coord = this.worldToScreen(position);
   var newfontsize = this.worldToScreen1D(style.text_size);
   var color = style.text_color;
 
-  this.canvas_draw.drawText(text,coord,color,newfontsize);
+
+  this.canvas_draw.drawText(text,coord,color,newfontsize,center);
 };
 
 //Draw multiple lines using the drawLine function

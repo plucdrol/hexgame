@@ -126,6 +126,8 @@ WorldRenderer.p.drawRoads = function(hexarray) {
   }
 }
 
+
+
 //draw the units and their resource-collection area
 WorldRenderer.p.drawUnits = function(hexarray) {
   for (hex of hexarray) {
@@ -188,17 +190,13 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   let size = 10*unit.size;
   this.hex_renderer.renderer.drawDot(position, size, unit_style);
   
-  if (unit.population) {
+  if (unit.pop) {
     let text_style = new RenderStyle();
-    text_style.font_size = 25;
-    let text = unit.population;      
-    this.hex_renderer.renderer.drawText(text, position, text_style);
+    text_style.text_size = 45;
+    let text = unit.pop;      
+    this.hex_renderer.renderer.drawText(text, position, text_style, true);
   }
 
-  //draw the city radius
-  if (unit.cityRadius) {
-    //this.drawCityRadius(hex, unit);
-  }
 };
 
 
