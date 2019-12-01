@@ -29,18 +29,18 @@ Unit.prototype.setType = function(unit_type) {
 
   switch (unit_type) {
 
-  case 'village':
+  case 'city':
     this.pop = 0;
     this.setGraphic('white',6);
     this.addAction( new actionGetResource(3));
     this.addAction( new actionCreateQueensChamber());
-    this.addAction( new actionCreateFishingCenter());
+    this.addAction( new actionCreateLighthouse());
     this.addAction( new actionCreateHarbor());
-    this.addAction( new actionCreateOutpost());
+    this.addAction( new actionCreateVillage());
     //this.addAction( new actionExpedition());
     break;
 
-  case 'outpost':
+  case 'village':
     this.transfer_pop = true;
     this.setGraphic('white',4);
     this.addAction( new actionGetResource(1));
@@ -48,18 +48,20 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'queens-chamber':
+    this.pop = 1;
     this.setGraphic('pink',6);
-    this.addAction( new actionCreateCamp());
+    this.addAction( new actionCreateCity());
     this.addAction( new actionCreateCouncilOfQueens());
     this.council_connected = false;
     break;
 
   case 'council-of-queens':
+    this.pop = 1;
     this.setGraphic('red',5);
     this.addAction( new actionConnectQueensChambers());
     break;
 
-  case 'fishing-center':
+  case 'lighthouse':
     this.transfer_pop = true;
     this.setGraphic('lightblue',3);
     this.addAction( new actionGoFishing(5));
@@ -67,9 +69,9 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'harbor':
     this.setGraphic('lightblue',5);
-    this.addAction( new actionCreateCampBySea());
-    this.addAction( new actionCreateFishingCenter('shallow-water'));
-    this.addAction( new actionExpedition());
+    this.addAction( new actionCreateCityBySea());
+    this.addAction( new actionCreateLighthouse());
+    //this.addAction( new actionExpedition());
     
 
     break;

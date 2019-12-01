@@ -22,6 +22,7 @@ function Action() {
   this.cloud_clear = 0;
   this.multi_target = false;
   this.destroy_resource = true;
+  this.can_use_roads = false;
 
   //evaluates if a target can receive an action
   this.targetFilterFunction = function(world, actor, target) {    return true;  }
@@ -57,8 +58,31 @@ function Action() {
 
     let cost = 1;
 
+    if (this.areRoadConnected(map,hex,next_hex) && this.can_use_roads)
+      cost = 0.8;
+
     return cost;
   }
+
+  this.areRoadConnected = function(map, hex1, hex2) {
+
+  let tile1 = map.getValue(hex1);
+  let tile2 = map.getValue(hex2);
+
+  if (tile1.road_from)
+    for (var from1 of tile1.road_from)
+      if (Hex.equals(from1, hex2))
+        return true;
+
+  if (tile2.road_from)
+    for (var from2 of tile2.road_from)
+      if (Hex.equals(from2, hex1))
+        return true;
+
+  //else
+  return false;
+
+}
 
   this.getPathfinder = function() {
 
@@ -236,7 +260,7 @@ function Action() {
 
 
 //This action transforms the unit into a camp
-function actionCreateCamp() {
+function actionCreateCity() {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -244,7 +268,7 @@ function actionCreateCamp() {
   this.name = "resettlement";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'village';
+  this.new_unit_type = 'city';
 
   this.nextSelection = "target";
   this.min_distance = 6;
@@ -257,7 +281,9 @@ function actionCreateCamp() {
 
   this.pop_cost = 4;
 
-  this.description = "New colony (-4 ants)";
+  this.can_use_roads = true;
+
+  this.description = "New city (-4 ants)";
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -277,15 +303,16 @@ function actionCreateCamp() {
 
 
 //This action transforms the unit into a camp
-function actionCreateOutpost() {
+function actionCreateVillage() {
   Action.call(this);
 
   this.minimum_elevation = 2;
 
-  this.name = "outpost";
+  this.name = "village";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'outpost';
+  this.new_unit_type = 'village';
+  this.can_use_roads = true;
 
   this.nextSelection = "target";
   this.min_distance = 2;
@@ -297,8 +324,8 @@ function actionCreateOutpost() {
   this.cloud_clear = 3;
   this.pop_cost = 2;
 
-  this.description = "Storage hole (-2 ants)";
-  this.extra_description = "Create an outpost to collect some more resources";
+  this.description = "Village (-2 ants)";
+  this.extra_description = "Create a small village to collect some more resources";
 
   this.targetFilterFunction = function(world, actor, position) {
     return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,1);
@@ -314,8 +341,8 @@ function actionCreateOutpost() {
 
 
 
-function actionCreateCampBySea() {
-  actionCreateCamp.call(this);
+function actionCreateCityBySea() {
+  actionCreateCity.call(this);
   this.minimum_elevation = 0;
   this.max_distance = 15;
   this.also_build_road = false;
@@ -350,7 +377,7 @@ function actionCreateQueensChamber() {
 
   this.cloud_clear = 5;
 
-  this.description = "Queen's chamber (-4 ants)";
+  this.description = "Queen's chamber (-4)";
   this.extra_description = "Needed to make settlers";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -360,7 +387,7 @@ function actionCreateQueensChamber() {
     return !world.countUnits(Hex.circle(position, 1), 'queens-chamber', 1);
   }
   this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 4;
+    return world.getPopulation() >= 8;
   }
 }
 
@@ -391,7 +418,7 @@ function actionExpedition() {
 
   this.destroy_resource = false;
 
-  this.description = "Expedition (free)";
+  this.description = "Expedition (1 pop)";
   this.extra_description = "Explore the area around your click";
 
 }
@@ -427,10 +454,10 @@ function actionCreateHarbor() {
     return world.nearCoast(target, 1);
   }
   this.activation = function(world, actor, position) {
-    return world.countUnits(Hex.circle(position, 3), 'fishing-center', 1);
+    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1);
   }
   this.requirement = function(world, actor, position) {
-    return world.countUnits(Hex.circle(position, 3), 'fishing-center', 1);
+    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1) &&  world.getPopulation() >= 8;
   }
 }
 
@@ -441,18 +468,15 @@ function actionCreateHarbor() {
 
 
 //This action transforms the unit into a camp
-function actionCreateFishingCenter(thing) {
+function actionCreateLighthouse() {
   Action.call(this);
 
   this.minimum_elevation = 2;
 
-  if (thing && thing == 'shallow-water')
-    this.minimum_elevation = 1;
-
-  this.name = "fishing-center";
+  this.name = "lighthouse";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'fishing-center';
+  this.new_unit_type = 'lighthouse';
 
   this.nextSelection = "target";
   this.min_distance = 1;
@@ -462,7 +486,9 @@ function actionCreateFishingCenter(thing) {
   this.cloud_clear = 5;
   this.pop_cost = 2;
 
-  this.description = "Fishing boats (-2 ants)";
+  this.can_use_roads = true;
+
+  this.description = "Lighthouse (-2 ants)";
   this.extra_description = "Fish collection agency";
 
   this.targetFilterFunction = function(world, actor, position) {
@@ -581,6 +607,8 @@ function actionCreateCouncilOfQueens() {
   this.cloud_clear = 5;
   this.pop_cost = 4;
 
+
+
   this.description = "Council of queens (-4 ants)";
   this.extra_description = "Get more ants if more queens chambers are nearby";
 
@@ -592,6 +620,7 @@ function actionCreateCouncilOfQueens() {
   this.effect = function(world, actor, position, target) {  
       actor.council_connected = true;
       actor.setGraphic('red',6);
+      actor.pop --;
   }
 }
 
@@ -626,8 +655,12 @@ function actionConnectQueensChambers() {
 
 
   this.effect = function(world, actor, position, target) { 
-    world.getUnit(target).council_connected = true;
-    world.getUnit(target).setGraphic('red',6);
+    
+    let queens_chamber = world.getUnit(target);
+    queens_chamber.council_connected = true;
+    queens_chamber.setGraphic('red',6);
+    actor.pop++;
+    queens_chamber.pop--;
   }
 
 }

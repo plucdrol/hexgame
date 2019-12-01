@@ -106,7 +106,7 @@ HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
 HUDRenderer.prototype.ocillate = function(length) {
   let time = new Date().getTime()%length;
   let opacity = Math.abs(time/length-0.5);
-  return opacity
+  return opacity;
 }
 
 
@@ -160,7 +160,7 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
 
   //display simple message if no unit is selected
   if (!actor.actions || actor.actions.length == 0) {
-    action_buttons.innerHTML = "Click a village";
+    action_buttons.innerHTML = "Click a town";
     return;
   }
 
@@ -208,7 +208,7 @@ HUDRenderer.prototype.addClickDetection = function() {
 }
 
 HUDRenderer.prototype.clearButtons = function() {
-  document.getElementById('action-buttons').innerHTML = "<p>Click a village</p>";
+  document.getElementById('action-buttons').innerHTML = "<p>Click a town</p>";
 }
 
 
@@ -263,6 +263,10 @@ function clearTooltip() {
   document.getElementById('tooltip').innerHTML = "";
 }
 
+function getTooltip() {
+  return document.getElementById('tooltip').innerHTML;
+}
+
 function addTooltip(message) {
   document.getElementById('tooltip').innerHTML += message;
 }
@@ -280,8 +284,10 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
 
   //HOVERING OVER THINGS
   this.addTooltipUnit(hex_hovered);
-  this.addTooltipResource(hex_hovered);
-  this.addTooltipTile(hex_hovered);
+  if (!getTooltip())
+    this.addTooltipResource(hex_hovered);
+  if (!getTooltip())
+    this.addTooltipTile(hex_hovered);
 
 }
 
@@ -303,6 +309,6 @@ HUDRenderer.prototype.addTooltipTile = function(hex_hovered) {
     addTooltip(land_tiles[tile.elevation]+", ");
   }
   if (tile && tile.river && tile.river.water_level >= 7) {
-    addTooltip('river '+tile.river.name+', ');
+    addTooltip('river '+', ');
   }
 }

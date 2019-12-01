@@ -45,7 +45,7 @@ function World(radius) {
 
   //create units map
   this.units = new HexMap();
-  this.units.set(new Hex(0,0), new Unit('village'));
+  this.units.set(new Hex(0,0), new Unit('city'));
 
   //create resources map
   this.resources_gotten = 0;
@@ -54,6 +54,7 @@ function World(radius) {
   this.resources = new HexMap();
   this.generateResources();
   this.generateUnknown();
+  this.destroyResource(new Hex(0,0));
 
   //Make the center tile into sand
   let land_tile = new Unit('terrain');
@@ -259,7 +260,7 @@ World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) 
   let area = Hex.circle(position, radius);
   for (hex of area) {
     if (this.units.containsHex(hex) ) {
-      if (this.getUnit(hex).type=='village')
+      if (this.getUnit(hex).type=='city')
         return false;
     }
   }
@@ -351,7 +352,7 @@ World.prototype.makeCloudsEverywhere = function() {
 World.prototype.createSubCity = function( origin, target ) {
 
   //Create a new unit
-  let new_unit = new Unit('village');
+  let new_unit = new Unit('town');
 
   //change color if conquering
   if (this.getUnit(target))
