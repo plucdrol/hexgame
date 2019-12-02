@@ -155,6 +155,12 @@ World.prototype.addUnit = function(hex, unit_type, owner) {
     this.units.set(hex, new_unit);
 }
 
+World.prototype.destroyUnit = function(hex) {
+
+    this.units.remove(hex);
+}
+
+
 
 World.prototype.buildRoad = function(hexarray) {
   let previous_hex;
@@ -178,6 +184,13 @@ World.prototype.addRoadTile = function(hex1, hex2) {
 World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
 }
+
+World.prototype.destroyResource = function(hex) {
+  this.resources.remove(hex);
+  if (this.getResource(hex))
+    this.total_resources -= 1;
+}
+
 World.prototype.tileIsRevealed = function(hex) {
   return (this.world_map.containsHex(hex) && !this.getTile(hex).hidden);
 }
@@ -239,12 +252,16 @@ World.prototype.countResources = function(hexarray, resource_type, minimum_count
   return (count >= minimum_count) 
 }
 
-World.prototype.nearCoast = function(position, max_tiles) {
+World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
   let count = 0;
   let max = 6;
+  let min = 1;
 
   if (max_tiles)
     max = max_tiles;
+
+  if (min_tiles)
+    min = min_tiles;
 
   for (neighbor of position.getNeighbors()) {
     if (this.getTile(neighbor) && 
@@ -252,13 +269,18 @@ World.prototype.nearCoast = function(position, max_tiles) {
       count++;
   }
 
-  return (count >= 1 && count <= max) 
+  return (count <= max && count >= min) 
 }
 
 //'unit' is overlooked, leave it undefined to avoid that
 World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) {
   let area = Hex.circle(position, radius);
   for (hex of area) {
+    //skip position_to_ignore
+    if (position_to_ignore && Hex.equals(hex, position_to_ignore))
+      continue;
+    
+    //returns false if a city is here
     if (this.units.containsHex(hex) ) {
       if (this.getUnit(hex).type=='city')
         return false;
@@ -295,12 +317,6 @@ World.prototype.generateUnknown = function() {
 World.prototype.addResource = function(hex, type) {
   this.resources.set(hex, new Unit(type) );
   this.total_resources += 1;
-}
-
-World.prototype.destroyResource = function(hex) {
-  this.resources.remove(hex);
-  if (this.getResource(hex))
-    this.total_resources -= 1;
 }
 
 World.prototype.generateResources = function() {

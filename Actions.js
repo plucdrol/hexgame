@@ -16,7 +16,8 @@ function Action() {
   this.min_distance = 1;
   this.max_distance = 1;
   this.nextSelection = "self";
-  this.stop_elevation = 100;
+  this.stop_elevation_up = 100;
+  this.stop_elevation_down = -1;
   this.extra_description = "";
   this.also_build_road = true;
   this.cloud_clear = 0;
@@ -25,7 +26,7 @@ function Action() {
   this.can_use_roads = false;
 
   //evaluates if a target can receive an action
-  this.targetFilterFunction = function(world, actor, target) {    return true;  }
+  this.targetFilterFunction = function(world, actor, position, target) {    return true;  }
 
   //evaluates if the action will be displayed in the list
   this.activation = function(world, actor, position) {    return true;  }
@@ -41,6 +42,13 @@ function Action() {
   this.getExtraDescription = function() {    return this.extra_description;  }
 
 
+  //STOP FUNCTION (for pathfinder)
+  this.stopFunction = function(map, hex, next_hex) {
+    
+    //return false;
+    return (map.get(next_hex).elevation >= this.stop_elevation_up && map.get(hex).elevation < this.stop_elevation_up)
+        || (map.get(next_hex).elevation <= this.stop_elevation_down && map.get(hex).elevation > this.stop_elevation_down);
+  }
 
   //NEIGHBORS FUNCTION (for pathfinder)
   this.getNeighborsFunction = function(map,hex) {
@@ -64,6 +72,38 @@ function Action() {
     return cost;
   }
 
+  this.getPathfinder = function() {
+
+    let action = this;
+
+    //get the movement functions
+    var stepCostFunction = action.stepCostFunction.bind(action); 
+    var neighborFunction = action.getNeighborsFunction.bind(action);
+    var stopFunction = action.stopFunction.bind(action); 
+
+    //create a pathfinder to explore the area around the unit
+    return new PathFinder(stepCostFunction, neighborFunction, stopFunction);
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   this.areRoadConnected = function(map, hex1, hex2) {
 
   let tile1 = map.getValue(hex1);
@@ -83,27 +123,6 @@ function Action() {
   return false;
 
 }
-
-  this.getPathfinder = function() {
-
-    let action = this;
-
-    //get the movement functions
-    var stepCostFunction = action.stepCostFunction.bind(action); 
-    var neighborFunction = action.getNeighborsFunction.bind(action);
-    var targetFilterFunction = action.targetFilterFunction.bind(action); 
-
-    //create a pathfinder to explore the area around the unit
-    return new PathFinder(stepCostFunction, neighborFunction);
-  }
-
-
-
-
-
-
-
-
 
   /////////////////////////////////////////////////////////
                     // ACTION EFFECTS //
@@ -200,7 +219,7 @@ function Action() {
     }
 
     //remove unsuitable targets
-    let filteredRange = middleRange.filter(position => this.targetFilterFunction(world, actor, position));
+    let filteredRange = middleRange.filter(target => this.targetFilterFunction(world, actor, position, target));
 
     return filteredRange;
   };
@@ -286,8 +305,8 @@ function actionCreateCity() {
   this.description = "New city (-4 ants)";
   this.extra_description = "Click somewhere to create a new city";
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,5);
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,5);
   }
 
   this.requirement = function(world, actor, position) {
@@ -327,8 +346,8 @@ function actionCreateVillage() {
   this.description = "Village (-2 ants)";
   this.extra_description = "Create a small village to collect some more resources";
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,1);
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,1);
   }
 
   this.requirement = function(world, actor, position) {
@@ -340,16 +359,65 @@ function actionCreateVillage() {
 }
 
 
+//This action transforms the unit into a camp
+function actionMoveCity() {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "move-city";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'city';
+  this.can_use_roads = true;
+
+  this.nextSelection = "target";
+  this.min_distance = 1;
+  this.max_distance = 5;
+
+  this.also_build_road = false;
+  this.hover_radius = 3;
+
+  this.cloud_clear = 6;
+  this.pop_cost = 1;
+  this.total_pop_cost = 1;
+
+  this.description = "Move the city (-1 ants)";
+  this.extra_description = "Move your city somewhere else if the area is bad.";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,5,position);
+  }
+
+  this.activation = function(world, actor, position,target) {
+    return (actor.pop == 0);
+  }
+
+  this.requirement = function(world, actor, position,target) {
+    return (actor.pop == 0);
+  }
+
+  this.effect = function(world, actor, position, target) {
+    world.destroyUnit(position);
+  }
+
+
+
+}
+
+
 
 function actionCreateCityBySea() {
   actionCreateCity.call(this);
   this.minimum_elevation = 0;
+  this.maximum_elevation = 5;
   this.max_distance = 15;
   this.also_build_road = false;
   this.stop_elevation = 2;
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return world.getTile(position).elevation >= 2 && world.noCitiesInArea(position,5) && world.nearCoast(position);
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
+           && world.noCitiesInArea(target,5) && world.nearCoast(target);
   }
 }
 
@@ -380,8 +448,8 @@ function actionCreateQueensChamber() {
   this.description = "Queen's chamber (-4)";
   this.extra_description = "Needed to make settlers";
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return !world.noCitiesInArea(position,1);
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && !world.noCitiesInArea(target,1);
   }
   this.activation = function(world, actor, position) {
     return !world.countUnits(Hex.circle(position, 1), 'queens-chamber', 1);
@@ -450,8 +518,8 @@ function actionCreateHarbor() {
   this.description = "Harbor (-4 ants)";
   this.extra_description = "Explore and settle the sea.";
 
-  this.targetFilterFunction = function(world, actor, target) {
-    return world.nearCoast(target, 1);
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.nearCoast(target, 1, 1);
   }
   this.activation = function(world, actor, position) {
     return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1);
@@ -471,7 +539,8 @@ function actionCreateHarbor() {
 function actionCreateLighthouse() {
   Action.call(this);
 
-  this.minimum_elevation = 2;
+  this.minimum_elevation = 1;
+  this.stop_elevation_up = 2;
 
   this.name = "lighthouse";
   this.type = "target";
@@ -491,8 +560,8 @@ function actionCreateLighthouse() {
   this.description = "Lighthouse (-2 ants)";
   this.extra_description = "Fish collection agency";
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return (world.nearCoast(position) && world.getTile(position).elevation >= 2)
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return (!world.unitAtLocation(target) && world.nearCoast(target,2,6) && world.getTile(target).elevation >= 2)
   }
 }
 
@@ -507,7 +576,8 @@ function actionCreateLighthouse() {
 function actionGetResource(max_distance) {
   Action.call(this);
 
-  this.minimum_elevation = 2;
+  this.minimum_elevation = 1;
+  this.stop_elevation_down = 1;
 
   this.name = "get";
   this.type = "target";
@@ -530,10 +600,22 @@ function actionGetResource(max_distance) {
   this.description = "Collect resources";
   this.extra_description = "Get all the resources nearby";
 
-  this.targetFilterFunction = function(world, actor, position) {
+  this.targetFilterFunction = function(world, actor, position, target) {
 
-    return !world.unitAtLocation(position) && world.countResources(Hex.circle(position, 0), 'food', 1);
+    return ((
+           //land food tiles within 3 tiles of the city or...
+           world.getTile(target).elevation >= 2 && 
+           !world.unitAtLocation(target) && 
+           world.countResources(Hex.circle(target, 0), 'food', 1)) 
+           ||
+           //...or shallow water fish besides the city tile
+           (world.getTile(target).elevation == 1 &&
+           !world.unitAtLocation(target) &&
+           world.countResources(Hex.circle(target, 0), 'food', 1) &&
+           !world.noCitiesInArea(target, 1)))   ;
   }
+
+
 
 
 
@@ -573,8 +655,8 @@ function actionGoFishing(max_distance) {
   this.description = "Go fishing";
   this.extra_description = "Get all the sea resources nearby";
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return !world.unitAtLocation(position) && world.countResources(Hex.circle(position, 0), 'food', 1);
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.countResources(Hex.circle(target, 0), 'food', 1);
   }
 
   this.requirement = function(world, actor, position) {
@@ -612,8 +694,8 @@ function actionCreateCouncilOfQueens() {
   this.description = "Council of queens (-4 ants)";
   this.extra_description = "Get more ants if more queens chambers are nearby";
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return (world.nearCoast(position) && world.getTile(position).elevation >= 2)
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return (world.nearCoast(target) && world.getTile(target).elevation >= 2)
   }
 
 
@@ -649,8 +731,8 @@ function actionConnectQueensChambers() {
   this.description = "Connect to a Queen's Chamber";
   this.extra_description = "Get more ants for each Queens Chamber nearby";
 
-  this.targetFilterFunction = function(world, actor, position) {
-    return world.countUnits(Hex.circle(position, 0), 'queens-chamber', 1) && !world.getUnit(position).council_connected;
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return world.countUnits(Hex.circle(target, 0), 'queens-chamber', 1) && !world.getUnit(target).council_connected;
   }
 
 

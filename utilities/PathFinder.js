@@ -7,7 +7,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
   //stepCostFunction must be (map, coordinate1, coordinate2)
   //getNeighborFunction must be (map, coordinate)
-  //stopFunction is optional, must be (map, coordinate)
+  //stopFunction is optional, must be (map, coordinate1, coordinate2)
 
   this.visited = new Map();
 
@@ -17,7 +17,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   if (stopFunction)
     this.stopFunction = stopFunction;
   else
-    this.stopFunction = function(map, coordinate) {return false;};
+    this.stopFunction = function(map, coordinate1, coordinate2) {return false;};
 
   PathFinderCell = function(coord, previous_coord, path_cost) {
       this.coord = coord;
@@ -60,7 +60,9 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
   this.calculateCost = function(map, cost_so_far, coord, previous_coord) {
     
-    return cost_so_far + this.stepCostFunction(map, previous_coord, coord);
+    let step_cost = this.stepCostFunction(map, previous_coord, coord);
+    
+    return cost_so_far + step_cost;
   };
 
   this.makeNeighborCell = function(map, previous_cell) {
@@ -189,7 +191,8 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
     let new_cells_to_add = [];
     
     //do not look further if stopFunction triggers (except at origin)
-    if (!this.stopFunction(map,coord) || Hex.equals(origin,coord) ) //shohul
+    let previous_coord = this.currentCell(coord).previous_coord;
+    if (Hex.equals(origin,coord) || (previous_coord && !this.stopFunction(map,previous_coord, coord))  ) 
       new_cells_to_add = this.getGoodNeighbors(map, coord, max_cost);
   
     for (cell of new_cells_to_add) {

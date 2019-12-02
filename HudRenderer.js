@@ -236,7 +236,7 @@ HUDRenderer.prototype.update_function = function() {
   let pop = this.world.getPopulation();
   let busy_pop = this.world.total_population-pop;
   let resources = this.world.total_resources;
-  this.writeMessage("Ants: "+busy_pop+" busy,    "+pop+" free              "+resources+" foods in the world", 'world-resources');
+  this.writeMessage("Ants: "+busy_pop+" busy,    "+pop+" free", 'world-resources');
 
 
   if (actor && actor.selectable) {
