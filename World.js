@@ -41,11 +41,23 @@ function World(radius) {
   //create land map
   this.world_map = new HexMap();
   this.world_map = new MapGenerator('perlin').makeMap(radius);
+
+  /*
+  //turn all water to grass
+  for (let hex of this.world_map.getHexArray() )  {
+    let tile = this.getTile(hex);
+    if (tile.elevation < 2)
+      tile.elevation = 3;
+  }*/
+
+
   this.makeCloudsEverywhere();
 
   //create units map
   this.units = new HexMap();
-  this.units.set(new Hex(0,0), new Unit('city'));
+  let first_city =  new Unit('city');
+  first_city.pop = 12;
+  this.units.set(new Hex(0,0), first_city);
 
   //create resources map
   this.resources_gotten = 0;
@@ -61,7 +73,7 @@ function World(radius) {
   land_tile.elevation = 2;
   this.setHex(new Hex(0,0), land_tile);
 
-  this.population = 12;
+  this.population = 11;
   this.total_population = 12;
 
 
@@ -405,6 +417,11 @@ World.prototype.clearClouds = function(position, radius) {
     if (this.world_map.containsHex(hex))
       this.world_map.get(hex).hidden = false;
   }
+}
+
+World.prototype.clearAllClouds = function() {
+  for (hex of this.world_map.getHexArray())
+    this.world_map.get(hex).hidden = false;
 }
 
 

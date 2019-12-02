@@ -24,6 +24,7 @@ function Action() {
   this.multi_target = false;
   this.destroy_resource = true;
   this.can_use_roads = false;
+  this.infinite_range = false;
 
   //evaluates if a target can receive an action
   this.targetFilterFunction = function(world, actor, position, target) {    return true;  }
@@ -180,14 +181,11 @@ function Action() {
       world.addUnit(target, this.new_unit_type, actor);
 
     if (this.add_pop) {
-      if (actor.transfer_pop)
-        actor.owner.pop += 1;
-      else
-        actor.pop += 1;
+      actor.addPop(this.add_pop);
     }
 
-    if (this.pop_cost)
-      world.population -= this.pop_cost;
+    if (this.free_pop_cost)
+      world.population -= this.free_pop_cost;
 
     if (this.total_pop_cost)
       world.total_population -= this.total_pop_cost;
@@ -220,6 +218,11 @@ function Action() {
   this.getActionRange = function(world, actor, position) {
 
     let pathfinder = this.getPathfinder();
+
+    if (this.infinite_range) {
+      world.clearAllClouds();
+      return [];
+    }
 
     var max_distance = this.max_distance;
     var min_distance = this.min_distance;
@@ -301,13 +304,13 @@ function actionCreateCity() {
 
   this.minimum_elevation = 2;
 
-  this.name = "resettlement";
+  this.name = "city-by-land";
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'city';
 
   this.nextSelection = "target";
-  this.min_distance = 1;
+  this.min_distance = 0;
   this.max_distance = 10;
 
   this.also_build_road = true;
@@ -315,7 +318,7 @@ function actionCreateCity() {
 
   this.cloud_clear = 6;
 
-  this.pop_cost = 4;
+  this.free_pop_cost = 4;
 
   this.can_use_roads = true;
 
@@ -336,12 +339,14 @@ function actionCreateCity() {
 
 function actionCreateCityBySea() {
   actionCreateCity.call(this);
+  this.name = 'city-by-sea';
   this.minimum_elevation = 0;
   this.maximum_elevation = 5;
-  this.min_distance = 1;
+  this.min_distance = 0;
   this.max_distance = 15;
   this.also_build_road = false;
   this.stop_elevation_up = 2;
+  this.can_use_roads = false;
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
@@ -349,12 +354,65 @@ function actionCreateCityBySea() {
   }
 }
 
+function actionCreateCityByAir() {
+  actionCreateCity.call(this);
+  this.name = 'city-by-air';
+  this.minimum_elevation = 0;
+  this.maximum_elevation = 30;
+  this.min_distance = 0;
+  this.also_build_road = false;
+  this.infinite_range = true;
+  this.can_use_roads = false;
 
-
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
+           && world.noCitiesInArea(target,5);
+  }
+}
 
 
 //This action transforms the unit into a camp
-function actionCreateVillage() {
+function actionCreateAirport(distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "airport";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'airport';
+  this.can_use_roads = true;
+
+  this.nextSelection = "target";
+  this.min_distance = 2;
+  this.max_distance = distance;
+
+  this.also_build_road = true;
+  this.hover_radius = 1;
+
+  this.cloud_clear = 3;
+
+  this.free_pop_cost = 6;
+  this.add_pop = -6;
+  
+  this.description = "Airport (-6 ants)";
+  this.extra_description = "Create a small village to collect some more resources";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,1);
+  }
+
+  this.requirement = function(world, actor, position) {
+    return actor.pop > 20;
+  }
+
+
+
+}
+
+
+//This action transforms the unit into a camp
+function actionCreateVillage(distance) {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -367,14 +425,16 @@ function actionCreateVillage() {
 
   this.nextSelection = "target";
   this.min_distance = 2;
-  this.max_distance = 5;
+  this.max_distance = distance;
 
   this.also_build_road = true;
   this.hover_radius = 1;
 
   this.cloud_clear = 3;
-  this.pop_cost = 2;
 
+  this.free_pop_cost = 2;
+  this.add_pop = -2;
+  
   this.description = "Village (-2 ants)";
   this.extra_description = "Create a small village to collect some more resources";
 
@@ -410,8 +470,10 @@ function actionMoveCity() {
   this.hover_radius = 3;
 
   this.cloud_clear = 6;
-  this.pop_cost = 1;
+
+  this.free_pop_cost = 1;
   this.total_pop_cost = 1;
+  this.add_pop = -1;
 
   this.description = "Move the city (-1 ants)";
   this.extra_description = "Move your city somewhere else if the area is bad.";
@@ -425,7 +487,7 @@ function actionMoveCity() {
   }
 
   this.requirement = function(world, actor, position,target) {
-    return (!actor.settled && world.getPopulation() >= 1);
+    return (!actor.settled && world.getPopulation() >= 1 && actor.pop >= 2);
   }
 
   this.effect = function(world, actor, position, target) {
@@ -465,7 +527,8 @@ function actionCreateQueensChamber() {
   this.max_distance = 1;
   this.hover_radius = 0;
 
-  this.pop_cost = 4;
+  this.free_pop_cost = 4;
+  this.add_pop = -4;
 
   this.cloud_clear = 5;
 
@@ -510,6 +573,10 @@ function actionExpedition() {
 
   this.destroy_resource = false;
 
+  this.free_pop_cost = 1;
+  this.total_pop_cost = 1;
+  this.add_pop = -1;
+
   this.description = "Expedition (1 pop)";
   this.extra_description = "Explore the area around your click";
 
@@ -537,7 +604,9 @@ function actionCreateHarbor() {
   this.hover_radius = 0;
 
   this.cloud_clear = 5;
-  this.pop_cost = 4;
+
+  this.free_pop_cost = 4;
+  this.add_pop = -4;
 
   this.description = "Harbor (-4 ants)";
   this.extra_description = "Explore and settle the sea.";
@@ -577,7 +646,9 @@ function actionCreateLighthouse() {
   this.hover_radius = 5;
 
   this.cloud_clear = 5;
-  this.pop_cost = 2;
+
+  this.free_pop_cost = 2;
+  this.add_pop = -2;
 
   this.can_use_roads = true;
 
@@ -597,7 +668,7 @@ function actionCreateLighthouse() {
 
 
 //This action transforms the unit into a camp
-function actionGetResource(max_distance) {
+function actionGetResource(max_distance, multi_target) {
   Action.call(this);
 
   this.minimum_elevation = 1;
@@ -611,13 +682,13 @@ function actionGetResource(max_distance) {
   this.hover_radius = 0;
 
   this.cloud_clear = 0;
-  this.multi_target = true;
+  this.multi_target = multi_target;
 
   this.new_unit_type = 'route';
-  this.pop_cost = -1;
-  this.total_pop_cost = -2;
 
-  this.add_pop = true;
+  this.free_pop_cost = -1;
+  this.total_pop_cost = -2;
+  this.add_pop = 1;
 
     this.destroy_resource = false;
 
@@ -672,13 +743,14 @@ function actionGoFishing(max_distance) {
 
   this.destroy_resource = false;
 
-  this.pop_cost = -1;
-  this.total_pop_cost = -1;
+  this.free_pop_cost = -1;
+  this.total_pop_cost = -2;
+  this.add_pop = 1;
 
   this.multi_target = true;
   this.new_unit_type = 'fishing-boat';
 
-  this.add_pop = true;
+
 
   this.description = "Go fishing";
   this.extra_description = "Get all the sea resources nearby";
@@ -715,7 +787,9 @@ function actionCreateCouncilOfQueens() {
   this.hover_radius = 10;
 
   this.cloud_clear = 5;
-  this.pop_cost = 4;
+
+  this.free_pop_cost = 4;
+  this.add_pop = -4;
 
 
 
@@ -730,7 +804,7 @@ function actionCreateCouncilOfQueens() {
   this.effect = function(world, actor, position, target) {  
       actor.council_connected = true;
       actor.setGraphic('red',6);
-      actor.pop --;
+      actor.pop -= 1;
   }
 }
 
@@ -750,7 +824,7 @@ function actionConnectQueensChambers() {
 
   this.destroy_resource = false;
 
-  this.pop_cost = -4;
+  this.free_pop_cost = -4;
   this.total_pop_cost = -4;
 
   this.also_build_road = true;

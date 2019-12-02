@@ -110,13 +110,16 @@ UnitInput.p.clickWithNoSelection = function(target) {
 UnitInput.p.clickWithSelection = function(target) {
   
   var actor = this.getActorSelected();
-  if (!actor.range ) {
-    this.clickOutsideUnitRange(target);
+  var action = this.getActionSelected();
+
+
+  if (action && !action.infinite_range && !actor.range ) {
+    this.clickOutsideRange(target);
     return 0;
   }
 
   //if you are clicking inside the actor's range
-  if (actor.range && listContainsHex(target, actor.range) ) {
+  if ((action && action.infinite_range) || (actor.range && listContainsHex(target, actor.range)) ) {
     this.clickInsideRange(target);
 
   //if you are clicking outside the actor's range

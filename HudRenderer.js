@@ -20,7 +20,13 @@ HUDRenderer.prototype.drawHUD = function() {
   var hex_selected = this.unit_input.hex_selected;
 
   if (hex_selected) {
-    this.drawActorRange();
+    let unit = this.unit_input.getActorSelected();
+    if (unit) {
+      let action = this.unit_input.getActionSelected();
+      if (action.name != 'city-by-air')
+        this.drawActorRange();
+    } 
+    
     this.drawSelectionHex(hex_selected);
 
     if (hex_hovered) {

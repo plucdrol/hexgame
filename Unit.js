@@ -11,6 +11,13 @@ function Unit(unit_type) {
 
 };
 
+Unit.prototype.addPop = function(pop_amount) {
+  if (this.transfer_pop && this.owner) 
+    this.owner.addPop(pop_amount);
+  else
+    this.pop += pop_amount;
+}
+
 Unit.prototype.addAction = function( action ) {
   if (!this.actions) {
     this.actions = [];
@@ -39,22 +46,22 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'city':
-    this.pop = 0;
+    this.pop = 4;
     this.setGraphic('white',6);
-    this.addAction( new actionGetResource(3));
+    this.addAction( new actionGetResource(3, true));
     this.addAction( new actionCreateQueensChamber());
+    this.addAction( new actionCreateAirport(5));
     this.addAction( new actionCreateLighthouse());
     this.addAction( new actionCreateHarbor());
-    this.addAction( new actionCreateVillage());
+    this.addAction( new actionCreateVillage(5));
     this.addAction( new actionMoveCity() );
-    //this.addAction( new actionExpedition());
     break;
 
   case 'village':
     this.transfer_pop = true;
     this.setGraphic('white',4);
-    this.addAction( new actionGetResource(1));
-    //this.addAction( new actionExpedition());
+    this.addAction( new actionGetResource(1, true));
+    //this.addAction( new actionCreateVillage(4));
     break;
 
   case 'queens-chamber':
@@ -63,6 +70,12 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateCity());
     this.addAction( new actionCreateCouncilOfQueens());
     this.council_connected = false;
+    break;
+
+  case 'airport':
+    this.pop = 6;
+    this.setGraphic('grey',6);
+    this.addAction( new actionCreateCityByAir());
     break;
 
   case 'council-of-queens':
@@ -78,12 +91,10 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'harbor':
+    this.transfer_pop = true;
     this.setGraphic('lightblue',5);
     this.addAction( new actionCreateCityBySea());
     this.addAction( new actionCreateLighthouse());
-    //this.addAction( new actionExpedition());
-    
-
     break;
 
   case 'route':
@@ -95,6 +106,10 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('white',3);
     this.setResource('route',1);
     break;
+
+
+
+
 
 
 
