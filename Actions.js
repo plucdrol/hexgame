@@ -84,7 +84,7 @@ function Action() {
     let cost = 1;
 
     if (this.areRoadConnected(map,hex,next_hex) && this.can_use_roads)
-      cost = 0.8;
+      cost = 0.5;
 
     return cost;
   }
@@ -307,7 +307,7 @@ function actionCreateCity() {
   this.new_unit_type = 'city';
 
   this.nextSelection = "target";
-  this.min_distance = 6;
+  this.min_distance = 1;
   this.max_distance = 10;
 
   this.also_build_road = true;
@@ -338,6 +338,7 @@ function actionCreateCityBySea() {
   actionCreateCity.call(this);
   this.minimum_elevation = 0;
   this.maximum_elevation = 5;
+  this.min_distance = 1;
   this.max_distance = 15;
   this.also_build_road = false;
   this.stop_elevation_up = 2;
@@ -420,16 +421,21 @@ function actionMoveCity() {
   }
 
   this.activation = function(world, actor, position,target) {
-    return (actor.pop == 0);
+    return (!actor.settled);
   }
 
   this.requirement = function(world, actor, position,target) {
-    return (actor.pop == 0);
+    return (!actor.settled && world.getPopulation() >= 1);
   }
 
   this.effect = function(world, actor, position, target) {
+
+
+    actor.moveActionToTop(this);
+
     world.units.set(target, actor);
     world.destroyUnit(position);
+
   }
 
 
@@ -631,6 +637,10 @@ function actionGetResource(max_distance) {
            !world.unitAtLocation(target) &&
            world.countResources(Hex.circle(target, 0), 'food', 1) &&
            (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village')   )))   ;
+  }
+
+  this.effect = function(world, actor, position, target) {
+    actor.settled = true;
   }
 
 

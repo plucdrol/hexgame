@@ -18,6 +18,15 @@ Unit.prototype.addAction = function( action ) {
   this.actions.push( action );
 }
 
+Unit.prototype.moveActionToTop = function( action) {
+  let i;
+  for (i=this.actions.length-1;i>=0; i--) {
+    if (this.actions[i].name == action.name)
+      this.actions.splice(i, 1);
+  }
+  this.actions.unshift(action);
+}
+
 Unit.prototype.setResourceStores = function(food, wood, stone) {
   this.resources = {'food':food, 'wood':wood, 'stone':stone};
 }
