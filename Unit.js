@@ -58,6 +58,7 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'village':
+    this.pop = 2;
     this.transfer_pop = true;
     this.setGraphic('white',4);
     this.addAction( new actionGetResource(1, true));
@@ -85,14 +86,16 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'lighthouse':
+    this.pop = 2;
     this.transfer_pop = true;
-    this.setGraphic('lightblue',3);
+    this.setGraphic('lightblue',4);
     this.addAction( new actionGoFishing(5));
     break;
 
   case 'harbor':
+    this.pop = 4;
     this.transfer_pop = true;
-    this.setGraphic('lightblue',5);
+    this.setGraphic('brown',5);
     this.addAction( new actionCreateCityBySea());
     this.addAction( new actionCreateLighthouse());
     break;

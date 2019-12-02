@@ -229,6 +229,10 @@ UnitInput.p.getActionSelectedId = function() {
 };
 
 UnitInput.p.getActionFromId = function(actor, action_id) {
+
+  if (!actor || !actor.actions)
+    return undefined;
+
   for (let action of actor.actions) {
     if ('action-'.concat(action.name) == action_id) {
       return action;

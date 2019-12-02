@@ -402,8 +402,13 @@ function actionCreateAirport(distance) {
     return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,1);
   }
 
-  this.requirement = function(world, actor, position) {
+
+  this.activation = function(world, actor, position) {
     return actor.pop > 20;
+  }
+
+  this.requirement = function(world, actor, position) {
+    return actor.pop > 30;
   }
 
 
@@ -424,7 +429,7 @@ function actionCreateVillage(distance) {
   this.can_use_roads = true;
 
   this.nextSelection = "target";
-  this.min_distance = 2;
+  this.min_distance = 0;
   this.max_distance = distance;
 
   this.also_build_road = true;
@@ -599,7 +604,7 @@ function actionCreateHarbor() {
   this.new_unit_type = 'harbor';
 
   this.nextSelection = "target";
-  this.min_distance = 1;
+  this.min_distance = 0;
   this.max_distance = 3;
   this.hover_radius = 0;
 
@@ -641,7 +646,7 @@ function actionCreateLighthouse() {
   this.new_unit_type = 'lighthouse';
 
   this.nextSelection = "target";
-  this.min_distance = 1;
+  this.min_distance = 0;
   this.max_distance = 3;
   this.hover_radius = 5;
 
