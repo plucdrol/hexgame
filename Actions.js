@@ -42,6 +42,23 @@ function Action() {
   this.getExtraDescription = function() {    return this.extra_description;  }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /////////////////////////////////////////////////////////
+                    // ACTION PATHFINDER SETTINGS //
+  /////////////////////////////////////////////////////////
+
   //STOP FUNCTION (for pathfinder)
   this.stopFunction = function(map, hex, next_hex) {
     
@@ -85,25 +102,6 @@ function Action() {
     return new PathFinder(stepCostFunction, neighborFunction, stopFunction);
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   this.areRoadConnected = function(map, hex1, hex2) {
 
   let tile1 = map.getValue(hex1);
@@ -123,6 +121,25 @@ function Action() {
   return false;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /////////////////////////////////////////////////////////
                     // ACTION EFFECTS //
@@ -317,6 +334,20 @@ function actionCreateCity() {
 
 }
 
+function actionCreateCityBySea() {
+  actionCreateCity.call(this);
+  this.minimum_elevation = 0;
+  this.maximum_elevation = 5;
+  this.max_distance = 15;
+  this.also_build_road = false;
+  this.stop_elevation_up = 2;
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
+           && world.noCitiesInArea(target,5) && world.nearCoast(target);
+  }
+}
+
 
 
 
@@ -368,14 +399,13 @@ function actionMoveCity() {
   this.name = "move-city";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'city';
   this.can_use_roads = true;
 
   this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 5;
 
-  this.also_build_road = false;
+  this.also_build_road = true;
   this.hover_radius = 3;
 
   this.cloud_clear = 6;
@@ -398,6 +428,7 @@ function actionMoveCity() {
   }
 
   this.effect = function(world, actor, position, target) {
+    world.units.set(target, actor);
     world.destroyUnit(position);
   }
 
@@ -407,19 +438,6 @@ function actionMoveCity() {
 
 
 
-function actionCreateCityBySea() {
-  actionCreateCity.call(this);
-  this.minimum_elevation = 0;
-  this.maximum_elevation = 5;
-  this.max_distance = 15;
-  this.also_build_road = false;
-  this.stop_elevation = 2;
-
-  this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
-           && world.noCitiesInArea(target,5) && world.nearCoast(target);
-  }
-}
 
 
 
@@ -591,7 +609,7 @@ function actionGetResource(max_distance) {
 
   this.new_unit_type = 'route';
   this.pop_cost = -1;
-  this.total_pop_cost = -1;
+  this.total_pop_cost = -2;
 
   this.add_pop = true;
 
@@ -612,7 +630,7 @@ function actionGetResource(max_distance) {
            (world.getTile(target).elevation == 1 &&
            !world.unitAtLocation(target) &&
            world.countResources(Hex.circle(target, 0), 'food', 1) &&
-           !world.noCitiesInArea(target, 1)))   ;
+           (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village')   )))   ;
   }
 
 

@@ -279,10 +279,28 @@ World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) 
     //skip position_to_ignore
     if (position_to_ignore && Hex.equals(hex, position_to_ignore))
       continue;
-    
+
     //returns false if a city is here
     if (this.units.containsHex(hex) ) {
       if (this.getUnit(hex).type=='city')
+        return false;
+    }
+  }
+  //no cities
+  return true;
+}
+
+//'unit' is overlooked, leave it undefined to avoid that
+World.prototype.noUnitTypeInArea = function(position, radius, unit_type, position_to_ignore) {
+  let area = Hex.circle(position, radius);
+  for (hex of area) {
+    //skip position_to_ignore
+    if (position_to_ignore && Hex.equals(hex, position_to_ignore))
+      continue;
+    
+    //returns false if a city is here
+    if (this.units.containsHex(hex) ) {
+      if (this.getUnit(hex).type==unit_type)
         return false;
     }
   }
