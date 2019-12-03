@@ -180,10 +180,6 @@ function Action() {
     if (this.new_unit_type)
       world.addUnit(target, this.new_unit_type, actor);
 
-    if (this.add_pop) {
-      actor.addPop(this.add_pop);
-    }
-
     if (this.free_pop_cost)
       world.population -= this.free_pop_cost;
 
@@ -393,7 +389,6 @@ function actionCreateAirport(distance) {
   this.cloud_clear = 3;
 
   this.free_pop_cost = 6;
-  this.add_pop = -6;
   
   this.description = "Airport (-6 ants)";
   this.extra_description = "Create a small village to collect some more resources";
@@ -404,11 +399,11 @@ function actionCreateAirport(distance) {
 
 
   this.activation = function(world, actor, position) {
-    return actor.pop > 20;
+    return world.getPopulation() > 40;
   }
 
   this.requirement = function(world, actor, position) {
-    return actor.pop > 30;
+    return world.getPopulation() > 50;
   }
 
 
@@ -438,7 +433,6 @@ function actionCreateVillage(distance) {
   this.cloud_clear = 3;
 
   this.free_pop_cost = 2;
-  this.add_pop = -2;
   
   this.description = "Village (-2 ants)";
   this.extra_description = "Create a small village to collect some more resources";
@@ -478,7 +472,6 @@ function actionMoveCity() {
 
   this.free_pop_cost = 1;
   this.total_pop_cost = 1;
-  this.add_pop = -1;
 
   this.description = "Move the city (-1 ants)";
   this.extra_description = "Move your city somewhere else if the area is bad.";
@@ -492,7 +485,7 @@ function actionMoveCity() {
   }
 
   this.requirement = function(world, actor, position,target) {
-    return (!actor.settled && world.getPopulation() >= 1 && actor.pop >= 2);
+    return (!actor.settled && world.getPopulation() >= 1);
   }
 
   this.effect = function(world, actor, position, target) {
@@ -533,7 +526,6 @@ function actionCreateQueensChamber() {
   this.hover_radius = 0;
 
   this.free_pop_cost = 4;
-  this.add_pop = -4;
 
   this.cloud_clear = 5;
 
@@ -580,7 +572,6 @@ function actionExpedition() {
 
   this.free_pop_cost = 1;
   this.total_pop_cost = 1;
-  this.add_pop = -1;
 
   this.description = "Expedition (1 pop)";
   this.extra_description = "Explore the area around your click";
@@ -611,7 +602,6 @@ function actionCreateHarbor() {
   this.cloud_clear = 5;
 
   this.free_pop_cost = 4;
-  this.add_pop = -4;
 
   this.description = "Harbor (-4 ants)";
   this.extra_description = "Explore and settle the sea.";
@@ -653,7 +643,6 @@ function actionCreateLighthouse() {
   this.cloud_clear = 5;
 
   this.free_pop_cost = 2;
-  this.add_pop = -2;
 
   this.can_use_roads = true;
 
@@ -693,7 +682,6 @@ function actionGetResource(max_distance, multi_target) {
 
   this.free_pop_cost = -1;
   this.total_pop_cost = -2;
-  this.add_pop = 1;
 
     this.destroy_resource = false;
 
@@ -717,6 +705,7 @@ function actionGetResource(max_distance, multi_target) {
 
   this.effect = function(world, actor, position, target) {
     actor.settled = true;
+    actor.addPop(1);
   }
 
 
@@ -750,7 +739,6 @@ function actionGoFishing(max_distance) {
 
   this.free_pop_cost = -1;
   this.total_pop_cost = -2;
-  this.add_pop = 1;
 
   this.multi_target = true;
   this.new_unit_type = 'fishing-boat';
@@ -766,6 +754,10 @@ function actionGoFishing(max_distance) {
 
   this.requirement = function(world, actor, position) {
     return world.nearCoast(position);
+  }
+
+  this.effect = function(world,actor,position,target) {
+    actor.addPop(1);
   }
 }
 
@@ -794,7 +786,6 @@ function actionCreateCouncilOfQueens() {
   this.cloud_clear = 5;
 
   this.free_pop_cost = 4;
-  this.add_pop = -4;
 
 
 
@@ -809,7 +800,6 @@ function actionCreateCouncilOfQueens() {
   this.effect = function(world, actor, position, target) {  
       actor.council_connected = true;
       actor.setGraphic('red',6);
-      actor.pop -= 1;
   }
 }
 

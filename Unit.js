@@ -46,7 +46,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'city':
-    this.pop = 4;
+    this.pop = 0;
     this.setGraphic('white',6);
     this.addAction( new actionGetResource(3, true));
     this.addAction( new actionCreateQueensChamber());
@@ -58,7 +58,6 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'village':
-    this.pop = 2;
     this.transfer_pop = true;
     this.setGraphic('white',4);
     this.addAction( new actionGetResource(1, true));
@@ -66,7 +65,6 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'queens-chamber':
-    this.pop = 1;
     this.setGraphic('pink',6);
     this.addAction( new actionCreateCity());
     this.addAction( new actionCreateCouncilOfQueens());
@@ -74,26 +72,22 @@ Unit.prototype.setType = function(unit_type) {
     break;
 
   case 'airport':
-    this.pop = 6;
     this.setGraphic('grey',6);
     this.addAction( new actionCreateCityByAir());
     break;
 
   case 'council-of-queens':
-    this.pop = 1;
     this.setGraphic('red',5);
     this.addAction( new actionConnectQueensChambers());
     break;
 
   case 'lighthouse':
-    this.pop = 2;
     this.transfer_pop = true;
     this.setGraphic('lightblue',4);
     this.addAction( new actionGoFishing(5));
     break;
 
   case 'harbor':
-    this.pop = 4;
     this.transfer_pop = true;
     this.setGraphic('brown',5);
     this.addAction( new actionCreateCityBySea());
