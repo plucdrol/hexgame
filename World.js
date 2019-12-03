@@ -395,33 +395,18 @@ World.prototype.makeCloudsEverywhere = function() {
   }
 }
 
-World.prototype.createSubCity = function( origin, target ) {
-
-  //Create a new unit
-  let new_unit = new Unit('town');
-
-  //change color if conquering
-  if (this.getUnit(target))
-    new_unit.setGraphic('red',3);
-
-  //Add it to the world
-  this.units.set(target, new_unit);
-  this.clearClouds(target, 5);
-
-  //add new
-  new_unit.colony = this.getUnit(origin).colony;
-}
-
 World.prototype.clearClouds = function(position, radius) {
+
+  if (!position) {
+    for (hex of this.world_map.getHexArray())
+      this.world_map.get(hex).hidden = false;
+  }
+
+
   for (hex of Hex.circle(position, radius)) {
     if (this.world_map.containsHex(hex))
       this.world_map.get(hex).hidden = false;
   }
-}
-
-World.prototype.clearAllClouds = function() {
-  for (hex of this.world_map.getHexArray())
-    this.world_map.get(hex).hidden = false;
 }
 
 
