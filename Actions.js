@@ -318,7 +318,7 @@ function actionCreateCity() {
 
   this.free_pop_cost = 4;
 
-  this.can_use_roads = true;
+  this.can_use_roads = false;
 
   this.description = "New city (-4 ants)";
   this.extra_description = "Click somewhere to create a new city";
@@ -526,6 +526,7 @@ function actionCreateQueensChamber() {
   this.min_distance = 1;
   this.max_distance = 1;
   this.hover_radius = 0;
+
 
   this.free_pop_cost = 4;
 
