@@ -162,7 +162,7 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
 
   //get button-list HTML element
   var action_buttons = document.getElementById('action-buttons');
-  action_buttons.innerHTML = "";
+  action_buttons.innerHTML = "<h2 class='action-header'>"+actor.name+"</h2>";
 
   //display simple message if no unit is selected
   if (!actor.actions || actor.actions.length == 0) {
