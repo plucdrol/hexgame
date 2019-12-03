@@ -32,10 +32,9 @@
 	</head>
 	<body>
 
-		<div id='city-bar'>
-			<span id='city-name'></span>
-			<span id='city-resources'></span>
-			<span id='world-resources'></span>
+		<div id='world-bar'>
+			<span id='free-ants'></span>
+			<span id='total-ants'></span>
 		</div>
 		<form id='action-buttons' style="position:absolute; bottom: 1em; left: 1em;";>
 	  </form>	

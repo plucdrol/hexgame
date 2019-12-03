@@ -5,11 +5,8 @@ html,body {
 	margin:0;
 	overflow:hidden;
 }
-body,p {
-	background: black;
-	color: white;
-}			
-#city-bar {
+
+#world-bar {
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -17,13 +14,16 @@ body,p {
 	padding: 5px;
 	background: grey;
 	font-size: 2em;
+	color: white;
 }
-#city-name {
-	color: darkgreen;
+
+#free-ants {
+	float: left;
 }
-#world-resources {
-	/*float: right;*/
+#total-ants {
+	float: right;
 }
+
 #mycanvas{
 	background: black;
 	clear: both;
@@ -38,9 +38,21 @@ body,p {
 	padding: 5px;
 }
 
+#action-buttons {
+	position: absolute;
+	bottom: 1em;
+	left: 1em;
+	background: gray;
+	padding: 0.4em;
+	border: 2px solid white;
+	border-right-color: black;
+	border-bottom-color: black;
+
+	color: black;
+}
+
 .action-button {
 	background: grey;
-  color: black;
   padding: 0.2em 0.5em;
   border: 2px solid darkgrey;
   border-bottom-color: black;
@@ -54,14 +66,10 @@ body,p {
 
 .action-header {
 	background: grey;
-	color: black;
 	padding: 0.2em 0.5em;
-	border: 2px solid black;
-  border-bottom-color: darkgrey;
-  border-right-color: darkgrey;
   font-size: 1.5em;	
   max-width: 12em;
-  margin-bottom: 0;
+  margin: 0;
 }
 
 .extra-description {

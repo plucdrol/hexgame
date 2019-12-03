@@ -214,7 +214,7 @@ HUDRenderer.prototype.addClickDetection = function() {
 }
 
 HUDRenderer.prototype.clearButtons = function() {
-  document.getElementById('action-buttons').innerHTML = "<p>Click a town</p>";
+  document.getElementById('action-buttons').innerHTML = "<h2 class='action-header'>Click a town</h2>";
 }
 
 
@@ -233,7 +233,7 @@ HUDRenderer.prototype.clearButtons = function() {
 
 HUDRenderer.prototype.writeMessage = function(message, element) {
   if (!element) 
-    var element = 'city-resources';
+    var element = 'free-ants';
   document.getElementById(element).innerHTML = message;
 }
 
@@ -244,7 +244,8 @@ HUDRenderer.prototype.update_function = function() {
   let busy_pop = total_pop-free_pop;
 
   let resources = this.world.total_resources;
-  this.writeMessage("Ants: "+free_pop+" free,    "+busy_pop+" busy, "+total_pop+" total", 'world-resources');
+  this.writeMessage("Free ants: "+free_pop, 'free-ants');
+  this.writeMessage("Total ants: "+total_pop, 'total-ants');
 
 
   if (actor && actor.selectable) {

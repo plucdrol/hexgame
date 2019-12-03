@@ -338,6 +338,8 @@ World.prototype.generateUnknown = function() {
     let random_hex = this.getRandomHex();
     if (this.getTile(random_hex).elevation < 1)
       continue;
+    if (this.getTile(random_hex).elevation > 15)
+      continue;
     this.addResource(random_hex, 'unknown');
     count--;
   }
