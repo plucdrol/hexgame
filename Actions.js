@@ -148,7 +148,7 @@ function Action() {
 
   this.doAction = function(world, actor, position, target) {
 
-    if (this.targetIsOK(world, target)) {
+    if (this.targetIsOK(world, actor, position, target)) {
       
       //Either do a single action or do the action on all targets
       if (this.multi_target) {
@@ -193,9 +193,11 @@ function Action() {
     this.effect(world, actor, position, target);
   }
 
-  this.targetIsOK = function(world, target) {
+  this.targetIsOK = function(world, actor, position, target) {
     let target_object = world.units.get(target);
 
+    if (!this.targetFilterFunction(world, actor, position, target))
+      return false;
     if (this.target == "both")
       return true;
     if (!target_object && this.target=="land")
@@ -216,7 +218,7 @@ function Action() {
     let pathfinder = this.getPathfinder();
 
     if (this.infinite_range) {
-      world.clearAllClouds();
+      world.clearClouds();
       return [];
     }
 
@@ -399,11 +401,11 @@ function actionCreateAirport(distance) {
 
 
   this.activation = function(world, actor, position) {
-    return world.getPopulation() > 40;
+    return world.total_population > 50;
   }
 
   this.requirement = function(world, actor, position) {
-    return world.getPopulation() > 50;
+    return world.total_population >= 60;
   }
 
 
@@ -530,7 +532,7 @@ function actionCreateQueensChamber() {
   this.cloud_clear = 5;
 
   this.description = "Queen's chamber (-4)";
-  this.extra_description = "Needed to make settlers";
+  this.extra_description = "Needed to make more cities";
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && !world.noCitiesInArea(target,1);
@@ -540,6 +542,9 @@ function actionCreateQueensChamber() {
   }
   this.requirement = function(world, actor, position) {
     return world.getPopulation() >= 8;
+  }
+  this.effect = function(world, actor, position, target) {
+    actor.addPop(3);
   }
 }
 
@@ -644,10 +649,10 @@ function actionCreateLighthouse() {
 
   this.free_pop_cost = 2;
 
-  this.can_use_roads = true;
+  this.can_use_roads = false;
 
   this.description = "Lighthouse (-2 ants)";
-  this.extra_description = "Fish collection agency";
+  this.extra_description = "Gather resources in coastal waters";
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return (!world.unitAtLocation(target) && world.nearCoast(target,2,6) && world.getTile(target).elevation >= 2)
@@ -686,7 +691,7 @@ function actionGetResource(max_distance, multi_target) {
     this.destroy_resource = false;
 
   this.description = "Collect resources";
-  this.extra_description = "Get all the resources nearby";
+  this.extra_description = "Get all resources up to "+this.max_distance+" tiles away.<br>City can no longer move.";
 
   this.targetFilterFunction = function(world, actor, position, target) {
 
@@ -746,7 +751,7 @@ function actionGoFishing(max_distance) {
 
 
   this.description = "Go fishing";
-  this.extra_description = "Get all the sea resources nearby";
+  this.extra_description = "Get all the sea resources up to "+this.max_distance+" tiles away";
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && world.countResources(Hex.circle(target, 0), 'food', 1);
@@ -799,6 +804,7 @@ function actionCreateCouncilOfQueens() {
 
   this.effect = function(world, actor, position, target) {  
       actor.council_connected = true;
+      actor.addPop(-1);
       actor.setGraphic('red',6);
   }
 }

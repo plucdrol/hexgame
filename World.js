@@ -56,7 +56,6 @@ function World(radius) {
   //create units map
   this.units = new HexMap();
   let first_city =  new Unit('city');
-  first_city.addPop(12);
   this.units.set(new Hex(0,0), first_city);
 
   //create resources map
@@ -74,7 +73,7 @@ function World(radius) {
   this.setHex(new Hex(0,0), land_tile);
 
   this.population = 12;
-  this.total_population = 12;
+  this.total_population = 16;
 
 
 

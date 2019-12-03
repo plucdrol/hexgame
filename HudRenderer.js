@@ -239,10 +239,12 @@ HUDRenderer.prototype.writeMessage = function(message, element) {
 
 HUDRenderer.prototype.update_function = function() { 
   let actor = this.unit_input.getActorSelected();
-  let pop = this.world.getPopulation();
-  let busy_pop = this.world.total_population-pop;
+  let free_pop = this.world.getPopulation();
+  let total_pop = this.world.total_population;
+  let busy_pop = total_pop-free_pop;
+
   let resources = this.world.total_resources;
-  this.writeMessage("Ants: "+busy_pop+" busy,    "+pop+" free", 'world-resources');
+  this.writeMessage("Ants: "+free_pop+" free,    "+busy_pop+" busy, "+total_pop+" total", 'world-resources');
 
 
   if (actor && actor.selectable) {
@@ -315,6 +317,6 @@ HUDRenderer.prototype.addTooltipTile = function(hex_hovered) {
     addTooltip(land_tiles[tile.elevation]+", ");
   }
   if (tile && tile.river && tile.river.water_level >= 7) {
-    addTooltip('river '+', ');
+    addTooltip('river, ');
   }
 }
