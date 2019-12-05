@@ -187,6 +187,10 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
  
   var unit_style = new RenderStyle();
   unit_style.fill_color = unit.color;
+
+  if (unit.type == 'unknown')
+    unit_style.fill_color = "rgba("+(128+127*this.ocillate(1000))+","+(255*this.ocillate(1000))+","+(128-128*this.ocillate(1000))+",1)";
+
   let size = 10*unit.size;
   this.hex_renderer.renderer.drawDot(position, size, unit_style);
   
@@ -198,6 +202,12 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   }
 
 };
+
+WorldRenderer.prototype.ocillate = function(length) {
+  let time = new Date().getTime()%length;
+  let value = 2*Math.abs(time/length-0.5);
+  return value;
+}
 
 
 WorldRenderer.p.drawPath = function(range,destination) {
