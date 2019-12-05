@@ -42,13 +42,7 @@ function World(radius) {
   this.world_map = new HexMap();
   this.world_map = new MapGenerator('perlin').makeMap(radius);
 
-  /*
-  //turn all water to grass
-  for (let hex of this.world_map.getHexArray() )  {
-    let tile = this.getTile(hex);
-    if (tile.elevation < 2)
-      tile.elevation = 3;
-  }*/
+
 
 
   this.makeCloudsEverywhere();
