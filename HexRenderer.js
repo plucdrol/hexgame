@@ -112,37 +112,6 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
   this.drawHexOutline( outline,range_style);
 }
 
-// CALCULATING RECTANGLE FUNCTIONS!?
-HexRenderer.p.getHexRectangleBoundaries = function() {
-
-    var corners = this.renderer.getViewCorners();
-   
-    //find the corner hexes
-    var toplefthex = Hex.round(this.pointToHex(corners.topleft));
-    var toprighthex = Hex.round(this.pointToHex(corners.topright));
-    var bottomlefthex = Hex.round(this.pointToHex(corners.bottomleft));
-    var bottomrighthex = Hex.round(this.pointToHex(corners.bottomright));
-
-    //define the limits of the iteration
-    var qmin = Math.min( toplefthex.getQ(),    bottomrighthex.getQ(),
-                         toprighthex.getQ(),   bottomlefthex.getQ());
-    var qmax = Math.max( toplefthex.getQ(),    bottomrighthex.getQ(),
-                         bottomlefthex.getQ(), toprighthex.getQ());
-    var rmin = Math.min( toplefthex.getR(),    bottomrighthex.getR(),
-                           toprighthex.getR(),   bottomlefthex.getR());
-    var rmax = Math.max( toplefthex.getR(),    bottomrighthex.getR(),
-                         toprighthex.getR(),   bottomlefthex.getR());
-  
-    var hex_rect = {
-      qmin:qmin,
-      qmax:qmax,
-      rmin:rmin, 
-      rmax:rmax
-    };
-    
-    return hex_rect;
-}
-
 
 HexRenderer.prototype.clear = function() {
   this.renderer.clear();
