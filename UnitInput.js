@@ -141,6 +141,8 @@ UnitInput.p.clickInsideRange = function(target) {
     } 
   }
 
+  hud_renderer.update_function();
+
 };
 
 
@@ -207,8 +209,6 @@ UnitInput.prototype.getActionId = function(action) {
 }
 
 UnitInput.prototype.actionIsSelected = function(action) {
-  console.log(this.getActionId(action));
-  console.log(this.getActionSelectedId());
   return this.getActionId(action) == this.getActionSelectedId();
 }
 
@@ -230,7 +230,7 @@ UnitInput.p.getActionSelectedId = function() {
 
 UnitInput.p.getActionFromId = function(actor, action_id) {
 
-  if (!actor || !actor.actions)
+  if (!actor || !actor.actions || !action_id)
     return undefined;
 
   for (let action of actor.actions) {
