@@ -10,7 +10,9 @@ function Rect(position, size) {
 //input:  universe coordinates
 //output: screen coordinates
 
-function View (canvas, initial_zoom_level) {
+function View (canvas_element_id, initial_zoom_level) {
+
+  var canvas = document.getElementById(canvas_element_id);
 
   if (initial_zoom_level == undefined) {
     var initial_zoom_level = 1;

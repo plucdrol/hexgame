@@ -24,8 +24,11 @@ function RenderStyle() {
 }
 
 //this is a basic Renderer, it doesn't know about hexes!
-function Renderer(canvas_draw, view) {
-    this.canvas_draw = canvas_draw;
+function Renderer(canvas_element_id, view) {
+
+    var canvas = document.getElementById(canvas_element_id);
+    this.canvas_draw  = new CanvasDraw(canvas);
+
     this.view = view;
 
     this.ready_to_render = true;
@@ -126,7 +129,10 @@ Renderer.prototype.getScale = function() {
 }
 
 
+Renderer.prototype.clear = function() {
 
+  this.canvas_draw.clear();
+}
 
 
 

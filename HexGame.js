@@ -8,24 +8,21 @@
 
 //---------------HTML5 Canvas elements-----------
 //define the screen which can be drawn on
-var real_canvas = document.getElementById('mycanvas');
-
-var canvas = document.createElement("canvas");
+var real_canvas = document.getElementById('real_canvas');
+var canvas = document.getElementById("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-//Interface for rendering on the Canvas
-var canv_draw = new CanvasDraw(canvas);
-var real_canv_draw = new CanvasDraw(real_canvas);
+
 //Interface for receiving input from the page
-var canv_input = new CanvasInput(real_canvas);
+var canv_input = new CanvasInput('real_canvas');
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
-var view = new View(canvas);
+var view = new View('canvas');
 //Has functions for drawing to the screen
-var renderer = new Renderer(canv_draw, view);
-var real_renderer = new Renderer(real_canv_draw, view);
+var renderer = new Renderer('canvas', view);
+var real_renderer = new Renderer('real_canvas', view);
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
@@ -69,7 +66,7 @@ function updateWorldRender() {
 function drawScreen() {
 
   //clear the real canvas
-  real_canv_draw.clear();
+  real_renderer.clear();
 
   //copy the temporary canvas to the real canvas
   var screen_context = real_canvas.getContext('2d');
@@ -80,5 +77,4 @@ function drawScreen() {
 
 }
 
-////////////////////////////////////////////////////// EVENT LISTENERS ////////////////////////////////////////
-canv_input.registerEvents();
+
