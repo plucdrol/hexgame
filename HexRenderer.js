@@ -144,6 +144,10 @@ HexRenderer.p.getHexRectangleBoundaries = function() {
 }
 
 
+HexRenderer.prototype.clear = function() {
+  this.renderer.clear();
+}
+
 
 
 

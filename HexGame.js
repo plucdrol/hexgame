@@ -66,7 +66,7 @@ function updateWorldRender() {
 function drawScreen() {
 
   //clear the real canvas
-  real_renderer.clear();
+  real_hex_renderer.clear();
 
   //copy the temporary canvas to the real canvas
   var screen_context = real_canvas.getContext('2d');
