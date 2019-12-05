@@ -27,7 +27,7 @@ function WorldRenderer (world, hex_renderer) {
 }
 WorldRenderer.p = WorldRenderer.prototype;
 
-WorldRenderer.p.calculateHexesToRender = function() {
+WorldRenderer.p.getVisibleHexes = function() {
   var rectMap = this.hex_renderer.getHexRectangleBoundaries();
   //get the rectangular array of hex tiles
   let hexmap = this.world.getRectangleSubMap( rectMap.qmin,
@@ -41,7 +41,7 @@ WorldRenderer.p.calculateHexesToRender = function() {
 WorldRenderer.p.drawWorld = function() {
 
   //draw the world to the canvas and to a backupcanvas
-  /*var hexmap = this.calculateHexesToRender();
+  /*var hexmap = this.getVisibleHexes();
   var hexarray = hexmap.getHexArray();
   */
 
