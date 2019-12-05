@@ -106,7 +106,12 @@ HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
 
     select_style.fill_color = "rgba(200,200,0,"+this.ocillate(500)+")";
     select_style.line_width = 2;
-    this.hex_renderer.drawHex(hex_selected, select_style);
+    //this.hex_renderer.drawHex(hex_selected, select_style);
+    this.hex_renderer.drawCenterLine(
+          Hex.add(hex_selected,new Hex(-0.25,0.5)),
+          Hex.add(hex_selected,new Hex(20,-40)),
+          10*this.unit_input.getActorSelected().size, 
+          "rgba(0,200,200,"+(0.3+0.7*this.ocillate(1000))+")" );
 }
 
 HUDRenderer.prototype.ocillate = function(length) {
