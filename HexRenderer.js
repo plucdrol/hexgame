@@ -58,6 +58,7 @@ HexRenderer.p.drawLongLine = function(hex_array, width) {
 }
 HexRenderer.p.drawHex = function(hex, style) {
   
+  //get the corners, then draww a polygon
   var corners = this.hexesToPoints(Hex.corners(hex));
   this.renderer.drawPolygon(corners,style);
 };

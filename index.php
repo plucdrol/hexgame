@@ -40,10 +40,10 @@
 	  </form>	
 	  
 		<div style="float:left;">
-			<canvas id="real_canvas" width="600" height="400">
+			<canvas id="canvas" width="600" height="400">
 				Your system does not support Canvas.
 			</canvas>
-			<canvas id="canvas" style="display: none;"></canvas>
+			<canvas id="temp_canvas" style="display: none;"></canvas>
 		</div>
 		
 

@@ -23,7 +23,7 @@ function WorldRenderer (world, hex_renderer) {
   this.render_portions = Math.floor(world.radius/3);
 
   var self = this; 
-  setInterval( self.drawWorld.bind(self), 2 );
+  //setInterval( self.drawWorld.bind(self), 2 );
 }
 WorldRenderer.p = WorldRenderer.prototype;
 
@@ -33,11 +33,11 @@ WorldRenderer.p.drawWorld = function() {
 
   
   var hexarray = this.world.getHexArray();
-  let section = Math.floor(hexarray.length/this.render_portions);
+  /*et section = Math.floor(hexarray.length/this.render_portions);
   hexarray = hexarray.slice(this.render_start*section, (this.render_start+1)*section );
   this.render_start++;
   if (this.render_start >= this.render_portions)
-    this.render_start = 0;
+    this.render_start = 0;*/
   
 
   

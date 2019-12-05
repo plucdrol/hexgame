@@ -23,10 +23,17 @@ function View (canvas_element_id, initial_zoom_level) {
                           new Point(canvas.width,canvas.height));
 
   var input = new Rect(  new Point(-canvas.width*initial_zoom,
-                                     -canvas.height*initial_zoom),
+                                   -canvas.height*initial_zoom),
 
                             new Point(canvas.width*initial_zoom*view_ratio,
                                      canvas.height*initial_zoom*view_ratio));
+
+  if (initial_zoom_level == -1) {
+  
+    input = output;
+
+
+  }
 
 
 
