@@ -297,7 +297,7 @@ function Action() {
 
 
 //This action transforms the unit into a camp
-function actionCreateCity() {
+function actionCreateCity(distance, extra) {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -309,7 +309,7 @@ function actionCreateCity() {
 
   this.nextSelection = "target";
   this.min_distance = 0;
-  this.max_distance = 10;
+  this.max_distance = distance;
 
   this.also_build_road = true;
   this.hover_radius = 3;
@@ -326,22 +326,30 @@ function actionCreateCity() {
   this.targetFilterFunction = function(world, actor, position, target) {
     return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,5);
   }
+  this.activation = function(world, actor, position) {
+    return !actor.can_move;
+
+  }
 
   this.requirement = function(world, actor, position) {
     return world.getPopulation() >= 4;
+  }
+  this.effect = function(world, actor, position, target) {
+    if (extra == 'settled')
+      world.getUnit(target).can_move = false;
   }
 
 
 
 }
 
-function actionCreateCityBySea() {
+function actionCreateCityBySea(distance) {
   actionCreateCity.call(this);
   this.name = 'city-by-sea';
   this.minimum_elevation = 0;
   this.maximum_elevation = 5;
   this.min_distance = 0;
-  this.max_distance = 15;
+  this.max_distance = distance;
   this.also_build_road = false;
   this.stop_elevation_up = 2;
   this.can_use_roads = false;
@@ -349,6 +357,9 @@ function actionCreateCityBySea() {
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
            && world.noCitiesInArea(target,5) && world.nearCoast(target);
+  }
+  this.effect = function(world, actor, position, target) {
+    world.unitAtLocation(target).can_move = false;
   }
 }
 
@@ -366,6 +377,7 @@ function actionCreateCityByAir() {
     return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
            && world.noCitiesInArea(target,5);
   }
+
 }
 
 
@@ -401,11 +413,11 @@ function actionCreateAirport(distance) {
 
 
   this.activation = function(world, actor, position) {
-    return world.total_population > 50;
+    return world.total_population > 180;
   }
 
   this.requirement = function(world, actor, position) {
-    return world.total_population >= 60;
+    return world.total_population >= 200;
   }
 
 
@@ -440,7 +452,7 @@ function actionCreateVillage(distance) {
   this.extra_description = "Create a small village to collect some more resources";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,1);
+    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
   }
 
   this.requirement = function(world, actor, position) {
@@ -472,7 +484,6 @@ function actionMoveCity() {
 
   this.cloud_clear = 6;
 
-  this.free_pop_cost = 1;
   this.total_pop_cost = 1;
 
   this.description = "Move the city (-1 ants)";
@@ -483,11 +494,11 @@ function actionMoveCity() {
   }
 
   this.activation = function(world, actor, position,target) {
-    return (!actor.settled);
+    return (actor.can_move);
   }
 
   this.requirement = function(world, actor, position,target) {
-    return (!actor.settled && world.getPopulation() >= 1);
+    return (actor.can_move && world.getPopulation() >= 1);
   }
 
   this.effect = function(world, actor, position, target) {
@@ -497,6 +508,9 @@ function actionMoveCity() {
 
     world.units.set(target, actor);
     world.destroyUnit(position);
+    world.addUnit(position, 'colony', actor);
+    
+
 
   }
 
@@ -512,41 +526,37 @@ function actionMoveCity() {
 
 
 //This action transforms the unit into a camp
-function actionCreateQueensChamber() {
+function actionCreateExpeditionCenter() {
   Action.call(this);
 
   this.minimum_elevation = 2;
 
-  this.name = "queens-chamber";
+  this.name = "expedition-center";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'queens-chamber';
+  this.new_unit_type = 'expedition-center';
 
   this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 1;
   this.hover_radius = 0;
 
-
   this.free_pop_cost = 4;
 
   this.cloud_clear = 5;
 
-  this.description = "Queen's chamber (-4)";
-  this.extra_description = "Needed to make more cities";
+  this.description = "Expedition Center (-4)";
+  this.extra_description = "Explore the area 10 tiles away.<br>Can create cities further away.";
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && !world.noCitiesInArea(target,1);
   }
   this.activation = function(world, actor, position) {
-    return !world.countUnits(Hex.circle(position, 1), 'queens-chamber', 1);
+    return !world.countUnits(Hex.circle(position, 1), 'expedition-center', 1);
   }
   this.requirement = function(world, actor, position) {
     return world.getPopulation() >= 8;
   }
-  this.effect = function(world, actor, position, target) {
-    actor.addPop(3);
-  }
 }
 
 
@@ -557,32 +567,6 @@ function actionCreateQueensChamber() {
 
 
 
-//This action transforms the unit into a camp
-function actionExpedition() {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
-
-  this.name = "expedition";
-  this.type = "target";
-  this.target = "land";
-  this.new_unit_type = 'expedition';
-
-  this.nextSelection = "self";
-  this.min_distance = 1;
-  this.max_distance = 5;
-  this.hover_radius = 4;
-  this.cloud_clear = 5;
-
-  this.destroy_resource = false;
-
-  this.free_pop_cost = 1;
-  this.total_pop_cost = 1;
-
-  this.description = "Expedition (1 pop)";
-  this.extra_description = "Explore the area around your click";
-
-}
 
 
 
@@ -630,7 +614,7 @@ function actionCreateHarbor() {
 
 
 //This action transforms the unit into a camp
-function actionCreateLighthouse() {
+function actionCreateLighthouse(distance) {
   Action.call(this);
 
   this.minimum_elevation = 1;
@@ -643,7 +627,7 @@ function actionCreateLighthouse() {
 
   this.nextSelection = "target";
   this.min_distance = 0;
-  this.max_distance = 3;
+  this.max_distance = distance;
   this.hover_radius = 5;
 
   this.cloud_clear = 5;
@@ -681,15 +665,17 @@ function actionGetResource(max_distance, multi_target) {
   this.max_distance = max_distance;
   this.hover_radius = 0;
 
+  this.single_use_remains = true;
+
   this.cloud_clear = 0;
   this.multi_target = multi_target;
 
-  this.new_unit_type = 'route';
+  this.new_unit_type = 'colony';
 
   this.free_pop_cost = -1;
   this.total_pop_cost = -2;
 
-    this.destroy_resource = false;
+  this.destroy_resource = false;
 
   this.description = "Collect resources";
   this.extra_description = "Get all resources up to "+this.max_distance+" tiles away.<br>City can no longer move.";
@@ -709,9 +695,17 @@ function actionGetResource(max_distance, multi_target) {
            (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village')   )))   ;
   }
 
+  this.activation = function (world, actor, position, target) {
+
+    return this.single_use_remains;
+
+  }
+
   this.effect = function(world, actor, position, target) {
-    actor.settled = true;
+    this.single_use_remains = false;
+    actor.can_move = false;
     actor.addPop(1);
+
   }
 
 
@@ -772,7 +766,7 @@ function actionGoFishing(max_distance) {
 
 
 
-
+/*
 //This action transforms the unit into a camp
 function actionCreateCouncilOfQueens() {
   Action.call(this);
@@ -852,7 +846,7 @@ function actionConnectQueensChambers() {
 }
 
 
-
+*/
 
 
 

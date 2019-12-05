@@ -49,10 +49,12 @@ Unit.prototype.setType = function(unit_type) {
     this.name = "City";
     this.pop = 4;
     this.setGraphic('white',6);
+    this.can_move = true;
     this.addAction( new actionGetResource(3, true));
-    this.addAction( new actionCreateQueensChamber());
+    this.addAction( new actionCreateCity(6,'settled'));
+    this.addAction( new actionCreateExpeditionCenter());
     this.addAction( new actionCreateAirport(5));
-    this.addAction( new actionCreateLighthouse());
+    this.addAction( new actionCreateLighthouse(3));
     this.addAction( new actionCreateHarbor());
     this.addAction( new actionCreateVillage(5));
     this.addAction( new actionMoveCity() );
@@ -63,16 +65,25 @@ Unit.prototype.setType = function(unit_type) {
     this.pop = 2;
     this.transfer_pop = true;
     this.setGraphic('white',4);
+    
+    let actionGetResource2 = new actionGetResource(2, false);
+    actionGetResource2.name = 'another-name';
+    actionGetResource2.description = 'Get one extra resource';
+    actionGetResource2.extra_description = 'Can reach 2 tiles away<br>But only once';
+
+
     this.addAction( new actionGetResource(1, true));
+    this.addAction( actionGetResource2 );
+    this.addAction( new actionCreateLighthouse(1));
     //this.addAction( new actionCreateVillage(4));
     break;
 
-  case 'queens-chamber':
-    this.name = "Queen's Chamber";
-    this.pop = 1;
-    this.setGraphic('pink',6);
-    this.addAction( new actionCreateCity());
-    this.addAction( new actionCreateCouncilOfQueens());
+  case 'expedition-center':
+    this.name = "Expedition Center";
+    this.pop = 4;
+    this.setGraphic('pink',5);
+    this.addAction( new actionCreateCity(12));
+    //this.addAction( new actionCreateCouncilOfQueens());
     this.council_connected = false;
     break;
 
@@ -83,12 +94,14 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateCityByAir());
     break;
 
+    /*
   case 'council-of-queens':
     this.name = "Council of Queens";
     this.pop = 5;
     this.setGraphic('red',5);
     this.addAction( new actionConnectQueensChambers());
     break;
+    */
 
   case 'lighthouse':
     this.name = "Lighthouse";
@@ -103,20 +116,20 @@ Unit.prototype.setType = function(unit_type) {
     this.pop = 4;
     this.transfer_pop = true;
     this.setGraphic('brown',5);
-    this.addAction( new actionCreateCityBySea());
-    this.addAction( new actionCreateLighthouse());
+    this.addAction( new actionCreateCityBySea(15));
+    this.addAction( new actionCreateLighthouse(10));
     break;
 
-  case 'route':
-    this.name = "Farm";
+  case 'colony':
+    this.name = "Colony";
     this.setGraphic('white',3);
-    this.setResource('route',1);
+    this.setResource('colony',1);
     break;
 
   case 'fishing-boat':
     this.name = "Fishing boat";
     this.setGraphic('white',3);
-    this.setResource('route',1);
+    this.setResource('colony',1);
     break;
 
 
@@ -128,7 +141,7 @@ Unit.prototype.setType = function(unit_type) {
 
 
   case 'fish':
-    this.setGraphic('lightblue',1);
+    this.setGraphic('lightblue',2);
     this.setResource('food',1);
     this.setResource('fish',1);
     break;
