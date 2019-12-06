@@ -67,7 +67,8 @@ function Action() {
     
     //return false;
     return (map.get(next_hex).elevation >= this.stop_elevation_up && map.get(hex).elevation < this.stop_elevation_up)
-        || (map.get(next_hex).elevation <= this.stop_elevation_down && map.get(hex).elevation > this.stop_elevation_down);
+        || (map.get(next_hex).elevation <= this.stop_elevation_down && map.get(hex).elevation > this.stop_elevation_down)
+        || (this.stop_on_rivers && map.get(next_hex).river && map.get(next_hex).river.water_level >= 7);
   }
 
   //NEIGHBORS FUNCTION (for pathfinder)
@@ -85,6 +86,10 @@ function Action() {
       return undefined;
     if (next_tile.elevation < this.minimum_elevation) 
       return undefined;
+
+    if (!this.river_only && !this.can_river)
+      if(next_tile.river && next_tile.river.water_level >= 7)
+        return undefined;
 
     if (this.river_only) {
       if (!this_tile.river || !next_tile.river)
@@ -497,6 +502,8 @@ function actionCreateRiverDock(distance) {
   this.also_build_road = true;
   this.hover_radius = 1;
 
+  this.can_river = true;
+
   this.cloud_clear = 3;
 
   this.free_pop_cost = 2;
@@ -712,6 +719,8 @@ function actionGetResource(max_distance, multi_target) {
 
   this.minimum_elevation = 1;
   this.stop_elevation_down = 1;
+  this.stop_on_rivers = true;
+  this.can_river = true;
 
   this.name = "get";
   this.type = "target";
@@ -737,17 +746,31 @@ function actionGetResource(max_distance, multi_target) {
 
   this.targetFilterFunction = function(world, actor, position, target) {
 
-    return ((
-           //land food tiles within 3 tiles of the city or...
-           world.getTile(target).elevation >= 2 && 
+    return (
+           //dry land food tiles within 3 tiles of the city or...
+           (
+            world.getTile(target).elevation >= 2 && 
+           !world.onRiver(target) &&
            !world.unitAtLocation(target) && 
-           world.countResources(Hex.circle(target, 0), 'food', 1)) 
+           world.countResources(Hex.circle(target, 0), 'food', 1)
+           ) 
            ||
            //...or shallow water fish besides the city tile
-           (world.getTile(target).elevation == 1 &&
+           (
+            world.getTile(target).elevation == 1 &&
            !world.unitAtLocation(target) &&
            world.countResources(Hex.circle(target, 0), 'food', 1) &&
-           (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village')   )))   ;
+           (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village'))
+            )
+           ||
+           //...or river fish besides the city tile
+           (
+            world.onRiver(target) &&
+           !world.unitAtLocation(target) &&
+           world.countResources(Hex.circle(target, 0), 'food', 1) &&
+           (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village'))
+           )
+           );
   }
 
   this.activation = function (world, actor, position, target) {
