@@ -179,10 +179,15 @@ World.prototype.buildRoad = function(hexarray) {
 }
 World.prototype.addRoadTile = function(hex1, hex2) {
 
+  //road on tile 2
   if (!this.getTile(hex2).road_from)
     this.getTile(hex2).road_from = [];
-
   this.getTile(hex2).road_from.push(hex1);
+
+  //road on tile 1
+  if (!this.getTile(hex1).road_from)
+    this.getTile(hex1).road_from = [];
+  this.getTile(hex1).road_from.push(hex2);
 
 }
 
