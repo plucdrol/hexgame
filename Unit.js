@@ -47,7 +47,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'city':
     this.name = "City";
-    this.pop = 4;
+    this.pop =  5;
     this.setGraphic('white',6);
     this.can_move = true;
     this.addAction( new actionGetResource(3, true));

@@ -335,11 +335,11 @@ function actionCreateCity(distance, extra) {
 
   this.cloud_clear = 6;
 
-  this.free_pop_cost = 4;
+  this.free_pop_cost = 5;
 
   this.can_use_roads = false;
 
-  this.description = "New city (-4 ants)";
+  this.description = "New city (-5 ants)";
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position, target) {
@@ -618,7 +618,7 @@ function actionCreateExpeditionCenter() {
     return !world.countUnits(Hex.circle(position, 1), 'expedition-center', 1);
   }
   this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 8;
+    return world.getPopulation() >= 10;
   }
 }
 
@@ -666,7 +666,7 @@ function actionCreateHarbor() {
     return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1);
   }
   this.requirement = function(world, actor, position) {
-    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1) &&  world.getPopulation() >= 8;
+    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1) &&  world.getPopulation() >= 10;
   }
 }
 
