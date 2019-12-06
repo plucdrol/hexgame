@@ -23,6 +23,8 @@ function GameInput(world, view) {
   this.world_drag = new Point(0,0);
   this.screen_drag = new Point(0,0);
 
+  this.zoom_amount = 1;
+
   //this is where the unit controller is created
   this.unit_input = new UnitInput(world); 
   this.hex_hovered = new Hex();
@@ -49,8 +51,21 @@ function GameInput(world, view) {
 
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
-    this.view.zoom(zoom);
-  	//updateWorldRender();
+
+    this.zoom_amount *= zoom; //1.2 or 0.8
+
+    if (1-this.zoom_amount <= -0.2) { // 1 - 1.1 = -=0.1     1 - 1.3 = -0.3
+      this.view.zoom(this.zoom_amount);
+      //console.log(this.zoom_amount);
+      this.zoom_amount = 1;
+    }
+    if (1-this.zoom_amount <= 0.2) { // 1 - 0.7 = 0.3,  1-0.9 = 0.1
+      this.view.zoom(this.zoom_amount);
+      //console.log(this.zoom_amount);
+      this.zoom_amount = 1;
+
+    }
+
 	}
 	
   //React to dragging across the screen with finger or mouse
@@ -99,14 +114,11 @@ function GameInput(world, view) {
 
     //if the mouse moved to a new hex, redraw the screen
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
-
       hud_renderer.updateTooltip(this.hex_hovered);
-      //drawScreen();
     }
 
     //remember the currently hovered hex
     this.hex_hovered_previous = this.hex_hovered;
-    //drawScreen();
   }
 
 

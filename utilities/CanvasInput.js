@@ -173,7 +173,7 @@ CanvasInput.prototype.touchMove = function(ev) {
         emitEvent('canvas_drag', drag);
         }
 
-        //zoom screen      
+        //zoom screen with two fingers      
         if (this.mouse_pos_previous[id[0]] != undefined && 
 	          this.mouse_pos_previous[id[1]] != undefined) {
             var previous_distance = distance(this.mouse_pos_previous[id[0]],  this.mouse_pos_previous[id[1]]);
