@@ -101,10 +101,25 @@ WorldRenderer.p.drawRivers = function(hexarray) {
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     if (this.getTile(hex).river) {
+
+      //downstream river first
       let downstream_hex = this.getTile(hex).river.downstream_hex;
       let water_level = this.getTile(hex).river.water_level;
       if (downstream_hex instanceof Hex && water_level >= 7)
-        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*6)), '#00D' );
+        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*6)), '#00D', true );
+
+      //upstream rivers next
+      let upstream_hexes = this.getTile(hex).river.upstream_hexes;
+      if (upstream_hexes instanceof Array) {
+        for (upstream_hex of upstream_hexes) {
+          if (!this.getTile(upstream_hex).river)
+            continue;
+          let up_level = this.getTile(upstream_hex).river.water_level;
+          if (up_level >= 7)
+            this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(up_level*6)), '#00D', true );
+        }
+      }
+
     }
   }
 }
@@ -118,9 +133,9 @@ WorldRenderer.p.drawRoads = function(hexarray) {
     if (tile.road_from) {
       for (from of tile.road_from) {
         if (tile.elevation >= 2)
-          this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0' );
+          this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0', true );
         else 
-          this.hex_renderer.drawCenterLine(hex, from, 6, '#0DD' );
+          this.hex_renderer.drawCenterLine(hex, from, 6, '#0DD', true );
       }
     }
   }
