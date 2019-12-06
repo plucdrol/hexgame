@@ -26,6 +26,8 @@ function Action() {
   this.can_use_roads = false;
   this.infinite_range = false;
 
+  this.river_only = false;
+
   //evaluates if a target can receive an action
   this.targetFilterFunction = function(world, actor, position, target) {    return true;  }
 
@@ -72,6 +74,8 @@ function Action() {
   this.getNeighborsFunction = function(map,hex) {
     return map.getNeighbors(hex);
   }
+
+
   //STEP COST FUNCTION (for pathfinder)
   this.stepCostFunction = function(map, hex, next_hex) {
     var next_tile = map.get(next_hex);
@@ -81,6 +85,16 @@ function Action() {
       return undefined;
     if (next_tile.elevation < this.minimum_elevation) 
       return undefined;
+
+    if (this.river_only) {
+      if (!this_tile.river || !next_tile.river)
+        return undefined;
+      if (!this_tile.river.water_level >= 7 || !next_tile.river.water_level >= 7)
+        return undefined;
+      if ( !( Hex.equals(this_tile.river.downstream_hex, next_hex ) || Hex.equals(next_tile.river.downstream_hex, hex )   ))
+        return undefined;
+    }
+
 
     let cost = 1;
 
@@ -465,6 +479,47 @@ function actionCreateVillage(distance) {
 
 
 //This action transforms the unit into a camp
+function actionCreateRiverDock(distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "create-river-dock";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'river-dock';
+  this.can_use_roads = false;
+
+  this.nextSelection = "target";
+  this.min_distance = 0;
+  this.max_distance = distance;
+
+  this.also_build_road = true;
+  this.hover_radius = 1;
+
+  this.cloud_clear = 3;
+
+  this.free_pop_cost = 2;
+  
+  this.description = "River docks (-2 ants)";
+  this.extra_description = "Can gather all resources on a river";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return world.onRiver(target);
+  }
+  this.activation = function(world, actor, position) {
+    return world.nearRiver(position, 1);
+  }
+  this.requirement = function(world, actor, position) {
+    return world.getPopulation() >= 2;
+  }
+
+
+
+}
+
+
+//This action transforms the unit into a camp
 function actionMoveCity() {
   Action.call(this);
 
@@ -717,7 +772,48 @@ function actionGetResource(max_distance, multi_target) {
 }
 
 
+//This action transforms the unit into a camp
+function actionCollectRiverFish(max_distance) {
+  Action.call(this);
 
+  this.minimum_elevation = 2;
+
+  this.name = "collect-river-fish";
+  this.type = "target";
+  this.target = "land";
+  this.min_distance = 1;
+  this.max_distance = max_distance;
+  this.hover_radius = 0;
+  this.cloud_clear = 0;
+  this.river_only = true;
+
+  this.also_build_road = false;
+
+  this.destroy_resource = false;
+
+  this.free_pop_cost = -1;
+  this.total_pop_cost = -2;
+
+  this.multi_target = true;
+  this.new_unit_type = 'colony';
+
+  this.description = "Harvest river";
+  this.extra_description = "Get all the fish resources in this river";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.sameRiver(position, target)
+         && world.countResources(Hex.circle(target, 0), 'food', 1);
+  }
+
+  this.activation = function(world, actor, position) {
+    return world.onRiver(position);
+  }
+
+
+  this.effect = function(world,actor,position,target) {
+    actor.addPop(1);
+  }
+}
 
 
 //This action transforms the unit into a camp

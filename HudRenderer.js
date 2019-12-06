@@ -322,7 +322,7 @@ HUDRenderer.prototype.addTooltipTile = function(hex_hovered) {
   if (tile && tile.hasOwnProperty('elevation')) {
     addTooltip(land_tiles[tile.elevation]+", ");
   }
-  if (tile && tile.river && tile.river.water_level >= 7) {
+  if (this.world.onRiver(hex_hovered)) {
     addTooltip('river, ');
   }
 }

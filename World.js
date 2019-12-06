@@ -262,6 +262,24 @@ World.prototype.countResources = function(hexarray, resource_type, minimum_count
   return (count >= minimum_count) 
 }
 
+World.prototype.nearRiver = function(position, max_distance) {
+  for (hex of Hex.circle(position, max_distance)) {
+    if (this.getTile(hex))
+      if (this.onRiver(hex))
+        return true;
+  }
+}
+
+World.prototype.onRiver = function(position) {
+  let tile = this.getTile(position);
+  return tile && tile.river && tile.river.water_level >= 7;
+}
+
+World.prototype.sameRiver = function(position1, position2) {
+  return this.onRiver(position1) && this.onRiver(position2) 
+          && this.getTile(position1).river.name == this.getTile(position2).river.name;
+}
+
 World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
   let count = 0;
   let max = 6;

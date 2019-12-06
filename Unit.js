@@ -55,6 +55,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateExpeditionCenter());
     this.addAction( new actionCreateAirport(5));
     this.addAction( new actionCreateLighthouse(3));
+    this.addAction( new actionCreateRiverDock(1));
     this.addAction( new actionCreateHarbor());
     this.addAction( new actionCreateVillage(4));
     this.addAction( new actionMoveCity() );
@@ -74,6 +75,7 @@ Unit.prototype.setType = function(unit_type) {
 
     this.addAction( new actionGetResource(1, true));
     this.addAction( actionGetResource2 );
+
     this.addAction( new actionCreateLighthouse(1));
     //this.addAction( new actionCreateVillage(4));
     break;
@@ -83,8 +85,15 @@ Unit.prototype.setType = function(unit_type) {
     this.pop = 4;
     this.setGraphic('pink',5);
     this.addAction( new actionCreateCity(12));
-    //this.addAction( new actionCreateCouncilOfQueens());
     this.council_connected = false;
+    break;
+
+  case 'river-dock':
+    this.name = "River dock";
+    this.pop = 2;
+    this.transfer_pop = true;
+    this.setGraphic('grey',4);
+    this.addAction( new actionCollectRiverFish(12));
     break;
 
   case 'airport':
@@ -108,7 +117,7 @@ Unit.prototype.setType = function(unit_type) {
     this.pop = 2;
     this.transfer_pop = true;
     this.setGraphic('lightblue',4);
-    this.addAction( new actionGoFishing(5));
+    this.addAction( new actionGoFishing(3));
     break;
 
   case 'harbor':
