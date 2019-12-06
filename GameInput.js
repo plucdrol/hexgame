@@ -33,6 +33,11 @@ function GameInput(world, view) {
 
 	//Event handling
   var self = this;
+
+
+
+
+
 	listenForEvent('canvas_zoom', function(e){
     self.zoomViewEvent(e.detail.amount);
   } );
@@ -48,6 +53,20 @@ function GameInput(world, view) {
   listenForEvent('canvas_hover', function(e){
     self.hoverEvent(e.detail.mousepos);
   });
+
+  document.addEventListener('keydown', logKey);
+
+  function logKey(event) {
+    console.log(event.keyCode);
+    if (event.keyCode === 189 || event.keyCode === 173) { // minus
+        self.zoomViewEvent(1.2);
+        return false;
+    }
+    if (event.keyCode === 187 || event.keyCode === 61) { // plus
+        self.zoomViewEvent(0.8);
+        return false;
+    }
+  }
 
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
