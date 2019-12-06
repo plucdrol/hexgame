@@ -106,7 +106,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
       let downstream_hex = this.getTile(hex).river.downstream_hex;
       let water_level = this.getTile(hex).river.water_level;
       if (downstream_hex instanceof Hex && water_level >= 7)
-        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*6)), '#00D', true );
+        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*9)), '#00D', true );
 
       //upstream rivers next
       let upstream_hexes = this.getTile(hex).river.upstream_hexes;
@@ -116,7 +116,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
             continue;
           let up_level = this.getTile(upstream_hex).river.water_level;
           if (up_level >= 7)
-            this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(up_level*6)), '#00D', true );
+            this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(up_level*9)), '#00D', true );
         }
       }
 
