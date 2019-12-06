@@ -85,7 +85,12 @@ RiverGenerator = function(world_map) {
   }
 
   this.growRiver = function(hex) {
+
+    //get current water hex
     var downstream_hex = next.get(hex);
+    var downstream_tile = this.map.get(downstream_hex);
+
+    //create new tile
     var tile = this.map.get(hex);
     tile.river = {};
     if (tile.elevation >= 3 && tile.elevation < 12) 
@@ -94,6 +99,12 @@ RiverGenerator = function(world_map) {
       tile.river.water_level = 0;
     tile.river.name = this.map.get(downstream_hex).river.name;
     tile.river.downstream_hex = downstream_hex;
+
+    //add this new river branch to the lower river tile
+    if (!downstream_tile.river.upstream_hexes)
+      downstream_tile.river.upstream_hexes = [];
+    downstream_tile.river.upstream_hexes.push(hex);
+
     //add 1 water level to all river tiles downstream until you reach the ocean
     if (tile.elevation >= 3 && tile.elevation < 12)
       this.propagateWaterLevel(hex);
