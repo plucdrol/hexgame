@@ -206,9 +206,15 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   if (unit.type == 'unknown')
     unit_style.fill_color = "rgba("+(128+127*this.ocillate(1000))+","+(255*this.ocillate(1000))+","+(128-128*this.ocillate(1000))+",1)";
 
-  let size = 10*unit.size;
-  this.hex_renderer.renderer.drawDot(position, size, unit_style);
-  
+
+  //draw a square or hexagon
+  if (unit.size > 4) {
+    this.hex_renderer.drawHex(hex, unit_style);
+  } else {
+    this.hex_renderer.renderer.drawDot(position, 10*unit.size, unit_style);
+  }
+
+  //draw a number on the unit
   if (unit.pop) {
     let text_style = new RenderStyle();
     text_style.text_size = 45;
