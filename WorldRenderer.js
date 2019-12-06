@@ -15,40 +15,83 @@
 //  Hex
 //  HexRenderer
 
-function WorldRenderer (world, hex_renderer) {
+function WorldRenderer (world, hex_renderer, layer_number) {
   
   this.hex_renderer = hex_renderer;
   this.world = world;
-  this.render_start = 0;
-  this.render_portions = Math.floor(world.radius/3);
+  this.render_layer = layer_number;
 
-  var self = this; 
-  //setInterval( self.drawWorld.bind(self), 2 );
+  
 }
 WorldRenderer.p = WorldRenderer.prototype;
 
-    
+
+WorldRenderer.p.drawWorldByPortions = function() {
+
+  this.render_portions = Math.floor(world.radius/3);
+  this.render_start = 0;
+
+  var self = this; 
+  this.stop_rendering = setInterval( self.drawWorldPortion.bind(self), 2 );
+}   
+
+WorldRenderer.p.drawWorldPortion = function() {
+
+  var hexarray = this.world.quick_hexarray;
+
+  let sections = Math.floor(hexarray.length/this.render_portions);
+  hexarray = hexarray.slice(this.render_start*sections, (this.render_start+1)*sections );
+  this.render_start++;
+
+  if (this.render_start >= this.render_portions) {
+    //this.render_start = 0;
+    clearInterval(this.stop_rendering);
+  }
+
+  this.renderLayer(hexarray);
+
+
+}
 
 WorldRenderer.p.drawWorld = function() {
+  var hexarray = this.world.quick_hexarray;
+/*
+    this.drawTiles(hexarray);
+    this.drawRivers(hexarray);
+    this.drawRoads(hexarray);
+    this.drawUnits(hexarray);
+    this.drawResources(hexarray);
 
+    */
   
-  var hexarray = this.world.getHexArray();
-  /*et section = Math.floor(hexarray.length/this.render_portions);
-  hexarray = hexarray.slice(this.render_start*section, (this.render_start+1)*section );
-  this.render_start++;
-  if (this.render_start >= this.render_portions)
-    this.render_start = 0;*/
-  
+  this.renderLayer(hexarray);
 
-  
-  //this.drawBigHex(this.world.radius);
-  this.drawTiles(hexarray);
-  this.drawRivers(hexarray);
 
-  this.drawRoads(hexarray);
-  this.drawUnits(hexarray);
-  this.drawResources(hexarray);
 
+}
+
+WorldRenderer.p.renderLayer = function(hexarray) {
+    switch (this.render_layer) {
+    case 0:
+    this.drawTiles(hexarray);
+    break;
+
+    case 1:
+    this.drawRivers(hexarray);
+    break;
+
+    case 2:
+    this.drawRoads(hexarray);
+    break;
+
+    case 3:
+    this.drawUnits(hexarray);
+    break;
+
+    case 4:
+    this.drawResources(hexarray);
+    break;
+  }
 }
 
 WorldRenderer.p.drawBigHex = function(radius) {

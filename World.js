@@ -71,7 +71,7 @@ function World(radius) {
 
 
 
-
+  this.quick_hexarray = this.getHexArray();
 
 }
 

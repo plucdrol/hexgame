@@ -43,7 +43,8 @@
 			<canvas id="canvas" width="600" height="400">
 				Your system does not support Canvas.
 			</canvas>
-			<canvas id="temp_canvas" style="display: none;"></canvas>
+			<canvas id="earth_canvas" style="display: none;"></canvas>
+			<canvas id="thing_canvas" style="display: none;"></canvas>
 		</div>
 		
 

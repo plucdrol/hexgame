@@ -61,22 +61,17 @@ function GameInput(world, view) {
 	  //shift the view by that movement
 	  this.view.shiftPosition(drag_move);
 
-    render_x += previous_mouse.x-mouse.x;
-    render_y += previous_mouse.y-mouse.y;
-
     //shift the image in the temporary canvas
     var temp_context = canvas.getContext('2d');
     temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));
-	  
-	  //redraw the screen after moving
-	  //drawScreen();
+	 
 	}
 
 
   //React to the window being resized
 	this.resizeEvent = function(width, height) {
 	  this.view.resizeOutput(width, height);
-	  updateWorldRender();
+	  //updateWorldRender();
 	}
 
 
@@ -91,12 +86,10 @@ function GameInput(world, view) {
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
 
       hud_renderer.updateTooltip(this.hex_hovered);
-      //drawScreen();
     }
 
     //remember the currently hovered hex
     this.hex_hovered_previous = this.hex_hovered;
-    drawScreen();
   }
 
 

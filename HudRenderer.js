@@ -303,6 +303,8 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
   if (!getTooltip())
     this.addTooltipTile(hex_hovered);
 
+  addTooltip(hex_hovered.q+" "+hex_hovered.r);
+
 }
 
 HUDRenderer.prototype.addTooltipUnit = function(hex_hovered) {

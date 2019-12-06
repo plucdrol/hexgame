@@ -28,12 +28,7 @@ function View (canvas_element_id, initial_zoom_level) {
                             new Point(canvas.width*initial_zoom*view_ratio,
                                      canvas.height*initial_zoom*view_ratio));
 
-  if (initial_zoom_level == -1) {
-  
-    input = output;
 
-
-  }
 
 
 
@@ -54,6 +49,19 @@ function View (canvas_element_id, initial_zoom_level) {
   this.setCenter = function(point) {
       input.position.x = point.x-input.size.x/2;
       input.position.y = point.y-input.size.y/2;
+  }
+
+  this.setInput = function(x,y,w,h) {
+    input.position.x = x;
+    input.position.y=y;
+    input.size.x = w;
+    input.size.y = h;
+  }
+  this.setOutput = function(x,y,w,h) {
+    output.position.x = x;
+    output.position.y=y;
+    output.size.x = w;
+    output.size.y = h;
   }
 
   this.resizeOutput = function(width,height) {
