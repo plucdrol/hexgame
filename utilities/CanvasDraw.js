@@ -113,8 +113,34 @@ function CanvasDraw (canvas) {
   CanvasDraw.prototype.drawLine = function(p1,p2,width,color) {
 
     //express this function as a polygon
-    var points = [p1,p2];
-    this.drawPolygon(points,width,'transparent',color);
+    var line = this.canvas.getContext('2d');
+    
+    //default line color
+    if (typeof color === 'undefined') {
+      let color = 'black';
+    }
+
+    //default line width
+    if (typeof width === 'undefined') {
+      let width = 0;
+    }
+    
+    //line style
+    line.lineWidth = width;
+    line.lineCap = "butt";
+    line.strokeStyle = color;  
+    line.lineCap = "round";
+    line.alpha = false;   
+
+    //polygon outline
+    line.beginPath();
+    line.moveTo(Math.floor(p1.x), Math.floor(p1.y) );
+    line.lineTo(Math.floor(p2.x), Math.floor(p2.y) );
+
+    //draw the line if thick enough
+    if (width > 0) {
+      line.stroke(); 
+    }
 
   };
 
