@@ -55,21 +55,19 @@ function step(timestamp) {
 }
 window.requestAnimationFrame(step);
 
-var render_x = 0;
-var render_y = 0;
+
 
 function updateWorldRender() {
 
   //canv_draw.clear();
   world_renderer.drawWorld(); 
-  render_x = 0;
-  render_y = 0;
+
 }
 
 function drawScreen() {
 
   //clear the real canvas
-  //real_canv_draw.clear();
+  real_canv_draw.clear();
 
   //copy the temporary canvas to the real canvas
   var screen_context = real_canvas.getContext('2d');

@@ -20,6 +20,9 @@ function GameInput(world, view) {
   this.world = world;
   this.view = view;
 
+  this.world_drag = new Point(0,0);
+  this.screen_drag = new Point(0,0);
+
   //this is where the unit controller is created
   this.unit_input = new UnitInput(world); 
   this.hex_hovered = new Hex();
@@ -56,21 +59,28 @@ function GameInput(world, view) {
 	  //get the movement the mouse has moved since last tick
 	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
 	  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
-	  var drag_move = new Point(x_move, y_move);
-	  
-	  //shift the view by that movement
-	  this.view.shiftPosition(drag_move);
 
-    render_x += previous_mouse.x-mouse.x;
-    render_y += previous_mouse.y-mouse.y;
+    this.world_drag.x += x_move;
+    this.world_drag.y += y_move;
+
+    this.screen_drag.x += previous_mouse.x-mouse.x;
+    this.screen_drag.y += previous_mouse.y-mouse.y;
+
+    if ( Math.pow(this.screen_drag.x, 2) + Math.pow(this.screen_drag.y, 2) > 1000 ) 
+      this.actuallyDrag();
+	}
+
+  this.actuallyDrag = function() {
+
+    this.view.shiftPosition(this.world_drag);
 
     //shift the image inside the temporary canvas
     var temp_context = canvas.getContext('2d');
-    temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));
-	  
-	  //redraw the screen after moving
-	  //drawScreen();
-	}
+    temp_context.drawImage(canvas, -this.screen_drag.x, -this.screen_drag.y);
+
+    this.world_drag = new Point(0,0);
+    this.screen_drag = new Point(0,0);
+  }
 
 
   //React to the window being resized
