@@ -810,7 +810,7 @@ function actionCollectRiverFish(max_distance) {
   this.cloud_clear = 0;
   this.river_only = true;
 
-  this.also_build_road = false;
+  this.also_build_road = true;
 
   this.destroy_resource = false;
 

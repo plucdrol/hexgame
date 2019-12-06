@@ -270,6 +270,13 @@ World.prototype.nearRiver = function(position, max_distance) {
   }
 }
 
+World.prototype.alongRiver = function(position1, position2) {
+  return (this.sameRiver(position1, position2) && 
+        (Hex.equals(this.getTile(position1).river.downstream_hex, position2) ||
+        Hex.equals(this.getTile(position2).river.downstream_hex, position1))
+        );
+}
+
 World.prototype.onRiver = function(position) {
   let tile = this.getTile(position);
   return tile && tile.river && tile.river.water_level >= 7;

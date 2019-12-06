@@ -132,7 +132,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
     if (tile.hidden) continue;
     if (tile.road_from) {
       for (from of tile.road_from) {
-        if (tile.elevation < 2)
+        if (tile.elevation < 2 || this.world.alongRiver(hex, from))
           this.hex_renderer.drawCenterLine(hex, from, 6, '#0DD', true );
         else 
           this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0', true );
