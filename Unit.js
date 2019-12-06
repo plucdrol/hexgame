@@ -55,7 +55,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateExpeditionCenter());
     this.addAction( new actionCreateAirport(5));
     this.addAction( new actionCreateLighthouse(3));
-    this.addAction( new actionCreateRiverDock(1));
+    this.addAction( new actionCreateRiverDock(2));
     this.addAction( new actionCreateHarbor());
     this.addAction( new actionCreateVillage(4));
     this.addAction( new actionMoveCity() );

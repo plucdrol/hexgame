@@ -493,16 +493,17 @@ function actionCreateRiverDock(distance) {
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'river-dock';
-  this.can_use_roads = false;
+  this.can_use_roads = true;
 
   this.nextSelection = "target";
   this.min_distance = 0;
   this.max_distance = distance;
 
   this.also_build_road = true;
-  this.hover_radius = 1;
+  this.hover_radius = 0;
 
   this.can_river = true;
+  this.stop_on_river = true;
 
   this.cloud_clear = 3;
 
@@ -515,7 +516,7 @@ function actionCreateRiverDock(distance) {
     return world.onRiver(target);
   }
   this.activation = function(world, actor, position) {
-    return world.nearRiver(position, 1);
+    return world.nearRiver(position, 2);
   }
   this.requirement = function(world, actor, position) {
     return world.getPopulation() >= 2;
