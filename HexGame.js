@@ -42,7 +42,7 @@ var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
 hud_renderer.clearButtons();
 //hud_renderer.update_function();
 
-//world.clearClouds(new Hex(0,0), 33);
+//world.clearClouds();
 
 canv_input.windowResize();
 
@@ -69,7 +69,7 @@ function updateWorldRender() {
 function drawScreen() {
 
   //clear the real canvas
-  real_canv_draw.clear();
+  //real_canv_draw.clear();
 
   //copy the temporary canvas to the real canvas
   var screen_context = real_canvas.getContext('2d');

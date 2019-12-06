@@ -141,7 +141,7 @@ Unit.prototype.setType = function(unit_type) {
 
 
   case 'fish':
-    this.setGraphic('lightblue',2);
+    this.setGraphic('lightblue',1);
     this.setResource('food',1);
     this.setResource('fish',1);
     break;
