@@ -307,6 +307,15 @@ World.prototype.sameRiver = function(position1, position2) {
           && this.getTile(position1).river.name == this.getTile(position2).river.name;
 }
 
+World.prototype.onLand = function(position) {
+  return (this.getTile(position).elevation >= 2);
+}
+
+World.prototype.onWater = function(position) {
+  return !this.isLand(position);
+}
+
+
 World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
   let count = 0;
   let max = 6;

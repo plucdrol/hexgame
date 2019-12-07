@@ -67,10 +67,19 @@ function Action() {
   //STOP FUNCTION (for pathfinder)
   this.stopFunction = function(world, hex, next_hex) {
     
-    //return false;
-    return (world.getTile(next_hex).elevation >= this.stop_elevation_up && world.getTile(hex).elevation < this.stop_elevation_up)
-        || (world.getTile(next_hex).elevation <= this.stop_elevation_down && world.getTile(hex).elevation > this.stop_elevation_down)
-        || ( this.stop_on_rivers && world.onRiver(next_hex) );
+    let this_tile = world.getTile(hex);
+    let next_tile = world.getTile(next_hex);
+
+    if (next_tile.elevation >= this.stop_elevation_up && this_tile.elevation < this.stop_elevation_up)
+      return true;
+
+    if (next_tile.elevation <= this.stop_elevation_down && this_tile.elevation > this.stop_elevation_down)
+      return true;
+
+    if (this.stop_on_rivers && world.onRiver(next_hex) )
+      return true;
+    
+    return false;
   }
 
   //NEIGHBORS FUNCTION (for pathfinder)
@@ -90,7 +99,7 @@ function Action() {
       return undefined;
 
     if (!this.river_only && !this.can_river)
-      if( world.onRiver(next_hex) )
+      if( world.onRiver(next_hex) && world.noUnitTypeInArea(next_hex, 0, 'river-dock') )
         return undefined;
 
     if (this.river_only) {
@@ -231,8 +240,7 @@ function Action() {
 
     //clear the clouds over the area explored
     for (let hex of middleRange) {
-      for (let neighbor of hex.getNeighbors())
-        world.world_map.get(neighbor).hidden = false;
+      world.clearClouds(hex,1);
     }
 
     //remove unsuitable targets
@@ -322,7 +330,7 @@ function actionCreateCity(distance, extra) {
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,5);
+    return world.onLand(target) && world.noCitiesInArea(target,5);
   }
   this.activation = function(world, actor, position) {
     return !actor.can_move;
@@ -353,7 +361,7 @@ function actionCreateCityBySea(distance) {
   this.can_use_roads = false;
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
+    return !world.unitAtLocation(target) && world.onLand(target) 
            && world.noCitiesInArea(target,5) && world.nearCoast(target);
   }
   this.effect = function(world, actor, position, target) {
@@ -372,7 +380,7 @@ function actionCreateCityByAir() {
   this.can_use_roads = false;
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.getTile(target).elevation >= 2 
+    return !world.unitAtLocation(target) && world.onLand(target) 
            && world.noCitiesInArea(target,5);
   }
 
@@ -406,7 +414,7 @@ function actionCreateAirport(distance) {
   this.extra_description = "Create a small village to collect some more resources";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,1);
+    return world.onLand(target) && world.noCitiesInArea(target,1);
   }
 
 
@@ -450,7 +458,7 @@ function actionCreateVillage(distance) {
   this.extra_description = "Create a small village to collect some more resources";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
+    return world.onLand(target) && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
   }
 
   this.requirement = function(world, actor, position) {
@@ -532,7 +540,7 @@ function actionMoveCity() {
   this.extra_description = "Move your city somewhere else if the area is bad.";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.getTile(target).elevation >= 2 && world.noCitiesInArea(target,5,position);
+    return world.onLand(target) && world.noCitiesInArea(target,5,position);
   }
 
   this.activation = function(world, actor, position,target) {
@@ -683,7 +691,11 @@ function actionCreateLighthouse(distance) {
   this.extra_description = "Gather resources in coastal waters";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.getTile(target).elevation >= 2)
+    return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.onLand(target))
+  }
+
+  this.effect = function(world, actor, position, target) {
+    actor.can_move = false;
   }
 
 }
@@ -731,7 +743,7 @@ function actionGetResource(max_distance, multi_target) {
     return (
            //dry land food tiles within 3 tiles of the city or...
            (
-            world.getTile(target).elevation >= 2 && 
+            world.onLand(target) && 
            !world.onRiver(target) &&
            !world.unitAtLocation(target) && 
            world.countResources(Hex.circle(target, 0), 'food', 1)
@@ -867,88 +879,6 @@ function actionGoFishing(max_distance) {
 
 
 
-
-/*
-//This action transforms the unit into a camp
-function actionCreateCouncilOfQueens() {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
-
-  this.name = "council-of-queens";
-  this.type = "target";
-  this.target = "land";
-  this.new_unit_type = 'council-of-queens';
-
-  this.nextSelection = "target";
-  this.min_distance = 1;
-  this.max_distance = 10;
-  this.hover_radius = 10;
-
-  this.cloud_clear = 5;
-
-  this.free_pop_cost = 4;
-
-
-
-  this.description = "Council of queens (-4 ants)";
-  this.extra_description = "Get more ants if more queens chambers are nearby";
-
-  this.targetFilterFunction = function(world, actor, position, target) {
-    return (world.nearCoast(target) && world.getTile(target).elevation >= 2)
-  }
-
-
-  this.effect = function(world, actor, position, target) {  
-      actor.council_connected = true;
-      actor.addPop(-1);
-      actor.setGraphic('red',6);
-  }
-}
-
-
-
-//This action transforms the unit into a camp
-function actionConnectQueensChambers() {
-  Action.call(this);
-
-  this.name = "connect-queens-chambers";
-  this.type = "target";
-  this.target = "unit";
-  this.min_distance = 1;
-  this.max_distance = 10;
-  this.hover_radius = 0;
-  this.cloud_clear = 0;
-
-  this.destroy_resource = false;
-
-  this.free_pop_cost = -4;
-  this.total_pop_cost = -4;
-
-  this.also_build_road = true;
-  this.multi_target = false;
-
-  this.description = "Connect to a Queen's Chamber";
-  this.extra_description = "Get more ants for each Queens Chamber nearby";
-
-  this.targetFilterFunction = function(world, actor, position, target) {
-    return world.countUnits(Hex.circle(target, 0), 'queens-chamber', 1) && !world.getUnit(target).council_connected;
-  }
-
-
-  this.effect = function(world, actor, position, target) { 
-    
-    let queens_chamber = world.getUnit(target);
-    queens_chamber.council_connected = true;
-    queens_chamber.setGraphic('red',6);
-    actor.pop++;
-    queens_chamber.pop--;
-  }
-
-}
-
-
-*/
 
 
 
