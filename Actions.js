@@ -27,6 +27,8 @@ function Action() {
   this.infinite_range = false;
 
   this.river_only = false;
+  this.can_river = false;
+  this.stop_on_rivers = false;
 
   //evaluates if a target can receive an action
   this.targetFilterFunction = function(world, actor, position, target) {    return true;  }
@@ -312,11 +314,11 @@ function actionCreateCity(distance, extra) {
 
   this.cloud_clear = 6;
 
-  this.free_pop_cost = 5;
+  this.free_pop_cost = 4;
 
   this.can_use_roads = false;
 
-  this.description = "New city (-5 ants)";
+  this.description = "New city (-4 ants)";
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position, target) {
@@ -480,7 +482,7 @@ function actionCreateRiverDock(distance) {
   this.hover_radius = 0;
 
   this.can_river = true;
-  this.stop_on_river = true;
+  this.stop_on_rivers = true;
 
   this.cloud_clear = 3;
 
@@ -490,7 +492,7 @@ function actionCreateRiverDock(distance) {
   this.extra_description = "Can gather all resources on a river";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onRiver(target);
+    return world.onRiver(target) && !world.unitAtLocation(target);
   }
   this.activation = function(world, actor, position) {
     return world.nearRiver(position, 2);
@@ -595,7 +597,7 @@ function actionCreateExpeditionCenter() {
     return !world.countUnits(Hex.circle(position, 1), 'expedition-center', 1);
   }
   this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 10;
+    return world.getPopulation() >= 8;
   }
 }
 
@@ -640,10 +642,11 @@ function actionCreateHarbor() {
     return !world.unitAtLocation(target) && world.nearCoast(target, 1, 1);
   }
   this.activation = function(world, actor, position) {
+
     return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1);
   }
   this.requirement = function(world, actor, position) {
-    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1) &&  world.getPopulation() >= 10;
+    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1) &&  world.getPopulation() >= 4;
   }
 }
 
@@ -680,8 +683,9 @@ function actionCreateLighthouse(distance) {
   this.extra_description = "Gather resources in coastal waters";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return (!world.unitAtLocation(target) && world.nearCoast(target,2,6) && world.getTile(target).elevation >= 2)
+    return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.getTile(target).elevation >= 2)
   }
+
 }
 
 
@@ -787,6 +791,7 @@ function actionCollectRiverFish(max_distance) {
   this.hover_radius = 0;
   this.cloud_clear = 0;
   this.river_only = true;
+  this.stop_on_rivers = false;
 
   this.also_build_road = true;
 

@@ -47,7 +47,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'city':
     this.name = "City";
-    this.pop =  5;
+    this.pop =  4;
     this.setGraphic('white',6);
     this.can_move = true;
     this.addAction( new actionGetResource(3, true));
@@ -57,7 +57,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateLighthouse(3));
     this.addAction( new actionCreateRiverDock(2));
     this.addAction( new actionCreateHarbor());
-    this.addAction( new actionCreateVillage(4));
+    this.addAction( new actionCreateVillage(5));
     this.addAction( new actionMoveCity() );
     break;
 
@@ -75,6 +75,8 @@ Unit.prototype.setType = function(unit_type) {
 
     this.addAction( new actionGetResource(1, true));
     this.addAction( actionGetResource2 );
+
+    this.addAction( new actionCreateRiverDock(1));
 
     this.addAction( new actionCreateLighthouse(1));
     //this.addAction( new actionCreateVillage(4));

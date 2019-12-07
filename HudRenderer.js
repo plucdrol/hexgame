@@ -181,6 +181,9 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
     if (!action.activation(this.world, actor, position)) 
       continue;
 
+    if (action.getActionRange(this.world, actor, position).length < 1 && !action.infinite_range)
+      continue;
+
     let new_button = this.makeActionButton(action);
     action_buttons.innerHTML += new_button;
     
