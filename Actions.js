@@ -63,24 +63,24 @@ function Action() {
   /////////////////////////////////////////////////////////
 
   //STOP FUNCTION (for pathfinder)
-  this.stopFunction = function(map, hex, next_hex) {
+  this.stopFunction = function(world, hex, next_hex) {
     
     //return false;
-    return (map.get(next_hex).elevation >= this.stop_elevation_up && map.get(hex).elevation < this.stop_elevation_up)
-        || (map.get(next_hex).elevation <= this.stop_elevation_down && map.get(hex).elevation > this.stop_elevation_down)
-        || (this.stop_on_rivers && map.get(next_hex).river && map.get(next_hex).river.water_level >= 7);
+    return (world.getTile(next_hex).elevation >= this.stop_elevation_up && world.getTile(hex).elevation < this.stop_elevation_up)
+        || (world.getTile(next_hex).elevation <= this.stop_elevation_down && world.getTile(hex).elevation > this.stop_elevation_down)
+        || ( this.stop_on_rivers && world.onRiver(next_hex) );
   }
 
   //NEIGHBORS FUNCTION (for pathfinder)
-  this.getNeighborsFunction = function(map,hex) {
-    return map.getNeighbors(hex);
+  this.getNeighborsFunction = function(world, hex) {
+    return world.world_map.getNeighbors(hex);
   }
 
 
   //STEP COST FUNCTION (for pathfinder)
-  this.stepCostFunction = function(map, hex, next_hex) {
-    var next_tile = map.get(next_hex);
-    var this_tile = map.get(hex);
+  this.stepCostFunction = function(world, hex, next_hex) {
+    var next_tile = world.getTile(next_hex);
+    var this_tile = world.getTile(hex);
 
     if (next_tile.elevation > this.maximum_elevation) 
       return undefined;
@@ -88,22 +88,18 @@ function Action() {
       return undefined;
 
     if (!this.river_only && !this.can_river)
-      if(next_tile.river && next_tile.river.water_level >= 7)
+      if( world.onRiver(next_hex) )
         return undefined;
 
     if (this.river_only) {
-      if (!this_tile.river || !next_tile.river)
-        return undefined;
-      if (!this_tile.river.water_level >= 7 || !next_tile.river.water_level >= 7)
-        return undefined;
-      if ( !( Hex.equals(this_tile.river.downstream_hex, next_hex ) || Hex.equals(next_tile.river.downstream_hex, hex )   ))
+      if (!world.alongRiver(hex, next_hex) )
         return undefined;
     }
 
 
     let cost = 1;
 
-    if (this.areRoadConnected(map,hex,next_hex) && this.can_use_roads)
+    if (world.areRoadConnected(hex,next_hex) && this.can_use_roads)
       cost = 0.5;
 
     return cost;
@@ -122,25 +118,7 @@ function Action() {
     return new PathFinder(stepCostFunction, neighborFunction, stopFunction);
   }
 
-  this.areRoadConnected = function(map, hex1, hex2) {
 
-  let tile1 = map.getValue(hex1);
-  let tile2 = map.getValue(hex2);
-
-  if (tile1.road_from)
-    for (var from1 of tile1.road_from)
-      if (Hex.equals(from1, hex2))
-        return true;
-
-  if (tile2.road_from)
-    for (var from2 of tile2.road_from)
-      if (Hex.equals(from2, hex1))
-        return true;
-
-  //else
-  return false;
-
-}
 
 
 
@@ -243,7 +221,7 @@ function Action() {
 
     var max_distance = this.max_distance;
     var min_distance = this.min_distance;
-    var actionRange = pathfinder.getRange( world.world_map, position, max_distance, min_distance );
+    var actionRange = pathfinder.getRange( world, position, max_distance, min_distance );
 
     //limit range to elevations
     let upperRange = actionRange.filter(hex => world.getMapValue(hex).elevation >= this.minimum_elevation );
@@ -270,7 +248,7 @@ function Action() {
       max_distance = extra_max_distance;
 
     var min_distance = this.min_distance;
-    var actionPath = pathfinder.getPath( world.world_map, position, target, max_distance );
+    var actionPath = pathfinder.getPath( world, position, target, max_distance );
 
     return actionPath;
   };
@@ -280,8 +258,7 @@ function Action() {
     let pathfinder = this.getPathfinder();
 
     var max_distance = this.max_distance;
-    var min_distance = this.min_distance;
-    var actionPath = pathfinder.getPath( world.world_map, origin, target, max_distance );
+    var actionPath = pathfinder.getPath( world, origin, target, max_distance );
 
     if (actionPath instanceof Array)
       world.buildRoad(actionPath);

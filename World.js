@@ -262,6 +262,26 @@ World.prototype.countResources = function(hexarray, resource_type, minimum_count
   return (count >= minimum_count) 
 }
 
+World.prototype.areRoadConnected = function(hex1, hex2) {
+
+  let tile1 = this.getTile(hex1);
+  let tile2 = this.getTile(hex2);
+
+  if (tile1.road_from)
+    for (var from1 of tile1.road_from)
+      if (Hex.equals(from1, hex2))
+        return true;
+
+  if (tile2.road_from)
+    for (var from2 of tile2.road_from)
+      if (Hex.equals(from2, hex1))
+        return true;
+
+  //else
+  return false;
+
+}
+
 World.prototype.nearRiver = function(position, max_distance) {
   for (hex of Hex.circle(position, max_distance)) {
     if (this.getTile(hex))
