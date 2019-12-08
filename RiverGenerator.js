@@ -44,6 +44,7 @@ RiverGenerator = function(world_map) {
   this.startRiver = function(hex, downstream_hex) {
     tile = this.map.get(hex);
     tile.river = {};
+    tile.river.river_starts_here = true;
     tile.river.water_level = 0;
     tile.river.downstream_hex = downstream_hex;
     tile.river.name = this.generateRiverName();

@@ -55,7 +55,6 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateExpeditionCenter());
     this.addAction( new actionCreateAirport(5));
     this.addAction( new actionCreateLighthouse(3));
-    this.addAction( new actionCreateRiverDock(2));
     this.addAction( new actionCreateHarbor());
     this.addAction( new actionCreateVillage(5));
     this.addAction( new actionMoveCity() );
@@ -72,14 +71,9 @@ Unit.prototype.setType = function(unit_type) {
     actionGetResource2.description = 'Get one extra resource';
     actionGetResource2.extra_description = 'Can reach 2 tiles away<br>But only once';
 
-
     this.addAction( new actionGetResource(1, true));
     this.addAction( actionGetResource2 );
-
-    this.addAction( new actionCreateRiverDock(1));
-
     this.addAction( new actionCreateLighthouse(1));
-    //this.addAction( new actionCreateVillage(4));
     break;
 
   case 'expedition-center':
@@ -105,21 +99,12 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateCityByAir());
     break;
 
-    /*
-  case 'council-of-queens':
-    this.name = "Council of Queens";
-    this.pop = 5;
-    this.setGraphic('red',5);
-    this.addAction( new actionConnectQueensChambers());
-    break;
-    */
-
   case 'lighthouse':
     this.name = "Lighthouse";
     this.pop = 2;
     this.transfer_pop = true;
     this.setGraphic('lightblue',4);
-    this.addAction( new actionGoFishing(3));
+    this.addAction( new actionGetShallowFish(4));
     break;
 
   case 'harbor':

@@ -282,6 +282,10 @@ World.prototype.areRoadConnected = function(hex1, hex2) {
 
 }
 
+World.prototype.riverStart = function(position) {
+  return this.getTile(position).river_starts_here;
+}
+
 World.prototype.nearRiver = function(position, max_distance) {
   for (hex of Hex.circle(position, max_distance)) {
     if (this.getTile(hex))
@@ -307,12 +311,22 @@ World.prototype.sameRiver = function(position1, position2) {
           && this.getTile(position1).river.name == this.getTile(position2).river.name;
 }
 
+World.prototype.leavingRiver = function(position1, position2) {
+  return (this.onRiver(position1) && this.onWater(position2) && this.getTile(position2).river &&
+          this.getTile(position2).river.river_starts_here && 
+          this.getTile(position2).river.name == this.getTile(position1).river.name);
+}
+
+World.prototype.enteringRiver = function(position1, position2) {
+  return this.leavingRiver(position2, position1);
+}
+
 World.prototype.onLand = function(position) {
   return (this.getTile(position).elevation >= 2);
 }
 
 World.prototype.onWater = function(position) {
-  return !this.isLand(position);
+  return !this.onLand(position);
 }
 
 
