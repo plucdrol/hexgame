@@ -61,13 +61,8 @@ function World(radius) {
   this.generateUnknown();
   this.destroyResource(new Hex(0,0));
 
-  //Make the center tile into sand
-  let land_tile = new Unit('terrain');
-  land_tile.elevation = 2;
-  this.setHex(new Hex(0,0), land_tile);
-
-  this.population = 12;
-  this.total_population = 16;
+  this.resources_available = 12;
+  this.resources_collected = 12;
 
 
 
@@ -81,7 +76,7 @@ function World(radius) {
 
 
 World.prototype.getPopulation = function() {
-  return Math.floor(this.population);
+  return Math.floor(this.resources_available);
 }
 
 
@@ -155,8 +150,7 @@ World.prototype.getUnit = function(hex) {
 
 World.prototype.addUnit = function(hex, unit_type, owner) {
 
-    let new_unit = new Unit(unit_type);
-    new_unit.owner = owner;
+    let new_unit = new Unit(unit_type, owner);
     this.units.set(hex, new_unit);
 }
 

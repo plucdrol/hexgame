@@ -4,18 +4,29 @@
 //
 //           GENERIC UNIT --------------------//
 
-function Unit(unit_type) {
+function Unit(unit_type, owner) {
   
-  this.setType(unit_type);
   this.selectable = true;
+  
+  this.owner = null;
+  if (owner) 
+    this.owner = owner;
 
+  this.setType(unit_type);
 };
 
 Unit.prototype.addPop = function(pop_amount) {
-  if (this.transfer_pop && this.owner) 
+  if (this.owner && this.unit_type != 'city') 
     this.owner.addPop(pop_amount);
   else
     this.pop += pop_amount;
+}
+
+Unit.prototype.getPop = function() {
+  if (this.owner && this.unit_type != 'city') 
+    return this.owner.getPop();
+  else
+    return this.pop;
 }
 
 Unit.prototype.addAction = function( action ) {
@@ -41,7 +52,7 @@ Unit.prototype.setResourceStores = function(food, wood, stone) {
 
 Unit.prototype.setType = function(unit_type) {
   this.type = unit_type;
-  this.owner = null;
+
 
   switch (unit_type) {
 
@@ -53,7 +64,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionGetResource(3, true));
     this.addAction( new actionCreateCity(6,'settled'));
     this.addAction( new actionCreateExpeditionCenter());
-    this.addAction( new actionCreateAirport(5));
+    this.addAction( new actionCreateFleshCanon(6));
     this.addAction( new actionCreateLighthouse(3));
     this.addAction( new actionCreateHarbor());
     this.addAction( new actionCreateVillage(5));
@@ -63,7 +74,6 @@ Unit.prototype.setType = function(unit_type) {
   case 'village':
     this.name = "Village";
     this.pop = 2;
-    this.transfer_pop = true;
     this.setGraphic('white',4);
     
     let actionGetResource2 = new actionGetResource(2, false);
@@ -81,28 +91,22 @@ Unit.prototype.setType = function(unit_type) {
     this.pop = 4;
     this.setGraphic('pink',5);
     this.addAction( new actionCreateCity(12));
+    this.addAction( new actionCreateVillage(12));
     this.council_connected = false;
     break;
 
-  case 'river-dock':
-    this.name = "River dock";
-    this.pop = 2;
-    this.transfer_pop = true;
-    this.setGraphic('grey',4);
-    this.addAction( new actionCollectRiverFish(12));
-    break;
-
-  case 'airport':
-    this.name = "Airport";
+  case 'flesh-canon':
+    this.name = "Flesh canon";
     this.pop = 6;
     this.setGraphic('grey',6);
-    this.addAction( new actionCreateCityByAir());
+    let canon_distance = Math.floor(this.getPop()/2);
+    this.addAction( new actionCreateCityByAir( canon_distance ));
+    console.log(canon_distance);
     break;
 
   case 'lighthouse':
     this.name = "Lighthouse";
     this.pop = 2;
-    this.transfer_pop = true;
     this.setGraphic('lightblue',4);
     this.addAction( new actionGetShallowFish(4));
     break;
@@ -110,7 +114,6 @@ Unit.prototype.setType = function(unit_type) {
   case 'harbor':
     this.name = "Harbor";
     this.pop = 4;
-    this.transfer_pop = true;
     this.setGraphic('brown',5);
     this.addAction( new actionCreateCityBySea(15));
     this.addAction( new actionCreateLighthouse(10));
