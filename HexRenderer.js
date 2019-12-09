@@ -36,17 +36,43 @@ HexRenderer.p.pointToHex = function(point) {
 }
 
 // RENDERING FUNCTIONS
-HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, half_only) {
+HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
   var style = new RenderStyle();
   style.line_width = width;
   style.line_color = line_color; 
-  var point1 = this.hexToPoint(hex1);
-  var point2 = this.hexToPoint(hex2);
-  if (half_only) {
-    point2 = new Point( (point2.x+point1.x)/2 , (point2.y+point1.y)/2 );
+  var p1 = this.hexToPoint(hex1);
+  var p2 = this.hexToPoint(hex2);
+
+  if (option && option=='half only') {
+    p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
   }
-  this.renderer.drawLine(point1, point2, style);
+
+  if (option && option=='moving dots') {
+    p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
+    p1 = this.fractionalRandomPoint1(p1,p2);
+    p2 = p1;
+  }
+
+  if (option && option=='moving dots backwards') {
+    p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
+    p1 = this.fractionalRandomPoint1(p2,p1);
+    p2 = p1;
+  }
+
+  this.renderer.drawLine(p1,p2, style);
+
 }
+
+HexRenderer.p.fractionalRandomPoint1 = function(p1, p2) {
+  let f = (new Date().getTime()%3000)/3000;
+  return new Point( ((1-f)*p2.x+f*p1.x) , ((1-f)*p2.y+f*p1.y) );
+
+}
+
+HexRenderer.p.fractionalRandomPoint2 = function(p1, p2) {
+  
+}
+
 HexRenderer.p.drawLongLine = function(hex_array, width) {
   var style = new RenderStyle();
   style.line_width = width;

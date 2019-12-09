@@ -23,7 +23,7 @@ HUDRenderer.prototype.drawHUD = function() {
     let unit = this.unit_input.getActorSelected();
     if (unit) {
       let action = this.unit_input.getActionSelected();
-      if (action && action.name != 'city-by-air')
+      if (action /*&& action.name != 'city-by-air'*/)
         this.drawActorRange();
     } 
 
@@ -247,13 +247,12 @@ HUDRenderer.prototype.writeMessage = function(message, element) {
 
 HUDRenderer.prototype.update_function = function() { 
   let actor = this.unit_input.getActorSelected();
-  let free_pop = this.world.getPopulation();
-  let total_pop = this.world.total_population;
-  let busy_pop = total_pop-free_pop;
+  let free_res = this.world.getPopulation();
+  let total_res = this.world.resources_collected;
 
   let resources = this.world.total_resources;
-  this.writeMessage("Free ants: "+free_pop, 'free-ants');
-  this.writeMessage("Total ants: "+total_pop, 'total-ants');
+  this.writeMessage("Resources available: "+free_res, 'free-ants');
+  this.writeMessage("Resources collected: "+total_res, 'total-ants');
 
 
   if (actor && actor.selectable) {

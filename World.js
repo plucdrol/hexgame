@@ -185,9 +185,9 @@ World.prototype.addRoadTile = function(hex1, hex2) {
   this.getTile(hex2).road_from.push(hex1);
 
   //road on tile 1
-  if (!this.getTile(hex1).road_from)
-    this.getTile(hex1).road_from = [];
-  this.getTile(hex1).road_from.push(hex2);
+  if (!this.getTile(hex1).road_to)
+    this.getTile(hex1).road_to = [];
+  this.getTile(hex1).road_to.push(hex2);
 
 }
 
@@ -272,8 +272,8 @@ World.prototype.areRoadConnected = function(hex1, hex2) {
       if (Hex.equals(from1, hex2))
         return true;
 
-  if (tile2.road_from)
-    for (var from2 of tile2.road_from)
+  if (tile1.road_to)
+    for (var from2 of tile1.road_to)
       if (Hex.equals(from2, hex1))
         return true;
 

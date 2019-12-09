@@ -19,7 +19,10 @@ function Action() {
   this.stop_elevation_up = 100;
   this.stop_elevation_down = -1;
   this.extra_description = "";
+
   this.also_build_road = true;
+  this.also_build_road_backwards = false;
+
   this.cloud_clear = 0;
   this.multi_target = false;
   this.destroy_resource = true;
@@ -28,6 +31,7 @@ function Action() {
 
   this.river_only = false;
   this.can_river = false;
+  this.rivers_and_coasts_only = false;
   this.stop_on_rivers = false;
 
   //evaluates if a target can receive an action
@@ -200,14 +204,17 @@ function Action() {
     if (this.also_build_road)
       this.createRoad(world, position, target);
 
+    if (this.also_build_road_backwards)
+      this.createRoad(world, target, position);
+
     if (this.new_unit_type)
       world.addUnit(target, this.new_unit_type, actor);
 
     if (this.free_pop_cost)
-      world.population -= this.free_pop_cost;
+      world.resources_available -= this.free_pop_cost;
 
     if (this.total_pop_cost)
-      world.total_population -= this.total_pop_cost;
+      world.resources_collected -= this.total_pop_cost;
 
     if (this.destroy_resource)
       world.destroyResource(target);
