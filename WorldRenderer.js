@@ -97,6 +97,8 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 
 
 WorldRenderer.p.drawRivers = function(hexarray) {
+
+  let water_draw_level = 7;
   //draw the rivers
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
@@ -105,7 +107,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
       //downstream river first
       let downstream_hex = this.getTile(hex).river.downstream_hex;
       let water_level = this.getTile(hex).river.water_level;
-      if (downstream_hex instanceof Hex && water_level >= 7)
+      if (downstream_hex instanceof Hex && water_level >= water_draw_level)
         this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*9)), '#00D', 'half only' );
 
       //upstream rivers next
@@ -115,7 +117,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
           if (!this.getTile(upstream_hex).river)
             continue;
           let up_level = this.getTile(upstream_hex).river.water_level;
-          if (up_level >= 7)
+          if (up_level >= water_draw_level)
             this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(up_level*9)), '#00D', 'half only' );
         }
       }
@@ -135,7 +137,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) )
           this.hex_renderer.drawCenterLine(hex, from, 8, '#0DD', 'moving dots');
         else 
-          this.hex_renderer.drawCenterLine(hex, from, 8, '#DD0', 'moving dots');
+          this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0', 'half only');
       }
     }
     if (tile.road_to) {
@@ -143,7 +145,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) )
           this.hex_renderer.drawCenterLine(hex, from, 8, '#0DD', 'moving dots backwards');
         else 
-          this.hex_renderer.drawCenterLine(hex, from, 8, '#DD0', 'moving dots backwards');
+          this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0', 'half only');
       }
     }
   }
