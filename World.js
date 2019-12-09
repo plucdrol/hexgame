@@ -184,6 +184,10 @@ World.prototype.addRoadTile = function(hex1, hex2) {
   this.getTile(hex1).road_to.push(hex2);
 
 }
+World.prototype.removeRoads = function(hex) {
+  this.getTile(hex).road_from = null;
+  this.getTile(hex).road_to = null;
+}
 
 World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
@@ -303,6 +307,22 @@ World.prototype.onRiver = function(position) {
 World.prototype.sameRiver = function(position1, position2) {
   return this.onRiver(position1) && this.onRiver(position2) 
           && this.getTile(position1).river.name == this.getTile(position2).river.name;
+}
+
+World.prototype.isUpstreamOf = function(upstream_position, position) {
+  if (!world.sameRiver(position, upstream_position))
+    return false;
+
+  let upstream_tile = this.getTile(upstream_position);
+  if (upstream_tile.river.river_starts_here)
+    return false;
+
+  if (Hex.equals(upstream_tile.river.downstream_hex, position) )
+    return true;
+
+  return this.isUpstreamOf(upstream_tile.river.downstream_hex, position);
+
+
 }
 
 World.prototype.leavingRiver = function(position1, position2) {

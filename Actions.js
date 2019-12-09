@@ -28,6 +28,7 @@ function Action() {
   this.destroy_resource = true;
   this.can_use_roads = false;
   this.infinite_range = false;
+  this.sky_action = false;
 
   this.river_only = false;
   this.can_river = false;
@@ -74,7 +75,7 @@ function Action() {
     let this_tile = world.getTile(hex);
     let next_tile = world.getTile(next_hex);
 
-    if (next_tile.elevation >= this.stop_elevation_up && this_tile.elevation < this.stop_elevation_up)
+    if (next_tile.elevation >= this.stop_elevation_up /*&& this_tile.elevation < this.stop_elevation_up*/)
       return true;
 
     if (next_tile.elevation <= this.stop_elevation_down && this_tile.elevation > this.stop_elevation_down)
@@ -129,7 +130,7 @@ function Action() {
 
     let cost = 1;
 
-    if ((world.areRoadConnected(hex,next_hex) && this.can_use_roads) || world.sameRiver(hex, next_hex))
+    if ((world.areRoadConnected(hex,next_hex) && (this.can_use_roads) ) || world.sameRiver(hex, next_hex))
       cost = 0.5;
 
     return cost;
@@ -245,16 +246,28 @@ function Action() {
 
   this.getActionRange = function(world, actor, position) {
 
-    let pathfinder = this.getPathfinder();
+    if (this.sky_action) {
 
-    if (this.infinite_range) {
-      world.clearClouds();
-      return [];
+      //just use a big circle for the action range
+      var actionRange = Hex.circle(position, this.max_distance);
+    } else {
+
+      //pathfind to find the action rangee
+      let pathfinder = this.getPathfinder();
+
+      if (this.infinite_range) {
+        world.clearClouds();
+        return [];
+      }
+
+      var max_distance = this.max_distance;
+      var min_distance = this.min_distance;
+      if (this.pop_action) {
+        max_distance = actor.getPop();
+      }
+
+      var actionRange = pathfinder.getRange( world, position, max_distance, min_distance );
     }
-
-    var max_distance = this.max_distance;
-    var min_distance = this.min_distance;
-    var actionRange = pathfinder.getRange( world, position, max_distance, min_distance );
 
     //limit range to elevations
     let upperRange = actionRange.filter(hex => world.getMapValue(hex).elevation >= this.minimum_elevation );
@@ -335,6 +348,8 @@ function actionCreateCity(distance, extra) {
   this.target = "land";
   this.new_unit_type = 'city';
 
+  this.pop_action = true;
+
   this.nextSelection = "target";
   this.min_distance = 0;
   this.max_distance = distance;
@@ -392,6 +407,32 @@ function actionCreateCityBySea(distance) {
   }
 }
 
+//This action transforms the unit into a camp
+function actionCreateLighthouseBySea(distance) {
+  actionCreateLighthouse.call(this);
+
+  this.minimum_elevation = 0;
+  this.stop_elevation_up = 2;
+
+  this.name = "lighthouse-by-sea";
+  this.max_distance = distance;
+  this.can_river = true;
+  this.stop_on_rivers = false;
+
+  this.free_pop_cost = 3;
+
+  this.description = "Water Den by sea (-3)";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    //coastal land tile
+    if (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.onLand(target))
+      return true
+
+    return false;
+  }
+
+}
+
 function actionCreateCityByAir(max_distance) {
   actionCreateCity.call(this);
   this.name = 'city-by-air';
@@ -399,7 +440,9 @@ function actionCreateCityByAir(max_distance) {
   this.maximum_elevation = 30;
   this.min_distance = 0;
   this.also_build_road = false;
+  this.also_build_road_backwards = false;
   this.can_use_roads = false;
+  this.sky_action = true;
 
   if (max_distance)
     this.max_distance = max_distance;
@@ -485,6 +528,43 @@ function actionCreateVillage(distance) {
   this.requirement = function(world, actor, position) {
     return world.getPopulation() >= 2;
   }
+}
+
+
+
+//This action transforms the unit into a camp
+function actionCreateVillage(distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "village";
+  this.type = "target";
+  this.target = "land";
+  this.new_unit_type = 'village';
+  this.can_use_roads = true;
+
+  this.nextSelection = "target";
+  this.min_distance = 0;
+  this.max_distance = distance;
+
+  this.also_build_road = true;
+  this.hover_radius = 1;
+
+  this.cloud_clear = 3;
+
+  this.free_pop_cost = 2;
+  
+  this.description = "Village (-2)";
+  this.extra_description = "Create a small village to collect some more resources";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return world.onLand(target) && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
+  }
+
+  this.requirement = function(world, actor, position) {
+    return world.getPopulation() >= 2;
+  }
 
 
 
@@ -507,7 +587,8 @@ function actionMoveCity() {
   this.min_distance = 1;
   this.max_distance = 5;
 
-  this.also_build_road = true;
+  this.also_build_road = false;
+  this.also_build_road_backwards = true;
   this.hover_radius = 3;
 
   this.cloud_clear = 6;
@@ -646,8 +727,7 @@ function actionCreateHarbor() {
 function actionCreateLighthouse(distance) {
   Action.call(this);
 
-  this.minimum_elevation = 1;
-  this.stop_elevation_up = 2;
+  this.minimum_elevation = 2;
 
   this.name = "lighthouse";
   this.type = "target";
@@ -681,12 +761,8 @@ function actionCreateLighthouse(distance) {
       return true;
   }
 
-
-  this.effect = function(world, actor, position, target) {
-    
-  }
-
 }
+
 
 
 
@@ -757,8 +833,6 @@ function actionGetResource(max_distance, multi_target) {
   this.max_distance = max_distance;
   this.hover_radius = 0;
 
-  this.single_use_remains = true;
-
   this.cloud_clear = 0;
   this.multi_target = multi_target;
 
@@ -801,14 +875,8 @@ function actionGetResource(max_distance, multi_target) {
            );
   }
 
-  this.activation = function (world, actor, position, target) {
-
-    return this.single_use_remains;
-
-  }
 
   this.effect = function(world, actor, position, target) {
-    this.single_use_remains = false;
     actor.can_move = false;
     actor.addPop(1);
 
@@ -877,37 +945,34 @@ function actionGetShallowFish(max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionCollectRiverFish(max_distance) {
+function actionHydroDam() {
   Action.call(this);
 
   this.minimum_elevation = 2;
 
-  this.name = "collect-river-fish";
+  this.name = "hydro-dam";
   this.type = "target";
   this.target = "land";
-  this.min_distance = 1;
-  this.max_distance = max_distance;
+  this.min_distance = 0;
+  this.max_distance = 10;
   this.hover_radius = 0;
   this.cloud_clear = 0;
   this.river_only = true;
   this.stop_on_rivers = false;
 
-  this.also_build_road = true;
+  this.also_build_road = false;
 
   this.destroy_resource = false;
 
-  this.free_pop_cost = -1;
-  this.total_pop_cost = -1;
+  this.free_pop_cost = -4;
 
-  this.multi_target = true;
-  this.new_unit_type = 'colony';
+  this.multi_target = false;
 
-  this.description = "Harvest river";
-  this.extra_description = "Get all the fish resources in this river";
+  this.description = "Hydro Dam";
+  this.extra_description = "Dam the river to get lots of resources";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.sameRiver(position, target)
-         && world.countResources(Hex.circle(target, 0), 'food', 1);
+    return world.isUpstreamOf(target, position) /*&& Hex.equals(world.getTile(target).river.downstream_hex, position)*/;
   }
 
   this.activation = function(world, actor, position) {
@@ -916,7 +981,41 @@ function actionCollectRiverFish(max_distance) {
 
 
   this.effect = function(world,actor,position,target) {
-    actor.addPop(1);
+    actor.pop += 4;
+    hydroDam(world, position);
+  }
+
+  function hydroDam(world, target) {
+    
+
+    let tile = world.getTile(target);
+    if (world.getTile(target).river.upstream_hexes) {
+      for (upstream of world.getTile(target).river.upstream_hexes) {
+        hydroDam(world, upstream);
+      }
+      
+      //floor the tile
+      tile.elevation = 1;     
+      world.removeRoads(target);   
+      if (!world.noUnitTypeInArea(target, 0, 'colony')) {
+        world.getUnit(target).owner.pop -= 1;
+        world.resources_collected -= 1;
+        world.resources_available -= 1;
+        world.destroyResource(target);
+        world.destroyUnit(target);
+      }
+      if (Math.random() <= 0.2)
+        world.addResource(target, 'fish');
+
+
+    } else {
+      tile.elevation = 3+Math.floor(5*Math.random());
+    }
+
+
+
+
+
   }
 }
 

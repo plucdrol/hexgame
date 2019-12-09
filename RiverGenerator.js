@@ -184,6 +184,7 @@ RiverGenerator = function(world_map) {
       if (tile.river.water_level <= 2 && tile.elevation >= 3) {
         tile.elevation += 3;
       }
+
       if (tile.river.water_level >= 10 && tile.elevation >= 6) {
         tile.elevation -= 2;
       }

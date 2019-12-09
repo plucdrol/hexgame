@@ -63,7 +63,7 @@ HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
 
 }
 
-HexRenderer.p.fractionalRandomPoint1 = function(p1, p2) {
+HexRenderer.p.fractionalRandomPoint1 = function(p1, p2, first_half) {
   let f = (new Date().getTime()%3000)/3000;
   return new Point( ((1-f)*p2.x+f*p1.x) , ((1-f)*p2.y+f*p1.y) );
 

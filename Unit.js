@@ -16,14 +16,14 @@ function Unit(unit_type, owner) {
 };
 
 Unit.prototype.addPop = function(pop_amount) {
-  if (this.owner && this.unit_type != 'city') 
+  if (this.owner && this.type != 'city') 
     this.owner.addPop(pop_amount);
   else
     this.pop += pop_amount;
 }
 
 Unit.prototype.getPop = function() {
-  if (this.owner && this.unit_type != 'city') 
+  if (this.owner && this.type != 'city') 
     return this.owner.getPop();
   else
     return this.pop;
@@ -62,7 +62,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('white',6);
     this.can_move = true;
     this.addAction( new actionGetResource(3, true));
-    this.addAction( new actionCreateCity(6,'settled'));
+    //this.addAction( new actionCreateCity(6,'settled'));
     this.addAction( new actionCreateExpeditionCenter());
     this.addAction( new actionCreateFleshCanon(6));
     this.addAction( new actionCreateLighthouse(3));
@@ -109,6 +109,7 @@ Unit.prototype.setType = function(unit_type) {
     this.pop = 2;
     this.setGraphic('lightblue',4);
     this.addAction( new actionGetShallowFish(4));
+    this.addAction( new actionHydroDam());
     break;
 
   case 'harbor':
@@ -116,7 +117,7 @@ Unit.prototype.setType = function(unit_type) {
     this.pop = 4;
     this.setGraphic('brown',5);
     this.addAction( new actionCreateCityBySea(15));
-    this.addAction( new actionCreateLighthouse(10));
+    this.addAction( new actionCreateLighthouseBySea(10));
     break;
 
   case 'colony':
