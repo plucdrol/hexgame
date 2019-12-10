@@ -185,7 +185,7 @@ UnitInput.p.updateActionRangeIndirectly = function() {
   let actor = this.getActorSelected();
 
   if (action)
-    actor.range = action.getActionRange(world, actor, this.hex_selected);
+    action.updateActionRange(world, actor, this.hex_selected);
   else
     actor.range = new HexMap();
 };

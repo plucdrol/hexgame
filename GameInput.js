@@ -133,7 +133,7 @@ function GameInput(world, view) {
 
     //if the mouse moved to a new hex, redraw the screen
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
-      hud_renderer.updateTooltip(this.hex_hovered);
+      hud_renderer.updateHover(this.hex_hovered);
     }
 
     //remember the currently hovered hex

@@ -161,6 +161,10 @@ Hex.prototype.getNeighbors = function() {
   return neighbors;
 }
 
+Hex.areNeighbors = function(hex1, hex2) {
+  return listContainsHex(hex2, hex1.getNeighbors());
+}
+
 // FRACTIONAL FUNCTIONS
 
 Hex.round = function(fractional_hex) {

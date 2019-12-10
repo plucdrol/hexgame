@@ -4,6 +4,8 @@ function HUDRenderer(world, game_input, hex_renderer) {
   this.world = world;
   this.unit_input = game_input.unit_input;
   this.hex_renderer = hex_renderer;
+  this.action_path = [];
+  this.action_targets = [];
 }
 
 
@@ -21,20 +23,29 @@ HUDRenderer.prototype.drawHUD = function() {
 
   if (hex_selected) {
     let unit = this.unit_input.getActorSelected();
-    if (unit) {
-      let action = this.unit_input.getActionSelected();
-      if (action /*&& action.name != 'city-by-air'*/)
-        this.drawActorRange();
-    } 
 
     this.drawSelectionHex(hex_selected);
 
     if (hex_hovered) {
       for (var hex of Hex.circle(hex_hovered, this.unit_input.getActionHoverRadius()))
         this.drawHoveredHex(hex);
-
       this.drawHoveredHex(hex_hovered);
     }
+
+    if (unit) {
+      let action = this.unit_input.getActionSelected();
+      if (action /*&& action.name != 'city-by-air'*/) {
+        this.drawActorRange();
+
+        if (this.action_path.length > 0) {
+          this.drawActionPath(hex_hovered);
+        }
+
+        if (this.action_targets.length > 0) {
+          this.drawActionTargets(hex_hovered);
+        }
+      }
+    } 
 
   } else {
     if (hex_hovered ) {
@@ -46,29 +57,75 @@ HUDRenderer.prototype.drawHUD = function() {
 
 }
 
-HUDRenderer.prototype.drawActionLine = function (hex_hovered, hex_selected) {
 
-  //draw a line from actor to target
+HUDRenderer.prototype.updateActionPath = function (hex_hovered) {
   let action = this.unit_input.getActionSelected();
   let actor = this.unit_input.getActorSelected();
+  let hex_selected = this.unit_input.hex_selected;
 
-  if (action && actor) {
-    let path = action.getActionPath(world, actor, hex_selected, hex_hovered, 15);
-
-    let color = '#C50';
-    if ( action.targetFilterFunction(this.world, actor, hex_hovered) )
-      color = '#5C0';
-
-    this.drawPath(path, color);
+  if (action && actor && hex_selected) {
+    this.action_path = action.getActionPath(world, actor, hex_selected, hex_hovered, 15);
+  } else {
+    this.action_path = [];
   }
 }
 
+HUDRenderer.prototype.drawActionPath = function (hex_hovered) {
+
+  let action = this.unit_input.getActionSelected();
+  let actor = this.unit_input.getActorSelected();
+  let hex_selected = this.unit_input.hex_selected;
+
+  //draw a line from actor to target
+  let color = '#C50';
+  if ( action.targetFilterFunction(this.world, actor, hex_selected, hex_hovered) )
+    color = '#5C0';
+
+  this.drawPath(this.action_path, color);
+}
+
+
+HUDRenderer.prototype.updateActionTargets = function (hex_hovered) {
+  let action = this.unit_input.getActionSelected();
+  let actor = this.unit_input.getActorSelected();
+  let hex_selected = this.unit_input.hex_selected;
+
+  this.action_targets = [];
+
+  if (action && actor && hex_selected && action.hover_action) {
+    if (!action.targetFilterFunction(this.world, actor, hex_selected, hex_hovered))
+      return;
+
+    let hover_action = action.hover_action;
+    this.action_targets = hover_action.getActionRange(this.world, actor, hex_hovered );
+  } 
+}
+
+HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
+
+  let action = this.unit_input.getActionSelected();
+  let actor = this.unit_input.getActorSelected();
+  let hex_selected = this.unit_input.hex_selected;
+  
+  var hover_style = new RenderStyle();
+  hover_style.fill_color = "rgba(50,200,50,1)";
+  hover_style.line_width = 0;
+
+  for (target of this.action_targets) {
+    this.hex_renderer.drawHex( target, hover_style );
+
+  }
+  
+}
+
+
 HUDRenderer.prototype.drawPath = function(hexarray, color) {
   var previous = hexarray[0];
-  for (hex of hexarray) {
-    this.hex_renderer.drawCenterLine(hex, previous, 6, color );
-    previous = hex;
-  }
+  if (hexarray.length > 0)
+    for (hex of hexarray) {
+      this.hex_renderer.drawCenterLine(hex, previous, 6, color );
+      previous = hex;
+    }
 }
 
 HUDRenderer.prototype.actorHasRenderableRange = function(actor) {
@@ -205,7 +262,7 @@ HUDRenderer.prototype.selectFirstActionIfNoneSelected = function() {
 
   //if none were selected, select the first one
   let first_action = radio_elements[0];
-  if (!first_action.disabled) {
+  if (first_action && !first_action.disabled) {
     first_action.checked = true;
     this.unit_input.updateActionRangeIndirectly();
   }
@@ -286,6 +343,19 @@ function getTooltip() {
 function addTooltip(message) {
   document.getElementById('tooltip').innerHTML += message;
 }
+
+HUDRenderer.prototype.updateHover = function(hex_hovered) {
+  this.updateActionPath(hex_hovered);
+  this.updateTooltip(hex_hovered);
+
+  this.action_targets = [];
+  let self = this;
+  if (this.hoverTimeout)
+    clearTimeout(this.hoverTimeout);
+  this.hoverTimeout = setTimeout(function(){ self.updateActionTargets(hex_hovered) }, 100);
+
+}
+
 
 HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
   clearTooltip();
