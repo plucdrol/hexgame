@@ -398,6 +398,7 @@ function actionCreateCityBySea(distance) {
   this.min_distance = 0;
   this.max_distance = distance;
   this.also_build_road = false;
+  this.also_build_road_backwards = true;
   this.stop_elevation_up = 2;
   this.can_use_roads = false;
 
@@ -422,6 +423,7 @@ function actionCreateLighthouseBySea(distance) {
   this.can_river = true;
   this.stop_on_rivers = false;
 
+  this.pop_action = true;
   this.free_pop_cost = 3;
 
   this.description = "Water Den by sea (-3)";
