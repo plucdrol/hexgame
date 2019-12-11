@@ -70,35 +70,34 @@ function World(radius) {
 }
 
 ////////////////////////////////////////////////////
-/////////// POPULATION FUNCTIONS
+/////////// LAYOUT FUNCTIONS
 ////////////////////////////////////////////////////
 
 
-World.prototype.getPopulation = function() {
-  return Math.floor(this.resources_available);
-}
+
 
 
 World.prototype.getLayout = function() {
   return this.layout;
 }
 
+World.prototype.getHex = function(world_position) {
+  var hex = Hex.round(this.layout.pointToHex(world_position));
+  return hex;
+}
 
+World.prototype.setHex = function(hex,value) {
+  this.world_map.set(hex, value);
+}
 
+World.prototype.getPoint = function(hex) {
+  return this.layout.hexToPoint(hex);
+}
 
+World.prototype.getHexArray = function() {
+  return this.world_map.getHexArray();
+}
 
-  World.prototype.highlightRange = function(range) {
-
-    for (hex of range) {
-      this.getTile(hex).highlighted = true;
-    }
-  }
-
-
-  World.prototype.clearHighlights = function() {
-    for (hex of this.getHexArray())
-      this.getTile(hex).highlighted = false;
-  }
 
 
 
@@ -123,22 +122,10 @@ World.prototype.getLayout = function() {
 ///////////
 ////////////////////////////////////////////////////
 
-World.prototype.getHex = function(world_position) {
-  var hex = Hex.round(this.layout.pointToHex(world_position));
-  return hex;
+World.prototype.getPopulation = function() {
+  return Math.floor(this.resources_available);
 }
 
-World.prototype.getHexArray = function() {
-  return this.world_map.getHexArray();
-}
-
-World.prototype.getPoint = function(hex) {
-  return this.layout.hexToPoint(hex);
-}
-
-World.prototype.setHex = function(hex,value) {
-  this.world_map.set(hex, value);
-}
 
 World.prototype.getMapValue = function(hex) {
   return this.world_map.getValue(hex);
@@ -503,10 +490,10 @@ World.prototype.generateResources = function() {
 
 World.prototype.makeCloudsEverywhere = function() {
   for (hex of this.world_map.getHexArray()) {
-    if (Hex.distance(new Hex(0,0), hex) > 10)
+    //if (Hex.distance(new Hex(0,0), hex) > 0)
       this.world_map.get(hex).hidden = true;
-    else
-      this.world_map.get(hex).hidden = false;
+    //else
+     //this.world_map.get(hex).hidden = false;
   }
 }
 
@@ -536,3 +523,23 @@ World.prototype.clearClouds = function(position, radius) {
 
 
 
+
+
+
+////////////////////////////////////////////////
+/////        UI PERFORMANCE FUNCTION          //
+////////////////////////////////////////////////
+
+
+  World.prototype.highlightRange = function(range) {
+
+    for (hex of range) {
+      this.getTile(hex).highlighted = true;
+    }
+  }
+
+
+  World.prototype.clearHighlights = function() {
+    for (hex of this.getHexArray())
+      this.getTile(hex).highlighted = false;
+  }
