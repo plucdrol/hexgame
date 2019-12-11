@@ -51,6 +51,16 @@ Renderer.prototype.drawDot = function (point,size,style) {
     this.canvas_draw.drawDot(coord, newsize, color);
 };
 
+Renderer.prototype.drawImage = function (image, point, size) {
+
+  let coord = this.worldToScreen(point);
+  let w = this.worldToScreen1D(size);
+  let context = this.canvas_draw.canvas.getContext('2d');
+  context.drawImage(image, coord.x-w/2, coord.y-w/2, w, w);
+
+}
+
+
 //Transform coordinates and draw a line using CanvasDraw
 Renderer.prototype.drawLine=function(point1,point2,style) {
 

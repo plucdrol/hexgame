@@ -197,8 +197,13 @@ WorldRenderer.p.drawResources = function(hexarray) {
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     var this_resource = this.world.getResource(hex);
-    if (this_resource != undefined) {
-        this.drawUnit(this_resource,hex,0);
+    if (this_resource != undefined && this_resource.resources) {
+        
+        if (this.hex_renderer.renderer.view.getZoom() > 1.5 && this_resource.type != 'fish')
+          this.hex_renderer.drawImage(hex);
+        else
+          this.drawUnit(this_resource,hex,0);
+
     }
   }
 }
@@ -251,6 +256,8 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   } else {
     this.hex_renderer.renderer.drawDot(position, 10*unit.size, unit_style);
   }
+
+  
 
   //draw a number on the unit
   if (unit.pop) {

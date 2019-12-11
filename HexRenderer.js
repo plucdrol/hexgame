@@ -16,6 +16,11 @@
 function HexRenderer(renderer, hexlayout) {
   this.renderer = renderer; 
   this.hexlayout = hexlayout;
+
+
+  
+  this.wheat = document.getElementById('wheat-icon');
+
 }
 
 HexRenderer.p = HexRenderer.prototype;
@@ -60,6 +65,17 @@ HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
   }
 
   this.renderer.drawLine(p1,p2, style);
+
+}
+
+HexRenderer.p.drawImage = function(hex) {
+
+  let world_point = this.hexToPoint(hex);
+
+  
+  this.renderer.drawImage(this.wheat, world_point, 60);
+
+
 
 }
 
