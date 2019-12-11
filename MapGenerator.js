@@ -124,9 +124,6 @@ MapGenerator.prototype.makeMap = function(radius) {
     }
   }
 
-  //add starting area
-  this.circleArea(4);
-
   //fine tune the m ap
   this.addWaterRim(0.1);
   this.roundDown();
@@ -159,13 +156,7 @@ MapGenerator.prototype.makeMap = function(radius) {
 
 
 
-MapGenerator.prototype.circleArea = function(radius) {
-  //add radius 4 area in center
-  for (let hex of Hex.circle(new Hex(0,0), radius) )  {
-    if (this.getElevation(hex) <= 2)
-      this.setElevation(hex, 3+Math.floor(4*Math.random()));
-  }
-}
+
 
 
 
