@@ -57,11 +57,15 @@ WorldRenderer.p.drawWorld = function() {
   
   //this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
+  this.drawHighlights(hexarray);
+
   this.drawRivers(hexarray);
 
   this.drawRoads(hexarray);
   this.drawUnits(hexarray);
   this.drawResources(hexarray);
+
+  
 
 }
 
@@ -83,17 +87,39 @@ WorldRenderer.p.drawTiles = function(hexarray) {
   //draw the land colors
   for (hex of hexarray) {
 
-    //clouds if not explored
+    //draw clouds if not explored
     if (this.getTile(hex).hidden) {
       this.drawTile(hex, {elevation: 32});
       continue;
     }
+
+    //skip if tile is highlighted
+    if (this.getTile(hex).highlighted) 
+      continue;
+
     //actual tiles
     if (this.getTile(hex).elevation >= 0)
       this.drawTile(hex, this.getTile(hex));
   }
 }
 
+
+WorldRenderer.p.drawHighlights = function(hexarray) {
+
+
+  //draw the highlighted tiles
+  for (hex of hexarray) {
+
+    //skip if not explored
+    if (this.getTile(hex).hidden)
+      continue;
+
+    //highlighted tiles (but only half the time)
+    if (this.getTile(hex).highlighted) {
+      this.drawTile(hex, {elevation: 32}, "rgba(250,250,0,1)");
+    }
+  }
+}
 
 
 WorldRenderer.p.drawRivers = function(hexarray) {
@@ -194,13 +220,15 @@ WorldRenderer.p.getTile = function(hex) {
     return this.world.getTile(hex);
 }
 
-WorldRenderer.p.drawTile = function(hex,tile) {
+WorldRenderer.p.drawTile = function(hex, tile, color) {
   
   var style = new RenderStyle();  
 
   //analyze tile
   var height = Math.floor(tile.elevation);
   style.fill_color = greenscale_colors(height);
+  if (color)
+    style.fill_color = color;
 
   this.hex_renderer.drawHex(hex, style);
 }
@@ -304,6 +332,17 @@ var greenscale_colors = function (i) {
                     90,100, //grass 3 4
                     100,105,110,120, //forest 5 6 7 8
                     34,35,36,37,38];  //hills 9 10 11 12 13
+
+  var oldgreenscale = ['#115','#22D','#994', //ocean coast sand 0 1 2
+                    '#282','#163', //grass 3 4
+                    '#363','#242','#232','#231', //forest 5 6 7 8
+                    '#321','#312','#331', //hills 9 10 11 12 13
+                    '#412','#422',
+                    '#777', '#777','#777', //mountains 14 15 16
+                    '#888','#888','#888', //mountains 17 18 19
+                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
+                    '#CCC']; //clouds
+
                     
  return oldgreenscale[i];
 

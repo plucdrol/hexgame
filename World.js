@@ -51,6 +51,7 @@ function World(radius) {
   this.units = new HexMap();
   let first_city =  new Unit('city');
   this.units.set(new Hex(0,0), first_city);
+  first_city.pop = 12;
 
   //create resources map
   this.resources_gotten = 0;
@@ -87,6 +88,19 @@ World.prototype.getLayout = function() {
 
 
 
+
+  World.prototype.highlightRange = function(range) {
+
+    for (hex of range) {
+      this.getTile(hex).highlighted = true;
+    }
+  }
+
+
+  World.prototype.clearHighlights = function() {
+    for (hex of this.getHexArray())
+      this.getTile(hex).highlighted = false;
+  }
 
 
 
@@ -341,6 +355,14 @@ World.prototype.onLand = function(position) {
 
 World.prototype.onWater = function(position) {
   return !this.onLand(position);
+}
+
+World.prototype.onMountain = function(position) {
+  return land_tiles[ this.getTile(position).elevation ] == 'mountains';
+}
+
+World.prototype.onIce = function(position) {
+  return land_tiles[ this.getTile(position).elevation ] == 'ice';
 }
 
 

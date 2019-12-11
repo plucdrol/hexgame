@@ -27,18 +27,18 @@ HUDRenderer.prototype.drawHUD = function() {
     this.drawSelectionHex(hex_selected);
 
     if (hex_hovered) {
-      for (var hex of Hex.circle(hex_hovered, this.unit_input.getActionHoverRadius()))
-        this.drawHoveredHex(hex);
+      //for (var hex of Hex.circle(hex_hovered, this.unit_input.getActionHoverRadius()))
+        //this.drawHoveredHex(hex);
       this.drawHoveredHex(hex_hovered);
     }
 
     if (unit) {
       let action = this.unit_input.getActionSelected();
       if (action /*&& action.name != 'city-by-air'*/) {
-        this.drawActorRange();
+        //this.drawActorRange();
 
         if (this.action_path.length > 0) {
-          this.drawActionPath(hex_hovered);
+          //this.drawActionPath(hex_hovered);
         }
 
         if (this.action_targets.length > 0) {
@@ -108,8 +108,9 @@ HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
   let hex_selected = this.unit_input.hex_selected;
   
   var hover_style = new RenderStyle();
-  hover_style.fill_color = "rgba(50,200,50,1)";
-  hover_style.line_width = 0;
+  hover_style.fill_color = "rgba(50,200,50,0)";
+  hover_style.line_width = 3;
+  hover_style.line_color = "rgba(50,200,50,1)";
 
   for (target of this.action_targets) {
     this.hex_renderer.drawHex( target, hover_style );
@@ -248,6 +249,9 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
     if (!action.requirement(this.world, actor, position)) {
       document.getElementById("action-".concat(action.name)).disabled = true;
     }
+
+    if (action.takes_city_pop && (action.free_pop_cost > actor.getPop() ))
+      document.getElementById("action-".concat(action.name)).disabled = true;
   }
 }
 
@@ -345,7 +349,7 @@ function addTooltip(message) {
 }
 
 HUDRenderer.prototype.updateHover = function(hex_hovered) {
-  this.updateActionPath(hex_hovered);
+  //this.updateActionPath(hex_hovered);
   this.updateTooltip(hex_hovered);
 
   this.action_targets = [];

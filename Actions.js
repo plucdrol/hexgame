@@ -35,6 +35,8 @@ function Action() {
   this.rivers_and_coasts_only = false;
   this.stop_on_rivers = false;
 
+  this.takes_city_pop = false;
+
   //evaluates if a target can receive an action
   this.targetFilterFunction = function(world, actor, position, target) {    return true;  }
 
@@ -130,8 +132,12 @@ function Action() {
 
     let cost = 1;
 
-    if ((world.areRoadConnected(hex,next_hex) && (this.can_use_roads) ) || world.sameRiver(hex, next_hex))
+    if ((world.areRoadConnected(hex,next_hex) && (this.can_use_roads) ) || world.sameRiver(hex, next_hex)) {
       cost = 0.5;
+      if (this.double_road_speed)
+        cost = 0.25;
+
+    }
 
     return cost;
   }
@@ -175,25 +181,17 @@ function Action() {
   /////////////////////////////////////////////////////////
 
   this.doAction = function(world, actor, position, target) {
-
-    if (this.targetIsOK(world, actor, position, target)) {
       
-      //Either do a single action or do the action on all targets
-      if (this.multi_target) {
-        for (hex of actor.range) 
-          this.doSingleAction(world, actor, position, hex);
-      } else {
-        this.doSingleAction(world, actor, position, target);
-      }
-
-
-      this.updateActionRange(world, actor, position);
-
-
-    //else just select that new location
+    //Either do a single action or do the action on all targets
+    if (this.multi_target) {
+      for (hex of actor.range) 
+        this.doSingleAction(world, actor, position, hex);
     } else {
-      actor.range = [];
-    }  
+      this.doSingleAction(world, actor, position, target);
+    }
+    
+    this.updateActionRange(world, actor, position);
+
   };
 
 
@@ -202,14 +200,26 @@ function Action() {
 
     world.clearClouds(target, this.cloud_clear);
 
+    if (this.takes_city_pop)
+      actor.addPop(-this.free_pop_cost);
+
     if (this.also_build_road)
-      this.createRoad(world, position, target);
+      this.createRoad(world, actor, position, target);
 
     if (this.also_build_road_backwards)
-      this.createRoad(world, target, position);
+      this.createRoad(world, actor, target, position);
 
-    if (this.new_unit_type)
+    if (this.new_unit_type) {
       world.addUnit(target, this.new_unit_type, actor);
+
+      //do automatic action if one exists
+      if (this.hover_action && this.hover_action.multi_target) {
+        let new_unit = world.getUnit(target);
+        this.hover_action.updateActionRange(world, new_unit, target);
+        this.hover_action.doAction(world, new_unit, target )
+      }
+
+    }
 
     if (this.free_pop_cost)
       world.resources_available -= this.free_pop_cost;
@@ -224,29 +234,22 @@ function Action() {
     this.effect(world, actor, position, target);
   }
 
-  this.targetIsOK = function(world, actor, position, target) {
-    let target_object = world.units.get(target);
-
-    if (!this.targetFilterFunction(world, actor, position, target))
-      return false;
-    if (this.target == "both")
-      return true;
-    if (!target_object && this.target=="land")
-      return true;
-    if (target_object && this.target=="unit")
-      return true;
-
-    return false;
-  };
-
   this.updateActionRange = function(world, actor, position) {
 
+    world.clearHighlights();
     actor.range = this.getActionRange(world, actor, position );
+    world.highlightRange(actor.range);
+
     //clear the clouds over the area explored
     for (let hex of actor.range) {
       world.clearClouds(hex,1);
     }
   };
+
+  this.clearActionRange = function(world, actor) {
+    world.clearHighlights();
+    actor.range = [];
+  }
 
   this.getActionRange = function(world, actor, position) {
 
@@ -266,9 +269,9 @@ function Action() {
 
       var max_distance = this.max_distance;
       var min_distance = this.min_distance;
-      if (this.pop_action) {
-        max_distance = 5+actor.getPop()/2;
-      }
+      if (this.pop_action) 
+        max_distance += actor.getPop()*this.pop_action;
+      
 
       var actionRange = pathfinder.getRange( world, position, max_distance, min_distance );
     }
@@ -299,12 +302,15 @@ function Action() {
     return actionPath;
   };
 
-  this.createRoad = function(world, origin, target) {
+  this.createRoad = function(world, actor, origin, target) {
 
     let pathfinder = this.getPathfinder();
 
     var max_distance = this.max_distance;
-    var actionPath = pathfinder.getPath( world, origin, target, max_distance );
+    if (this.pop_action) 
+        max_distance += actor.getPop()*this.pop_action;
+      
+    var actionPath = pathfinder.getPath( world, origin, target, max_distance+1 );
 
     if (actionPath instanceof Array)
       world.buildRoad(actionPath);
@@ -345,11 +351,9 @@ function actionCreateCity(distance, extra) {
   this.minimum_elevation = 2;
 
   this.name = "city-by-land";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'city';
 
-  this.pop_action = true;
+  this.pop_action = false;
 
   this.hover_action = new actionGetResource(3,'true');
 
@@ -364,14 +368,16 @@ function actionCreateCity(distance, extra) {
   this.cloud_clear = 6;
 
   this.free_pop_cost = 4;
+  this.takes_city_pop = false;
 
-  this.can_use_roads = false;
+  this.can_use_roads = true;
+  //this.double_road_speed = true;
 
   this.description = "New city (-4)";
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5);
+    return world.onLand(target) && world.noCitiesInArea(target,5) && !world.unitAtLocation(target);
   }
   this.activation = function(world, actor, position) {
     return !actor.can_move;
@@ -401,6 +407,7 @@ function actionCreateCityBySea(distance) {
   this.also_build_road_backwards = true;
   this.stop_elevation_up = 2;
   this.can_use_roads = false;
+  this.pop_action = 1/3;
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && world.onLand(target) 
@@ -410,6 +417,13 @@ function actionCreateCityBySea(distance) {
     world.unitAtLocation(target).can_move = false;
   }
 }
+
+
+
+
+
+
+
 
 //This action transforms the unit into a camp
 function actionCreateLighthouseBySea(distance) {
@@ -423,8 +437,10 @@ function actionCreateLighthouseBySea(distance) {
   this.can_river = true;
   this.stop_on_rivers = false;
 
-  this.pop_action = true;
+  this.pop_action = 1/3;
   this.free_pop_cost = 3;
+
+  this.also_build_road = true;
 
   this.description = "Water Den by sea (-3)";
 
@@ -436,7 +452,17 @@ function actionCreateLighthouseBySea(distance) {
     return false;
   }
 
+  this.effect  = function(world, actor, position, target) {
+    world.getUnit(target).pop = 3;
+  }
+
 }
+
+
+
+
+
+
 
 function actionCreateCityByAir(max_distance) {
   actionCreateCity.call(this);
@@ -448,6 +474,7 @@ function actionCreateCityByAir(max_distance) {
   this.also_build_road_backwards = false;
   this.can_use_roads = false;
   this.sky_action = true;
+  this.pop_action = 1/3;
 
   if (max_distance)
     this.max_distance = max_distance;
@@ -456,7 +483,7 @@ function actionCreateCityByAir(max_distance) {
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && world.onLand(target) 
-           && world.noCitiesInArea(target,5);
+           && world.noCitiesInArea(target,5) && !world.onIce(target) && !world.onMountain(target);
   }
 
 }
@@ -470,8 +497,6 @@ function actionCreateFleshCanon(distance) {
   this.minimum_elevation = 2;
 
   this.name = "flesh-canon";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'flesh-canon';
   this.can_use_roads = true;
 
@@ -490,7 +515,7 @@ function actionCreateFleshCanon(distance) {
   this.extra_description = "Creates cities anywhere within 20 tiles";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,3);
+    return world.onLand(target) && world.noCitiesInArea(target,3) && !world.unitAtLocation(target);
   }
 
   this.activation = function(world, actor, position) {
@@ -507,14 +532,13 @@ function actionCreateVillage(distance) {
   this.minimum_elevation = 2;
 
   this.name = "village";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'village';
   this.can_use_roads = true;
+  //this.double_road_speed = true;
 
   this.hover_action = new actionGetResource( 1 ,'true');
 
-  this.nextSelection = "target";
+  this.nextSelection = "self";
   this.min_distance = 0;
   this.max_distance = distance;
 
@@ -529,7 +553,7 @@ function actionCreateVillage(distance) {
   this.extra_description = "Create a small village to collect some more resources";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
+    return world.onLand(target) && world.noUnitTypeInArea(target, 2, 'village') && !world.unitAtLocation(target);
   }
 
   this.requirement = function(world, actor, position) {
@@ -547,8 +571,6 @@ function actionMoveCity() {
   this.minimum_elevation = 2;
 
   this.name = "move-city";
-  this.type = "target";
-  this.target = "land";
   this.can_use_roads = true;
 
   this.nextSelection = "target";
@@ -561,13 +583,14 @@ function actionMoveCity() {
 
   this.cloud_clear = 6;
 
-  this.total_pop_cost = 1;
+  //this.total_pop_cost = 1;
+  this.free_pop_cost = 1;
 
   this.description = "Move the city (-1)";
   this.extra_description = "Move your city somewhere else if the area is bad.";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5,position);
+    return world.onLand(target) && world.noCitiesInArea(target,5,position) && !world.unitAtLocation(target);
   }
 
   this.activation = function(world, actor, position,target) {
@@ -609,8 +632,6 @@ function actionCreateExpeditionCenter() {
   this.minimum_elevation = 2;
 
   this.name = "expedition-center";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'expedition-center';
 
   this.nextSelection = "target";
@@ -621,6 +642,8 @@ function actionCreateExpeditionCenter() {
   this.free_pop_cost = 4;
 
   this.cloud_clear = 5;
+
+  this.hover_action = new actionGetResource(3,true);
 
   this.description = "Expedition Center (-4)";
   this.extra_description = "Explore the area 10 tiles away.<br>Can create cities further away.";
@@ -657,8 +680,6 @@ function actionCreateHarbor() {
   this.minimum_elevation = 2;
 
   this.name = "harbor";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'harbor';
 
   this.nextSelection = "target";
@@ -698,13 +719,11 @@ function actionCreateLighthouse(distance) {
   this.minimum_elevation = 2;
 
   this.name = "lighthouse";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'lighthouse';
 
   this.hover_action = new actionGetShallowFish( 4 );
 
-  this.nextSelection = "target";
+  this.nextSelection = "self";
   this.min_distance = 0;
   this.max_distance = distance;
   this.hover_radius = 0;
@@ -752,8 +771,6 @@ function actionGetResource(max_distance, multi_target) {
   this.can_river = true;
 
   this.name = "get";
-  this.type = "target";
-  this.target = "land";
   this.min_distance = 1;
   this.max_distance = max_distance;
   this.hover_radius = 0;
@@ -765,6 +782,7 @@ function actionGetResource(max_distance, multi_target) {
 
   this.free_pop_cost = -1;
   this.total_pop_cost = -1;
+  this.takes_city_pop = true;
 
   this.destroy_resource = false;
 
@@ -803,7 +821,7 @@ function actionGetResource(max_distance, multi_target) {
 
   this.effect = function(world, actor, position, target) {
     actor.can_move = false;
-    actor.addPop(1);
+    //actor.addPop(1);
 
   }
 }
@@ -822,8 +840,6 @@ function actionGetShallowFish(max_distance) {
   this.minimum_elevation = 1;
 
   this.name = "get-shallow-fish";
-  this.type = "target";
-  this.target = "land";
   this.min_distance = 0;
   this.max_distance = max_distance;
   this.hover_radius = 0;
@@ -839,6 +855,7 @@ function actionGetShallowFish(max_distance) {
 
   this.free_pop_cost = -1;
   this.total_pop_cost = -1;
+  this.takes_city_pop = true;
 
   this.multi_target = true;
   this.new_unit_type = 'colony';
@@ -862,7 +879,7 @@ function actionGetShallowFish(max_distance) {
 
 
   this.effect = function(world,actor,position,target) {
-    actor.addPop(1);
+    //actor.addPop(1);
   }
 }
 
@@ -876,8 +893,6 @@ function actionHydroDam() {
   this.minimum_elevation = 2;
 
   this.name = "hydro-dam";
-  this.type = "target";
-  this.target = "land";
   this.min_distance = 0;
   this.max_distance = 10;
   this.hover_radius = 0;

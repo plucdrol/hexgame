@@ -50,7 +50,7 @@ UnitInput.p.selectHex = function(hex) {
       //look if there is a unit
       var actor = this.getActorSelected();
       if (actor) { 
-        this.selectActor(actor);
+        this.clearRange(actor);
       }
     } 
   } else {
@@ -59,13 +59,15 @@ UnitInput.p.selectHex = function(hex) {
   }
 };
 
-UnitInput.p.selectActor = function(actor) {
+UnitInput.p.clearRange = function(actor) {
 
   actor.range = [];
+  this.world.clearHighlights();
 };
 
 UnitInput.p.selectNothing = function() {
   this.getActorSelected().range = undefined;
+  this.world.clearHighlights();
   this.hex_selected = undefined;
 };
 
@@ -184,10 +186,13 @@ UnitInput.p.updateActionRangeIndirectly = function() {
   let world = this.world;
   let actor = this.getActorSelected();
 
-  if (action)
+  if (action) {
     action.updateActionRange(world, actor, this.hex_selected);
-  else
+    world.highlightRange(actor.range);
+  } else {
     actor.range = new HexMap();
+    world.clearHighlights();
+  }
 };
 
 //returns the actual action object
