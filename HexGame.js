@@ -22,17 +22,43 @@ var canv_input = new CanvasInput(real_canvas);
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
-var view = new View(canvas);
+var view = new View(canvas, 1/2);
 //Has functions for drawing to the screen
 var renderer = new Renderer(canv_draw, view);
 var real_renderer = new Renderer(real_canv_draw, view);
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
-var world = new World(35);// <-- model
+
+let world_radius = 35;
+var world = new World( world_radius );// <-- model
 //Has functions for drawing hexes to the screen
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
+
+//Put the first city in
+var start_hex;
+for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) {
+  if (world.countLand(hex, 3, 20) && world.onLand(hex) && !world.onRiver(hex)) {
+    start_hex = hex;
+  }
+}
+if (!start_hex)
+  start_hex = new Hex(0,0);
+
+let first_city =  new Unit('city');
+world.units.set(start_hex, first_city);
+world.destroyResource(start_hex);
+first_city.pop = 1;
+
+let inverted_point = new Point(-world.getPoint(start_hex).x, -world.getPoint(start_hex).y);
+view.setCenter(inverted_point);
+
+//clear some clouds
+world.clearClouds(start_hex, 4);
+
+
+
 
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
 //Receives input for the game

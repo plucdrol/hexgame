@@ -49,9 +49,8 @@ function World(radius) {
 
   //create units map
   this.units = new HexMap();
-  let first_city =  new Unit('city');
-  this.units.set(new Hex(0,0), first_city);
-  first_city.pop = 12;
+
+
 
   //create resources map
   this.resources_gotten = 0;
@@ -60,7 +59,6 @@ function World(radius) {
   this.resources = new HexMap();
   this.generateResources();
   this.generateUnknown();
-  this.destroyResource(new Hex(0,0));
 
   this.resources_available = 12;
   this.resources_collected = 12;
@@ -365,6 +363,19 @@ World.prototype.onIce = function(position) {
   return land_tiles[ this.getTile(position).elevation ] == 'ice';
 }
 
+World.prototype.countLand = function(position, radius, minimum) {
+  let count = 0;
+
+  for (neighbor of Hex.circle(position,radius)) {
+    if (this.onLand(neighbor))
+      count++;
+
+    if (count > minimum)
+      return true;
+  }
+
+  return false;
+}
 
 World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
   let count = 0;
