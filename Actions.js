@@ -35,7 +35,7 @@ function Action() {
   this.rivers_and_coasts_only = false;
   this.stop_on_rivers = false;
 
-  this.takes_city_pop = false;
+  this.takes_city_pop = false; //true makes resources LOCAL, false makes resources GLOBAL
 
   //evaluates if a target can receive an action
   this.targetFilterFunction = function(world, actor, position, target) {    return true;  }

@@ -58,48 +58,44 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'city':
     this.name = "City";
-    this.pop =  0;
+    this.pop =  4;
     this.setGraphic('white',6);
     this.can_move = true;
-    this.addAction( new actionGetResource(3, true));
-    this.addAction( new actionCreateVillage(4));
+    this.addAction( new actionGetResource(3, false));
+    this.addAction( new actionCreateVillage(2));
     this.addAction( new actionCreateLighthouse(3));
 
     this.addAction( new actionCreateExpeditionCenter());
     this.addAction( new actionCreateHarbor());
-    this.addAction( new actionCreateFleshCanon(6));
+    this.addAction( new actionCreateCityCanon(6));
 
     this.addAction( new actionMoveCity() );
     break;
 
   case 'village':
     this.name = "Village";
-    this.pop = 2;
     this.setGraphic('white',4);
     
     this.addAction( new actionGetResource(1, true));
-    this.addAction( new actionCreateLighthouse(1));
+    //this.addAction( new actionCreateLighthouse(1));
     break;
 
   case 'expedition-center':
     this.name = "Expedition Center";
-    this.pop = 4;
     this.setGraphic('pink',5);
-    this.addAction( new actionCreateCity(12));
+    this.addAction( new actionCreateCity(10));
     this.addAction( new actionCreateVillage(5));
     this.council_connected = false;
     break;
 
   case 'flesh-canon':
-    this.name = "Flesh canon";
-    this.pop = 6;
+    this.name = "City canon";
     this.setGraphic('grey',6);
     this.addAction( new actionCreateCityByAir( 10 ));
     break;
 
   case 'lighthouse':
     this.name = "Lighthouse";
-    this.pop = 2;
     this.setGraphic('lightblue',4);
     this.addAction( new actionGetShallowFish(4));
     this.addAction( new actionHydroDam());
@@ -107,11 +103,15 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'harbor':
     this.name = "Harbor";
-    this.pop = 4;
     this.setGraphic('brown',5);
-    this.addAction( new actionCreateCityBySea(12));
-    this.addAction( new actionCreateLighthouseBySea(12));
+    this.addAction( new actionCreateCityBySea(6));
+    this.addAction( new actionCreateLighthouseBySea(6));
     break;
+
+
+
+
+
 
   case 'colony':
     this.name = "Colony";
