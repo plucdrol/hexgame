@@ -113,7 +113,8 @@ HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
   hover_style.line_color = "rgba(50,200,50,1)";
 
   for (target of this.action_targets) {
-    this.hex_renderer.drawHex( target, hover_style );
+    if (!this.world.getTile(target).hidden)
+      this.hex_renderer.drawHex( target, hover_style );
 
   }
   
