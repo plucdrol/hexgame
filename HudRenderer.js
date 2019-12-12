@@ -315,6 +315,7 @@ HUDRenderer.prototype.generateBonusButtons = function(bonus_list) {
 
   //display simple message if no bonus available
   if ( !bonus_list.bonusAvailable() ) {
+    buttons.innerHTML = "";
     return;
   }
 

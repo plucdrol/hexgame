@@ -12,6 +12,9 @@ function BonusList() {
 
 
 	];
+
+	this.number_of_bonuses = 0;
+	this.next_bonus = [ 3,10,30,100,300,1000];
 }
 
 BonusList.prototype.bonusNameList = function() {
@@ -20,6 +23,7 @@ BonusList.prototype.bonusNameList = function() {
 
 BonusList.prototype.bonusAvailable = function(world) {
 	for (let bonus of this.bonuses) {
+
 		if (bonus.activation(world) && !bonus.enabled)
 			return true;
 	}
@@ -44,7 +48,7 @@ BonusList.prototype.getBonuses = function() {
 }
 
 BonusList.prototype.getBonusesAvailable = function(world) {
-	return this.bonuses.filter(bonus => (!bonus.enabled && bonus.activation(world)));
+	return this.bonuses.filter(bonus => (!bonus.enabled && bonus.requirement(world)));
 }
 
 BonusList.prototype.enableBonus = function(bonus_name, world) {
@@ -53,9 +57,13 @@ BonusList.prototype.enableBonus = function(bonus_name, world) {
 	if (bonus) {
 		bonus.enabled = true;
 		bonus.effect(world);
+		this.number_of_bonuses++;
 	}
 }
 
+BonusList.prototype.nextBonusCostMet = function(world) {
+	return world.resources_collected >= this.next_bonus[this.number_of_bonuses];
+}
 
 
 
@@ -78,7 +86,13 @@ function Bonus() {
 
 	this.requirement = function(world) {
 
+		if (!world.bonus_list.nextBonusCostMet(world))
+			return false; 
+
 		if (this.min_collected && world.resources_collected < this.min_collected)
+			return false;
+
+		if (this.required_bonus && !world.bonus_list.bonusEnabled(this.required_bonus))
 			return false;
 		
 		return this.activation(world);
@@ -103,7 +117,6 @@ function bonusCreateVillages() {
 	Bonus.call(this);
 	this.name = 'can-create-villages';
 	this.description = "Tunneling";
-	this.min_collected = 2;
 
 
 }
@@ -113,7 +126,6 @@ function bonusCreateWaterDens() {
 	Bonus.call(this);
 	this.name = 'can-create-waterdens';
 	this.description = "Amphibious";
-	this.min_collected = 2;
 
 
 }
@@ -123,7 +135,6 @@ function bonusMoveCities() {
 	Bonus.call(this);
 	this.name = 'moveable-cities';
 	this.description = "Nomadic Hives";
-	this.min_collected = 6;
 
 }
 
@@ -131,9 +142,15 @@ function bonusCreateExpedition() {
 	Bonus.call(this);
 	this.name = 'expedition-centers';
 	this.description = "Exploration";
-	this.min_collected = 10;
 
+	this.required_bonus = 'can-create-villages';
 }
 
+function bonusCreateHarbours() {
+	Bonus.call(this);
+	this.name = 'harbours';
+	this.description = "Ocean navigation";
+	this.required_bonus = 'can-create-waterdens';
+}
 
 
