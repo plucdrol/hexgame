@@ -931,16 +931,17 @@ function actionHydroDam() {
 
   this.effect = function(world,actor,position,target) {
     actor.pop += 4;
-    hydroDam(world, position);
+    this.hydroDam(world, position);
   }
 
-  function hydroDam(world, target) {
+  this.hydroDam = function(world, target) {
     
 
     let tile = world.getTile(target);
     if (world.getTile(target).river.upstream_hexes) {
       for (upstream of world.getTile(target).river.upstream_hexes) {
-        hydroDam(world, upstream);
+        this.hydroDam(world, upstream);
+        //setTimeout(function(){ self.hydroDam(world, upstream); }, 200);
       }
       
       //floor the tile
