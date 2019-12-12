@@ -39,7 +39,7 @@ var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
 //Put the first city in
 var start_hex;
 for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) {
-  if (world.countLand(hex, 3, 20) && world.onLand(hex) && !world.onRiver(hex)) {
+  if (world.countLand(hex, 3, 20) && world.onLand(hex) && !world.onRiver(hex) && !(world.getTile(hex).elevation==2)) {
     start_hex = hex;
   }
 }
@@ -48,7 +48,7 @@ if (!start_hex)
 
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
-world.destroyResource(start_hex);
+
 first_city.pop = 1;
 
 let inverted_point = new Point(-world.getPoint(start_hex).x, -world.getPoint(start_hex).y);
@@ -57,6 +57,29 @@ view.setCenter(inverted_point);
 //clear some clouds
 world.clearClouds(start_hex, 4);
 
+//add resources
+let count = 4;
+while (count > 0) {
+  let circle = Hex.ring(start_hex, 3);
+  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
+  count--;
+}
+
+count = 3
+while (count > 0) {
+  let circle = Hex.ring(start_hex, 2);
+  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
+  count--;
+}
+
+count = 2;
+while (count > 0) {
+  let circle = Hex.ring(start_hex, 1);
+  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
+  count--;
+}
+
+world.destroyResource(start_hex);
 
 
 

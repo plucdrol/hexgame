@@ -451,19 +451,14 @@ World.prototype.addResource = function(hex, type) {
   this.total_resources += 1;
 }
 
-World.prototype.generateResources = function() {
-  for (let hex of this.world_map.getHexArray() )  {
-    let terrain = this.getTile(hex);
+World.prototype.addLocalResource = function(hex) {
+  let terrain = this.getTile(hex);
 
-    //only 20% of the land gets resources
-    if (Math.random() < 0.8) {
-
-      continue;
-    }
-    if (terrain.river && terrain.river.water_level >= 7) {
+  if (terrain.river && terrain.river.water_level >= 7) {
       this.addResource(hex, 'fish' );
-      continue;
+      return;
     }
+
     switch (terrain.elevation) {
       case 1: //coasts
         this.addResource(hex, 'fish' );
@@ -485,6 +480,17 @@ World.prototype.generateResources = function() {
         //resources.set(hex, new Unit('stone'));
         break;
     }
+
+}
+
+World.prototype.generateResources = function() {
+  for (let hex of this.world_map.getHexArray() )  {
+    
+    //only 20% of the land gets resources
+    if (Math.random() < 0.8) 
+      continue;
+
+    this.addLocalResource(hex);
   }
 }
 
