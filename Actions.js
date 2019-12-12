@@ -800,6 +800,13 @@ function actionGetResource(max_distance, multi_target) {
 
   this.targetFilterFunction = function(world, actor, position, target) {
 
+    let distance = 1;
+    if (actor.pop >= 3) distance = 2;
+    if (actor.pop >= 6) distance = 3;
+    if (actor.pop >= 12) distance = 4;
+    if (Hex.distance(position, target) > distance)
+      return false;
+
     return (
            //dry land food tiles within 3 tiles of the city or...
            (
