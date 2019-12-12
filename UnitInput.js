@@ -19,6 +19,7 @@
 function UnitInput(world) {
   this.world = world;
   this.hex_selected = undefined;
+  this.button_menu = new ButtonMenu('action-buttons');
 
 
 }
@@ -40,7 +41,7 @@ UnitInput.p.clickHex = function(hex) {
 //selecting a tile
 UnitInput.p.selectHex = function(hex) {
 
-  this.unselectActions();
+  this.button_menu.unselectActions();
 
   if (hex) {
     if (this.world.getActor(hex)) {
@@ -112,7 +113,7 @@ UnitInput.p.clickWithNoSelection = function(target) {
 UnitInput.p.clickWithSelection = function(target) {
   
   var actor = this.getActorSelected();
-  var action = this.getActionSelected();
+  var action = this.button_menu.getActionSelected(actor);
 
 
   if (action && !action.infinite_range && !actor.range ) {
@@ -133,8 +134,8 @@ UnitInput.p.clickWithSelection = function(target) {
 UnitInput.p.clickInsideRange = function(target) {
 
   let origin = this.hex_selected;
-  let action = this.getActionSelected();
   let actor = this.getActorSelected();
+  let action = this.button_menu.getActionSelected(actor);
 
   if (action.requirement(this.world, actor, origin)) {
     action.doAction(this.world, actor, origin, target);
@@ -162,99 +163,17 @@ UnitInput.p.clickOutsideRange = function(target) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/////////////////////////////////////////////////////////
-                  // ACTION MENU AND SELECTION //
-/////////////////////////////////////////////////////////
-
-//uses nothing
 UnitInput.p.updateActionRangeIndirectly = function() {
 
-  let action = this.getActionSelected();
-  let world = this.world;
   let actor = this.getActorSelected();
+  let action = this.button_menu.getActionSelected(actor);
 
   if (action) {
-    action.updateActionRange(world, actor, this.hex_selected);
+    action.updateActionRange(this.world, actor, this.hex_selected);
     world.highlightRange(actor.range);
   } else {
     actor.range = new HexMap();
     world.clearHighlights();
-  }
-};
-
-//returns the actual action object
-UnitInput.p.getActionSelected = function() {
-  return this.getActionFromId(this.getActorSelected(), this.getActionSelectedId());
-};
-
-UnitInput.prototype.getActionHoverRadius = function() {
-  let action_selected = this.getActionSelected();
-  if (action_selected) {
-    return action_selected.hover_radius;
-  } else {
-    return 1;
-  }
-}
-
-UnitInput.prototype.getActionId = function(action) {
-  return 'action-'.concat(action.name);
-}
-
-UnitInput.prototype.actionIsSelected = function(action) {
-  return this.getActionId(action) == this.getActionSelectedId();
-}
-
-//Returns the currently selected action_id of the selected unit
-UnitInput.p.getActionSelectedId = function() {
-  var action_buttons = document.getElementsByClassName('action-button-input');
-  for (let input of action_buttons) {
-    if (input.checked) {
-      var current_action = input.id;
-      break;
-    }
-  }
-
-  if (current_action)
-    return current_action;
-  else
-    return false;
-};
-
-UnitInput.p.getActionFromId = function(actor, action_id) {
-
-  if (!actor || !actor.actions || !action_id)
-    return undefined;
-
-  for (let action of actor.actions) {
-    if ('action-'.concat(action.name) == action_id) {
-      return action;
-    }
-  }
-};
-
-UnitInput.p.selectActionById = function(action_id) {
-  if (document.getElementById(action_id)) {
-    document.getElementById(action_id).checked = true;
-  }
-};
-
-UnitInput.p.unselectActions = function() {
-  let buttons = document.getElementsByClassName('action-button-input');
-  for (button of buttons) {
-    button.checked = false;
   }
 };
 

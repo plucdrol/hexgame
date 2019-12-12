@@ -3,6 +3,7 @@ function HUDRenderer(world, game_input, hex_renderer) {
   this.game_input = game_input;
   this.world = world;
   this.unit_input = game_input.unit_input;
+  this.button_menu = this.unit_input.button_menu;
   this.hex_renderer = hex_renderer;
   this.action_path = [];
   this.action_targets = [];
@@ -27,13 +28,11 @@ HUDRenderer.prototype.drawHUD = function() {
     this.drawSelectionHex(hex_selected);
 
     if (hex_hovered) {
-      //for (var hex of Hex.circle(hex_hovered, this.unit_input.getActionHoverRadius()))
-        //this.drawHoveredHex(hex);
       this.drawHoveredHex(hex_hovered);
     }
 
     if (unit) {
-      let action = this.unit_input.getActionSelected();
+      let action = this.button_menu.getActionSelected(unit);
       if (action /*&& action.name != 'city-by-air'*/) {
         //this.drawActorRange();
 
@@ -59,8 +58,9 @@ HUDRenderer.prototype.drawHUD = function() {
 
 
 HUDRenderer.prototype.updateActionPath = function (hex_hovered) {
-  let action = this.unit_input.getActionSelected();
+  
   let actor = this.unit_input.getActorSelected();
+  let action = this.button_menu.getActionSelected(actor);
   let hex_selected = this.unit_input.hex_selected;
 
   if (action && actor && hex_selected) {
@@ -72,8 +72,8 @@ HUDRenderer.prototype.updateActionPath = function (hex_hovered) {
 
 HUDRenderer.prototype.drawActionPath = function (hex_hovered) {
 
-  let action = this.unit_input.getActionSelected();
   let actor = this.unit_input.getActorSelected();
+  let action = this.button_menu.getActionSelected(actor);
   let hex_selected = this.unit_input.hex_selected;
 
   //draw a line from actor to target
@@ -86,8 +86,9 @@ HUDRenderer.prototype.drawActionPath = function (hex_hovered) {
 
 
 HUDRenderer.prototype.updateActionTargets = function (hex_hovered) {
-  let action = this.unit_input.getActionSelected();
+  
   let actor = this.unit_input.getActorSelected();
+  let action = this.button_menu.getActionSelected(actor);
   let hex_selected = this.unit_input.hex_selected;
 
   this.action_targets = [];
@@ -103,8 +104,9 @@ HUDRenderer.prototype.updateActionTargets = function (hex_hovered) {
 
 HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
 
-  let action = this.unit_input.getActionSelected();
   let actor = this.unit_input.getActorSelected();
+  let action = this.button_menu.getActionSelected(actor);
+  
   let hex_selected = this.unit_input.hex_selected;
   
   var hover_style = new RenderStyle();
@@ -190,14 +192,26 @@ HUDRenderer.prototype.ocillate = function(length) {
 //              Functions about action buttons
 /////////////////////////////////////////////////////
 
+HUDRenderer.prototype.makeButton = function(menu_name, button_id, button_title, text, do_button) {
+
+  if (do_button)
+    var do_button =  "<button type='button' id='"+button_id+"'class='button-do'>Choose</button>";
+  else 
+    var do_button = "";
+
+  return "<label><input class='button-input' name='"+menu_name+"' type='radio' "
+           +" id='" + menu_name + "-" + button_id + "'"
+           +" value='" + button_id + "'><div class='action-button'>"
+           + button_title + "<br><span class='extra-description'>" +
+           text +"</span>"+do_button+"</div></label></input>";
+}
+
 HUDRenderer.prototype.makeActionButton = function(action) {
 
-  let extra_description = "<br><span class='extra-description'>" + action.getExtraDescription()+"</span>";
+  let description = action.getDescription();
+  let extra_description = action.getExtraDescription();
 
-  return "<label><input class='action-button-input' name='actions' type='radio' "
-           +" id='action-" + action.name + "'"
-           +" value='" + action.name + "'><div class='action-button'>"
-           + action.getDescription() + extra_description + "</div></label></input>";
+  return this.makeButton('action', action.name, description, extra_description);
 }
 
 HUDRenderer.prototype.updateActionButtons = function() {
@@ -208,7 +222,7 @@ HUDRenderer.prototype.updateActionButtons = function() {
   if (!actor) return;
 
   //remember previous action
-  var current_action = this.unit_input.getActionSelectedId();
+  var current_action = this.button_menu.getActionSelectedId();
 
   //generate new button list
   this.generateButtons(actor, position);
@@ -216,7 +230,7 @@ HUDRenderer.prototype.updateActionButtons = function() {
 
   //reselect the previously selected action
   if (current_action) {
-    this.unit_input.selectActionById(current_action);
+    this.button_menu.selectActionById(current_action);
   } else {
     this.selectFirstActionIfNoneSelected();
   }
@@ -259,7 +273,7 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
 HUDRenderer.prototype.selectFirstActionIfNoneSelected = function() {
 
   //test if an action is already selected
-  let radio_elements = document.getElementById('action-buttons').getElementsByClassName('action-button-input');
+  let radio_elements = document.getElementById('action-buttons').getElementsByClassName('button-input');
   for (radio of radio_elements) {
     if (radio.checked) 
       return;
@@ -278,7 +292,7 @@ HUDRenderer.prototype.selectFirstActionIfNoneSelected = function() {
 HUDRenderer.prototype.addClickDetection = function() {
   let self = this;
   //add the click-detection code
-  for (let button of document.getElementsByClassName('action-button-input')) {
+  for (let button of document.getElementById('action-buttons').getElementsByClassName('button-input')) {
     button.addEventListener('click', function(){ self.unit_input.updateActionRangeIndirectly(); });
   }
 }
@@ -298,13 +312,12 @@ HUDRenderer.prototype.clearButtons = function() {
 
 HUDRenderer.prototype.makeBonusButton = function(bonus) {
 
-  let extra_description = "<br><span class='extra-description'>" + bonus.getExtraDescription()+"</span>";
-  let do_button = "<button type='button' id='"+bonus.name+"'class='bonus-button-do'>Choose</button>";
+  return this.makeButton('bonus', bonus.name, bonus.getDescription(), bonus.getExtraDescription(), bonus.name);
 
-  return "<label><input class='action-button-input' name='bonus' type='radio' "
+  /*return "<label><input class='button-input' name='bonus' type='radio' "
            +" id='bonus-" + bonus.name + "'"
            +" value='" + bonus.name + "'><div class='action-button'>"
-           + bonus.getDescription() + extra_description + do_button + "</div></label></input>";
+           + bonus.getDescription() + extra_description + do_button + "</div></label></input>";*/
 }
 
 HUDRenderer.prototype.generateBonusButtons = function(bonus_list) {
@@ -336,7 +349,7 @@ HUDRenderer.prototype.generateBonusButtons = function(bonus_list) {
 HUDRenderer.prototype.addBonusClickDetection = function(bonus_list) {
   let self = this;
   //add the click-detection code
-  for (let button of document.getElementsByClassName('bonus-button-do')) {
+  for (let button of document.getElementsByClassName('button-do')) {
 
     button.addEventListener('click', function(){ bonus_list.enableBonus(button.id, self.world); 
                                                  self.update_function(); });
