@@ -567,6 +567,9 @@ function actionCreateVillage(distance) {
     return world.onLand(target) && world.noUnitTypeInArea(target, 2, 'village') && !world.unitAtLocation(target);
   }
 
+  this.activation = function(world, actor, position) {
+    return (world.bonusEnabled('can-create-villages'));
+  }
   this.requirement = function(world, actor, position) {
     return world.getPopulation() >= 2;
   }
@@ -605,7 +608,7 @@ function actionMoveCity() {
   }
 
   this.activation = function(world, actor, position,target) {
-    return (actor.can_move);
+    return (actor.can_move && world.bonusEnabled('moveable-cities') );
   }
 
   this.requirement = function(world, actor, position,target) {
@@ -661,7 +664,7 @@ function actionCreateExpeditionCenter() {
     return !world.unitAtLocation(target) && !world.noCitiesInArea(target,1);
   }
   this.activation = function(world, actor, position) {
-    return !world.countUnits(Hex.circle(position, 1), 'expedition-center', 1);
+    return !world.countUnits(Hex.circle(position, 1), 'expedition-center', 1) && world.bonusEnabled('expedition-centers');
   }
   this.requirement = function(world, actor, position) {
     return world.getPopulation() >= 8;
@@ -757,6 +760,10 @@ function actionCreateLighthouse(distance) {
     //river tiles
     if (world.onRiver(target) && !world.unitAtLocation(target))
       return true;
+  }
+
+  this.activation = function(world, actor, position) {
+    return (world.bonusEnabled('can-create-waterdens'));
   }
 
 }

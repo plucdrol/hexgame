@@ -38,6 +38,8 @@
 		</div>
 		<form id='action-buttons' style="position:absolute; bottom: 1em; left: 1em;";>
 	  </form>	
+	  <form id='bonus-buttons' style="position:absolute; bottom: 1em; right: 1em;";>
+	  </form>	
 	  
 		<div style="float:left;">
 			<canvas id="mycanvas" width="600" height="400">

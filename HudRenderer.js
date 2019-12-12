@@ -292,7 +292,68 @@ HUDRenderer.prototype.clearButtons = function() {
 
 
 
+/////////////////////////////////////////////////////
+//              Functions about bonus buttons
+/////////////////////////////////////////////////////
 
+HUDRenderer.prototype.makeBonusButton = function(bonus) {
+
+  let extra_description = "<br><span class='extra-description'>" + bonus.getExtraDescription()+"</span>";
+  let do_button = "<button type='button' id='"+bonus.name+"'class='bonus-button-do'>Choose</button>";
+
+  return "<label><input class='action-button-input' name='bonus' type='radio' "
+           +" id='bonus-" + bonus.name + "'"
+           +" value='" + bonus.name + "'><div class='action-button'>"
+           + bonus.getDescription() + extra_description + do_button + "</div></label></input>";
+}
+
+HUDRenderer.prototype.generateBonusButtons = function(bonus_list) {
+
+  //get button-list HTML element
+  var buttons = document.getElementById('bonus-buttons');
+  buttons.innerHTML = "<h2 class='action-header'>Evolution</h2>";
+
+  //display simple message if no bonus available
+  if ( !bonus_list.bonusAvailable() ) {
+    return;
+  }
+
+  for (let bonus of bonus_list.getBonuses()) {
+    
+    //only show actions whose activation is met
+    if (!bonus.requirement(this.world)) 
+      continue;
+
+    if (bonus.enabled) 
+      continue;
+
+    let new_button = this.makeBonusButton(bonus);
+    buttons.innerHTML += new_button;
+  }
+}
+
+HUDRenderer.prototype.addBonusClickDetection = function(bonus_list) {
+  let self = this;
+  //add the click-detection code
+  for (let button of document.getElementsByClassName('bonus-button-do')) {
+
+    button.addEventListener('click', function(){ bonus_list.enableBonus(button.id, self.world); 
+                                                 self.update_function(); });
+  }
+}
+
+HUDRenderer.prototype.updateBonusButtons = function(bonus_list) {
+
+
+  //generate new button list
+  this.generateBonusButtons(bonus_list);
+  this.addBonusClickDetection(bonus_list);
+
+}
+
+HUDRenderer.prototype.clearBonusButtons = function() {
+  document.getElementById('bonus-buttons').innerHTML = "<h2 class='action-header'>Evolution</h2>";
+}
 
 
 
@@ -313,9 +374,10 @@ HUDRenderer.prototype.update_function = function() {
   let total_res = this.world.resources_collected;
 
   let resources = this.world.total_resources;
-  this.writeMessage("Resources available: "+free_res, 'free-ants');
-  this.writeMessage("Resources collected: "+total_res, 'total-ants');
+  this.writeMessage("Free: "+free_res, 'free-ants');
+  this.writeMessage("Total: "+total_res, 'total-ants');
 
+  this.updateBonusButtons(this.world.bonus_list);
 
   if (actor && actor.selectable) {
     this.updateActionButtons();

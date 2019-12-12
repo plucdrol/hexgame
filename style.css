@@ -39,10 +39,9 @@ html,body {
 	padding: 5px;
 }
 
-#action-buttons {
+#action-buttons, #bonus-buttons {
 	position: absolute;
 	bottom: 1em;
-	left: 1em;
 	background: gray;
 	padding: 0.4em;
 	border: 2px solid white;
@@ -50,6 +49,14 @@ html,body {
 	border-bottom-color: black;
 
 	color: black;
+}
+
+#action-buttons {
+	left: 1em;
+}
+
+#bonus-buttons {
+	right: 1em;
 }
 
 .action-button {

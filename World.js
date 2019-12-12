@@ -42,6 +42,8 @@ function World(radius) {
   this.world_map = new HexMap();
   this.world_map = new MapGenerator('perlin').makeMap(radius);
 
+  this.bonus_list = new BonusList();
+
 
 
 
@@ -60,8 +62,8 @@ function World(radius) {
   this.generateResources();
   this.generateUnknown();
 
-  this.resources_available = 12;
-  this.resources_collected = 12;
+  this.resources_available = 0;
+  this.resources_collected = 0;
 
 
 
@@ -549,3 +551,15 @@ World.prototype.clearClouds = function(position, radius) {
     for (hex of this.getHexArray())
       this.getTile(hex).highlighted = false;
   }
+
+
+
+
+
+  ////////////////////////////////////////////////
+/////        BONUS-RELATED FUNCTION          //
+////////////////////////////////////////////////
+
+World.prototype.bonusEnabled = function(bonus_name) {
+  return this.bonus_list.bonusEnabled(bonus_name);
+}
