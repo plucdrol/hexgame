@@ -807,10 +807,10 @@ function actionGetResource(max_distance, multi_target) {
 
   this.targetFilterFunction = function(world, actor, position, target) {
 
-    let distance = 1;
-    if (actor.pop >= 3) distance = 2;
-    if (actor.pop >= 6) distance = 3;
-    if (actor.pop >= 12) distance = 4;
+    let distance = 2;
+    if (actor.pop >= 3) distance = 3;
+    if (actor.pop >= 6) distance = 4;
+    if (actor.pop >= 12) distance = 5;
     if (Hex.distance(position, target) > distance)
       return false;
 

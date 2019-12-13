@@ -68,3 +68,44 @@ ButtonMenu.p.unselectActions = function() {
 };
 
 
+
+
+
+
+ButtonMenu.prototype.makeButton = function(menu_name, button_id, button_title, text, do_button) {
+
+  if (do_button)
+    var do_button =  "<button type='button' id='"+button_id+"'class='button-do'>Choose</button>";
+  else 
+    var do_button = "";
+
+  return "<label><input class='button-input' name='"+menu_name+"' type='radio' "
+           +" id='" + menu_name + "-" + button_id + "'"
+           +" value='" + button_id + "'><div class='action-button'>"
+           + button_title + "<br><span class='extra-description'>" +
+           text +"</span>"+do_button+"</div></label></input>";
+}
+
+
+
+
+
+
+
+ButtonMenu.prototype.addButtonClickDetection = function(menu_name, function_call) {
+  
+  //add the click-detection code
+  for (let button of document.getElementById(menu_name).getElementsByClassName('button-input')) {
+    button.addEventListener('click', function_call );
+  }
+}
+
+ButtonMenu.prototype.addInstantButtonClickDetection = function(menu_name, bonus_list, world, hud_renderer) {
+
+  //add the click-detection code
+  for (let button of document.getElementById(menu_name).getElementsByClassName('button-do')) {
+
+    button.addEventListener('click', function(){ bonus_list.enableBonus(button.id, hud_renderer.world); 
+                                                 hud_renderer.update_function(); });
+  }
+}

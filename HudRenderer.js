@@ -192,26 +192,14 @@ HUDRenderer.prototype.ocillate = function(length) {
 //              Functions about action buttons
 /////////////////////////////////////////////////////
 
-HUDRenderer.prototype.makeButton = function(menu_name, button_id, button_title, text, do_button) {
 
-  if (do_button)
-    var do_button =  "<button type='button' id='"+button_id+"'class='button-do'>Choose</button>";
-  else 
-    var do_button = "";
-
-  return "<label><input class='button-input' name='"+menu_name+"' type='radio' "
-           +" id='" + menu_name + "-" + button_id + "'"
-           +" value='" + button_id + "'><div class='action-button'>"
-           + button_title + "<br><span class='extra-description'>" +
-           text +"</span>"+do_button+"</div></label></input>";
-}
 
 HUDRenderer.prototype.makeActionButton = function(action) {
 
   let description = action.getDescription();
   let extra_description = action.getExtraDescription();
 
-  return this.makeButton('action', action.name, description, extra_description);
+  return this.button_menu.makeButton('action', action.name, description, extra_description);
 }
 
 HUDRenderer.prototype.updateActionButtons = function() {
@@ -226,7 +214,7 @@ HUDRenderer.prototype.updateActionButtons = function() {
 
   //generate new button list
   this.generateButtons(actor, position);
-  this.addClickDetection();
+  this.addActionClickDetection();
 
   //reselect the previously selected action
   if (current_action) {
@@ -289,12 +277,18 @@ HUDRenderer.prototype.selectFirstActionIfNoneSelected = function() {
 
 }
 
-HUDRenderer.prototype.addClickDetection = function() {
+
+
+HUDRenderer.prototype.addActionClickDetection = function() {
   let self = this;
+
+  this.button_menu.addButtonClickDetection('action-buttons', function(){ self.unit_input.updateActionRangeIndirectly() });
+
+  /*
   //add the click-detection code
   for (let button of document.getElementById('action-buttons').getElementsByClassName('button-input')) {
     button.addEventListener('click', function(){ self.unit_input.updateActionRangeIndirectly(); });
-  }
+  }*/
 }
 
 HUDRenderer.prototype.clearButtons = function() {
@@ -312,12 +306,7 @@ HUDRenderer.prototype.clearButtons = function() {
 
 HUDRenderer.prototype.makeBonusButton = function(bonus) {
 
-  return this.makeButton('bonus', bonus.name, bonus.getDescription(), bonus.getExtraDescription(), bonus.name);
-
-  /*return "<label><input class='button-input' name='bonus' type='radio' "
-           +" id='bonus-" + bonus.name + "'"
-           +" value='" + bonus.name + "'><div class='action-button'>"
-           + bonus.getDescription() + extra_description + do_button + "</div></label></input>";*/
+  return this.button_menu.makeButton('bonus', bonus.name, bonus.getDescription(), bonus.getExtraDescription(), bonus.name);
 }
 
 HUDRenderer.prototype.generateBonusButtons = function(bonus_list) {
@@ -346,14 +335,19 @@ HUDRenderer.prototype.generateBonusButtons = function(bonus_list) {
   }
 }
 
+
+
 HUDRenderer.prototype.addBonusClickDetection = function(bonus_list) {
-  let self = this;
-  //add the click-detection code
+  //let self = this;
+
+  this.button_menu.addInstantButtonClickDetection('bonus-buttons', bonus_list, this.world, this);
+
+  /*//add the click-detection code
   for (let button of document.getElementsByClassName('button-do')) {
 
     button.addEventListener('click', function(){ bonus_list.enableBonus(button.id, self.world); 
                                                  self.update_function(); });
-  }
+  }*/
 }
 
 HUDRenderer.prototype.updateBonusButtons = function(bonus_list) {
