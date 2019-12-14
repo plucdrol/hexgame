@@ -61,22 +61,22 @@ Unit.prototype.setType = function(unit_type) {
     this.pop =  4;
     this.setGraphic('white',6);
     this.can_move = true;
-    this.addAction( new actionGetResource(3, false));
-    this.addAction( new actionCreateVillage(2));
+    //this.addAction( new actionGetResource(1, false));
+    this.addAction( new actionCreateVillage(3));
     this.addAction( new actionCreateLighthouse(3));
 
     this.addAction( new actionCreateExpeditionCenter());
     this.addAction( new actionCreateHarbor());
     this.addAction( new actionCreateCityCanon(6));
 
-    this.addAction( new actionMoveCity() );
+    this.addAction( new actionMoveCity(8) );
     break;
 
   case 'village':
     this.name = "Village";
-    this.setGraphic('white',4);
+    this.setGraphic('white',0);
     
-    this.addAction( new actionGetResource(1, true));
+    this.addAction( new actionGetFood(2));
     //this.addAction( new actionCreateLighthouse(1));
     break;
 
@@ -97,7 +97,7 @@ Unit.prototype.setType = function(unit_type) {
   case 'lighthouse':
     this.name = "Lighthouse";
     this.setGraphic('lightblue',4);
-    this.addAction( new actionGetShallowFish(4));
+    //this.addAction( new actionGetShallowFish(3));
     this.addAction( new actionHydroDam());
     break;
 
@@ -121,7 +121,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'fishing-boat':
     this.name = "Fishing boat";
-    this.setGraphic('white',3);
+    this.setGraphic('white',2);
     this.setResource('colony',1);
     break;
 
