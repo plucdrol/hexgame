@@ -201,6 +201,7 @@ function Action() {
       
     //Either do a single action or do the action on all targets
     if (this.multi_target) {
+      //do actions in order from closest to furthest
       actor.range.sort((a, b) => (Hex.distance(a, position) > Hex.distance(b, position)) ? 1 : -1);
       for (hex of actor.range) 
         this.doSingleAction(world, actor, position, hex);
@@ -233,15 +234,9 @@ function Action() {
 
       if (this.free_pop_cost > 0)
         new_unit.pop = this.free_pop_cost;
-
-      //do automatic action if one exists
-      if (this.hover_action && this.hover_action.multi_target) {
-        
-        this.hover_action.updateActionRange(world, new_unit, target);
-        this.hover_action.doAction(world, new_unit, target )
-      }
-
     }
+
+
 
     if (this.collect_resource) {
       if (world.hasResource(target)) {
@@ -261,6 +256,15 @@ function Action() {
 
     //then do the action
     this.effect(world, actor, position, target);
+
+    //do automatic action if one exists
+    if (this.hover_action && this.hover_action.multi_target) {
+      let actor = world.getUnit(target);
+      this.hover_action.updateActionRange(world, actor, target);
+      this.hover_action.doAction(world, actor, target )
+    }
+
+
   }
 
   this.updateActionRange = function(world, actor, position) {
@@ -383,7 +387,7 @@ function actionCreateCity(distance, extra) {
 
   this.pop_action = 1/3;
 
-  this.hover_action = new actionGetResource(5,'true');
+  this.hover_action = new actionGetResource(5,true);
 
 
   this.can_river = true;
@@ -393,7 +397,7 @@ function actionCreateCity(distance, extra) {
   this.min_distance = 0;
   this.max_distance = distance;
 
-  this.also_build_road = true;
+  this.also_build_road = false;
   this.hover_radius = 3;
 
   this.destroy_resource = true;
@@ -407,20 +411,13 @@ function actionCreateCity(distance, extra) {
   this.can_use_roads = true;
   //this.double_road_speed = true;
 
-  this.description = "New city";
-  this.extra_description = "Click somewhere to create a new city";
+  this.description = "Expedition";
+  this.extra_description = "Create a new city far away. Goes further from bigger cities";
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return world.onLand(target) && !world.unitAtLocation(target);
   }
-  this.activation = function(world, actor, position) {
-    return !actor.can_move;
 
-  }
-
-  this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 4;
-  }
   this.effect = function(world, actor, position, target) {
     if (extra == 'settled') {
       world.getUnit(target).can_move = false;
@@ -439,15 +436,21 @@ function actionCreateCityBySea(distance) {
   this.min_distance = 0;
   this.max_distance = distance;
   this.also_build_road = false;
-  this.also_build_road_backwards = true;
+  this.also_build_road_backwards = false;
   this.stop_elevation_up = 2;
   this.can_use_roads = false;
   this.pop_action = 1/3;
     this.can_river = true;
   this.stop_on_rivers = false;
 
+    this.description = "Sea expedition";
+  this.extra_description = "Create a new city by sea. Goes further from bigger cities";
+
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && world.onLand(target) && world.nearCoast(target);
+  }
+  this.activation = function(world, actor, position) {
+    return world.nearCoast(position);
   }
   this.effect = function(world, actor, position, target) {
     world.unitAtLocation(target).can_move = false;
@@ -487,6 +490,10 @@ function actionCreateLighthouseBySea(distance) {
       return true
 
     return false;
+  }
+
+  this.activation = function(world,actor,position) {
+    return world.nearCoast(position);
   }
 
   this.effect  = function(world, actor, position, target) {
@@ -629,6 +636,8 @@ function actionMoveCity() {
   this.also_build_road_backwards = true;
   this.hover_radius = 3;
 
+  this.hover_action = new actionGetResource(3,true);
+
   this.cloud_clear = 6;
 
   this.collect_resource = true;
@@ -637,8 +646,8 @@ function actionMoveCity() {
   //this.total_pop_cost = 1;
   this.free_pop_cost = 1;
 
-  this.description = "Move the city";
-  this.extra_description = "Move your city somewhere else if the area is bad.";
+  this.description = "Expand city";
+  this.extra_description = "Grow the city into new lands";
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return world.onLand(target) && world.noCitiesInArea(target,5,position) && 
@@ -656,7 +665,8 @@ function actionMoveCity() {
 
   this.effect = function(world, actor, position, target) {
 
-
+    actor.split++;
+    actor.addPop( -Math.floor(actor.getPop()/actor.split)  );
     actor.moveActionToTop(this);
 
     world.units.set(target, actor);
@@ -1062,7 +1072,8 @@ function actionHydroDam() {
     let tile = world.getTile(target);
     if (world.getTile(target).river.upstream_hexes) {
       for (upstream of world.getTile(target).river.upstream_hexes) {
-        this.hydroDam(world, upstream);
+        if (world.getTile(upstream).river.water_level >= 7)
+          this.hydroDam(world, upstream);
         //setTimeout(function(){ self.hydroDam(world, upstream); }, 200);
       }
       

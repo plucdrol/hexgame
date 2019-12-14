@@ -57,6 +57,7 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
   case 'city':
+    this.split = 1;
     this.name = "City";
     this.pop =  4;
     this.setGraphic('white',6);
@@ -65,11 +66,16 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateVillage(3));
     this.addAction( new actionCreateLighthouse(3));
 
-    this.addAction( new actionCreateExpeditionCenter());
-    this.addAction( new actionCreateHarbor());
-    this.addAction( new actionCreateCityCanon(6));
+
+    this.addAction( new actionCreateCity(10));
+    //this.addAction( new actionCreateExpeditionCenter());
+    //this.addAction( new actionCreateHarbor());
+    //this.addAction( new actionCreateCityCanon(6));
 
     this.addAction( new actionMoveCity(8) );
+
+    this.addAction( new actionCreateCityBySea(6));
+    this.addAction( new actionCreateLighthouseBySea(6));
     break;
 
   case 'village':
