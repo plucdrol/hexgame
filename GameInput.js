@@ -48,7 +48,10 @@ function GameInput(world, view) {
     self.resizeEvent(e.detail.width, e.detail.height);
   } );
   listenForEvent('canvas_click', function(e){
-    self.clickScreenEvent(e.detail.click_pos);
+    self.clickScreenEvent(e.detail.click_pos, 'mouse');
+  }); 
+  listenForEvent('canvas_touch', function(e){
+    self.clickScreenEvent(e.detail.click_pos, 'touch');
   }); 
   listenForEvent('canvas_hover', function(e){
     self.hoverEvent(e.detail.mousepos);
@@ -60,12 +63,18 @@ function GameInput(world, view) {
     console.log(event.keyCode);
     if (event.keyCode === 189 || event.keyCode === 173) { // minus
         self.zoomViewEvent(1.2);
-        return false;
     }
     if (event.keyCode === 187 || event.keyCode === 61) { // plus
         self.zoomViewEvent(0.8);
-        return false;
     }
+
+    if (event.keyCode === 187 || event.keyCode === 27) { // escape
+        self.unit_input.selectNothing();
+        hud_renderer.update_function();
+        hud_renderer.updateHover(this.hex_hovered);
+        //updateWorldRender();
+    }
+    return false;
   }
 
   //React to either mouse scrolling or finger pinching
@@ -120,7 +129,7 @@ function GameInput(world, view) {
   //React to the window being resized
 	this.resizeEvent = function(width, height) {
 	  this.view.resizeOutput(width, height);
-	  updateWorldRender();
+	  //updateWorldRender();
 	}
 
 
@@ -142,21 +151,27 @@ function GameInput(world, view) {
 
 
   //React to the screen being clicked at screen_position
-  this.clickScreenEvent = function(screen_position) {
+  this.clickScreenEvent = function(screen_position, device_type) {
     
+
+
     if (this.unit_input != undefined) {
 
       var world_position = this.view.screenToWorld(screen_position);
       let hex_clicked = this.world.getHex(world_position);
 
       //Only reference to unit controller in WorldInterface
-      this.unit_input.clickHex(hex_clicked);
+      if (device_type == "mouse" || Hex.equals(hud_renderer.last_hover, hex_clicked))
+        this.unit_input.clickHex(hex_clicked);
       hud_renderer.update_function();
       hud_renderer.updateHover(this.hex_hovered);
       
-      updateWorldRender();
+      //updateWorldRender();
     }
   }
+
+
+
 }
 
 
