@@ -43,8 +43,13 @@ function World(radius) {
   this.world_map = new MapGenerator('perlin').makeMap(radius);
 
   this.bonus_list = new BonusList();
+  this.bonus_list.enableBonus('moveable-cities');
+  this.bonus_list.enableBonus('can-create-waterdens');
+  this.bonus_list.enableBonus('can-create-villages');
+  this.bonus_list.enableBonus('expedition-centers');
 
 
+  this.highlights_on = false;
 
 
   this.makeCloudsEverywhere();
@@ -62,7 +67,7 @@ function World(radius) {
   this.generateResources();
   this.generateUnknown();
 
-  this.resources_available = 0;
+  this.resources_available = 100;
   this.resources_collected = 0;
 
 
@@ -168,6 +173,7 @@ World.prototype.buildRoad = function(hexarray) {
   for (hex of hexarray) {
     if (previous_hex && this.getTile(hex)) {
       this.addRoadTile(previous_hex, hex);
+      this.clearClouds(hex,1);
     }
     previous_hex = hex;
   }
@@ -192,6 +198,13 @@ World.prototype.removeRoads = function(hex) {
 
 World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
+}
+
+World.prototype.hasResource = function(hex) {
+  if (this.getResource(hex))
+    return this.getResource(hex).resources['food'] > 0;
+  else
+    return false;
 }
 
 World.prototype.destroyResource = function(hex) {
@@ -508,12 +521,12 @@ World.prototype.makeCloudsEverywhere = function() {
 World.prototype.clearClouds = function(position, radius) {
 
   if (!position) {
-    for (hex of this.world_map.getHexArray())
+    for (var hex of this.world_map.getHexArray())
       this.world_map.get(hex).hidden = false;
   }
 
 
-  for (hex of Hex.circle(position, radius)) {
+  for (var hex of Hex.circle(position, radius)) {
     if (this.world_map.containsHex(hex))
       this.world_map.get(hex).hidden = false;
   }
@@ -540,16 +553,19 @@ World.prototype.clearClouds = function(position, radius) {
 
 
   World.prototype.highlightRange = function(range) {
-
+    this.highlights_on = true;
     for (hex of range) {
       this.getTile(hex).highlighted = true;
     }
+
   }
 
 
   World.prototype.clearHighlights = function() {
+    this.highlights_on = false;
     for (hex of this.getHexArray())
       this.getTile(hex).highlighted = false;
+
   }
 
 
