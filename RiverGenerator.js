@@ -94,7 +94,7 @@ RiverGenerator = function(world_map) {
     //create new tile
     var tile = this.map.get(hex);
     tile.river = {};
-    if (tile.elevation >= 3 && tile.elevation < 12) 
+    if (tile.elevation >= 3 && tile.elevation < 9) 
       tile.river.water_level = 1;
     else
       tile.river.water_level = 0;

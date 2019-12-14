@@ -70,6 +70,48 @@ PerlinConfiguration = function(config_name) {
       this.base =5;
       break;
 
+    case 1:
+      this.scales = [  0.02, 0.1, 1, ];
+      this.weights = [ 8, 1, 1];
+      this.base = 2;
+      break;
+
+    case 2: //ocean planet
+      this.scales = [  0.02, 0.1, 1, ];
+      this.weights = [ 8, 5, 5];
+      this.base = -1;
+      break;
+
+    case 3: //crater with rivers planet
+      this.scales = [  0.02, 0.1, 1, ];
+      this.weights = [ 8, 1, 1];
+      this.base = 7;
+      break;
+
+    case 4: //small islands
+      this.scales = [  0.1, 0.5, 1, ];
+      this.weights = [ 7, 2, 1];
+      this.base = -1;
+      break;
+
+    case 5: //small continents
+      this.scales = [  0.1, 0.5, 1, ];
+      this.weights = [ 6, 3, 0.5];
+      this.base = 3;
+      break;
+
+    case 6: //large continents, frilly coasts
+      this.scales = [  0.03, 0.5, 1, ];
+      this.weights = [ 6, 3, 0.5];
+      this.base = 4;
+      break;
+
+    case 7:
+      this.scales = [ 0.04, 0.1, 0.1, 0.5,  1 ];
+      this.weights = [8 ,   2,   2,   1,    1  ];
+      this.base = 5;
+      break;
+
     default:
       this.scales = [0.02,0.1,0.2,0.5,1.0,2.0];
       this.weights = [16,8,4,2,1,0.5];
@@ -131,7 +173,7 @@ RandomTileGenerator.prototype = Object.create(TileGenerator.prototype);
 function PerlinTileGenerator() {
 
   TileGenerator.call(this); 
-  var config = new PerlinConfiguration('fractal');
+  var config = new PerlinConfiguration(1+Math.floor(Math.random()*7 ));
   var simplex = new SimplexNoise();  
 
   var sand_config = new PerlinConfiguration('big_patches');
@@ -163,7 +205,7 @@ function PerlinTileGenerator() {
       sand_chance += Math.floor(sand_simplex.noise(tile_x, tile_y)*tile_weight);
     }
     if (sand_chance >= 9 && total > 1 && total < 12)
-      total = 3;
+      total = 2;
 
     //shallow water for anything between these numbers
     //if (total < 1 && total > -7) 

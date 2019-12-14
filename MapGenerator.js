@@ -125,7 +125,7 @@ MapGenerator.prototype.makeMap = function(radius) {
   }
 
   //fine tune the m ap
-  this.addWaterRim(0.1);
+  //this.addWaterRim(0.1);
   this.roundDown();
   this.addShallowWater();
   this.addIcePoles();
@@ -137,6 +137,12 @@ MapGenerator.prototype.makeMap = function(radius) {
   this.trimPoints(0, [0], 2, 1 );
 
   this.map = new RiverGenerator(this.map).getMap();
+
+  //turn big rivers into coasts
+  for (hex of this.map.getHexArray()) {
+    if (this.map.get(hex).river && this.map.get(hex).river.water_level > 150)
+      this.setElevation(hex, 1);
+  }
 
   return this.map;
 }
