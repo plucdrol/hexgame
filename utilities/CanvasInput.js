@@ -63,10 +63,14 @@ CanvasInput.prototype.clickCanvas = function(event) {
   
       //trigger the click event
       var click_pos = this.getCursorPosition(event);
-      emitEvent('canvas_click', {click_pos: click_pos} );
+      if (this.touching)
+        emitEvent('canvas_touch', {click_pos: click_pos} );
+      else
+        emitEvent('canvas_click', {click_pos: click_pos} );
     }
     //remember that the mouse is done dragging
     this.is_dragging = false;
+    this.touching = false;
     
 }   
 
@@ -193,6 +197,7 @@ CanvasInput.prototype.touchMove = function(ev) {
 
 //React to finger starting to touch screen
 CanvasInput.prototype.touchStart = function(ev) {
+
     //ev.preventDefault();
     for(var i=0;i<ev.changedTouches.length;i++) {
         var id = ev.changedTouches[i].identifier;
@@ -202,6 +207,9 @@ CanvasInput.prototype.touchStart = function(ev) {
 
 //React to finger removed from screen
 CanvasInput.prototype.touchEnd = function(ev) {
+
+    this.touching = true;
+
     //ev.preventDefault();
     for(var i=0;i<ev.changedTouches.length;i++) {
         var id = ev.changedTouches[i].identifier;
