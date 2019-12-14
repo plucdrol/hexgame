@@ -16,6 +16,11 @@
 
 // HEX OBJECT
 
+function hex(q,r) {
+  return new Hex(q,r);
+
+}
+
 function Hex(q,r) { //stores a hex unit
   this.q = q;
   this.r = r;
