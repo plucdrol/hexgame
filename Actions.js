@@ -25,14 +25,15 @@ function Action() {
 
   this.cloud_clear = 0;
   this.multi_target = false;
-  this.destroy_resource = true;
+  this.destroy_resource = false;
+  this.collect_resource = true;
   this.can_use_roads = false;
   this.infinite_range = false;
   this.sky_action = false;
 
   this.river_only = false;
   this.can_river = false;
-  this.rivers_and_coasts_only = false;
+  this.rivers_and_coasts = false;
   this.stop_on_rivers = false;
 
   this.takes_city_pop = false; //true makes resources LOCAL, false makes resources GLOBAL
@@ -90,6 +91,21 @@ function Action() {
 
     if (this.stop_on_rivers && world.onRiver(next_hex) && world.noUnitTypeInArea(next_hex, 0, 'lighthouse') )
       return true;
+
+    if (this.rivers_and_coasts) {
+      
+      //stepping into coastal water only allowed for same river
+      if (world.onLand(hex) && world.onWater(next_hex) && !world.leavingRiver(hex, next_hex)) 
+       return true;
+
+      //stop if moving on land
+      if (world.onLand(hex) && world.onLand(next_hex) && !world.alongRiver(hex, next_hex))
+        return true;
+
+      //stop if moving to land and you're not entering a river
+      if ( world.onWater(hex) && world.onLand(next_hex) && !world.alongRiver(hex, next_hex) && !world.enteringRiver(hex, next_hex) )
+        return true;
+    }
     
     return false;
   }
@@ -110,8 +126,8 @@ function Action() {
     if (next_tile.elevation < this.minimum_elevation) 
       return undefined;
 
-    //no stepping on rivers or coast without the proper ability
-    if (!(this.river_only || this.rivers_and_coasts_only) && !this.can_river)
+    //no stepping on rivers without the proper ability
+    if (!this.river_only && !this.rivers_and_coasts && !this.can_river && this.minimum_elevation >= 2)
       if( world.onRiver(next_hex) && world.noUnitTypeInArea(next_hex, 0, 'lighthouse') )
         return undefined;
 
@@ -121,28 +137,24 @@ function Action() {
         return undefined;
     }
 
-    //rivers_and_coasts_only can move along river, out the mouth, and into coastal waters
-    if (this.rivers_and_coasts_only) {
-
-      //no if moving to land and you're not entering a river
-      if ( !world.alongRiver(hex, next_hex) && world.onLand(next_hex) && !world.enteringRiver(hex, next_hex) )
-        return undefined;
-
-      //stepping into coastal water only allowed for same river (or a lighthouse's first move)
-      if (world.onLand(hex) && !world.onLand(next_hex) && !world.leavingRiver(hex, next_hex) 
-        && world.noUnitTypeInArea(hex,0,'lighthouse'))
+    if (this.rivers_and_coasts) {
+      if (world.onLand(hex) && world.onLand(next_hex) && !world.alongRiver(hex, next_hex))
         return undefined;
     }
 
 
     let cost = 1;
 
-    if ((world.areRoadConnected(hex,next_hex) && (this.can_use_roads) ) || world.sameRiver(hex, next_hex)) {
+    if ((world.areRoadConnected(hex,next_hex) && (this.can_use_roads) ) /*|| world.sameRiver(hex, next_hex)*/) {
       cost = 0.5;
       if (this.double_road_speed)
         cost = 0.25;
 
     }
+
+    if (this.two_max_distances && world.onWater(next_hex))
+      cost = 0.4;
+
 
     return cost;
   }
@@ -189,6 +201,7 @@ function Action() {
       
     //Either do a single action or do the action on all targets
     if (this.multi_target) {
+      actor.range.sort((a, b) => (Hex.distance(a, position) > Hex.distance(b, position)) ? 1 : -1);
       for (hex of actor.range) 
         this.doSingleAction(world, actor, position, hex);
     } else {
@@ -230,6 +243,13 @@ function Action() {
 
     }
 
+    if (this.collect_resource) {
+      if (world.hasResource(target)) {
+        world.resources_available++;
+        world.resources_collected++;
+      }
+    }
+
     if (this.free_pop_cost)
       world.resources_available -= this.free_pop_cost;
 
@@ -262,6 +282,11 @@ function Action() {
 
   this.getActionRange = function(world, actor, position) {
 
+    var max_distance = this.max_distance;
+    var min_distance = this.min_distance;
+    if (this.pop_action) 
+      max_distance += actor.getPop()*this.pop_action;
+
     if (this.sky_action) {
 
       //just use a big circle for the action range
@@ -274,13 +299,7 @@ function Action() {
       if (this.infinite_range) {
         world.clearClouds();
         return [];
-      }
-
-      var max_distance = this.max_distance;
-      var min_distance = this.min_distance;
-      if (this.pop_action) 
-        max_distance += actor.getPop()*this.pop_action;
-      
+      }      
 
       var actionRange = pathfinder.getRange( world, position, max_distance, min_distance );
     }
@@ -364,14 +383,21 @@ function actionCreateCity(distance, extra) {
 
   this.pop_action = 1/3;
 
-  this.hover_action = new actionGetResource(3,'true');
+  this.hover_action = new actionGetResource(5,'true');
 
-  this.nextSelection = "target";
+
+  this.can_river = true;
+  this.stop_on_rivers = true;
+
+  this.nextSelection = "self";
   this.min_distance = 0;
   this.max_distance = distance;
 
   this.also_build_road = true;
   this.hover_radius = 3;
+
+  this.destroy_resource = true;
+  this.collect_resource = true;
 
   this.cloud_clear = 6;
 
@@ -385,7 +411,7 @@ function actionCreateCity(distance, extra) {
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5) && !world.unitAtLocation(target);
+    return world.onLand(target) && !world.unitAtLocation(target);
   }
   this.activation = function(world, actor, position) {
     return !actor.can_move;
@@ -409,7 +435,7 @@ function actionCreateCity(distance, extra) {
 function actionCreateCityBySea(distance) {
   actionCreateCity.call(this);
   this.name = 'city-by-sea';
-  this.minimum_elevation = 1;
+  this.minimum_elevation = 0;
   this.min_distance = 0;
   this.max_distance = distance;
   this.also_build_road = false;
@@ -417,10 +443,11 @@ function actionCreateCityBySea(distance) {
   this.stop_elevation_up = 2;
   this.can_use_roads = false;
   this.pop_action = 1/3;
+    this.can_river = true;
+  this.stop_on_rivers = false;
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.onLand(target) 
-           && world.noCitiesInArea(target,5) && world.nearCoast(target);
+    return !world.unitAtLocation(target) && world.onLand(target) && world.nearCoast(target);
   }
   this.effect = function(world, actor, position, target) {
     world.unitAtLocation(target).can_move = false;
@@ -433,18 +460,19 @@ function actionCreateCityBySea(distance) {
 
 
 
-
 //This action transforms the unit into a camp
 function actionCreateLighthouseBySea(distance) {
   actionCreateLighthouse.call(this);
 
-  this.minimum_elevation = 1;
+  this.minimum_elevation = 0;
   this.stop_elevation_up = 2;
 
   this.name = "lighthouse-by-sea";
   this.max_distance = distance;
   this.can_river = true;
   this.stop_on_rivers = false;
+
+  this.hover_action = new actionGetShallowFish( 4 );
 
   this.pop_action = 1/3;
   this.free_pop_cost = 3;
@@ -518,6 +546,9 @@ function actionCreateCityCanon(distance) {
 
   this.cloud_clear = 3;
 
+  this.destroy_resource = true;
+  this.collect_resource = false;
+
   this.free_pop_cost = 6;
   
   this.description = "City canon";
@@ -542,29 +573,32 @@ function actionCreateVillage(distance) {
 
   this.name = "village";
   this.new_unit_type = 'village';
-  this.can_use_roads = false;
+  this.can_use_roads = true;
   //this.double_road_speed = true;
 
-  this.hover_action = new actionGetResource( 1 ,'true');
+  this.can_river = true;
+  this.stop_on_rivers = true;
+
+  this.hover_action = new actionGetFood( 1 );
 
   this.nextSelection = "self";
   this.min_distance = 0;
   this.max_distance = distance;
 
-  this.pop_action = 1/3;
+  //this.pop_action = 1/3;
 
   this.also_build_road = true;
   this.hover_radius = 1;
 
   this.cloud_clear = 3;
 
-  this.free_pop_cost = 2;
+  //this.free_pop_cost = 2;
   
-  this.description = "Village";
-  this.extra_description = "Create a small village to collect some more resources";
+  this.description = "Collect resources";
+  this.extra_description = "Collect resources in a small circle";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onLand(target) && world.noUnitTypeInArea(target, 2, 'village') && !world.unitAtLocation(target);
+    return world.onLand(target) && !world.unitAtLocation(target);
   }
 
   this.activation = function(world, actor, position) {
@@ -597,6 +631,9 @@ function actionMoveCity() {
 
   this.cloud_clear = 6;
 
+  this.collect_resource = true;
+  this.destroy_resource = true;
+
   //this.total_pop_cost = 1;
   this.free_pop_cost = 1;
 
@@ -604,11 +641,13 @@ function actionMoveCity() {
   this.extra_description = "Move your city somewhere else if the area is bad.";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5,position) && !world.unitAtLocation(target);
+    return world.onLand(target) && world.noCitiesInArea(target,5,position) && 
+    (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
+    ( world.hasResource(target) || world.nearCoast(target) || world.nearRiver(target) ) ;
   }
 
   this.activation = function(world, actor, position,target) {
-    return (actor.can_move && world.bonusEnabled('moveable-cities') );
+    return (actor.can_move /*&& world.bonusEnabled('moveable-cities')*/ );
   }
 
   this.requirement = function(world, actor, position,target) {
@@ -621,8 +660,8 @@ function actionMoveCity() {
     actor.moveActionToTop(this);
 
     world.units.set(target, actor);
-    world.destroyUnit(position);
-    world.addUnit(position, 'colony', actor);
+    //world.destroyUnit(position);
+    //world.addUnit(position, 'colony', actor);
     
 
 
@@ -656,6 +695,9 @@ function actionCreateExpeditionCenter() {
   this.free_pop_cost = 4;
 
   this.cloud_clear = 5;
+
+  this.destroy_resource = true;
+  
 
   this.description = "Expedition Center";
   this.extra_description = "Explore the area 10 tiles away.<br>Can create cities further away.";
@@ -701,13 +743,16 @@ function actionCreateHarbor() {
 
   this.cloud_clear = 5;
 
+  this.destroy_resource = true;
+  
+
   this.free_pop_cost = 2;
 
   this.description = "Harbor";
   this.extra_description = "Explore and settle the sea.";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.nearCoast(target, 1, 1);
+    return !world.unitAtLocation(target) && world.nearCoast(target);
   }
   this.activation = function(world, actor, position) {
 
@@ -754,12 +799,14 @@ function actionCreateLighthouse(distance) {
 
   this.targetFilterFunction = function(world, actor, position, target) {
     //coastal land tile
-    if (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.onLand(target))
+    if (!world.unitAtLocation(target) && world.onLand(target) && world.nearCoast(target))
       return true
 
     //river tiles
     if (world.onRiver(target) && !world.unitAtLocation(target))
       return true;
+
+    return false;
   }
 
   this.activation = function(world, actor, position) {
@@ -787,7 +834,7 @@ function actionGetResource(max_distance, multi_target) {
   this.can_river = true;
 
   this.name = "get";
-  this.min_distance = 1;
+  this.min_distance = 0;
   this.max_distance = max_distance;
   this.hover_radius = 0;
 
@@ -800,6 +847,7 @@ function actionGetResource(max_distance, multi_target) {
   this.total_pop_cost = -1;
   this.takes_city_pop = true;
 
+  this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
   this.destroy_resource = false;
 
   this.description = "Collect resources";
@@ -807,12 +855,6 @@ function actionGetResource(max_distance, multi_target) {
 
   this.targetFilterFunction = function(world, actor, position, target) {
 
-    let distance = 2;
-    if (actor.pop >= 3) distance = 3;
-    if (actor.pop >= 6) distance = 4;
-    if (actor.pop >= 12) distance = 5;
-    if (Hex.distance(position, target) > distance)
-      return false;
 
     return (
            //dry land food tiles within 3 tiles of the city or...
@@ -869,11 +911,13 @@ function actionGetShallowFish(max_distance) {
   this.cloud_clear = 1;
 
 
-  this.rivers_and_coasts_only = true;
+  this.rivers_and_coasts = true;
+  this.continue_in_water = true;
   this.stop_on_rivers = false;
 
   this.also_build_road = true;
 
+  this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
   this.destroy_resource = false;
 
   this.free_pop_cost = -1;
@@ -882,6 +926,8 @@ function actionGetShallowFish(max_distance) {
 
   this.multi_target = true;
   this.new_unit_type = 'colony';
+
+
 
   this.description = "Harvest shallow waters";
   this.extra_description = "Get all the fish resources in water range";
@@ -896,7 +942,7 @@ function actionGetShallowFish(max_distance) {
     if (world.onRiver(target) ) 
       return true;
 
-    if (!world.onLand(target))
+    if (world.onWater(target))
       return true;
   }
 
@@ -906,6 +952,68 @@ function actionGetShallowFish(max_distance) {
   }
 }
 
+
+
+
+
+
+
+
+
+function actionGetFood(max_distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 1;
+
+  this.name = "get-food";
+  this.min_distance = 0;
+  this.max_distance = max_distance;
+  this.hover_radius = 0;
+  this.cloud_clear = 2;
+
+  this.can_river = true;
+  this.stop_on_rivers = true;
+  this.two_max_distances = true;
+
+  //this.rivers_and_coasts = true;
+
+  this.also_build_road = true;
+
+  this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
+  this.destroy_resource = false;
+
+  this.free_pop_cost = -1;
+  this.total_pop_cost = -1;
+  this.takes_city_pop = true;
+
+  this.multi_target = true;
+  this.new_unit_type = 'colony';
+
+
+
+  this.description = "Weird village action";
+  this.extra_description = "Get all the food";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    if (world.unitAtLocation(target)) 
+      return false;
+
+    if (!world.countResources(Hex.circle(target, 0), 'food', 1))
+      return false;
+
+    /*if (world.onRiver(target)) 
+      return true;
+
+    if (!world.onLand(target))
+      return true;*/
+    return true;
+  }
+
+
+  this.effect = function(world,actor,position,target) {
+    //actor.addPop(1);
+  }
+}
 
 
 
