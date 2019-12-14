@@ -8,13 +8,15 @@ function BonusList() {
 	new bonusCreateVillages(),
 	new bonusCreateWaterDens(),
 	new bonusMoveCities(),
-	new bonusCreateExpedition()
+	new bonusCreateExpedition(),
+	new bonusCitiesRange3(),
+	new bonusCitiesRange5()
 
 
 	];
 
 	this.number_of_bonuses = 0;
-	this.next_bonus = [ 3,10,30,100,300,1000];
+	this.next_bonus = [ 1,3,10,30,100,300,1000];
 }
 
 BonusList.prototype.bonusNameList = function() {
@@ -117,33 +119,39 @@ function bonusCreateVillages() {
 	Bonus.call(this);
 	this.name = 'can-create-villages';
 	this.description = "Tunneling";
-
-
+	this.extra_description = "Create tunnels to reach resources further away";
 }
 
-
-function bonusCreateWaterDens() {
+function bonusCitiesRange3() {
 	Bonus.call(this);
-	this.name = 'can-create-waterdens';
-	this.description = "Amphibious";
-
-
+	this.name = 'cities-range-3';
+	this.description = "Bigger city";
+	this.required_bonus = 'can-create-villages';
 }
-
-
-function bonusMoveCities() {
+function bonusCitiesRange5() {
 	Bonus.call(this);
-	this.name = 'moveable-cities';
-	this.description = "Nomadic Hives";
-
+	this.name = 'cities-range-5';
+	this.description = "Bigger city";
+	this.required_bonus = 'cities-range-3';
 }
 
 function bonusCreateExpedition() {
 	Bonus.call(this);
 	this.name = 'expedition-centers';
 	this.description = "Exploration";
-
 	this.required_bonus = 'can-create-villages';
+}
+
+function bonusCreateWaterDens() {
+	Bonus.call(this);
+	this.name = 'can-create-waterdens';
+	this.description = "Amphibious";
+}
+
+function bonusMoveCities() {
+	Bonus.call(this);
+	this.name = 'moveable-cities';
+	this.description = "Nomadic Hives";
 }
 
 function bonusCreateHarbours() {
