@@ -111,7 +111,7 @@ HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
   
   var hover_style = new RenderStyle();
   hover_style.fill_color = "rgba(50,200,50,0)";
-  hover_style.line_width = 3;
+  hover_style.line_width = 6;
   hover_style.line_color = "rgba(50,200,50,1)";
 
   for (target of this.action_targets) {
@@ -220,7 +220,7 @@ HUDRenderer.prototype.updateActionButtons = function() {
   if (current_action) {
     this.button_menu.selectActionById(current_action);
   } else {
-    this.selectFirstActionIfNoneSelected();
+    //this.selectFirstActionIfNoneSelected();
   }
 }
 
@@ -232,8 +232,8 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
 
   //display simple message if no unit is selected
   if (!actor.actions || actor.actions.length == 0) {
-    action_buttons.innerHTML = "Click a town";
-    return;
+    //action_buttons.innerHTML = "Click a town";
+    //return;
   }
 
   for (let action of actor.actions) {
@@ -338,16 +338,9 @@ HUDRenderer.prototype.generateBonusButtons = function(bonus_list) {
 
 
 HUDRenderer.prototype.addBonusClickDetection = function(bonus_list) {
-  //let self = this;
 
   this.button_menu.addInstantButtonClickDetection('bonus-buttons', bonus_list, this.world, this);
 
-  /*//add the click-detection code
-  for (let button of document.getElementsByClassName('button-do')) {
-
-    button.addEventListener('click', function(){ bonus_list.enableBonus(button.id, self.world); 
-                                                 self.update_function(); });
-  }*/
 }
 
 HUDRenderer.prototype.updateBonusButtons = function(bonus_list) {
@@ -422,6 +415,7 @@ function addTooltip(message) {
 HUDRenderer.prototype.updateHover = function(hex_hovered) {
   //this.updateActionPath(hex_hovered);
   this.updateTooltip(hex_hovered);
+  this.last_hover = hex_hovered;
 
   this.action_targets = [];
   let self = this;
@@ -445,9 +439,9 @@ HUDRenderer.prototype.updateTooltip = function(hex_hovered) {
 
   //HOVERING OVER THINGS
   this.addTooltipUnit(hex_hovered);
-  if (!getTooltip())
+  //if (!getTooltip())
     this.addTooltipResource(hex_hovered);
-  if (!getTooltip())
+  //if (!getTooltip())
     this.addTooltipTile(hex_hovered);
 
 }
@@ -469,7 +463,7 @@ HUDRenderer.prototype.addTooltipTile = function(hex_hovered) {
   if (tile && tile.hasOwnProperty('elevation')) {
     addTooltip(land_tiles[tile.elevation]+", ");
   }
-  if (this.world.onRiver(hex_hovered)) {
-    addTooltip('river, ');
+  if (tile.river) {
+    addTooltip('river '+tile.river.name);
   }
 }
