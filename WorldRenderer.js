@@ -23,7 +23,6 @@ function WorldRenderer (world, hex_renderer) {
   this.render_portions = Math.floor(world.radius/3);
 
   var self = this; 
-  setInterval( self.drawWorld.bind(self), 2 );
 }
 WorldRenderer.p = WorldRenderer.prototype;
 
@@ -57,7 +56,6 @@ WorldRenderer.p.drawWorld = function() {
   
   //this.drawBigHex(this.world.radius);
   this.drawTiles(hexarray);
-  this.drawHighlights(hexarray);
 
   this.drawRivers(hexarray);
 
@@ -93,38 +91,34 @@ WorldRenderer.p.drawTiles = function(hexarray) {
       continue;
     }
 
-    //skip if tile is highlighted
-    if (this.getTile(hex).highlighted) 
-      continue;
-
-    //actual tiles
-    if (this.getTile(hex).elevation >= 0)
-      this.drawTile(hex, this.getTile(hex));
-  }
-}
-
-
-WorldRenderer.p.drawHighlights = function(hexarray) {
-
-
-  //draw the highlighted tiles
-  for (hex of hexarray) {
-
-    //skip if not explored
-    if (this.getTile(hex).hidden)
-      continue;
-
-    //highlighted tiles (but only half the time)
+    //draw tiles lighter if highlighted
     if (this.getTile(hex).highlighted) {
-      this.drawTile(hex, {elevation: 32}, "rgba(250,250,0,1)");
+      //this.drawTile(hex, this.getTile(hex));
+      if (this.getTile(hex).elevation >= 2)
+        this.drawTile(hex, {elevation: 32}, 'yellow' );
+      else
+        this.drawTile(hex, {elevation: 32}, 'aqua' );
+      //this.drawTile(hex, {elevation: 32}, lighter( greenscale_colors(this.getTile(hex).elevation) ) );
+      continue;
+    }
+
+    //actual tiles, darker when highlights are on
+    if (this.getTile(hex).elevation >= 0) {
+      //if (this.world.highlights_on)
+        //this.drawTile(hex, {elevation: 32}, darker( greenscale_colors(this.getTile(hex).elevation) ) );
+      //else
+        this.drawTile(hex, this.getTile(hex));
     }
   }
 }
 
 
+
 WorldRenderer.p.drawRivers = function(hexarray) {
 
-  let water_draw_level = 7;
+  let water_draw_level = 3;
+  let max_draw_level = 150;
+
   //draw the rivers
   for (hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
@@ -134,7 +128,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
       let downstream_hex = this.getTile(hex).river.downstream_hex;
       let water_level = this.getTile(hex).river.water_level;
       if (downstream_hex instanceof Hex && water_level >= water_draw_level)
-        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(water_level*9)), '#22D', 'half only' );
+        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(Math.min(water_level,max_draw_level)*9)), '#22D', 'half only' );
 
       //upstream rivers next
       let upstream_hexes = this.getTile(hex).river.upstream_hexes;
@@ -144,7 +138,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
             continue;
           let up_level = this.getTile(upstream_hex).river.water_level;
           if (up_level >= water_draw_level)
-            this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(up_level*9)), '#22D', 'half only' );
+            this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(Math.min(up_level,max_draw_level)*9)), '#22D', 'half only' );
         }
       }
 
@@ -352,7 +346,7 @@ var greenscale_colors = function (i) {
                     100,105,110,120, //forest 5 6 7 8
                     34,35,36,37,38];  //hills 9 10 11 12 13
 
-  var oldgreenscale = ['#115','#22D','#994', //ocean coast sand 0 1 2
+  var newgreenscale = ['#115','#22D','#994', //ocean coast sand 0 1 2
                     '#282','#163', //grass 3 4
                     '#363','#242','#232','#231', //forest 5 6 7 8
                     '#321','#312','#331', //hills 9 10 11 12 13
@@ -362,16 +356,72 @@ var greenscale_colors = function (i) {
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
 
+
+
+  var even_greenscale = ['#222255','#2222DD','#999944', //ocean coast sand 0 1 2
+                    '#228822','#226633', //grass 3 4
+                    '#336644','#446633','#336622','#225533', //forest 5 6 7 8
+                    '#664433','#663344','#666633', //hills 9 10 11 12 13
+                    '#441122','#442222',
+                    '#777777', '#777777','#777777', //mountains 14 15 16
+                    '#888888','#888888','#888888', //mountains 17 18 19
+                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
+                    '#CCC']; //clouds
+
+
+
                     
- return oldgreenscale[i];
+ return newgreenscale[i];
 
-  //ice
-  if (i >= 20)
-    return "hsl(0, 0%, 90%)"; 
-  //mountains
-  if (i >= 14)
-    return "hsl(0, 0%, 50%)"; 
-  //land
-  return "hsl("+greenscale[i]+", 30%, 50%)"; 
+}
 
+function darker(col) {
+  return LightenDarkenColor(col, -0.7);
+}
+
+function lighter(col) {
+  return LightenDarkenColor(col, 0.3);
+}
+
+function LightenDarkenColor(col,amt) {
+    var usePound = false;
+    if ( col[0] == "#" ) {
+        col = col.slice(1);
+        usePound = true;
+    }
+
+    if (col.length == 3)
+      col = ""+col[0]+col[0]+col[1]+col[1]+col[2]+col[2];
+
+    var num = parseInt(col,16);
+
+    if (amt >= 0)
+      {var r = (num >> 16); r=r+(255-r)*amt;}
+    else
+      {var r = (num >> 16); r=-r*amt;}
+
+    if ( r > 255 ) r = 255;
+    else if  (r < 0) r = 0;
+
+    if (amt >= 0)
+      {var b = ((num >> 8) & 0x00FF); b=b+(255-b)*amt;}
+    else
+      {var b = ((num >> 8) & 0x00FF);  b=-b*amt;}
+
+    if ( b > 255 ) b = 255;
+    else if  (b < 0) b = 0;
+
+    if (amt >= 0)
+      {var g = (num & 0x0000FF); g=g+(255-g)*amt;}
+    else 
+      {var g = (num & 0x0000FF);  g=-g*amt;}
+
+    if ( g > 255 ) g = 255;
+    else if  ( g < 0 ) g = 0;
+
+    r = Math.floor(r);
+    g = Math.floor(g);
+    b = Math.floor(b);
+
+    return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
 }

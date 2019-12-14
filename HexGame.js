@@ -22,7 +22,7 @@ var canv_input = new CanvasInput(real_canvas);
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
-var view = new View(canvas, 1/2);
+var view = new View(canvas, 0.8);
 //Has functions for drawing to the screen
 var renderer = new Renderer(canv_draw, view);
 var real_renderer = new Renderer(real_canv_draw, view);
@@ -36,53 +36,6 @@ var world = new World( world_radius );// <-- model
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
 
-//Put the first city in
-var start_hex;
-for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) {
-  if (world.countLand(hex, 3, 20) && world.onLand(hex) && !world.onRiver(hex) && !(world.getTile(hex).elevation==2)) {
-    start_hex = hex;
-  }
-}
-if (!start_hex)
-  start_hex = new Hex(0,0);
-
-let first_city =  new Unit('city');
-world.units.set(start_hex, first_city);
-
-first_city.pop = 1;
-
-let inverted_point = new Point(-world.getPoint(start_hex).x, -world.getPoint(start_hex).y);
-view.setCenter(inverted_point);
-
-//clear some clouds
-world.clearClouds(start_hex, 4);
-
-//add resources
-let count = 4;
-while (count > 0) {
-  let circle = Hex.ring(start_hex, 3);
-  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
-  count--;
-}
-
-count = 3
-while (count > 0) {
-  let circle = Hex.ring(start_hex, 2);
-  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
-  count--;
-}
-
-count = 2;
-while (count > 0) {
-  let circle = Hex.ring(start_hex, 1);
-  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
-  count--;
-}
-
-world.destroyResource(start_hex);
-
-
-
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
 //Receives input for the game
 var game_input = new GameInput(world, view);     //<--controller
@@ -93,13 +46,89 @@ hud_renderer.clearButtons();
 
 //world.clearClouds();
 
-canv_input.windowResize();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//Put the first city in
+var start_hex;
+for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) {
+  if (world.countLand(hex, 1,3) && world.onLand(hex) && !world.onRiver(hex) && !(world.getTile(hex).elevation==2)) {
+    start_hex = hex;
+  }
+}
+if (!start_hex)
+  start_hex = new Hex(0,0);
+
+let first_city =  new Unit('city');
+world.units.set(start_hex, first_city);
+
+first_city.pop = 4;
+
+let inverted_point = new Point( -world.getPoint( start_hex.add(new Hex(3,0.5)) ).x, 
+                                -world.getPoint( start_hex.add(new Hex(3,0.5)) ).y   );
+view.setCenter(inverted_point);
+
+//clear some clouds
+world.clearClouds(start_hex, 4);
+//world.clearClouds();
+
+//add resources
+let count = 5;
+while (count > 0) {
+  let circle = Hex.ring(start_hex, 3);
+  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
+  count--;
+}
+
+count = 3;
+while (count > 0) {
+  let circle = Hex.ring(start_hex, 2);
+  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
+  count--;
+}
+
+count = 3;
+while (count > 0) {
+  let circle = Hex.ring(start_hex, 1);
+  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
+  count--;
+}
+
+world.destroyResource(start_hex);
+
+
 
 ////////////////////////// DRAWING TO THE CANVAS //////////////////
+canv_input.windowResize();
 
-
+let then = 0;
 function step(timestamp) {
+
+  let now = new Date().getTime();
+
   drawScreen();
+
+  if (then)
+    while (now-then < 30) {
+      world_renderer.drawWorld();
+      now = new Date().getTime();
+    }
+
+
+  then = now;
   window.requestAnimationFrame(step);
 }
 window.requestAnimationFrame(step);
