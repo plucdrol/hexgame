@@ -70,7 +70,7 @@ function GameInput(world, view) {
 
     if (event.keyCode === 187 || event.keyCode === 27) { // escape
         self.unit_input.selectNothing();
-        hud_renderer.update_function();
+        this.unit_input.button_menu.update_function(this.unit_input.world, this.unit_input);
         hud_renderer.updateHover(this.hex_hovered);
         //updateWorldRender();
     }
@@ -163,10 +163,10 @@ function GameInput(world, view) {
       //Only reference to unit controller in WorldInterface
       if (device_type == "mouse" || Hex.equals(hud_renderer.last_hover, hex_clicked))
         this.unit_input.clickHex(hex_clicked);
-      hud_renderer.update_function();
+      this.unit_input.button_menu.update_function(this.unit_input.world, this.unit_input);
+      this.unit_input.button_menu.updateHover(this.hex_hovered);
       hud_renderer.updateHover(this.hex_hovered);
       
-      //updateWorldRender();
     }
   }
 

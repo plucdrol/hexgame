@@ -20,6 +20,7 @@ function UnitInput(world) {
   this.world = world;
   this.hex_selected = undefined;
   this.button_menu = new ButtonMenu('action-buttons');
+  this.button_menu.unit_input = this;
 
 
 }
@@ -144,7 +145,7 @@ UnitInput.p.clickInsideRange = function(target) {
     } 
   }
 
-  hud_renderer.update_function();
+  this.button_menu.update_function(this.world, this);
 
 };
 

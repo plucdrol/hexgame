@@ -41,7 +41,7 @@ var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view
 var game_input = new GameInput(world, view);     //<--controller
 //draws mouse interactions
 var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
-hud_renderer.clearButtons();
+//hud_renderer.clearButtons();
 //hud_renderer.update_function();
 
 //world.clearClouds();

@@ -46,6 +46,7 @@ BonusList.prototype.getBonus = function(bonus_name) {
 }
 
 BonusList.prototype.getBonuses = function() {
+
 	return this.bonuses;
 }
 
@@ -53,12 +54,11 @@ BonusList.prototype.getBonusesAvailable = function(world) {
 	return this.bonuses.filter(bonus => (!bonus.enabled && bonus.requirement(world)));
 }
 
-BonusList.prototype.enableBonus = function(bonus_name, world) {
+BonusList.prototype.enableBonus = function(bonus_name) {
 	let bonus = this.getBonus(bonus_name);
 
 	if (bonus) {
 		bonus.enabled = true;
-		bonus.effect(world);
 		this.number_of_bonuses++;
 	}
 }
