@@ -74,11 +74,10 @@ HUDRenderer.prototype.drawActionPath = function (hex_hovered) {
 
   let actor = this.unit_input.getActorSelected();
   let action = this.button_menu.getActionSelected(actor);
-  let hex_selected = this.unit_input.hex_selected;
 
   //draw a line from actor to target
   let color = '#C50';
-  if ( action.targetFilterFunction(this.world, actor, hex_selected, hex_hovered) )
+  if ( action.targetFilterFunction(this.world, actor, hex_hovered) )
     color = '#5C0';
 
   this.drawPath(this.action_path, color);
@@ -89,12 +88,11 @@ HUDRenderer.prototype.updateActionTargets = function (hex_hovered) {
   
   let actor = this.unit_input.getActorSelected();
   let action = this.button_menu.getActionSelected(actor);
-  let hex_selected = this.unit_input.hex_selected;
 
   this.action_targets = [];
 
-  if (action && actor && hex_selected && action.hover_action) {
-    if (!action.targetFilterFunction(this.world, actor, hex_selected, hex_hovered))
+  if (action && actor && action.hover_action) {
+    if (!action.targetFilterFunction(this.world, actor, hex_hovered))
       return;
 
     let hover_action = action.hover_action;
