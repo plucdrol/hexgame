@@ -72,7 +72,7 @@ HUDRenderer.prototype.updateActionPath = function (hex_hovered) {
   let hex_selected = this.unit_input.hex_selected;
 
   if (action && actor && hex_selected) {
-    this.action_path = action.getActionPath(world, actor, hex_selected, hex_hovered, 15);
+    this.action_path = action.getActionPath(this.world, actor, hex_selected, hex_hovered, 15);
   } else {
     this.action_path = [];
   }
