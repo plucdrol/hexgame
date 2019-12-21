@@ -174,6 +174,7 @@ function PerlinTileGenerator() {
 
   TileGenerator.call(this); 
   var config = new PerlinConfiguration(1+Math.floor(Math.random()*7 ));
+  var config = new PerlinConfiguration('perlin');
   var simplex = new SimplexNoise();  
 
   var sand_config = new PerlinConfiguration('big_patches');
@@ -195,6 +196,8 @@ function PerlinTileGenerator() {
       tile_weight = config.weights[i];
       total += Math.floor(simplex.noise(tile_x, tile_y)*tile_weight);
     }
+    if (total == 2)
+      total = 3;
 
     //add patches of desert
     var sand_chance = sand_config.base;
