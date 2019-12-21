@@ -15,6 +15,17 @@ RiverGenerator = function(world_map) {
     return (this.map.get(hex).elevation < 1);
   }
 
+  this.isCoastal = function(hex) {
+    for (let neighbor of hex.getNeighbors() ) {
+      if (!this.map.get(neighbor))
+        continue;
+      if (this.map.get(neighbor).elevation < 2) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   this.isWater = function(hex) {
     if (!(hex instanceof Hex))
       return false;
@@ -62,6 +73,8 @@ RiverGenerator = function(world_map) {
        continue;
       //skip the water
       if (this.isWater(neighbor))
+        continue;
+      if (this.isCoastal(neighbor) && !this.isWater(hex))
         continue;
       //skip those with rivers already
       if (this.map.get(neighbor).river)
@@ -171,7 +184,8 @@ RiverGenerator = function(world_map) {
     let nextHex = this.getRandomNext();
     //make it into a river, with 1 water level
     //connect it to the river that made it
-    this.growRiver(nextHex);
+    
+        this.growRiver(nextHex);
     //add its neighbors to the bag
     this.addNeighbors(nextHex);
     //console.log(next.getHexArray().length);

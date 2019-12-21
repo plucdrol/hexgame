@@ -163,16 +163,16 @@ UnitInput.p.clickOutsideRange = function(target) {
 
 
 
-UnitInput.p.updateActionRangeIndirectly = function() {
+UnitInput.p.updateActionTargetsIndirectly = function() {
 
   let actor = this.getActorSelected();
   let action = this.button_menu.getActionSelected(actor);
 
   if (action) {
-    action.updateActionRange(this.world, actor, this.hex_selected);
+    action.updateActionTargets(this.world, actor, this.hex_selected);
     world.highlightRange(actor.range);
   } else {
-    actor.range = new HexMap();
+    actor.range = [];
     world.clearHighlights();
   }
 };

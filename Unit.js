@@ -4,17 +4,30 @@
 //
 //           GENERIC UNIT --------------------//
 
+var unit_id_incrementer = 1000;
+
 function Unit(unit_type, owner) {
   
   this.selectable = true;
+  this.position = null;
+
+  this.id = unit_id_incrementer++;
   
   this.owner = null;
-  if (owner) 
+  if (owner) {
     this.owner = owner;
+    this.group = owner.group;
+  } else {
+    this.group = new Group();
+    this.group.addUnit(this);
+  }
 
   this.setType(unit_type);
 };
 
+Unit.prototype.getGroupPositions = function() {
+  return this.group.getGroupPositions();
+}
 Unit.prototype.addPop = function(pop_amount) {
   if (this.owner && this.type != 'city') 
     this.owner.addPop(pop_amount);
@@ -34,6 +47,13 @@ Unit.prototype.addAction = function( action ) {
     this.actions = [];
   }
   this.actions.push( action );
+}
+
+Unit.prototype.getActions = function() {
+  if (this.actions)
+    return this.actions;
+  else
+    return [];
 }
 
 Unit.prototype.moveActionToTop = function( action) {
@@ -59,40 +79,25 @@ Unit.prototype.setType = function(unit_type) {
   case 'city':
     this.split = 1;
     this.name = "City";
-    this.pop =  4;
-    this.setGraphic('white',6);
+    this.pop =  0;
+    this.setGraphic('saddlebrown',4);
     this.can_move = true;
-    //this.addAction( new actionGetResource(1, false));
-    this.addAction( new actionCreateVillage(3));
-    this.addAction( new actionCreateLighthouse(3));
-
-
-    this.addAction( new actionCreateCity(10));
-    //this.addAction( new actionCreateExpeditionCenter());
-    //this.addAction( new actionCreateHarbor());
-    //this.addAction( new actionCreateCityCanon(6));
-
+    this.addAction( new actionExploit(12, false));
+    this.addAction( new actionExpand(3));
+    this.addAction( new actionExpand2(12));
+    this.addAction( new actionExplore(10));
     this.addAction( new actionMoveCity(8) );
+    this.addAction( new actionExpandAll() );
 
-    this.addAction( new actionCreateCityBySea(6));
-    this.addAction( new actionCreateLighthouseBySea(6));
     break;
 
   case 'village':
     this.name = "Village";
-    this.setGraphic('white',0);
+    this.setGraphic('saddlebrown',2);
     
-    this.addAction( new actionGetFood(2));
-    //this.addAction( new actionCreateLighthouse(1));
+    
     break;
 
-  case 'expedition-center':
-    this.name = "Expedition Center";
-    this.setGraphic('pink',5);
-    this.addAction( new actionCreateCity(10));
-    this.addAction( new actionCreateVillage(5));
-    this.council_connected = false;
-    break;
 
   case 'flesh-canon':
     this.name = "City canon";
@@ -107,12 +112,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionHydroDam());
     break;
 
-  case 'harbor':
-    this.name = "Harbor";
-    this.setGraphic('brown',5);
-    this.addAction( new actionCreateCityBySea(6));
-    this.addAction( new actionCreateLighthouseBySea(6));
-    break;
+
 
 
 
@@ -121,7 +121,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'colony':
     this.name = "Colony";
-    this.setGraphic('white',3);
+    this.setGraphic('saddlebrown',1);
     this.setResource('colony',1);
     break;
 
@@ -145,11 +145,11 @@ Unit.prototype.setType = function(unit_type) {
     this.setResource('fish',1);
     break;
   case 'food':
-    this.setGraphic('brown',2);
+    this.setGraphic('#f33',1);
     this.setResource('food',1);
     break;
   case 'wood':
-    this.setGraphic('brown',2);
+    this.setGraphic('#f33',1);
     this.setResource('food',1);
     this.setResource('forest',1);
     break;
@@ -213,4 +213,46 @@ Unit.prototype.setCitySize = function(size) {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var group_id_incrementer = 1000;
+
+
+function Group() {
+
+  this.units = [];
+  this.id = group_id_incrementer++;
+
+  this.addUnit = function(unit) {this.units.push(unit);}
+  this.getUnits = function() {return this.units;}
+  this.hasUnit = function(unit) {
+    for (let my_unit of this.units)
+      if (my_unit.id == unit.id)
+        return true;
+
+    return false;
+  }
+
+  this.getGroupPositions = function() {
+
+  }
+
+}
 

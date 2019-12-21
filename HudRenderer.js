@@ -98,7 +98,7 @@ HUDRenderer.prototype.updateActionTargets = function (hex_hovered) {
       return;
 
     let hover_action = action.hover_action;
-    this.action_targets = hover_action.getActionRange(this.world, actor, hex_hovered );
+    this.action_targets = hover_action.getActionTargets(this.world, actor, hex_hovered );
   } 
 }
 
@@ -242,8 +242,8 @@ HUDRenderer.prototype.generateButtons = function(actor, position) {
     if (!action.activation(this.world, actor, position)) 
       continue;
 
-    if (action.getActionRange(this.world, actor, position).length < 1 && !action.infinite_range)
-      continue;
+    //if (action.getActionTargets(this.world, actor, position).length < 1 && !action.infinite_range)
+      //continue;
 
     let new_button = this.makeActionButton(action);
     action_buttons.innerHTML += new_button;
@@ -271,7 +271,7 @@ HUDRenderer.prototype.selectFirstActionIfNoneSelected = function() {
   let first_action = radio_elements[0];
   if (first_action && !first_action.disabled) {
     first_action.checked = true;
-    this.unit_input.updateActionRangeIndirectly();
+    this.unit_input.updateActionTargetsIndirectly();
   }
 
 
@@ -282,12 +282,12 @@ HUDRenderer.prototype.selectFirstActionIfNoneSelected = function() {
 HUDRenderer.prototype.addActionClickDetection = function() {
   let self = this;
 
-  this.button_menu.addButtonClickDetection('action-buttons', function(){ self.unit_input.updateActionRangeIndirectly() });
+  this.button_menu.addButtonClickDetection('action-buttons', function(){ self.unit_input.updateActionTargetsIndirectly() });
 
   /*
   //add the click-detection code
   for (let button of document.getElementById('action-buttons').getElementsByClassName('button-input')) {
-    button.addEventListener('click', function(){ self.unit_input.updateActionRangeIndirectly(); });
+    button.addEventListener('click', function(){ self.unit_input.updateActionTargetsIndirectly(); });
   }*/
 }
 
@@ -464,6 +464,6 @@ HUDRenderer.prototype.addTooltipTile = function(hex_hovered) {
     addTooltip(land_tiles[tile.elevation]+", ");
   }
   if (tile.river) {
-    addTooltip('river '+tile.river.name);
+    addTooltip('river '+tile.river.water_level);
   }
 }

@@ -18,7 +18,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   if (stopFunction)
     this.stopFunction = stopFunction;
   else
-    this.stopFunction = function(map, coordinate1, coordinate2) {return false;};
+    this.stopFunction = function(map, coordinate1, coordinate2, origin) {return false;};
 
   PathFinderCell = function(coord, previous_coord, path_cost) {
       this.coord = coord;
@@ -33,15 +33,25 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   //Creates a new map of the visited cells
   this.initVisited = function(origin) {
     this.visited = new Map();
+    this.origins = [];
 
-    if (Array.isArray(origin))
-      for (position of origin)
-        this.setCell( position, this.originCell(position) );
-    else
-      this.setCell( origin, this.originCell(origin) );
+    if (Array.isArray(origin)) {
+
+      for (position of origin) {
+        this.setCell( position, this.makeOriginCell(position) );
+        this.origins.push(position);
+      }
+    } else {
+      this.setCell( origin, this.makeOriginCell(origin) );
+      this.origins.push(origin);
+    }
   };
+
+  this.getOriginArray = function() {
+    return this.origins;
+  }
  
-  this.originCell = function(coord) {
+  this.makeOriginCell = function(coord) {
     return new PathFinderCell(coord, undefined, 0);
   };
 
@@ -61,7 +71,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
   this.calculateCost = function(map, cost_so_far, coord, previous_coord) {
     
-    let step_cost = this.stepCostFunction(map, previous_coord, coord);
+    let step_cost = this.stepCostFunction(map, previous_coord, coord, this.getOriginArray());
     
     return cost_so_far + step_cost;
   };
@@ -81,7 +91,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   this.calculatePath = function(origin, target) {
     
     if (origin.equals(target)) {
-      return [ getOriginCell(origin) ];
+      return [ this.makeOriginCell(origin) ];
     }
 
     //find path to the hex before target using function
@@ -95,11 +105,6 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   };
 
 
-
-  //Creates a cell at the start of a queue
-  this.getOriginCell = function(origin) {
-    return new PathfinderCell(origin,0,undefined);
-  };
 
   //Return the cells worth revisiting for pathfinding
   this.getCellsToRevisit = function(cells) {
@@ -123,7 +128,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
     var self = this;
     return function(cell) {
       let coord = self.getCoord(cell);
-      return ( self.stepCostFunction(map, cell.previous_coord, coord ) != undefined );
+      return ( self.stepCostFunction(map, cell.previous_coord, coord, self.getOriginArray() ) != undefined );
     };
   };
 
@@ -186,83 +191,52 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   };
 
 
-    //recursive step of exploring the map
-  this.rangeFindBreadthFirst = function(map, origin, max_cost) {
+
+
+
+     //recursive step of exploring the map
+  this.rangeFind = function(map, origins, max_cost, target = null) {
 
     let new_cells_to_add = [];
 
     let pathfinder = this;
-    let all_coords_to_visit = [origin];
+    let all_coords_to_visit;
+    if (target)
+      all_coords_to_visit = new PriorityQueue(   (coord1, coord2) => (pathfinder.currentCell(coord1).path_cost+Hex.distance(coord1,target) < pathfinder.currentCell(coord2).path_cost+Hex.distance(coord2,target)) );  
+    else
+      all_coords_to_visit = new PriorityQueue(   (coord1, coord2) => (pathfinder.currentCell(coord1).path_cost < pathfinder.currentCell(coord2).path_cost) );  
 
-    let coord;
-    
-    do {
 
-      coord = all_coords_to_visit.shift();
-
-      //do not look further if stop function triggers (except at origin)
-      let previous_coord = this.currentCell(coord).previous_coord;
-      if (Hex.equals(origin,coord) || Hex.equals(origin,previous_coord) || (previous_coord && !this.stopFunction(map,previous_coord, coord))  ) 
-        new_cells_to_add = this.getGoodNeighbors(map, coord, max_cost);
-      else
-        continue;
-    
-      for (cell of new_cells_to_add) {
-        //mutability of data in these steps!
-        this.setCell(this.getCoord(cell), cell); 
-      }
-
-      let new_coords = new_cells_to_add.map(cell => pathfinder.getCoord(cell));
-
-      all_coords_to_visit = all_coords_to_visit.concat(new_coords);
+    for (let origin of this.origins)
+      all_coords_to_visit.push(origin);
       
-    } while (all_coords_to_visit.length > 0) 
-
-  };
-
-
-
-
-    //recursive step of exploring the map
-  this.rangeFindPriority = function(map, origin, target, max_cost) {
-
-    let new_cells_to_add = [];
-
-    let pathfinder = this;
-    let all_coords_to_visit = new PriorityQueue(   (coord1, coord2) => (pathfinder.currentCell(coord1).path_cost+Hex.distance(coord1,target) < pathfinder.currentCell(coord2).path_cost+Hex.distance(coord2,target)) );
-    //let all_coords_to_visit = [];
-    all_coords_to_visit.push(origin);
-  
-
-    let coord;
-    
     do {
 
       //coord = all_coords_to_visit.shift();
-      coord = all_coords_to_visit.pop();
+      let coord = all_coords_to_visit.pop();
 
       //do not look further if stop function triggers (except at origin)
       let previous_coord = this.currentCell(coord).previous_coord;
-      if (Hex.equals(origin,coord) || Hex.equals(origin,previous_coord) || (previous_coord && !this.stopFunction(map,previous_coord, coord))  ) 
+      if ( !previous_coord || (previous_coord && !this.stopFunction(map, previous_coord, coord, this.origins))  )
         new_cells_to_add = this.getGoodNeighbors(map, coord, max_cost);
       else
         continue;
     
       for (cell of new_cells_to_add) {
         //mutability of data in these steps!
-        this.setCell(this.getCoord(cell), cell); 
+        this.setCell(cell.coord, cell); 
       }
 
-      let new_coords = new_cells_to_add.map(cell => pathfinder.getCoord(cell));
+      let new_coords = new_cells_to_add.map( cell => cell.coord );
 
       for (new_coord of new_coords) {
         all_coords_to_visit.push(new_coord);
       }
-      //all_coords_to_visit = all_coords_to_visit.concat(new_coords);
-      if (Hex.equals(coord,target))
+      
+      //Stop if target is reached
+      if (target && Hex.equals(coord,target))
           break;
       
-    //} while (all_coords_to_visit.length > 0) 
     } while (!all_coords_to_visit.isEmpty()) 
 
   };
@@ -274,15 +248,25 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
 
 
+
+
+
   //Returns an array of coordinates of each cell that was visited 
-  this.getRangeArray = function(min_cost, max_cost) {
+  this.getRangeArray = function(max_cost) {
     var coord_array = [];
     for (cell of this.visited.values()) {
-      if (cell.path_cost >= min_cost && cell.path_cost <= max_cost) {
-        coord_array.push(this.getCoord(cell)); 
+      if (cell.path_cost <= max_cost) {
+        coord_array.push( this.getCoord(cell) ); 
       }
     }
     return coord_array;
+  };
+
+
+  //Returns an array of coordinates of each cell that was visited, and the cell that leads to them 
+  this.getRangeTree = function(max_cost) {
+
+    return this.visited;
   };
  
   //returns a map containing only the coordinates on the path
@@ -314,34 +298,12 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
 
 
+ 
 
-  this.exploreArea = function(map, origin, max_cost) {
-      
-    this.initVisited(origin);
-        
-    //return a map of origin only, if movement is 0
-    if (max_cost > 0) {
-      if (Array.isArray(origin))
-        for (position of origin)
-          this.rangeFindBreadthFirst(map, origin, max_cost);
-      else
-        this.rangeFindBreadthFirst(map, origin, max_cost);
-    }
-  };
 
-  this.exploreAreaTargetted = function(map, origin, target, max_cost) {
-      
-    this.initVisited(origin);
-        
-    //return a map of origin only, if movement is 0
-    if (max_cost > 0) {
-      if (Array.isArray(origin))
-        for (position of origin)
-          this.rangeFindPriority(map, origin, target, max_cost);
-      else
-        this.rangeFindPriority(map, origin, target, max_cost);
-    }
-  };
+
+
+
 
 
 
@@ -349,25 +311,31 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
 
   //Return a function which can be used many times
-  this.getCost = function(map, origin, target, max_cost) {
-    if (max_cost === undefined) 
-      max_cost = 10;
-    this.exploreArea(map, origin, max_cost);
+  this.getCost = function(map, origin, target, max_cost = 10) {
+    this.initVisited(origin);
+    this.rangeFind(map, origin, max_cost, target);
     return this.currentCell(target).path_cost;
   };
 
   //Return a function which can be reused to find the path
-  this.getPath = function(map, origin, target, max_cost) {
-    if (max_cost === undefined) 
-      max_cost = 5;
-    this.exploreAreaTargetted(map, origin, target, max_cost);
+  this.getPath = function(map, origin, target, max_cost = 10) {
+    this.initVisited(origin);
+    this.rangeFind(map, origin, max_cost, target);
     return this.targetPathfind(map, origin, target);
   };
 
   //Returns a function which can be used many times to find range 
-  this.getRange = function(map, origin, max_cost, min_cost) {
-    this.exploreArea(map, origin, max_cost);
-    return this.getRangeArray(min_cost, max_cost);
+  this.getRange = function(map, origin, max_cost) {
+    this.initVisited(origin);
+    this.rangeFind(map, origin, max_cost);
+    return this.getRangeArray(max_cost);
+  };
+
+    //Returns a function which can be used many times to find range 
+  this.getTree = function(map, origin, max_cost) {
+    this.initVisited(origin);
+    this.rangeFind(map, origin, max_cost);
+    return this.getRangeTree(max_cost);
   };
 }
 

@@ -116,7 +116,7 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 
 WorldRenderer.p.drawRivers = function(hexarray) {
 
-  let water_draw_level = 3;
+  let water_draw_level = 7;
   let max_draw_level = 150;
 
   //draw the rivers
@@ -149,7 +149,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
 WorldRenderer.p.drawRoads = function(hexarray) {
 
   let road_style = 'half only'
-
+  let zoom = this.hex_renderer.renderer.view.getZoom();
 
 
   //draw the roads
@@ -161,23 +161,32 @@ WorldRenderer.p.drawRoads = function(hexarray) {
     
     if (tile.road_from) {
 
-      if (this.hex_renderer.renderer.view.getZoom() > 1.5) 
-        road_style = 'moving dots';
+      //Math.min(6,5/zoom)
       for (from of tile.road_from) {
-        if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) )
-          this.hex_renderer.drawCenterLine(hex, from, 8, '#0DD', 'moving dots');
-        else 
-          this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0', road_style);
+        if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.road_size, 'saddlebrown', 'half only');
+          if (zoom > 1.5) 
+            this.hex_renderer.drawCenterLine(hex, from, 6, '#saddlebrown', 'moving dots');
+        } else {
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.road_size, 'saddlebrown', 'half only');
+          if (zoom > 1.5) 
+            this.hex_renderer.drawCenterLine(hex, from, 6, 'saddlebrown', 'moving dots');
+        }
       }
     }
+
+    
     if (tile.road_to) {
-      if (this.hex_renderer.renderer.view.getZoom() > 1.5) 
-        road_style = 'moving dots backwards';
       for (from of tile.road_to) {
-        if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) )
-          this.hex_renderer.drawCenterLine(hex, from, 8, '#0DD', 'moving dots backwards');
-        else 
-          this.hex_renderer.drawCenterLine(hex, from, 6, '#DD0', road_style);
+        if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.road_size, 'saddlebrown', 'half only');
+          if (zoom > 1.5) 
+            this.hex_renderer.drawCenterLine(hex, from, 6, '#saddlebrown', 'moving dots backwards');
+        } else {
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.road_size, 'saddlebrown', 'half only');
+          if (zoom > 1.5) 
+            this.hex_renderer.drawCenterLine(hex, from, 6, 'saddlebrown', 'moving dots backwards');
+        }
       }
     }
   }
@@ -205,9 +214,9 @@ WorldRenderer.p.drawResources = function(hexarray) {
     var this_resource = this.world.getResource(hex);
     if (this_resource != undefined && this_resource.resources) {
         
-        if (this.hex_renderer.renderer.view.getZoom() > 1.5 && this_resource.type != 'fish')
-          this.hex_renderer.drawImage(hex);
-        else
+        //if (this.hex_renderer.renderer.view.getZoom() > 1.5 && this_resource.type != 'fish')
+         // this.hex_renderer.drawImage(hex);
+        //else
           this.drawUnit(this_resource,hex,0);
 
     }
@@ -255,22 +264,24 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   if (unit.type == 'unknown')
     unit_style.fill_color = "rgba("+(128+127*this.ocillate(1000))+","+(255*this.ocillate(1000))+","+(128-128*this.ocillate(1000))+",1)";
 
+  let zoom = view.getZoom();
 
   //draw a square or hexagon
-  if (unit.size > 4) {
+  if (unit.size > 4 || (unit.pop && unit.pop > 9)) {
     this.hex_renderer.drawHex(hex, unit_style);
   } else {
-    this.hex_renderer.renderer.drawDot(position, 10*unit.size, unit_style);
+    this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size, 15*unit.size/zoom ), unit_style);
   }
 
   
 
   //draw a number on the unit
-  if (unit.pop) {
+  if (unit.pop && unit.pop >= 1) {
     let text_style = new RenderStyle();
-    text_style.text_size = 45;
+    let zoom = view.getZoom();
+    text_style.text_size = Math.min(45, 1.5*45/zoom );
     let text = unit.pop;      
-    this.hex_renderer.renderer.drawText(text, position, text_style, true);
+    //this.hex_renderer.renderer.drawText(text, position, text_style, true);
   }
 
 };

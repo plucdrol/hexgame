@@ -22,7 +22,7 @@ var canv_input = new CanvasInput(real_canvas);
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
-var view = new View(canvas, 0.8);
+var view = new View(canvas, 0.3);
 //Has functions for drawing to the screen
 var renderer = new Renderer(canv_draw, view);
 var real_renderer = new Renderer(real_canv_draw, view);
@@ -75,14 +75,14 @@ if (!start_hex)
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
 
-first_city.pop = 4;
+first_city.pop = 1;
 
-let inverted_point = new Point( -world.getPoint( start_hex.add(new Hex(3,0.5)) ).x, 
-                                -world.getPoint( start_hex.add(new Hex(3,0.5)) ).y   );
+let inverted_point = new Point( -world.getPoint( start_hex.add(new Hex(2,0.5)) ).x, 
+                                -world.getPoint( start_hex.add(new Hex(2,0.5)) ).y   );
 view.setCenter(inverted_point);
 
 //clear some clouds
-world.clearClouds(start_hex, 4);
+world.clearClouds(start_hex, 2);
 //world.clearClouds();
 
 //add resources

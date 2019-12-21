@@ -162,9 +162,17 @@ World.prototype.addUnit = function(hex, unit_type, owner) {
 
 World.prototype.destroyUnit = function(hex) {
 
+
     this.units.remove(hex);
 }
 
+World.prototype.getGroupPositions = function(group) {
+  let position_array = [];
+  for (let hex of this.units.getHexArray())
+    if (this.getUnit(hex) && this.getUnit(hex).group.id == group.id)
+      position_array.push(hex);
+  return position_array;
+}
 
 
 World.prototype.buildRoad = function(hexarray) {
@@ -183,14 +191,58 @@ World.prototype.addRoadTile = function(hex1, hex2) {
   //road on tile 2
   if (!this.getTile(hex2).road_from)
     this.getTile(hex2).road_from = [];
-  this.getTile(hex2).road_from.push(hex1);
+
+  let none_equal = true;
+  for (let hex of this.getTile(hex2).road_from)
+    if (Hex.equals(hex1, hex))
+      none_equal = false;
+  if (none_equal) {
+    this.getTile(hex2).road_from.push(hex1);
+    this.getTile(hex2).road_from.road_size = 1;
+  } else {
+    this.getTile(hex2).road_from.road_size++;
+    if (this.getTile(hex2).road_from.road_size > 36) {
+      this.getTile(hex2).road_from.road_size = 0;
+      this.addUnit(hex2, 'city', null);
+      this.getUnit(hex2).pop = 10;
+    }
+  }
+
 
   //road on tile 1
   if (!this.getTile(hex1).road_to)
     this.getTile(hex1).road_to = [];
-  this.getTile(hex1).road_to.push(hex2);
+
+  none_equal = true;
+  for (let hex of this.getTile(hex1).road_to)
+    if (Hex.equals(hex2, hex))
+      none_equal = false;
+  if (none_equal) {
+    this.getTile(hex1).road_to.push(hex2);
+    this.getTile(hex1).road_to.road_size = 1;
+  } else {
+    this.getTile(hex1).road_to.road_size++;
+    if (this.getTile(hex1).road_to.road_size > 36) {
+      this.getTile(hex1).road_to.road_size = 0;
+      this.addUnit(hex1, 'city', null);
+      this.getUnit(hex1).pop = 10;
+    }
+  }
 
 }
+
+World.prototype.countRoads = function(hex) {
+  let count = 0;
+  if (this.getTile(hex).road_from)
+    count += this.getTile(hex).road_from.length;
+  if (this.getTile(hex).road_to)
+    count += this.getTile(hex).road_to.length;
+  return count;
+
+}
+
+
+
 World.prototype.removeRoads = function(hex) {
   this.getTile(hex).road_from = null;
   this.getTile(hex).road_to = null;
@@ -340,8 +392,8 @@ World.prototype.isUpstreamOf = function(upstream_position, position) {
 }
 
 World.prototype.leavingRiver = function(position1, position2) {
-  return (this.onRiver(position1) && this.onWater(position2) && this.getTile(position2).river &&
-          this.getTile(position2).river.river_starts_here && 
+  return (this.onRiver(position1) && this.onWater(position2) && 
+          this.getTile(position2).river && this.getTile(position2).river.river_starts_here && 
           this.getTile(position2).river.name == this.getTile(position1).river.name);
 }
 
@@ -523,6 +575,12 @@ World.prototype.clearClouds = function(position, radius) {
   if (!position) {
     for (var hex of this.world_map.getHexArray())
       this.world_map.get(hex).hidden = false;
+    return;
+  }
+
+  if (!radius) {
+    this.world_map.get(position).hidden = false;
+    return;
   }
 
 
@@ -530,6 +588,7 @@ World.prototype.clearClouds = function(position, radius) {
     if (this.world_map.containsHex(hex))
       this.world_map.get(hex).hidden = false;
   }
+  return;
 }
 
 
