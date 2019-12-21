@@ -19,10 +19,10 @@
 function UnitInput(world) {
   this.world = world;
   this.hex_selected = undefined;
-  this.button_menu = new ButtonMenu('action-buttons');
-  this.button_menu.unit_input = this;
 
-
+  listenForEvent('hex_clicked', this.clickHex.bind(this) );
+  
+  this.button_menu = new ButtonMenu('action-buttons', this);
 }
 //-------1---------2---------3---------4---------5---------6--------7---------8--------
 UnitInput.p = UnitInput.prototype;
@@ -31,12 +31,12 @@ UnitInput.p.clickHex = function(hex) {
 
   //if there is already a unit on the hex selected
   if (this.anActorIsSelected() ) {
-    this.clickWithSelection(hex);
+    this.clickWithSelection(hex.detail);
     return;
   }
     
   //if there is no unit selected
-  this.clickWithNoSelection(hex);
+  this.clickWithNoSelection(hex.detail);
 };
 
 //selecting a tile

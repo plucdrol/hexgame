@@ -67,8 +67,7 @@ function GameInput(world, view) {
     if (event.keyCode === 187 || event.keyCode === 27) { // escape
         self.unit_input.selectNothing();
         this.unit_input.button_menu.update_function(this.unit_input.world, this.unit_input);
-        hud_renderer.updateHover(this.hex_hovered);
-        //updateWorldRender();
+        emitEvent('hex_hovered_changed', this.hex_hovered);
     }
     return false;
   }
@@ -138,7 +137,7 @@ function GameInput(world, view) {
 
     //if the mouse moved to a new hex, redraw the screen
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
-      hud_renderer.updateHover(this.hex_hovered);
+      emitEvent('hex_hovered_changed', this.hex_hovered);
     }
 
     //remember the currently hovered hex
@@ -149,19 +148,18 @@ function GameInput(world, view) {
   //React to the screen being clicked at screen_position
   this.clickScreenEvent = function(screen_position, device_type) {
     
-
-
     if (this.unit_input != undefined) {
 
       var world_position = this.view.screenToWorld(screen_position);
       let hex_clicked = this.world.getHex(world_position);
 
       //Only reference to unit controller in WorldInterface
-      if (device_type == "mouse" || Hex.equals(hud_renderer.last_hover, hex_clicked))
-        this.unit_input.clickHex(hex_clicked);
-      this.unit_input.button_menu.update_function(this.unit_input.world, this.unit_input);
-      this.unit_input.button_menu.updateHover(this.hex_hovered);
-      hud_renderer.updateHover(this.hex_hovered);
+      if (device_type == "mouse" || Hex.equals(hud_renderer.last_hover, hex_clicked)) {
+        emitEvent('hex_clicked', hex_clicked);
+      }
+        //this.unit_input.clickHex(hex_clicked);
+
+      emitEvent('hex_hovered_changed', this.hex_hovered);
       
     }
   }

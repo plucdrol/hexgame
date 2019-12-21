@@ -1,11 +1,53 @@
 
 
-function ButtonMenu(menu_id) {
+function ButtonMenu(menu_id, unit_input) {
 
 	this.menu_id = menu_id;
+  this.unit_input = unit_input;
+
+  listenForEvent('hex_hovered_changed', this.updateHover.bind(this) );
+  listenForEvent('hex_clicked', this.update_function.bind(this) );
 }
 
 ButtonMenu.p = ButtonMenu.prototype;
+
+
+
+
+/////////////////////////////////////////////////////
+//           Function which updates all the menus
+/////////////////////////////////////////////////////
+
+ButtonMenu.prototype.update_function = function() { 
+
+  let actor = this.unit_input.getActorSelected();
+  let position = this.unit_input.getHexSelected();
+
+  let free_res = this.unit_input.world.getPopulation();
+  let total_res = this.unit_input.world.resources_collected;
+
+  let resources = this.unit_input.world.total_resources;
+  this.writeMessage("Free: "+free_res, 'free-ants');
+  this.writeMessage("Total: "+total_res, 'total-ants');
+
+  this.updateBonusButtons(this.unit_input.world.bonus_list, this.unit_input.world);
+  
+
+  if (actor && actor.selectable) {
+    this.updateActionButtons(this.unit_input.world, actor, position);
+  } else {
+    this.clearButtons();
+    this.writeMessage("", 'city-resources');
+  }
+}
+
+
+
+ButtonMenu.prototype.updateHover = function(hex_hovered) {
+  //this.updateActionPath(hex_hovered);
+  //this.updateTooltip(hex_hovered);
+  this.last_hover = hex_hovered.detail;
+}
 
 /////////////////////////////////////////////////////////
                   // ACTION MENU AND SELECTION //
@@ -314,31 +356,6 @@ ButtonMenu.prototype.clearBonusButtons = function() {
 
 
 
-/////////////////////////////////////////////////////
-//           Function which updates all the menus
-/////////////////////////////////////////////////////
-
-ButtonMenu.prototype.update_function = function(world, unit_input) { 
-  let actor = unit_input.getActorSelected();
-  let position = unit_input.getHexSelected();
-
-  let free_res = world.getPopulation();
-  let total_res = world.resources_collected;
-
-  let resources = world.total_resources;
-  this.writeMessage("Free: "+free_res, 'free-ants');
-  this.writeMessage("Total: "+total_res, 'total-ants');
-
-  this.updateBonusButtons(world.bonus_list, world);
-  
-
-  if (actor && actor.selectable) {
-    this.updateActionButtons(world, actor, position);
-  } else {
-    this.clearButtons();
-    this.writeMessage("", 'city-resources');
-  }
-}
 
 
 
@@ -378,11 +395,7 @@ function addTooltip(message) {
   document.getElementById('tooltip').innerHTML += message;
 }
 
-ButtonMenu.prototype.updateHover = function(hex_hovered) {
-  //this.updateActionPath(hex_hovered);
-  //this.updateTooltip(hex_hovered);
-  this.last_hover = hex_hovered;
-}
+
 
 
 ButtonMenu.prototype.updateTooltip = function(hex_hovered) {

@@ -7,10 +7,20 @@ function HUDRenderer(world, game_input, hex_renderer) {
   this.hex_renderer = hex_renderer;
   this.action_path = [];
   this.action_targets = [];
+
+  listenForEvent('hex_hovered_changed', this.updateHover.bind(this) );
 }
 
 
+HUDRenderer.prototype.updateHover = function(hex_hovered) {
 
+  this.action_targets = [];
+  let self = this;
+  if (this.hoverTimeout)
+    clearTimeout(this.hoverTimeout);
+  this.hoverTimeout = setTimeout(function(){ self.updateActionTargets(hex_hovered.detail) }, 100);
+
+}
 
 
 /////////////////////////////////////////////////////
@@ -54,15 +64,7 @@ HUDRenderer.prototype.drawHUD = function() {
 }
 
 
-HUDRenderer.prototype.updateHover = function(hex_hovered) {
 
-  this.action_targets = [];
-  let self = this;
-  if (this.hoverTimeout)
-    clearTimeout(this.hoverTimeout);
-  this.hoverTimeout = setTimeout(function(){ self.updateActionTargets(hex_hovered) }, 100);
-
-}
 
 
 HUDRenderer.prototype.updateActionPath = function (hex_hovered) {
