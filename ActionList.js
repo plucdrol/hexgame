@@ -74,8 +74,9 @@ function actionExpand2(distance) {
   this.can_river = true;
   this.stop_on_rivers = true;
 
-  this.can_water = false;
+  this.can_water = true;
   this.coastal_start = false;
+  this.embark_at_cities = true;
 
   this.nextSelection = "self";
   this.min_distance = 0;
@@ -99,7 +100,7 @@ function actionExpand2(distance) {
   this.extra_description = "Create a new node far away.";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target);
+    return true;//world.onLand(target);
   }
 
   this.preEffect = function(world, actor, position, target) {

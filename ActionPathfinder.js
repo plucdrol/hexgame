@@ -139,18 +139,28 @@
 
     //climbing into ocean, but not from a river
     if (world.onLand(hex) && world.onWater(next_hex) && !world.enteringRiver(hex, next_hex) && !world.leavingRiver(hex, next_hex)) {
-      
+
+      //cannot water
+      if (!this.action.can_water)
+        return undefined;
+
+      //can embark at any city
+      if ( !this.action.coastal_start && this.action.embark_at_cities) {
+        if (world.noCitiesInArea(hex,0))
+          return undefined;
+      }
+
+
       //coastal starts cannot enter water except from their start position
-      if ( this.action.coastal_start )
+      if ( this.action.coastal_start && !this.action.embark_at_cities) {
         for (let origin of origins) {
           if (Hex.equals(origin, hex))
             continue;
           else
             return undefined;
         }
+      }
 
-      else if (!this.action.can_water)
-        return undefined;
     }
 
     //climbing from water to land without a river
@@ -178,7 +188,7 @@
 
 
     if (world.onWater(hex) && world.onWater(next_hex))
-      cost*= 0.5;
+      cost= 2;
 
     if (world.onWater(next_hex) && this.action.slow_in_water)
       cost = 100;

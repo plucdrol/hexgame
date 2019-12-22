@@ -45,6 +45,7 @@ function Action() {
 
 
   this.coastal_start = false;
+  this.embark_at_cities = false;
 
   this.takes_city_pop = false; //true makes resources LOCAL, false makes resources GLOBAL
 
@@ -84,6 +85,7 @@ function Action() {
     let pathfinder = new ActionPathfinder(this);
     let tree = pathfinder.getTree( world, position, this.max_distance);
     let range = this.range.concat();
+    let action = this;
       
     //Either do a single action or do the action on all targets
     if (this.multi_target) {
@@ -92,7 +94,7 @@ function Action() {
       range.sort((a, b) => (world.onWater(a) && world.onLand(b)) ? 1 : -1);
       range.sort((a, b) => (tree.currentCell(a).path_cost > tree.currentCell(b).path_cost) ? 1 : -1);
       
-      let action = this;
+
       let counter = 0;
       let step_time = 500;
 
@@ -104,20 +106,22 @@ function Action() {
           step_time = 20;
         }
         counter++;
+        action.updateActionTargets(world, actor, position);
+        world.highlightRange(action.range);
         if (counter < range.length)
           setTimeout(stepByStep, step_time);
         step_time = 500;
       }
       stepByStep();
 
-      //for (hex of actor.range) 
-        //this.doSingleAction(world, actor, position, hex);
+
     } else {
-      this.doSingleAction(world, actor, position, target);
+      action.doSingleAction(world, actor, position, target);
+      action.updateActionTargets(world, actor, position);
+      world.highlightRange(action.range);
     }
     
-    this.updateActionTargets(world, actor, position);
-    world.highlightRange(this.range);
+
 
   };
 
