@@ -275,18 +275,21 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   if (unit.size > 4 || (unit.pop && unit.pop > 9)) {
     this.hex_renderer.drawHex(hex, unit_style);
   } else {
-    this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size, 15*unit.size/zoom ), unit_style);
+    if (unit.pop && unit.pop < 3)
+      this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size/2, 15*unit.size/2/zoom ), unit_style);
+    else
+      this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size, 15*unit.size/zoom ), unit_style);
   }
 
   
 
   //draw a number on the unit
-  if (unit.pop && unit.pop >= 1) {
+  if (unit.pop && unit.pop >= 3) {
     let text_style = new RenderStyle();
     let zoom = view.getZoom();
     text_style.text_size = Math.min(45, 1.5*45/zoom );
     let text = unit.pop;      
-    //this.hex_renderer.renderer.drawText(text, position, text_style, true);
+    this.hex_renderer.renderer.drawText(text, position, text_style, true);
   }
 
 };
