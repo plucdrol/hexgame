@@ -82,16 +82,16 @@ function Action() {
 
     let pathfinder = new ActionPathfinder(this);
     let tree = pathfinder.getTree( world, position, this.max_distance);
+    let range = this.range.concat();
       
     //Either do a single action or do the action on all targets
     if (this.multi_target) {
 
       //do actions in order from closest to furthest, with a preference for land tiles
-      actor.range.sort((a, b) => (world.onWater(a) && world.onLand(b)) ? 1 : -1);
-      actor.range.sort((a, b) => (tree.currentCell(a).path_cost > tree.currentCell(b).path_cost) ? 1 : -1);
+      range.sort((a, b) => (world.onWater(a) && world.onLand(b)) ? 1 : -1);
+      range.sort((a, b) => (tree.currentCell(a).path_cost > tree.currentCell(b).path_cost) ? 1 : -1);
       
       let action = this;
-      let range = actor.range;
       let counter = 0;
       let step_time = 500;
 
@@ -167,14 +167,14 @@ function Action() {
       //var target_actor = world.getUnit(target);
 
       this.hover_action.updateActionTargets(world, actor, target);
-      if (actor.range.length > 0)
+      if (this.hover_action.range.length > 0)
         this.hover_action.doAction(world, actor, target )
     }
 
 
     if (this.collect_resource ) 
-      if (world.hasResource(target) && world.getUnit(target)) 
-        world.getUnit(target).addPop(1);
+      if (world.hasResource(target)) 
+        world.getUnit(position).addPop(1);
 
     if (this.transfer_pop)
       if (world.getUnit(target) && world.getUnit(target).pop) {
