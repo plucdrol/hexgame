@@ -73,27 +73,28 @@ Unit.prototype.setResourceStores = function(food, wood, stone) {
 Unit.prototype.setType = function(unit_type) {
   this.type = unit_type;
 
+  let city_color = 'saddlebrown';
 
   switch (unit_type) {
 
   case 'city':
     this.split = 1;
     this.name = "City";
-    this.pop =  0;
-    this.setGraphic('saddlebrown',4);
+    this.pop =  1;
+    this.setGraphic(city_color,4);
     this.can_move = true;
-    this.addAction( new actionExploit(12, false));
-    this.addAction( new actionExpand(3));
-    this.addAction( new actionExpand2(12));
-    this.addAction( new actionExplore(10));
-    this.addAction( new actionMoveCity(8) );
-    this.addAction( new actionExpandAll() );
+    //this.addAction( new actionExploit(12, false));
+    //this.addAction( new actionExpand(3));
+    this.addAction( new actionExpand2(2));
+    this.addAction( new actionExplore(12));
+    //this.addAction( new actionMoveCity(8) );
+    //this.addAction( new actionExpandAll() );
 
     break;
 
   case 'village':
     this.name = "Village";
-    this.setGraphic('saddlebrown',2);
+    this.setGraphic(city_color,2);
     
     
     break;
@@ -121,7 +122,7 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'colony':
     this.name = "Colony";
-    this.setGraphic('saddlebrown',1);
+    this.setGraphic(city_color,1);
     this.setResource('colony',1);
     break;
 
