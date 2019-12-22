@@ -82,6 +82,10 @@ WorldRenderer.p.drawBigHex = function(radius) {
 
 WorldRenderer.p.drawTiles = function(hexarray) {
 
+  let purples = ['#924','#915','#925','#926','#936','#926','#924' ];
+  let greens = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822',];
+
+
   //draw the land colors
   for (hex of hexarray) {
 
@@ -95,9 +99,10 @@ WorldRenderer.p.drawTiles = function(hexarray) {
     if (this.getTile(hex).highlighted) {
       //this.drawTile(hex, this.getTile(hex));
       if (this.getTile(hex).elevation >= 2)
-        this.drawTile(hex, {elevation: 32}, 'yellow' );
+        this.drawTile(hex, {elevation: 32}, greens[this.getTile(hex).elevation%7] );
       else
-        this.drawTile(hex, {elevation: 32}, 'aqua' );
+       // this.drawTile(hex, {elevation: 32}, 'aqua' );
+      this.drawTile(hex, this.getTile(hex));
       //this.drawTile(hex, {elevation: 32}, lighter( greenscale_colors(this.getTile(hex).elevation) ) );
       continue;
     }
