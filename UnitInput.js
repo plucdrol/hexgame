@@ -49,26 +49,27 @@ UnitInput.p.selectHex = function(hex) {
 
       this.hex_selected = hex;
 
+      /* ----Do not clear the range----
       //look if there is a unit
       var actor = this.getActorSelected();
       if (actor) { 
         this.clearRange(actor);
-      }
+      }*/
     } 
   } else {
     this.hex_selected = undefined;
     this.selectNothing();
   }
 };
-
+/*
 UnitInput.p.clearRange = function(actor) {
 
   actor.range = [];
   this.world.clearHighlights();
-};
+};*/
 
 UnitInput.p.selectNothing = function() {
-  this.getActorSelected().range = undefined;
+  //this.getActorSelected().range = undefined;
   this.world.clearHighlights();
   this.hex_selected = undefined;
 };
@@ -117,13 +118,13 @@ UnitInput.p.clickWithSelection = function(target) {
   var action = this.button_menu.getActionSelected(actor);
 
 
-  if (action && !action.infinite_range && !actor.range ) {
+  if (action && !action.infinite_range && !action.range ) {
     this.clickOutsideRange(target);
     return 0;
   }
 
   //if you are clicking inside the actor's range
-  if ((action && action.infinite_range) || (actor.range && listContainsHex(target, actor.range)) ) {
+  if ((action && action.infinite_range) || (action.range && listContainsHex(target, action.range)) ) {
     this.clickInsideRange(target);
 
   //if you are clicking outside the actor's range
@@ -171,9 +172,9 @@ UnitInput.p.updateActionTargetsIndirectly = function() {
 
   if (action) {
     action.updateActionTargets(this.world, actor, this.hex_selected);
-    world.highlightRange(actor.range);
+    world.highlightRange(action.range);
   } else {
-    actor.range = [];
+    action.range = [];
     world.clearHighlights();
   }
 };

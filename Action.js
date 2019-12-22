@@ -153,6 +153,7 @@ function Action() {
       if (world.hasResource(target)) {
         world.resources_available++;
         world.resources_collected++;
+        actor.addPop(1);
       }
     }
 
@@ -206,9 +207,9 @@ function Action() {
 
   this.updateActionTargets = function(world, actor, position) {
 
-    world.clearHighlights();
-    actor.range = this.getActionTargets(world, actor, position );
-    world.highlightRange(actor.range);
+    //world.clearHighlights();
+    this.range = this.getActionTargets(world, actor, position );
+    //world.highlightRange(this.range);
 
     //clear the clouds over the area explored
     //for (let hex of actor.range) {

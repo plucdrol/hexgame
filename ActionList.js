@@ -1,6 +1,63 @@
 
 
 
+//This action transforms the unit into a camp
+function actionExpand(distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "village";
+  this.new_unit_type = 'city';
+  this.can_use_roads = true;
+  //this.double_road_speed = true;
+
+  this.can_land = true;
+  this.can_river = true;
+  this.stop_on_rivers = true;
+  this.stop_on_coast = true;
+
+  this.coastal_start = true;
+  this.can_water = true;
+
+  this.transfer_pop = true;
+
+  this.hover_action = new actionExploit(1, true);
+
+  this.nextSelection = "self";
+  this.min_distance = 0;
+  this.max_distance = distance;
+
+  //this.pop_action = 1/3;
+
+  this.also_build_road = true;
+  this.hover_radius = 1;
+
+  this.cloud_clear = 3;
+
+  this.free_pop_cost = 1;
+
+  this.collect_resource = true;
+
+
+  
+  this.description = "Expand";
+  this.extra_description = "Collect resources in a small circle";
+
+  this.targetFilterFunction = function(world, actor, target) {
+    return world.onLand(target) && !world.unitAtLocation(target) && !world.hasResource(target) && 
+    (world.countResources(Hex.circle(target,1),'food',1) || world.nearCoast(target));
+  }
+
+  this.activation = function(world, actor, position) {
+    return (world.bonusEnabled('can-create-villages') && actor.pop && actor.pop >= 0);
+  }
+  this.requirement = function(world, actor, position) {
+    return world.getPopulation() >= 2;
+  }
+}
+
+
 
 
 
@@ -89,7 +146,7 @@ function actionExplore(distance) {
   this.stop_on_coast = true;
 
   this.can_river = true;
-  this.stop_on_rivers = true;
+  this.stop_on_rivers = false;
 
   this.can_water = true;
   this.coastal_start = true;
@@ -110,7 +167,7 @@ function actionExplore(distance) {
   //this.takes_city_pop = false;
 
   this.can_use_roads = true;
-  //this.double_road_speed = true;
+  this.double_road_speed = true;
 
   this.description = "Explore";
   this.extra_description = "Create a new node far away.";
@@ -138,63 +195,6 @@ function actionExplore(distance) {
 
 
 
-
-
-//This action transforms the unit into a camp
-function actionExpand(distance) {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
-
-  this.name = "village";
-  this.new_unit_type = 'city';
-  this.can_use_roads = true;
-  //this.double_road_speed = true;
-
-  this.can_land = true;
-  this.can_river = true;
-  this.stop_on_rivers = true;
-  this.stop_on_coast = true;
-
-  this.coastal_start = true;
-  this.can_water = true;
-
-  this.transfer_pop = true;
-
-  this.hover_action = new actionExploit(1, true);
-
-  this.nextSelection = "self";
-  this.min_distance = 0;
-  this.max_distance = distance;
-
-  //this.pop_action = 1/3;
-
-  this.also_build_road = true;
-  this.hover_radius = 1;
-
-  this.cloud_clear = 3;
-
-  this.free_pop_cost = 1;
-
-  this.collect_resource = true;
-
-
-  
-  this.description = "Expand";
-  this.extra_description = "Collect resources in a small circle";
-
-  this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && !world.unitAtLocation(target) && !world.hasResource(target) && 
-    (world.countResources(Hex.circle(target,1),'food',1) || world.nearCoast(target));
-  }
-
-  this.activation = function(world, actor, position) {
-    return (world.bonusEnabled('can-create-villages') && actor.pop && actor.pop >= 0);
-  }
-  this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 2;
-  }
-}
 
 
 
@@ -368,7 +368,7 @@ function actionExploit(max_distance, multi_target) {
 
   this.also_build_road = true;
   this.can_use_roads = true;
-  this.double_road_speed = true;
+  this.double_road_speed = false;
 
   this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
   this.destroy_resource = true;
@@ -475,8 +475,35 @@ function actionHydroDam() {
     actor.pop += 4;
     this.hydroDam(world, position);
   }
+}*/
 
-  this.hydroDam = function(world, target) {
+function cutRiver(world, position) {
+  let tile = world.getTile(position);
+  let step_time = 300;
+
+  if (world.onRiver(position)) {
+    var water_level = tile.river.water_level;
+    stepByStepCutRiver();
+  }
+
+  
+
+  function stepByStepCutRiver() {   
+    
+    tile.river.water_level -= Math.floor(2*water_level/3);
+    tile = world.getTile(tile.river.downstream_hex);
+
+    if (tile.river.downstream_hex)
+      setTimeout(stepByStepCutRiver, step_time);
+
+  }
+}
+
+
+
+
+/*
+function hydroDam = function(world, target) {
     
 
     let tile = world.getTile(target);
@@ -507,12 +534,8 @@ function actionHydroDam() {
     }
 
 
-
-
-
-  }
-}*/
-
+}
+*/
 
 
 
