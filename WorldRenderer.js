@@ -155,7 +155,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
 
   let road_style = 'half only'
   let zoom = this.hex_renderer.renderer.view.getZoom();
-
+  let road_color = '#040';
 
   //draw the roads
   for (hex of hexarray) {
@@ -167,30 +167,30 @@ WorldRenderer.p.drawRoads = function(hexarray) {
     if (tile.road_from) {
 
       //Math.min(6,5/zoom)
-      for (from of tile.road_from) {
+      for (from of tile.road_from.getHexArray()) {
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.road_size, 'saddlebrown', 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.getValue(from), road_color, 'half only');
           if (zoom > 1.5) 
-            this.hex_renderer.drawCenterLine(hex, from, 6, '#saddlebrown', 'moving dots');
+            this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots');
         } else {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.road_size, 'saddlebrown', 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.getValue(from), road_color, 'half only');
           if (zoom > 1.5) 
-            this.hex_renderer.drawCenterLine(hex, from, 6, 'saddlebrown', 'moving dots');
+            this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots');
         }
       }
     }
 
     
     if (tile.road_to) {
-      for (from of tile.road_to) {
+      for (from of tile.road_to.getHexArray()) {
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.road_size, 'saddlebrown', 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.getValue(from), road_color, 'half only');
           if (zoom > 1.5) 
-            this.hex_renderer.drawCenterLine(hex, from, 6, '#saddlebrown', 'moving dots backwards');
+            this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots backwards');
         } else {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.road_size, 'saddlebrown', 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.getValue(from), road_color, 'half only');
           if (zoom > 1.5) 
-            this.hex_renderer.drawCenterLine(hex, from, 6, 'saddlebrown', 'moving dots backwards');
+            this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots backwards');
         }
       }
     }
