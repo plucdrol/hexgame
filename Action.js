@@ -58,6 +58,7 @@ function Action() {
   this.requirement = function(world, actor, position) {    return true;  }
 
   //additional effects of the action, which happen after the default ones
+    this.preEffect = function(world, actor, position, target) {  }
   this.effect = function(world, actor, position, target) {  }
 
   this.getDescription = function() {    
@@ -116,6 +117,7 @@ function Action() {
     }
     
     this.updateActionTargets(world, actor, position);
+    world.highlightRange(this.range);
 
   };
 
@@ -125,11 +127,15 @@ function Action() {
 
     world.clearClouds(target, this.cloud_clear);
 
+    this.preEffect(world, actor, position, target);
+
     if (this.takes_city_pop)       
       if (this.transfer_resources)
         actor.owner.addPop(-this.free_pop_cost);
       else
         actor.addPop(-this.free_pop_cost);
+
+
 
     if (this.also_build_road)
       this.createRoad(world, position, target);

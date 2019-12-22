@@ -36,21 +36,31 @@ function actionExpand2(distance) {
   //this.takes_city_pop = false;
 
   this.can_use_roads = true;
-  //this.double_road_speed = true;
+  this.double_road_speed = true;
 
   this.description = "Expand 2";
   this.extra_description = "Create a new node far away.";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && !world.unitAtLocation(target);
+    return world.onLand(target);
   }
 
-  this.effect = function(world, actor, position, target) {
+  this.preEffect = function(world, actor, position, target) {
 
-    world.getUnit(target).pop = 1;
-        for (let hex of Hex.circle(target,2))
-      if (world.onLand(hex))
-        world.getTile(hex).elevation = 3+Math.floor(Math.random()*4);
+
+    if (world.unitAtLocation(target) && world.getUnit(target).pop)
+      world.getUnit(target).pop++;
+
+
+    if (!world.unitAtLocation(target) && (world.countRoads(target) || world.onRiver(target))) {
+      world.addUnit(target, 'city', actor);
+      cutRiver(world, target);
+    }
+
+
+        //for (let hex of Hex.circle(target,2))
+      //if (world.onLand(hex))
+        //world.getTile(hex).elevation = 3+Math.floor(Math.random()*4);
 
   }
 }
