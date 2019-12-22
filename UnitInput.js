@@ -151,8 +151,8 @@ UnitInput.p.clickInsideRange = function(target) {
 
 
 UnitInput.p.clickOutsideRange = function(target) {
-  this.selectNothing();
-  this.clickHex(target);
+  //this.selectNothing();
+  //this.clickHex(target);
 };
 
 

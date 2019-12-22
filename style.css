@@ -60,6 +60,9 @@ html,body {
 }
 
 .action-button {
+
+	display: none;
+
 	background: grey;
   padding: 0.2em 0.5em;
   border: 2px solid darkgrey;

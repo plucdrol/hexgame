@@ -209,7 +209,7 @@ ButtonMenu.prototype.updateActionButtons = function(world, actor, position) {
   if (current_action) {
     this.selectActionById(current_action);
   } else {
-    //this.selectFirstActionIfNoneSelected();
+    this.selectFirstActionIfNoneSelected();
   }
 }
 
