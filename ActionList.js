@@ -380,7 +380,7 @@ function actionGrowRoots(max_distance) {
   this.hover_radius = 0;
   this.cloud_clear = 2;
 
-  this.can_water = false;
+  this.can_water = true;
   this.can_river = true;
   this.stop_on_rivers = true;
   this.no_climbing_ashore = true;
