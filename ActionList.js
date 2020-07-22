@@ -65,24 +65,29 @@ function actionExpand2(distance) {
   Action.call(this);
 
   this.name = "city-by-land-2";
+
+  this.nextSelection = 'new_unit_if_exists';
   //this.new_unit_type = 'city';
 
-  this.hover_action = new actionExploit(2, true);
+  //this.hover_action = new actionExploit(2, true);
 
   this.stop_on_coast = true;
 
   this.can_river = true;
   this.stop_on_rivers = true;
 
+  this.stay_on_rivers = false;
+  this.can_leave_rivers_on_first_step = true;
+  this.stop_on_river_exit=true;
+
   this.can_water = true;
   this.coastal_start = false;
   this.embark_at_cities = true;
 
-  this.nextSelection = "self";
   this.min_distance = 0;
   this.max_distance = distance;
 
-  this.also_build_road = true;
+  this.also_build_road = false;
   this.hover_radius = 3;
 
   this.destroy_resource = true;

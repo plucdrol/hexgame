@@ -144,6 +144,10 @@ UnitInput.p.clickInsideRange = function(target) {
     if (action.nextSelection == 'target') {
       this.selectHex(target); 
     } 
+
+    if (action.nextSelection == 'new_unit_if_exists' && this.world.unitAtLocation(target) ) {
+      this.selectHex(target); 
+    } 
   }
 
   this.button_menu.update_function(this.world, this);
