@@ -82,8 +82,9 @@ WorldRenderer.p.drawBigHex = function(radius) {
 
 WorldRenderer.p.drawTiles = function(hexarray) {
 
-  let purples = ['#924','#915','#925','#926','#936','#926','#924' ];
-  let greens = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822',];
+  let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
+  let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
+  let brown = ['#421','#412','#431','#421','#412','#431','#421','#412','#431'];
 
 
   //draw the land colors
@@ -98,8 +99,16 @@ WorldRenderer.p.drawTiles = function(hexarray) {
     //draw tiles lighter if highlighted
     if (this.getTile(hex).highlighted) {
       //this.drawTile(hex, this.getTile(hex));
-      if (this.getTile(hex).elevation >= 2)
-        this.drawTile(hex, {elevation: 32}, greens[this.getTile(hex).elevation%7] );
+      if (this.getTile(hex).elevation >= 2) {
+        if (this.getTile(hex).highlighted['brown'])
+          if (this.getTile(hex).highlighted['green'])
+            this.drawTile(hex, {elevation: 32}, green[this.getTile(hex).elevation%7] );
+          else
+            this.drawTile(hex, {elevation: 32}, brown[this.getTile(hex).elevation%7] );
+          
+
+      }
+        
       else
        // this.drawTile(hex, {elevation: 32}, 'aqua' );
       this.drawTile(hex, this.getTile(hex));
@@ -166,14 +175,18 @@ WorldRenderer.p.drawRoads = function(hexarray) {
     
     if (tile.road_from) {
 
+
       //Math.min(6,5/zoom)
       for (from of tile.road_from.getHexArray()) {
+        let road_size = tile.road_from.getValue(from);
+        if (road_size < 2) continue;
+
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.getValue(from), road_color, 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, road_size+3, road_color, 'half only');
           if (zoom > 1.5) 
             this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots');
         } else {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_from.getValue(from), road_color, 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, road_size+3, road_color, 'half only');
           if (zoom > 1.5) 
             this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots');
         }
@@ -183,12 +196,15 @@ WorldRenderer.p.drawRoads = function(hexarray) {
     
     if (tile.road_to) {
       for (from of tile.road_to.getHexArray()) {
+        let road_size = tile.road_to.getValue(from);
+        if (road_size < 2) continue;
+
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.getValue(from), road_color, 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
           if (zoom > 1.5) 
             this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots backwards');
         } else {
-          this.hex_renderer.drawCenterLine(hex, from, 3+tile.road_to.getValue(from), road_color, 'half only');
+          this.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
           if (zoom > 1.5) 
             this.hex_renderer.drawCenterLine(hex, from, 6, road_color, 'moving dots backwards');
         }
@@ -389,10 +405,10 @@ var greenscale_colors = function (i) {
 
 
   var rockscale = ['#115','#22D','#994', //ocean coast sand 0 1 2
-                    '#421','#412','#431', //grass 3 4 5
-                    '#421','#412','#431', //forest  6 7 8
-                    '#421','#412','#431', //hills 9 10 11 12 13
-                    '#412','#422',
+                    '#333','#444','#555', //grass 3 4 5
+                    '#333','#444','#555', //forest  6 7 8
+                    '#555','#555','#555', //hills 9 10 11 12 13
+                    '#444','#444',
                     '#777', '#777','#777', //mountains 14 15 16
                     '#888','#888','#888', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice

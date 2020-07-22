@@ -132,12 +132,18 @@ HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
 
 
 HUDRenderer.prototype.drawPath = function(hexarray, color) {
-  var previous = hexarray[0];
+  /*var previous = hexarray[0];
   if (hexarray.length > 0)
     for (hex of hexarray) {
       this.hex_renderer.drawCenterLine(hex, previous, 6, color );
       previous = hex;
-    }
+    }*/
+
+  //var previous = hexarray[0];
+  for (let i = 0; i < hexarray.length-1; i++) {
+    if (!this.world.areRoadConnected(hexarray[i], hexarray[i+1]))  
+      this.hex_renderer.drawCenterLine(hexarray[i], hexarray[i+1], 6, color );
+  }
 }
 
 HUDRenderer.prototype.actorHasRenderableRange = function(actor) {

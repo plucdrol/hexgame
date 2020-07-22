@@ -107,7 +107,7 @@ function Action() {
         }
         counter++;
         action.updateActionTargets(world, actor, position);
-        world.highlightRange(action.range);
+        world.highlightRange(action.range, 'brown');
         if (counter < range.length)
           setTimeout(stepByStep, step_time);
         step_time = 500;
@@ -118,7 +118,7 @@ function Action() {
     } else {
       action.doSingleAction(world, actor, position, target);
       action.updateActionTargets(world, actor, position);
-      world.highlightRange(action.range);
+      world.highlightRange(action.range, 'brown');
     }
     
 

@@ -614,7 +614,7 @@ World.prototype.clearClouds = function(position, radius) {
 ////////////////////////////////////////////////
 
 
-  World.prototype.highlightRange = function(original_range) {
+  World.prototype.highlightRange = function(original_range, color) {
     this.highlights_on = true;
     //for (hex of range) {
       //this.getTile(hex).highlighted = true;
@@ -628,15 +628,24 @@ World.prototype.clearClouds = function(position, radius) {
     function stepByStepHighlight() {
         let hex = range[counter];
 
-        while(hex instanceof Hex && world.getTile(hex) && world.getTile(hex).highlighted && counter < range.length) {
+        /*while(hex instanceof Hex && world.getTile(hex) && world.getTile(hex).highlighted && counter < range.length) {
+          if (color && !world.getTile(hex).highlighted[color])
+            break;
           counter++;
           hex = range[counter];
-        }
+        }*/
           
         if (counter >= range.length)
           return;
 
-        world.getTile(hex).highlighted = true;
+        if (!world.getTile(hex).highlighted)
+          world.getTile(hex).highlighted = [];
+
+        if (color) {
+          world.getTile(hex).highlighted[color] = true;
+        } else {
+          world.getTile(hex).highlighted['neutral'] = true;
+        }
 
         counter++;
         if (counter < range.length)
