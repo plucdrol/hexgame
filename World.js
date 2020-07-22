@@ -52,7 +52,7 @@ function World(radius) {
   this.highlights_on = false;
 
 
-  this.makeCloudsEverywhere();
+  //this.makeCloudsEverywhere();
 
   //create units map
   this.units = new HexMap();
@@ -66,9 +66,6 @@ function World(radius) {
   this.resources = new HexMap();
   this.generateResources();
   this.generateUnknown();
-
-  this.resources_available = 100;
-  this.resources_collected = 0;
 
 
 
