@@ -84,7 +84,7 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic(city_color,4);
     this.can_move = true;
     //this.addAction( new actionExploit(12, false));
-    this.addAction( new actionExpand(2));
+    this.addAction( new actionExpand(5));
     this.addAction( new actionExplore(12));
     //this.addAction( new actionMoveCity(8) );
     //this.addAction( new actionExpandAll() );

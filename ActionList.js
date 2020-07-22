@@ -9,7 +9,7 @@ function actionExpand(distance) {
   this.nextSelection = 'new_unit_if_exists';
   //this.new_unit_type = 'city';
 
-  //this.hover_action = new actionExploit(2, true);
+  this.hover_action = new actionGrowRoots(1);
 
   this.stop_on_coast = true;
 
@@ -412,8 +412,8 @@ function actionGrowRoots(max_distance) {
     if (world.countRoads(target) >= 1)
       return false;
 
-    //if (!world.countResources(Hex.circle(target, 0), 'food', 1))
-      //return false;
+    if (!world.countResources(Hex.circle(target, 0), 'food', 1))
+      return false;
 
     return true;
   }
@@ -421,6 +421,7 @@ function actionGrowRoots(max_distance) {
 
   this.effect = function(world,actor,position,target) {
     //actor.addPop(1);
+    this.createRoad(world, position, target);
   }
 }
 
