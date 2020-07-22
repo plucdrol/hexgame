@@ -18,7 +18,8 @@ HUDRenderer.prototype.updateHover = function(hex_hovered) {
   let self = this;
   if (this.hoverTimeout)
     clearTimeout(this.hoverTimeout);
-  this.hoverTimeout = setTimeout(function(){ self.updateActionTargets(hex_hovered.detail) }, 100);
+  this.hoverTimeout = setTimeout(function(){ self.updateActionTargets(hex_hovered.detail);
+                                             self.updateActionPath(hex_hovered.detail); }, 100);
 
 }
 
@@ -35,7 +36,7 @@ HUDRenderer.prototype.drawHUD = function() {
   if (hex_selected) {
     let actor = this.unit_input.getActorSelected();
 
-    this.drawSelectionHex(hex_selected);
+    //this.drawSelectionHex(hex_selected);
 
     if (hex_hovered) {
       this.drawHoveredHex(hex_hovered);
@@ -47,7 +48,7 @@ HUDRenderer.prototype.drawHUD = function() {
         //this.drawActorRange();
 
         if (this.action_path.length > 0) {
-          //this.drawActionPath(hex_hovered);
+          this.drawActionPath(hex_hovered);
         }
 
         if (this.action_targets.length > 0) {
@@ -74,7 +75,7 @@ HUDRenderer.prototype.updateActionPath = function (hex_hovered) {
   let hex_selected = this.unit_input.hex_selected;
 
   if (action && actor && hex_selected) {
-    this.action_path = action.getActionPath(this.world, actor, hex_selected, hex_hovered, 15);
+    this.action_path = action.getActionPath(this.world, actor, hex_selected, hex_hovered, action.max_distance);
   } else {
     this.action_path = [];
   }
@@ -92,6 +93,7 @@ HUDRenderer.prototype.drawActionPath = function (hex_hovered) {
 
   this.drawPath(this.action_path, color);
 }
+
 
 
 HUDRenderer.prototype.updateActionTargets = function (hex_hovered) {

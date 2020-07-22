@@ -22,7 +22,7 @@ function actionExpand(distance) {
 
   this.transfer_pop = true;
 
-  this.hover_action = new actionExploit(1, true);
+  //this.hover_action = new actionExploit(1, true);
 
   this.nextSelection = "self";
   this.min_distance = 0;
@@ -110,20 +110,39 @@ function actionExpand2(distance) {
 
   this.preEffect = function(world, actor, position, target) {
 
+    if (!world.unitAtLocation(target)) {
 
-    if (world.unitAtLocation(target) && world.getUnit(target).pop)
-      world.getUnit(target).pop++;
+      if ((world.countRoads(target) || world.onRiver(target))) {
+        world.addUnit(target, 'city', actor);
+        
+        world.highlightRange(Hex.circle(target, 1), 'green');
+      }
+
+      this.createRoad(world, position, target);
+      this.createRoad(world, position, target);
 
 
-    if (!world.unitAtLocation(target) && (world.countRoads(target) || world.onRiver(target))) {
-      world.addUnit(target, 'city', actor);
-      cutRiver(world, target);
+    }
+
+    if (Hex.equals(position, target)) {
+      actor.pop++;
+
+      let new_unit = world.getUnit(target);
+      //let root_action = new actionGrowRoots(new_unit.pop);
+      //root_action.updateActionTargets(world, new_unit, target);
+      //root_action.doAction(world, new_unit, target)
+
     }
 
 
-        //for (let hex of Hex.circle(target,2))
-      //if (world.onLand(hex))
-        //world.getTile(hex).elevation = 3+Math.floor(Math.random()*4);
+
+
+
+
+  }
+
+  this.effect = function(world, actor, position, target) {
+
 
   }
 }
@@ -407,6 +426,63 @@ function actionExploit(max_distance, multi_target) {
   }
 }
 
+
+
+
+
+
+function actionGrowRoots(max_distance) {
+  Action.call(this);
+
+  this.name = "get-food";
+  this.min_distance = 1;
+  this.max_distance = max_distance;
+  this.hover_radius = 0;
+  this.cloud_clear = 2;
+
+  this.can_water = false;
+  this.can_river = true;
+  this.stop_on_rivers = true;
+  this.no_climbing_ashore = true;
+  this.coastal_start = true;
+
+  this.also_build_road = true;
+  this.can_use_roads = false;
+  this.double_road_speed = false;
+
+  this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
+  this.destroy_resource = true;
+
+  //this.free_pop_cost = -1;
+  //this.total_pop_cost = -1;
+  //this.takes_city_pop = true;
+
+  this.multi_target = true;
+  //this.new_unit_type = 'colony';
+
+
+
+  this.description = "Claim resources";
+  this.extra_description = "Get all the food";
+
+  this.targetFilterFunction = function(world, actor, target) {
+    if (world.unitAtLocation(target)) 
+      return false;
+
+    if (world.countRoads(target) >= 1)
+      return false;
+
+    //if (!world.countResources(Hex.circle(target, 0), 'food', 1))
+      //return false;
+
+    return true;
+  }
+
+
+  this.effect = function(world,actor,position,target) {
+    //actor.addPop(1);
+  }
+}
 
 
 
