@@ -408,6 +408,10 @@ World.prototype.onLand = function(position) {
   return (this.getTile(position).elevation >= 2);
 }
 
+World.prototype.onDesert = function(position) {
+  return (this.getTile(position).elevation == 2);
+}
+
 World.prototype.onWater = function(position) {
   return !this.onLand(position);
 }
