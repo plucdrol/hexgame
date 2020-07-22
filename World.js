@@ -39,7 +39,6 @@ function World(radius) {
   this.layout = new HexLayout('pointy', tile_size, origin);
   
   //create land map
-  this.world_map = new HexMap();
   this.world_map = new MapGenerator('perlin').makeMap(radius);
 
   this.bonus_list = new BonusList();
