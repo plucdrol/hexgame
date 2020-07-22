@@ -176,7 +176,7 @@ UnitInput.p.updateActionTargetsIndirectly = function() {
 
   if (action) {
     action.updateActionTargets(this.world, actor, this.hex_selected);
-    world.highlightRange(action.range);
+    world.highlightRange(action.range, 'brown');
   } else {
     action.range = [];
     world.clearHighlights();
