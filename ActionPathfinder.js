@@ -49,6 +49,7 @@
         return true;
     }
 
+    //leaving a river
 
     //entering a river from land (except the river tip tile)
     if (!world.onRiver(hex) && world.onRiver(next_hex) && world.onLand(hex) 
@@ -175,19 +176,19 @@
 
     //climbing from water to land without a river
     if (world.onWater(hex) && world.onLand(next_hex) && !world.enteringRiver(hex, next_hex) && !world.leavingRiver(hex, next_hex)) {
-      if (this.action.no_climbing_ashore)
+      if (action.no_climbing_ashore)
         return undefined;
     }
 
     //if not along a river
     if (!world.alongRiver(hex, next_hex) ) {
-      if (this.action.river_only)
+      if (action.river_only)
         return undefined;
     }
 
     //if along a river
     if (world.alongRiver(hex, next_hex) ) {
-      if (!this.action.can_river || this.action.stop_on_rivers)
+      if (!action.can_river || (action.stop_on_rivers && !action.stay_on_rivers ))
         return undefined;
     }
     
@@ -200,21 +201,21 @@
     if (world.onWater(hex) && world.onWater(next_hex))
       cost= 2;
 
-    if (world.onWater(next_hex) && this.action.slow_in_water)
+    if (world.onWater(next_hex) && action.slow_in_water)
       cost = 100;
 
-    if (world.onWater(hex) && world.onLand(next_hex) && this.action.slow_in_water)
+    if (world.onWater(hex) && world.onLand(next_hex) && action.slow_in_water)
       cost = 200;
 
-    if (world.onLand(hex) && world.onWater(next_hex) && this.action.slow_in_water)
+    if (world.onLand(hex) && world.onWater(next_hex) && action.slow_in_water)
       if (world.noCitiesInArea(hex,0))
         cost = 10;
       else
         cost = 1;
 
-    if ((world.areRoadConnected(hex,next_hex) && (this.action.can_use_roads) )) {
+    if ((world.areRoadConnected(hex,next_hex) && (action.can_use_roads) )) {
       cost = 0.5;
-      if (this.action.double_road_speed)
+      if (action.double_road_speed)
         cost = 0;
 
     }
