@@ -1,67 +1,7 @@
 
 
 
-//This action transforms the unit into a camp
 function actionExpand(distance) {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
-
-  this.name = "village";
-  this.new_unit_type = 'city';
-  this.can_use_roads = true;
-  //this.double_road_speed = true;
-
-  this.can_land = true;
-  this.can_river = true;
-  this.stop_on_rivers = true;
-  this.stop_on_coast = true;
-
-  this.coastal_start = true;
-  this.can_water = true;
-
-  this.transfer_pop = true;
-
-  //this.hover_action = new actionExploit(1, true);
-
-  this.nextSelection = "self";
-  this.min_distance = 0;
-  this.max_distance = distance;
-
-  //this.pop_action = 1/3;
-
-  this.also_build_road = true;
-  this.hover_radius = 1;
-
-  this.cloud_clear = 3;
-
-  this.free_pop_cost = 1;
-
-  this.collect_resource = true;
-
-
-  
-  this.description = "Expand";
-  this.extra_description = "Collect resources in a small circle";
-
-  this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && !world.unitAtLocation(target) && !world.hasResource(target) && 
-    (world.countResources(Hex.circle(target,1),'food',1) || world.nearCoast(target));
-  }
-
-  this.activation = function(world, actor, position) {
-    return (world.bonusEnabled('can-create-villages') && actor.pop && actor.pop >= 0);
-  }
-  this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 2;
-  }
-}
-
-
-
-
-
-function actionExpand2(distance) {
   Action.call(this);
 
   this.name = "city-by-land-2";
