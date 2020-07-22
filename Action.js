@@ -212,7 +212,6 @@ function Action() {
 
   this.updateActionTargets = function(world, actor, position) {
 
-    //world.clearHighlights();
     this.range = this.getActionTargets(world, actor, position );
     //world.highlightRange(this.range);
 
@@ -223,7 +222,6 @@ function Action() {
   };
 
   this.clearActionRange = function(world, actor) {
-    world.clearHighlights();
     actor.range = [];
   }
 
