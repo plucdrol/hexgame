@@ -106,10 +106,11 @@
     var this_tile = world.getTile(hex);
 
 
+    let action = this.action;
 
     //going into clouds
     if (next_tile.hidden)
-      if (!this.action.can_explore)
+      if (!action.can_explore)
         return undefined;
 
     //going into moutains
@@ -117,23 +118,33 @@
       return undefined;
 
     if (world.onWater(next_hex)) {
-      if (!this.action.can_water)
+      if (!action.can_water)
         return undefined;
 
 
     }
+
+    if (world.onDesert(next_hex))
+      if (!action.can_desert)
+        return undefined;
 
 
     //walking on land, no river
     if (world.onLand(hex) && world.onLand(next_hex) && !world.alongRiver(hex, next_hex)) {
-      if (!this.action.can_land) {
+      if (!action.can_land) {
         return undefined;
       }
     }
 
+    //stepping out of a river
+    if (world.onRiver(hex) && !world.onRiver(next_hex)) {
+      if (action.stay_on_rivers)
+        return undefined;
+    }
+
     //stepping onto a river from dry land
-    if( !world.onRiver(hex) && world.onRiver(next_hex) && world.noUnitTypeInArea(next_hex, 0, 'city') && next_tile.river.water_level != 7) {
-      if (!this.action.river_only && !this.action.can_river)
+    if( !world.onRiver(hex) && world.onRiver(next_hex) && next_tile.river.water_level != 7) {
+      if (!action.river_only && !action.can_river)
         return undefined;
     }
 
@@ -141,18 +152,17 @@
     if (world.onLand(hex) && world.onWater(next_hex) && !world.enteringRiver(hex, next_hex) && !world.leavingRiver(hex, next_hex)) {
 
       //cannot water
-      if (!this.action.can_water)
+      if (!action.can_water)
         return undefined;
 
       //can embark at any city
-      if ( !this.action.coastal_start && this.action.embark_at_cities) {
+      if ( !action.coastal_start && action.embark_at_cities) {
         if (world.noCitiesInArea(hex,0))
           return undefined;
       }
 
-
       //coastal starts cannot enter water except from their start position
-      if ( this.action.coastal_start && !this.action.embark_at_cities) {
+      if ( action.coastal_start && !action.embark_at_cities) {
         for (let origin of origins) {
           if (Hex.equals(origin, hex))
             continue;

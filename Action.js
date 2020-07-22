@@ -34,6 +34,7 @@ function Action() {
 
   this.slow_in_water = false;
 
+  this.can_desert = true;
   this.river_only = false;
   this.can_river = false;
   this.can_water = false;
