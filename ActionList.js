@@ -6,12 +6,12 @@ function actionExpand(distance) {
 
   this.name = "city-by-land-2";
 
-  this.nextSelection = 'new_unit_if_exists';
+  this.nextSelection = 'self';//new_unit_if_exists';
   //this.new_unit_type = 'city';
 
   this.hover_action = new actionGrowRoots(1);
 
-  this.stop_on_coast = true;
+
 
   this.can_river = true;
   this.stop_on_rivers = true;
@@ -20,9 +20,11 @@ function actionExpand(distance) {
   this.can_leave_rivers_on_first_step = true;
   this.stop_on_river_exit=true;
 
+  this.stop_on_coast = true;
   this.can_water = true;
   this.coastal_start = false;
   this.embark_at_cities = true;
+  this.disembark_at_cities = true;
 
   this.min_distance = 0;
   this.max_distance = distance;
@@ -39,9 +41,10 @@ function actionExpand(distance) {
   //this.takes_city_pop = false;
 
   this.can_use_roads = true;
-  this.double_road_speed = true;
+  this.double_road_speed = false;
+  this.double_highway_speed = true;
 
-  this.description = "Expand 2";
+  this.description = "Expand";
   this.extra_description = "Create a new node far away.";
 
   this.targetFilterFunction = function(world, actor, target) {
@@ -50,29 +53,46 @@ function actionExpand(distance) {
 
   this.preEffect = function(world, actor, position, target) {
 
+
+    //grow city if clicking on it
+    if (world.unitAtLocation(target) && world.getUnit(target).pop) {
+      world.getUnit(target).pop++;
+
+    }
+
+    //grow road and maybe build a node
     if (!world.unitAtLocation(target)) {
 
+      //create green around river nodes
       if ((world.countRoads(target) || world.onRiver(target))) {
-        world.addUnit(target, 'city', actor);
-        
         world.highlightRange(Hex.circle(target, 1), 'green');
+        world.addUnit(target, 'city', actor);
+
+        //automatically connect resources around new city
+        var hover_action = new actionGrowRoots(1);
+        if (hover_action && hover_action.multi_target) {
+
+          hover_action.updateActionTargets(world, actor, target);
+          if (hover_action.range.length > 0)
+            hover_action.doAction(world, actor, target )
+        }
+
+        //create highway to new city     
+        this.createRoad(world, position, target, 2);
+        this.createRoad(world, position, target, 2);
+
+      } else {
+        //create normal road to resource
+        this.createRoad(world, position, target, 1);
+        this.createRoad(world, position, target, 1);
       }
 
-      this.createRoad(world, position, target);
-      this.createRoad(world, position, target);
+      
 
 
     }
 
-    if (Hex.equals(position, target)) {
-      actor.pop++;
 
-      let new_unit = world.getUnit(target);
-      //let root_action = new actionGrowRoots(new_unit.pop);
-      //root_action.updateActionTargets(world, new_unit, target);
-      //root_action.doAction(world, new_unit, target)
-
-    }
 
 
 
@@ -409,8 +429,8 @@ function actionGrowRoots(max_distance) {
     if (world.unitAtLocation(target)) 
       return false;
 
-    if (world.countRoads(target) >= 1)
-      return false;
+    //if (world.countRoads(target) >= 1)
+      //return false;
 
     if (!world.countResources(Hex.circle(target, 0), 'food', 1))
       return false;
@@ -422,6 +442,7 @@ function actionGrowRoots(max_distance) {
   this.effect = function(world,actor,position,target) {
     //actor.addPop(1);
     this.createRoad(world, position, target);
+    world.addUnit(target, 'village', actor);
   }
 }
 

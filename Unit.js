@@ -93,7 +93,9 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'village':
     this.name = "Village";
-    this.setGraphic(city_color,2);
+    this.setGraphic('#040',2);
+        this.addAction( new actionExpand(5));
+    this.addAction( new actionExplore(12));
     
     
     break;

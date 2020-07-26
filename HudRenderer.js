@@ -47,13 +47,16 @@ HUDRenderer.prototype.drawHUD = function() {
       if (action /*&& action.name != 'city-by-air'*/) {
         //this.drawActorRange();
 
+
         if (this.action_path.length > 0) {
           this.drawActionPath(hex_hovered);
+          
+          if (this.action_targets.length > 0) {
+           this.drawActionTargets(hex_hovered);
+          }
         }
 
-        if (this.action_targets.length > 0) {
-          this.drawActionTargets(hex_hovered);
-        }
+
       }
     } 
 

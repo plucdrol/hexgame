@@ -171,50 +171,81 @@ World.prototype.getGroupPositions = function(group) {
 }
 
 
-World.prototype.buildRoad = function(hexarray) {
+World.prototype.buildRoad = function(hexarray, road_level) {
   let previous_hex;
+
+  if (!road_level)
+      road_level = 1;
+      
 
   for (hex of hexarray) {
     if (previous_hex && this.getTile(hex)) {
-      this.addRoadTile(previous_hex, hex);
+      this.addRoadTile(previous_hex, hex, road_level);
       this.clearClouds(hex,1);
     }
     previous_hex = hex;
   }
 }
-World.prototype.addRoadTile = function(hex1, hex2) {
+World.prototype.addRoadTile = function(hex1, hex2, road_level) {
 
+  if (!road_level)
+      road_level = 1;
+      
   //road on tile 2
-  if (!this.getTile(hex2).road_from)
+  if (!this.getTile(hex2).road_from) {
     this.getTile(hex2).road_from = new HexMap();
+    this.getTile(hex2).road_from_level = new HexMap();
+  }
 
   let none_equal = true;
+  
   for (let hex of this.getTile(hex2).road_from.getHexArray() )
     if (Hex.equals(hex1, hex))
       none_equal = false;
+
   if (none_equal) {
+    //road does not already exist
     this.getTile(hex2).road_from.set(hex1, 1);
+    this.getTile(hex2).road_from_level.set(hex1, road_level );
   } else {
+    //road already exists
     let road_size = this.getTile(hex2).road_from.getValue(hex1);
     if (road_size < 32) {
       this.getTile(hex2).road_from.set(hex1, road_size+1 );
     }
+    let current_road_level = this.getTile(hex2).road_from_level.getValue(hex1);
+    if (road_level > current_road_level){
+      this.getTile(hex2).road_from_level.set(hex1, road_level );
+    }
   }
 
+
+
+
   //road on tile 1
-  if (!this.getTile(hex1).road_to)
+  if (!this.getTile(hex1).road_to) {
     this.getTile(hex1).road_to = new HexMap();
+    this.getTile(hex1).road_to_level = new HexMap();
+  }
 
   none_equal = true;
   for (let hex of this.getTile(hex1).road_to.getHexArray() )
     if (Hex.equals(hex2, hex))
       none_equal = false;
+
   if (none_equal) {
+    //road does not already exist
     this.getTile(hex1).road_to.set(hex2, 1);
+    this.getTile(hex1).road_to_level.set(hex2, road_level );
   } else {
+    //road already exists
     let road_size = this.getTile(hex1).road_to.getValue(hex2);
     if (road_size < 32) {
       this.getTile(hex1).road_to.set(hex2, road_size+1 );
+    }
+    let current_road_level = this.getTile(hex1).road_to_level.getValue(hex2);
+    if (road_level > current_road_level){
+      this.getTile(hex1).road_to_level.set(hex2, road_level );
     }
   }
 
@@ -228,6 +259,20 @@ World.prototype.countRoads = function(hex) {
     count += this.getTile(hex).road_to.getHexArray().length;
   return count;
 
+}
+
+World.prototype.getRoadLevel = function(hex1,hex2) {
+
+  if (!this.areRoadConnected(hex1,hex2))
+    return 0;
+
+  if (this.getTile(hex1).road_from_level)
+    return this.getTile(hex1).road_from_level.getValue(hex2);
+
+  if (this.getTile(hex1).road_to_level)
+    return this.getTile(hex1).road_to_level.getValue(hex2);
+  else 
+    return 0;
 }
 
 
@@ -616,9 +661,6 @@ World.prototype.clearClouds = function(position, radius) {
 
   World.prototype.highlightRange = function(original_range, color) {
     this.highlights_on = true;
-    //for (hex of range) {
-      //this.getTile(hex).highlighted = true;
-    //}
 
     let range = original_range.concat(); //makes a copy of the array, in case it gets modified later
     let counter = 0;
@@ -627,13 +669,6 @@ World.prototype.clearClouds = function(position, radius) {
 
     function stepByStepHighlight() {
         let hex = range[counter];
-
-        /*while(hex instanceof Hex && world.getTile(hex) && world.getTile(hex).highlighted && counter < range.length) {
-          if (color && !world.getTile(hex).highlighted[color])
-            break;
-          counter++;
-          hex = range[counter];
-        }*/
           
         if (counter >= range.length)
           return;
@@ -641,31 +676,30 @@ World.prototype.clearClouds = function(position, radius) {
         if (!world.getTile(hex).highlighted)
           world.getTile(hex).highlighted = [];
 
-        if (color) {
-          world.getTile(hex).highlighted[color] = true;
+        //skip tiles if already the right color
+        if (world.getTile(hex).highlighted[color]) {
+          counter++;
+          stepByStepHighlight();
         } else {
-          world.getTile(hex).highlighted['neutral'] = true;
-        }
 
-        counter++;
-        if (counter < range.length)
-          setTimeout(stepByStepHighlight, step_time);
+          //color the tile with the new color
+          if (color) {
+            world.getTile(hex).highlighted[color] = true;
+          } else {
+            world.getTile(hex).highlighted['neutral'] = true;
+          }
+
+          //go to the next tile in 100ms
+          counter++;
+          if (counter < range.length)
+            setTimeout(stepByStepHighlight, step_time);
+        }
 
       }
       stepByStepHighlight();
 
   }
 
-
-
-
-
-  World.prototype.clearHighlights = function() {
-    /*this.highlights_on = false;
-    for (hex of this.getHexArray())
-      this.getTile(hex).highlighted = false;*/
-
-  }
 
 
 

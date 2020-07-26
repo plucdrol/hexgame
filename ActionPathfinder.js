@@ -45,7 +45,7 @@
     //climbing from water to land
     if (world.onWater(hex) && world.onLand(next_hex)) {
 
-      if (this.action.stop_on_coast)
+      if (this.action.stop_on_coast && (world.noUnitTypeInArea(next_hex, 0, 'city') || !this.action.disembark_at_cities)  )
         return true;
     }
 
@@ -214,11 +214,16 @@
         cost = 1;
 
     if ((world.areRoadConnected(hex,next_hex) && (action.can_use_roads) )) {
-      cost = 0.5;
-      if (action.double_road_speed)
+
+      if (action.double_road_speed )
+        cost = 0;
+
+      if (action.double_highway_speed && world.getRoadLevel(hex,next_hex) >= 2)
         cost = 0;
 
     }
+
+    
 
 
     return cost;

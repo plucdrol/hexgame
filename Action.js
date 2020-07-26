@@ -28,9 +28,13 @@ function Action() {
   this.multi_target = false;
   this.destroy_resource = true;
   this.collect_resource = true;
-  this.can_use_roads = false;
   this.infinite_range = false;
   this.sky_action = false;
+
+
+  this.can_use_roads = false;
+  this.double_road_speed = false;
+  this.double_highway_speed = false;
 
   this.slow_in_water = false;
 
@@ -47,6 +51,7 @@ function Action() {
 
   this.coastal_start = false;
   this.embark_at_cities = false;
+  this.disembark_at_cities = false;
 
   this.takes_city_pop = false; //true makes resources LOCAL, false makes resources GLOBAL
 
@@ -140,8 +145,6 @@ function Action() {
       else
         actor.addPop(-this.free_pop_cost);
 
-
-
     if (this.also_build_road)
       this.createRoad(world, position, target);
 
@@ -168,12 +171,20 @@ function Action() {
     if (this.total_pop_cost)
       world.resources_collected -= this.total_pop_cost;
 
-    if (this.destroy_resource && world.getResource(target) && !world.getResource(target).resources['unknown'])
+    if (this.destroy_resource && world.getResource(target) && !world.getResource(target).resources['unknown']) {
+
       world.destroyResource(target);
+
+      //add a village if clicling directly on a resource
+      if (this.collect_resource)
+        world.addUnit(target, 'village', actor);
+      
+    }
 
     //then do the action
     this.effect(world, actor, position, target);
 
+    /*
     //do automatic action if one exists
     if (this.hover_action && this.hover_action.multi_target) {
       //var target_actor = world.getUnit(target);
@@ -181,7 +192,7 @@ function Action() {
       this.hover_action.updateActionTargets(world, actor, target);
       if (this.hover_action.range.length > 0)
         this.hover_action.doAction(world, actor, target )
-    }
+    }*/
 
 
     if (this.collect_resource ) 
@@ -280,14 +291,17 @@ function Action() {
 
 
 
-  this.createRoad = function(world, origin, target) {
+  this.createRoad = function(world, origin, target, road_level) {
 
     let pathfinder = new ActionPathfinder(this);
+
+    if (!road_level)
+      road_level = 1;
       
     var actionPath = pathfinder.getPath( world, origin, target, 20 );
 
     if (actionPath instanceof Array)
-      world.buildRoad(actionPath);
+      world.buildRoad(actionPath, road_level);
   }
 
   this.buildRoadUsingTree = function(world, actor, origin, target) {

@@ -62,7 +62,7 @@ var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
 
 
 
-//Put the first city in
+//Put the first city in a random position on the "equator"
 var start_hex;
 for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) {
   if (world.countLand(hex, 1,3) && world.onLand(hex) && !world.onRiver(hex) && !(world.getTile(hex).elevation==2)) {
@@ -75,7 +75,7 @@ if (!start_hex)
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
 
-first_city.pop = 1;
+first_city.pop = 20;
 
 let inverted_point = new Point( -world.getPoint( start_hex.add(new Hex(2,0.5)) ).x, 
                                 -world.getPoint( start_hex.add(new Hex(2,0.5)) ).y   );

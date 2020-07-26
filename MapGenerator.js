@@ -125,7 +125,7 @@ MapGenerator.prototype.makeMap = function(radius) {
   }
 
   //fine tune the m ap
-  //this.addWaterRim(0.1);
+  this.addWaterRim(0.1);
   this.roundDown();
   this.addShallowWater();
   this.addIcePoles();

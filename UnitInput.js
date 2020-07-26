@@ -61,16 +61,10 @@ UnitInput.p.selectHex = function(hex) {
     this.selectNothing();
   }
 };
-/*
-UnitInput.p.clearRange = function(actor) {
 
-  actor.range = [];
-  this.world.clearHighlights();
-};*/
 
 UnitInput.p.selectNothing = function() {
   //this.getActorSelected().range = undefined;
-  this.world.clearHighlights();
   this.hex_selected = undefined;
 };
 
@@ -156,8 +150,11 @@ UnitInput.p.clickInsideRange = function(target) {
 
 
 UnitInput.p.clickOutsideRange = function(target) {
-  //this.selectNothing();
-  //this.clickHex(target);
+
+  if (this.world.unitAtLocation(target)) {
+    this.selectNothing();
+    this.clickHex(target);
+  }
 };
 
 
@@ -179,7 +176,6 @@ UnitInput.p.updateActionTargetsIndirectly = function() {
     world.highlightRange(action.range, 'brown');
   } else {
     action.range = [];
-    world.clearHighlights();
   }
 };
 
