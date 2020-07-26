@@ -181,6 +181,10 @@ WorldRenderer.p.drawRoads = function(hexarray) {
         let road_size = tile.road_from.getValue(from);
         if (road_size < 2) continue;
 
+        road_color = '#040';
+        if (road_size > 12) 
+          road_color = 'saddlebrown'; 
+
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
           this.hex_renderer.drawCenterLine(hex, from, road_size+3, road_color, 'half only');
           if (zoom > 1.5) 
@@ -198,6 +202,10 @@ WorldRenderer.p.drawRoads = function(hexarray) {
       for (from of tile.road_to.getHexArray()) {
         let road_size = tile.road_to.getValue(from);
         if (road_size < 2) continue;
+
+        road_color = '#040';
+        if (road_size > 12) 
+          road_color = 'saddlebrown'; 
 
         if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
           this.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
