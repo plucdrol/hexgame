@@ -22,6 +22,7 @@ function actionExpand(distance) {
 
   this.stop_on_coast = true;
   this.can_water = true;
+  this.can_ocean = true;
   this.coastal_start = false;
   this.embark_at_cities = true;
   this.disembark_at_cities = true;

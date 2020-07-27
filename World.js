@@ -457,6 +457,10 @@ World.prototype.onWater = function(position) {
   return !this.onLand(position);
 }
 
+World.prototype.onOcean = function(position) {
+  return this.getTile(position).elevation == 0;
+}
+
 World.prototype.onMountain = function(position) {
   return land_tiles[ this.getTile(position).elevation ] == 'mountains';
 }

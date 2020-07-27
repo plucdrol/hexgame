@@ -149,7 +149,13 @@
         return undefined;
     }
 
-    //climbing into ocean, but not from a river
+    //entering a deep sea tile
+    if (world.onOcean(next_hex)) {
+      if (!action.can_ocean)
+        return undefined;
+    }
+    
+    //climbing into water, but not from a river
     if (world.onLand(hex) && world.onWater(next_hex) && !world.enteringRiver(hex, next_hex) && !world.leavingRiver(hex, next_hex)) {
 
       //cannot water
