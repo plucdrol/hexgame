@@ -40,6 +40,8 @@ function actionExpand(distance) {
   this.free_pop_cost = 1;
   //this.takes_city_pop = false;
 
+  this.also_build_road = true;
+
   this.can_use_roads = true;
   this.double_road_speed = false;
   this.double_highway_speed = true;
@@ -437,7 +439,7 @@ function actionGrowRoots(max_distance) {
 
 
   this.effect = function(world,actor,position,target) {
-    //actor.addPop(1);
+    actor.addPop(1);
     this.createRoad(world, position, target);
     world.addUnit(target, 'village', actor);
   }
