@@ -55,37 +55,34 @@ function actionExpand(distance) {
 
 
     //grow city if clicking on it
-    if (world.unitAtLocation(target) && world.getUnit(target).pop) {
+    if (world.unitAtLocation(target) && world.getUnit(target).pop && world.getUnit(target).pop < 5) {
+
+      actor.pop -= 2;
       world.getUnit(target).pop++;
 
+      world.highlightRange(Hex.circle(target, world.getUnit(target).pop), 'green');
+
+      //grow to connect more resources around city
+      let grow_roots_action = new actionGrowRoots( world.getUnit(target).pop );
+      grow_roots_action.triggerMultiAction( world, actor, target) 
     }
 
-    //grow road and maybe build a node
+    //grow road and build a city if clicking somewhere else
     if (!world.unitAtLocation(target)) {
 
-      //create green around river nodes
-      if ((world.countRoads(target) || world.onRiver(target))) {
-        world.highlightRange(Hex.circle(target, 1), 'green');
-        world.addUnit(target, 'city', actor);
+      actor.pop -= 2;
 
-        //automatically connect resources around new city
-        var hover_action = new actionGrowRoots(1);
-        if (hover_action && hover_action.multi_target) {
+      //builds a city if clicking on rivers or on a road
+      world.highlightRange(Hex.circle(target, 1), 'green');
+      world.addUnit(target, 'city', actor);
 
-          hover_action.updateActionTargets(world, actor, target);
-          if (hover_action.range.length > 0)
-            hover_action.doAction(world, actor, target )
-        }
+      //automatically connect resources around new city
+      let grow_roots_action = new actionGrowRoots( 1 );
+      grow_roots_action.triggerMultiAction( world, actor, target) 
 
-        //create highway to new city     
-        this.createRoad(world, position, target, 2);
-        this.createRoad(world, position, target, 2);
+      //create highway to new city     
+      this.createRoad(world, position, target, 2);
 
-      } else {
-        //create normal road to resource
-        this.createRoad(world, position, target, 1);
-        this.createRoad(world, position, target, 1);
-      }
 
       
 

@@ -184,15 +184,11 @@ function Action() {
     //then do the action
     this.effect(world, actor, position, target);
 
-    /*
+    
     //do automatic action if one exists
     if (this.hover_action && this.hover_action.multi_target) {
-      //var target_actor = world.getUnit(target);
-
-      this.hover_action.updateActionTargets(world, actor, target);
-      if (this.hover_action.range.length > 0)
-        this.hover_action.doAction(world, actor, target )
-    }*/
+      this.hover_action.triggerMultiAction(world, actor, target);
+    }
 
 
     if (this.collect_resource ) 
@@ -220,6 +216,12 @@ function Action() {
       }
   }
 
+  this.triggerMultiAction = function( world, actor, position) {
+
+    this.updateActionTargets(world, actor, position);
+    if (this.range.length > 0)
+      this.doAction(world, actor, position );
+  }
 
   this.updateActionTargets = function(world, actor, position) {
 
