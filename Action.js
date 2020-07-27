@@ -42,6 +42,7 @@ function Action() {
   this.river_only = false;
   this.can_river = false;
   this.can_water = false;
+  this.can_ocean = false;
   this.can_land = true;
   this.stop_on_rivers = false;
   this.stop_on_water = false;
@@ -174,10 +175,6 @@ function Action() {
     if (this.destroy_resource && world.getResource(target) && !world.getResource(target).resources['unknown']) {
 
       world.destroyResource(target);
-
-      //add a village if clicling directly on a resource
-      if (this.collect_resource)
-        world.addUnit(target, 'village', actor);
       
     }
 

@@ -86,24 +86,77 @@ function actionExpand(distance) {
       //create highway to new city     
       this.createRoad(world, position, target, 2);
 
-
-      
-
-
     }
 
-
-
-
-
-
-
+    //add a village if clicling directly on a resource
+    if (world.getResource(target) && !world.getResource(target).resources['unknown'])
+      world.addUnit(target, 'village', actor);
 
   }
 
   this.effect = function(world, actor, position, target) {
 
 
+  }
+}
+
+
+
+
+
+function actionGrowRoots(max_distance) {
+  Action.call(this);
+
+  this.name = "get-food";
+  this.min_distance = 1;
+  this.max_distance = max_distance;
+  this.hover_radius = 0;
+  this.cloud_clear = 2;
+
+  this.can_water = true;
+  this.can_ocean = false;
+  this.can_river = true;
+  this.stop_on_rivers = true;
+  this.no_climbing_ashore = true;
+  this.coastal_start = true;
+
+  this.also_build_road = true;
+  this.can_use_roads = false;
+  this.double_road_speed = false;
+
+  this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
+  this.destroy_resource = true;
+
+  //this.free_pop_cost = -1;
+  //this.total_pop_cost = -1;
+  //this.takes_city_pop = true;
+
+  this.multi_target = true;
+  //this.new_unit_type = 'colony';
+
+
+
+  this.description = "Claim resources";
+  this.extra_description = "Get all the food";
+
+  this.targetFilterFunction = function(world, actor, target) {
+    if (world.unitAtLocation(target)) 
+      return false;
+
+    //if (world.countRoads(target) >= 1)
+      //return false;
+
+    if (!world.countResources(Hex.circle(target, 0), 'food', 1))
+      return false;
+
+    return true;
+  }
+
+
+  this.effect = function(world,actor,position,target) {
+    actor.addPop(1);
+    this.createRoad(world, position, target);
+    world.addUnit(target, 'village', actor);
   }
 }
 
