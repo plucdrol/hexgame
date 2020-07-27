@@ -121,8 +121,6 @@
     if (world.onWater(next_hex)) {
       if (!action.can_water)
         return undefined;
-
-
     }
 
     if (world.onDesert(next_hex))
@@ -205,9 +203,9 @@
 
 
     if (world.onWater(hex) && world.onWater(next_hex))
-      cost= 2;
+      cost= 1;
 
-    if (world.onWater(next_hex) && action.slow_in_water)
+    if (world.onWater(hex) && world.onWater(next_hex) && action.slow_in_water)
       cost = 100;
 
     if (world.onWater(hex) && world.onLand(next_hex) && action.slow_in_water)
