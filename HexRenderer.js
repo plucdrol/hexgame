@@ -103,8 +103,18 @@ HexRenderer.p.drawLongLine = function(hex_array, width) {
 }
 HexRenderer.p.drawHex = function(hex, style) {
   
+  //draw hex the normal way
   var corners = this.hexesToPoints(Hex.corners(hex));
-  this.renderer.drawPolygon(corners,style);
+  //this.renderer.drawPolygon(corners,style);
+
+  //draw a rectangle instead
+  var left = this.hexToPoint(hex); left.x -= 31;
+  var right = this.hexToPoint(hex); right.x += 30;
+
+  style.line_width = 53;
+  style.line_color = style.fill_color;
+  this.renderer.drawLine(left, right, style);
+
 };
 
 //Draw a series of short lines

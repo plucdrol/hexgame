@@ -412,13 +412,13 @@ var greenscale_colors = function (i) {
                     '#CCC']; //clouds
 
 
-  var rockscale = ['#115','#22D','#994', //ocean coast sand 0 1 2
-                    '#333','#444','#555', //grass 3 4 5
-                    '#333','#444','#555', //forest  6 7 8
-                    '#555','#555','#555', //hills 9 10 11 12 13
-                    '#444','#444',
-                    '#777', '#777','#777', //mountains 14 15 16
-                    '#888','#888','#888', //mountains 17 18 19
+  var rockscale = ['#115','#22D','#443', //ocean coast sand 0 1 2
+                    '#333','#444','#413937', //grass 3 4 5
+                    '#333','#444','#414241', //forest  6 7 8
+                    '#474047','#404740','#404747', //hills 9 10 11 12 13
+                    '#585951','#484951',
+                    '#BBB', '#BBB','#BBB', //mountains 14 15 16
+                    '#CCC','#DDD','#EEE', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
 

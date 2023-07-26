@@ -129,7 +129,7 @@ function CanvasDraw (canvas) {
     line.lineWidth = width;
     line.lineCap = "butt";
     line.strokeStyle = color;  
-    line.lineCap = "round";
+    //line.lineCap = "round";
     line.alpha = false;   
 
     //polygon outline
