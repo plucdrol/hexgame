@@ -206,10 +206,10 @@
       cost= 1;
 
     if (world.onWater(hex) && world.onWater(next_hex) && action.slow_in_water)
-      cost = 100;
+      cost = 2;
 
     if (world.onWater(hex) && world.onLand(next_hex) && action.slow_in_water)
-      cost = 200;
+      cost = 2;
 
     if (world.onLand(hex) && world.onWater(next_hex) && action.slow_in_water)
       if (world.noCitiesInArea(hex,0))

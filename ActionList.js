@@ -27,6 +27,8 @@ function actionExpand(distance) {
   this.embark_at_cities = true;
   this.disembark_at_cities = true;
 
+  this.slow_in_water = true;
+
   this.min_distance = 0;
   this.max_distance = distance;
 
