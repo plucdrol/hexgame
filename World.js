@@ -67,6 +67,8 @@ export default function World(radius) {
   //create resources map
   this.resources_gotten = 0;
   this.total_resources = 0;
+  this.resources_available = 10;
+
 
   this.resources = new HexMap();
   this.generateResources();
