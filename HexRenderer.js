@@ -105,7 +105,9 @@ HexRenderer.p.drawHex = function(hex, style) {
   
   //draw hex the normal way
   var corners = this.hexesToPoints(Hex.corners(hex));
-  //this.renderer.drawPolygon(corners,style);
+  this.renderer.drawPolygon(corners,style);
+
+  return;
 
   //draw a rectangle instead
   var left = this.hexToPoint(hex); left.x -= 31;
