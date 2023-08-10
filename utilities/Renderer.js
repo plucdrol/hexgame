@@ -24,8 +24,12 @@ export function RenderStyle() {
 }
 
 //this is a basic Renderer, it doesn't know about hexes!
-export default function Renderer(canvas_draw, view) {
-    this.canvas_draw = canvas_draw;
+
+export default function Renderer(canvas_element_id, view) {
+
+    var canvas = document.getElementById(canvas_element_id);
+    this.canvas_draw  = new CanvasDraw(canvas);
+
     this.view = view;
 
     this.ready_to_render = true;
@@ -106,37 +110,11 @@ Renderer.prototype.drawLines = function(points,style, width) {
   }
 };
 
-Renderer.prototype.drawRedRenderingRectangle = function() {
-    var object = this.view.getCorners();
-    
-    var corners = [];
-    corners.push(object.topleft);
-    corners.push(object.topright);
-    corners.push(object.bottomright);
-    corners.push(object.bottomleft);
 
-    var rect_style = new RenderStyle();
-    rect_style.fill_color = 'transparent';
-    rect_style.line_color = 'red';
-    rect_style.line_width = 20;
+Renderer.prototype.clear = function() {
 
-    this.drawPolygon(corners,rect_style);
+  this.canvas_draw.clear();
 }
-
-Renderer.prototype.getViewCorners = function() {
-
-    return this.view.getCorners();
-
-}
-
-Renderer.prototype.getScale = function() {
-
-    return this.view.getScale();
-
-}
-
-
-
 
 
 

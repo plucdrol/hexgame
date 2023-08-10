@@ -16,9 +16,11 @@
 	  </form>	
 	  
 		<div style="float:left;">
-			<canvas id="mycanvas" width="600" height="400">
+			<canvas id="canvas" width="600" height="400">
 				Your system does not support Canvas.
 			</canvas>
+			<canvas id="earth_canvas" style="display: none;"></canvas>
+			<canvas id="thing_canvas" style="display: none;"></canvas>
 		</div>
 		
 

@@ -9,6 +9,7 @@
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 
+
 import CanvasDraw from './utilities/CanvasDraw.js'
 import World from './World.js'
 import Unit from './Unit.js'
@@ -18,56 +19,83 @@ import HexRenderer from './HexRenderer.js'
 import {RenderStyle} from './utilities/Renderer.js'
 
 
+export default function WorldRenderer (world, hex_renderer, layer_number) {
 
-export default function WorldRenderer (world, hex_renderer) {
   
   this.hex_renderer = hex_renderer;
   this.world = world;
-  this.render_start = 0;
-  this.render_portions = Math.floor(world.radius/3);
+  this.render_layer = layer_number;
 
   var self = this; 
+
 }
 WorldRenderer.p = WorldRenderer.prototype;
 
-WorldRenderer.p.getVisibleHexes = function() {
-  var rectMap = this.hex_renderer.getHexRectangleBoundaries();
-  //get the rectangular array of hex tiles
-  let hexmap = this.world.getRectangleSubMap( rectMap.qmin,
-                                                  rectMap.qmax,
-                                                  rectMap.rmin, 
-                                                  rectMap.rmax);
-   return hexmap;
+
+WorldRenderer.p.drawWorldByPortions = function() {
+
+  this.render_portions = Math.floor(world.radius/3);
+  this.render_start = 0;
+
+  var self = this; 
+  this.stop_rendering = setInterval( self.drawWorldPortion.bind(self), 2 );
+}   
+
+WorldRenderer.p.drawWorldPortion = function() {
+
+  var hexarray = this.world.quick_hexarray;
+
+  let sections = Math.floor(hexarray.length/this.render_portions);
+  hexarray = hexarray.slice(this.render_start*sections, (this.render_start+1)*sections );
+  this.render_start++;
+
+  if (this.render_start >= this.render_portions) {
+    //this.render_start = 0;
+    clearInterval(this.stop_rendering);
+  }
+
+  this.renderLayer(hexarray);
+
+
 }
-    
 
 WorldRenderer.p.drawWorld = function() {
+  var hexarray = this.world.quick_hexarray;
 
-  //draw the world to the canvas and to a backupcanvas
-  /*var hexmap = this.getVisibleHexes();
-  var hexarray = hexmap.getHexArray();
-  */
-  
-  var hexarray = this.world.getHexArray();
-  let section = Math.floor(hexarray.length/this.render_portions);
-  hexarray = hexarray.slice(this.render_start*section, (this.render_start+1)*section );
-  this.render_start++;
-  if (this.render_start >= this.render_portions)
-    this.render_start = 0;
-  
-
-  
-  //this.drawBigHex(this.world.radius);
+  /*
   this.drawTiles(hexarray);
-
   this.drawRivers(hexarray);
-
   this.drawRoads(hexarray);
   this.drawUnits(hexarray);
   this.drawResources(hexarray);
+  */
 
   
+  this.renderLayer(hexarray);
+}
 
+WorldRenderer.p.renderLayer = function(hexarray) {
+    switch (this.render_layer) {
+    case 0:
+    this.drawTiles(hexarray);
+    break;
+
+    case 1:
+    this.drawRivers(hexarray);
+    break;
+
+    case 2:
+    this.drawRoads(hexarray);
+    break;
+
+    case 3:
+    this.drawUnits(hexarray);
+    break;
+
+    case 4:
+    this.drawResources(hexarray);
+    break;
+  }
 }
 
 WorldRenderer.p.drawBigHex = function(radius) {

@@ -20,9 +20,9 @@ import {Point} from './Hex.js'
 
 export default CanvasInput;
 
-function CanvasInput(canvas) {
+function CanvasInput(canvas_element_id) {
 
-    this.canvas = canvas;
+    this.canvas = document.getElementById(canvas_element_id);
     
     //create the mouse pointer 
     this.mouse_pos = new Object();
@@ -31,6 +31,8 @@ function CanvasInput(canvas) {
     this.is_dragging = false;
 
     this.mouse_down = [];
+
+    this.registerEvents();
 }
 
 //Registers all default functions to methods of CanvasInput

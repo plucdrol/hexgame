@@ -102,6 +102,9 @@ export default function GameInput(world, view, image_shift_function) {
 	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
 	  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
 
+/*
+
+//saved from merge HEAD
     this.world_drag.x += x_move;
     this.world_drag.y += y_move;
 
@@ -110,6 +113,12 @@ export default function GameInput(world, view, image_shift_function) {
 
     if ( Math.pow(this.screen_drag.x, 2) + Math.pow(this.screen_drag.y, 2) > 1000 ) 
       this.actuallyDrag();
+*/
+    //shift the image in the temporary canvas
+    var temp_context = canvas.getContext('2d');
+    temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));
+	 
+
 	}
 
   this.actuallyDrag = function() {
@@ -138,6 +147,7 @@ export default function GameInput(world, view, image_shift_function) {
     //if the mouse moved to a new hex, redraw the screen
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
       Events.emit('hex_hovered_changed', this.hex_hovered);
+
     }
 
     //remember the currently hovered hex
