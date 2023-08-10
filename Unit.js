@@ -6,7 +6,14 @@
 
 var unit_id_incrementer = 1000;
 
-function Unit(unit_type, owner) {
+import actionExpand from './ActionList.js'
+import actionGrowRoots from './ActionList.js'
+import actionExplore from './ActionList.js'
+import actionMoveCity from './ActionList.js'
+import actionExploit from './ActionList.js'
+import actionCreateCityByAir from './ActionList.js'
+
+export default function Unit(unit_type, owner) {
   
   this.selectable = true;
   this.position = null;
@@ -237,7 +244,7 @@ Unit.prototype.setCitySize = function(size) {
 var group_id_incrementer = 1000;
 
 
-function Group() {
+export function Group() {
 
   this.units = [];
   this.id = group_id_incrementer++;

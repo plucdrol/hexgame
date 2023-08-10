@@ -13,7 +13,13 @@
 //A hex-shaped array of tiles, with each tile having some information inside them
 
 //Dependencies
-//  Hex.js
+import Hex from './utilities/Hex.js'
+import {Point, HexLayout, HexMap} from './utilities/Hex.js'
+import MapGenerator from './MapGenerator.js'
+import BonusList from './BonusList.js'
+import Unit from './Unit.js'
+
+
 //  WorldMap
 //  UnitMap
 
@@ -29,7 +35,7 @@ var land_tiles = [
 'clouds'
 ];
 
-function World(radius) {
+export default function World(radius) {
 
   this.radius = radius;
   
@@ -178,7 +184,7 @@ World.prototype.buildRoad = function(hexarray, road_level) {
       road_level = 1;
       
 
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
     if (previous_hex && this.getTile(hex)) {
       this.addRoadTile(previous_hex, hex, road_level);
       this.clearClouds(hex,1);
@@ -338,7 +344,7 @@ World.prototype.countUnits = function(hexarray, unit_type, minimum_count) {
 
   let count = 0;
 
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
     if (this.getUnit(hex) && this.getUnit(hex).type == unit_type)
       count++;
   }
@@ -350,7 +356,7 @@ World.prototype.countUnits = function(hexarray, unit_type, minimum_count) {
 World.prototype.countResources = function(hexarray, resource_type, minimum_count) {
   let count = 0;
 
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
     if (this.getResource(hex) && 
       this.getResource(hex).resources &&
         this.getResource(hex).resources[resource_type])
@@ -395,7 +401,7 @@ World.prototype.riverStart = function(position) {
 }
 
 World.prototype.nearRiver = function(position, max_distance) {
-  for (hex of Hex.circle(position, max_distance)) {
+  for (let hex of Hex.circle(position, max_distance)) {
     if (this.getTile(hex))
       if (this.onRiver(hex))
         return true;
@@ -472,7 +478,7 @@ World.prototype.onIce = function(position) {
 World.prototype.countLand = function(position, radius, minimum) {
   let count = 0;
 
-  for (neighbor of Hex.circle(position,radius)) {
+  for (let neighbor of Hex.circle(position,radius)) {
     if (this.onLand(neighbor))
       count++;
 
@@ -494,7 +500,7 @@ World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
   if (min_tiles)
     min = min_tiles;
 
-  for (neighbor of position.getNeighbors()) {
+  for (let neighbor of position.getNeighbors()) {
     if (this.getTile(neighbor) && 
         this.getTile(neighbor).elevation <= 1)
       count++;
@@ -506,7 +512,7 @@ World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
 //'unit' is overlooked, leave it undefined to avoid that
 World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) {
   let area = Hex.circle(position, radius);
-  for (hex of area) {
+  for (let hex of area) {
     //skip position_to_ignore
     if (position_to_ignore && Hex.equals(hex, position_to_ignore))
       continue;
@@ -524,7 +530,7 @@ World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) 
 //'unit' is overlooked, leave it undefined to avoid that
 World.prototype.noUnitTypeInArea = function(position, radius, unit_type, position_to_ignore) {
   let area = Hex.circle(position, radius);
-  for (hex of area) {
+  for (let hex of area) {
     //skip position_to_ignore
     if (position_to_ignore && Hex.equals(hex, position_to_ignore))
       continue;
@@ -614,7 +620,7 @@ World.prototype.generateResources = function() {
 }
 
 World.prototype.makeCloudsEverywhere = function() {
-  for (hex of this.world_map.getHexArray()) {
+  for (let hex of this.world_map.getHexArray()) {
     //if (Hex.distance(new Hex(0,0), hex) > 0)
       this.world_map.get(hex).hidden = true;
     //else

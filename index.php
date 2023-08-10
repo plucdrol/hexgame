@@ -1,37 +1,7 @@
 <html>
 	<head>
 		<link rel="stylesheet" type="text/css" href="style.css">
-		<?php 
 
-			// LOAD ALL SCRIPTS IN DIRECTORY AND SUBDIRECTORIES
-		  //get local directory
-      $directory = new RecursiveDirectoryIterator('.');
-
-			foreach (new RecursiveIteratorIterator($directory) as $filename => $file) {
-				if (filter_filename($filename))
-    		  include_script($filename);
-			}
-
-			function filter_filename($filename) {
-				return (
-					$filename != '.\.' && 
-					$filename != '.\..' && 
-					substr($filename,0,7) != ".\.git\\" && 
-					substr($filename,0,12) != ".\react-hud\\" && 
-					substr($filename,-2) != '\.' && 
-					substr($filename,-3) != '\..' &&
-					$filename != '.\HexGame.js');
-			}
-
-			/*function include_script($filename) {
-				echo "<script type='module' src='".$filename."'></script>";
-			}*/
-
-      function include_script($filename) {
-        echo "<script src='".$filename."'></script>";
-      }
-
-		?>
 
 	</head>
 	<body>
@@ -59,10 +29,39 @@
 
 		<!-- Javascript after this line -->
 
+        <?php 
+
+      // LOAD ALL SCRIPTS IN DIRECTORY AND SUBDIRECTORIES
+      //get local directory
+      $directory = new RecursiveDirectoryIterator('.');
+
+      foreach (new RecursiveIteratorIterator($directory) as $filename => $file) {
+        if (filter_filename($filename))
+          include_script($filename);
+      }
+
+      function filter_filename($filename) {
+        return (
+          $filename != '.\.' && 
+          $filename != '.\..' && 
+          substr($filename,0,7) != ".\.git\\" && 
+          substr($filename,0,12) != ".\react-hud\\" && 
+          substr($filename,-2) != '\.' && 
+          substr($filename,-3) != '\..' &&
+          substr($filename,strlen($filename)-3) == '.js' &&
+          $filename != '.\HexGame.js');
+      }
+
+      function include_script($filename) {
+        echo "<script type='module' src='".$filename."'></script>";
+      }
+
+    ?>
+
 	</body>
 
 
-	<script src="HexGame.js">
+	<script type='module' src="HexGame.js">
 		
 	</script>
 

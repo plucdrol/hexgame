@@ -8,14 +8,18 @@
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-//Dependencies:
-//  CanvasDraw
-//  World
-//  Unit
-//  Hex
-//  HexRenderer
 
-function WorldRenderer (world, hex_renderer) {
+import CanvasDraw from './utilities/CanvasDraw.js'
+import World from './World.js'
+import Unit from './Unit.js'
+import Hex from './utilities/Hex.js'
+import View from './utilities/View.js'
+import HexRenderer from './HexRenderer.js'
+import {RenderStyle} from './utilities/Renderer.js'
+
+
+
+export default function WorldRenderer (world, hex_renderer) {
   
   this.hex_renderer = hex_renderer;
   this.world = world;
@@ -43,7 +47,6 @@ WorldRenderer.p.drawWorld = function() {
   /*var hexmap = this.getVisibleHexes();
   var hexarray = hexmap.getHexArray();
   */
-
   
   var hexarray = this.world.getHexArray();
   let section = Math.floor(hexarray.length/this.render_portions);
@@ -71,7 +74,7 @@ WorldRenderer.p.drawBigHex = function(radius) {
 
   let big_corners = [];
   let center = new Hex(0,0);
-  for (corner of center.getNeighbors()) {
+  for (let corner of center.getNeighbors()) {
     big_corners.push(this.hex_renderer.hexToPoint(Hex.multiply(corner,this.world.radius)));
   }
 
@@ -86,9 +89,8 @@ WorldRenderer.p.drawTiles = function(hexarray) {
   let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
   let brown = ['#421','#412','#431','#421','#412','#431','#421','#412','#431'];
 
-
   //draw the land colors
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
 
     //draw clouds if not explored
     if (this.getTile(hex).hidden) {
@@ -134,7 +136,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
   let max_draw_level = 150;
 
   //draw the rivers
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     if (this.getTile(hex).river) {
 
@@ -147,7 +149,7 @@ WorldRenderer.p.drawRivers = function(hexarray) {
       //upstream rivers next
       let upstream_hexes = this.getTile(hex).river.upstream_hexes;
       if (upstream_hexes instanceof Array) {
-        for (upstream_hex of upstream_hexes) {
+        for (let upstream_hex of upstream_hexes) {
           if (!this.getTile(upstream_hex).river)
             continue;
           let up_level = this.getTile(upstream_hex).river.water_level;
@@ -167,7 +169,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
   let road_color = '#040';
 
   //draw the roads
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
     let tile = this.getTile(hex);
     if (!tile) continue;
     if (tile.hidden) continue;
@@ -177,7 +179,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
 
 
       //Math.min(6,5/zoom)
-      for (from of tile.road_from.getHexArray()) {
+      for (let from of tile.road_from.getHexArray()) {
         let road_size = tile.road_from.getValue(from);
         if (road_size < 2) continue;
 
@@ -199,7 +201,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
 
     
     if (tile.road_to) {
-      for (from of tile.road_to.getHexArray()) {
+      for (let from of tile.road_to.getHexArray()) {
         let road_size = tile.road_to.getValue(from);
         if (road_size < 2) continue;
 
@@ -225,7 +227,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
 
 //draw the units and their resource-collection area
 WorldRenderer.p.drawUnits = function(hexarray) {
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     //draw units
     var this_unit = this.world.getUnit(hex);
@@ -238,7 +240,7 @@ WorldRenderer.p.drawUnits = function(hexarray) {
 //draw the resource icons
 WorldRenderer.p.drawResources = function(hexarray) {
   //draw resources
-  for (hex of hexarray) {
+  for (let hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     var this_resource = this.world.getResource(hex);
     if (this_resource != undefined && this_resource.resources) {
@@ -283,6 +285,9 @@ WorldRenderer.p.drawTile = function(hex, tile, color) {
 }
 
 WorldRenderer.p.drawUnit = function(unit,hex,height) {
+
+  let view = this.hex_renderer.renderer.view;
+
 
   var position = this.hex_renderer.hexToPoint(hex);
   position = position.offset(0,-height);
@@ -339,7 +344,7 @@ WorldRenderer.p.drawPath = function(range,destination) {
     //calculate points of the hexes
     var hexes = pathfinder.destinationPathfind(range, destination);
     var points = [];
-    for (var i = 0; i<hexes.length;i++) {
+    for (let i = 0; i<hexes.length;i++) {
       points.push(this.hex_renderer.hexToPoint(hexes[i]));
     }
 
@@ -357,7 +362,7 @@ WorldRenderer.p.drawPath = function(range,destination) {
 
 
 
-getWindArrowCharacter = function(direction) {
+var getWindArrowCharacter = function(direction) {
 
     switch (direction) {
         case 0: return 8594; break;

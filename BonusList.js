@@ -2,7 +2,7 @@
 
 
 
-function BonusList() {
+export default function BonusList() {
 	this.bonuses = [
 
 	new bonusCreateVillages(),
@@ -38,7 +38,7 @@ BonusList.prototype.bonusEnabled = function(bonus_name) {
 }
 
 BonusList.prototype.getBonus = function(bonus_name) {
-	for (bonus of this.bonuses) {
+	for (let bonus of this.bonuses) {
 		if (bonus.name == bonus_name)
 			return bonus;
 	}
@@ -63,6 +63,7 @@ BonusList.prototype.enableBonus = function(bonus_name) {
 	}
 }
 
+//bonus list should not need to refer to the world
 BonusList.prototype.nextBonusCostMet = function(world) {
 	return world.resources_collected >= this.next_bonus[this.number_of_bonuses];
 }

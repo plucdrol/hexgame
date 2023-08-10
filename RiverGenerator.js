@@ -4,7 +4,11 @@
 /////////////////////////////////////////////////////////
 ///////////////          RIVER  GENERATION //////////////////////
 /////////////////////////////////////////////////////////
-RiverGenerator = function(world_map) {
+
+import Hex from './utilities/Hex.js'
+import {HexMap} from './utilities/Hex.js'
+
+export default function RiverGenerator (world_map) {
   var visited = new HexMap();
   var next = new HexMap();
   this.map = world_map;

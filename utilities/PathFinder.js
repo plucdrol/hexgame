@@ -1,9 +1,13 @@
 //-------1---------2---------3---------4---------5---------6---------7--------8
+
+import PriorityQueue from './PriorityQueue.js'
+import Hex from './Hex.js'
+
 //PathFinder cell used for mapping paths
 //Tracks the previous cell and total path cost
 //on 5e path.from the origin to cell
 //it take maps as arguments as returns maps as 'visited'
-function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
+export default function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
   //stepCostFunction must be (map, coordinate1, coordinate2)
   //getNeighborFunction must be (map, coordinate)
@@ -20,7 +24,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   else
     this.stopFunction = function(map, coordinate1, coordinate2, origin) {return false;};
 
-  PathFinderCell = function(coord, previous_coord, path_cost) {
+  var PathFinderCell = function(coord, previous_coord, path_cost) {
       this.coord = coord;
       this.previous_coord = previous_coord;
       this.path_cost = path_cost;
@@ -37,7 +41,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
 
     if (Array.isArray(origin)) {
 
-      for (position of origin) {
+      for (let position of origin) {
         this.setCell( position, this.makeOriginCell(position) );
         this.origins.push(position);
       }
@@ -222,14 +226,14 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
       else
         continue;
     
-      for (cell of new_cells_to_add) {
+      for (let cell of new_cells_to_add) {
         //mutability of data in these steps!
         this.setCell(cell.coord, cell); 
       }
 
       let new_coords = new_cells_to_add.map( cell => cell.coord );
 
-      for (new_coord of new_coords) {
+      for (let new_coord of new_coords) {
         all_coords_to_visit.push(new_coord);
       }
       
@@ -254,7 +258,7 @@ function PathFinder(stepCostFunction, getNeighborFunction, stopFunction) {
   //Returns an array of coordinates of each cell that was visited 
   this.getRangeArray = function(max_cost) {
     var coord_array = [];
-    for (cell of this.visited.values()) {
+    for (let cell of this.visited.values()) {
       if (cell.path_cost <= max_cost) {
         coord_array.push( this.getCoord(cell) ); 
       }

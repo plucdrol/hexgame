@@ -1,7 +1,8 @@
 
+import Hex from './utilities/Hex.js'
+import Action from './Action.js'
 
-
-function actionExpand(distance) {
+export default function actionExpand(distance) {
   Action.call(this);
 
   this.name = "city-by-land-2";
@@ -106,7 +107,7 @@ function actionExpand(distance) {
 
 
 
-function actionGrowRoots(max_distance) {
+export function actionGrowRoots(max_distance) {
   Action.call(this);
 
   this.name = "get-food";
@@ -190,7 +191,7 @@ function actionGrowRoots(max_distance) {
 
 
 
-function actionExplore(distance) {
+export function actionExplore(distance) {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -265,7 +266,7 @@ function actionExplore(distance) {
 
 
 //This action transforms the unit into a camp
-function actionExpandAll() {
+export function actionExpandAll() {
   Action.call(this);
 
   this.name = "villagessss";
@@ -344,7 +345,7 @@ function actionExpandAll() {
 
 
 //This action transforms the unit into a camp
-function actionMoveCity() {
+export function actionMoveCity() {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -410,7 +411,7 @@ function actionMoveCity() {
 
 
 
-function actionExploit(max_distance, multi_target) {
+export function actionExploit(max_distance, multi_target) {
   Action.call(this);
 
   this.name = "get-food";
@@ -604,7 +605,7 @@ function hydroDam = function(world, target) {
 
 
 
-function actionCreateCityByAir(max_distance) {
+export function actionCreateCityByAir(max_distance) {
   actionCreateCity.call(this);
   this.name = 'city-by-air';
   this.minimum_elevation = 0;

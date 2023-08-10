@@ -1,16 +1,20 @@
 //-------0---------1---------2---------3---------4---------5---------6---------8
+import {Point} from './Hex.js'
+
 //takes two vectors. Position is the top-left corner, 
 //size is a vector across
-function Rect(position, size) {
+export function Rect(position, size) {
   this.position = position;
   this.size = size;
 }
+
+
 
 //The View is a coordinate transformation tool
 //input:  universe coordinates
 //output: screen coordinates
 
-function View (canvas, initial_zoom_level) {
+export default function View (canvas, initial_zoom_level) {
 
   if (initial_zoom_level == undefined) {
     var initial_zoom_level = 1;

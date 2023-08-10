@@ -5,7 +5,11 @@
                     // ACTION PATHFINDER SETTINGS //
   /////////////////////////////////////////////////////////
 
- function ActionPathfinder(action) {
+import PathFinder from './utilities/PathFinder.js'
+import Hex from './utilities/Hex.js'
+
+
+export default function ActionPathfinder(action) {
 
     this.action = action;
 

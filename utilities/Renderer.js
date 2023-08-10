@@ -15,7 +15,7 @@
 //  View.js
 
 //this is a style for renderer
-function RenderStyle() {
+export function RenderStyle() {
   this.line_color = 'black';
   this.line_width = 0;
   this.fill_color = 'transparent';
@@ -24,7 +24,7 @@ function RenderStyle() {
 }
 
 //this is a basic Renderer, it doesn't know about hexes!
-function Renderer(canvas_draw, view) {
+export default function Renderer(canvas_draw, view) {
     this.canvas_draw = canvas_draw;
     this.view = view;
 
@@ -45,7 +45,7 @@ Renderer.prototype.worldToScreen1D = function(scalar) {
 Renderer.prototype.drawDot = function (point,size,style) {
 
     var coord = this.worldToScreen(point);
-    newsize = this.worldToScreen1D(size);
+    let newsize = this.worldToScreen1D(size);
     var color = style.fill_color;
 
     this.canvas_draw.drawDot(coord, newsize, color);

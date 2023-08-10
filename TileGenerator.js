@@ -12,7 +12,11 @@
 /////////////////////////////////////////////////////////////////////////*/
 
 
-PerlinConfiguration = function(config_name) {
+import SimplexNoise from './utilities/Noise.js'
+import Hex from './utilities/Hex.js'
+
+
+export function PerlinConfiguration (config_name) {
   
   this.base;
   this.scales;
@@ -145,7 +149,7 @@ PerlinConfiguration = function(config_name) {
 
 
 //TileGenerator is not an interface, no abstract classes in Javascript
-function TileGenerator() {
+export function TileGenerator() {
 }
 
 TileGenerator.prototype.generateTile = function(x,y) {
@@ -154,7 +158,7 @@ TileGenerator.prototype.generateTile = function(x,y) {
 
 
 
-function RandomTileGenerator() {
+export function RandomTileGenerator() {
   TileGenerator.call(this);
   var range = 10;
 
@@ -170,7 +174,7 @@ RandomTileGenerator.prototype = Object.create(TileGenerator.prototype);
 
 
 
-function PerlinTileGenerator() {
+export default function PerlinTileGenerator() {
 
   TileGenerator.call(this); 
   var config = new PerlinConfiguration(1+Math.floor(Math.random()*7 ));

@@ -1,4 +1,9 @@
-function HUDRenderer(world, game_input, hex_renderer) {
+
+import Events from './utilities/Events.js'
+import Hex from './utilities/Hex.js'
+import RenderStyle from './utilities/Renderer.js'
+
+export default function HUDRenderer(world, game_input, hex_renderer) {
 
   this.game_input = game_input;
   this.world = world;
@@ -8,7 +13,7 @@ function HUDRenderer(world, game_input, hex_renderer) {
   this.action_path = [];
   this.action_targets = [];
 
-  listenForEvent('hex_hovered_changed', this.updateHover.bind(this) );
+  Events.on('hex_hovered_changed', this.updateHover.bind(this) );
 }
 
 
@@ -127,7 +132,7 @@ HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
   hover_style.line_width = 6;
   hover_style.line_color = "rgba(50,200,50,1)";
 
-  for (target of this.action_targets) {
+  for (let target of this.action_targets) {
     if (!this.world.getTile(target).hidden)
       this.hex_renderer.drawHex( target, hover_style );
 

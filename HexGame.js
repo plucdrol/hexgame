@@ -14,17 +14,22 @@ var canvas = document.createElement("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-//import CanvasDraw from './utilities/CanvasDraw.js';
+
 //Interface for rendering on the Canvas
+import CanvasDraw from './utilities/CanvasDraw.js';
 var canv_draw = new CanvasDraw(canvas);
 var real_canv_draw = new CanvasDraw(real_canvas);
+
 //Interface for receiving input from the page
+import CanvasInput from './utilities/CanvasInput.js';
 var canv_input = new CanvasInput(real_canvas);
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
+import View from './utilities/View.js';
 var view = new View(canvas, 0.3);
 //Has functions for drawing to the screen
+import Renderer from './utilities/Renderer.js';
 var renderer = new Renderer(canv_draw, view);
 var real_renderer = new Renderer(real_canv_draw, view);
 
@@ -32,15 +37,23 @@ var real_renderer = new Renderer(real_canv_draw, view);
 //Contains a world map, units, and resources
 
 let world_radius = 35;
+import World from './World.js';
 var world = new World( world_radius );// <-- model
+
 //Has functions for drawing hexes to the screen
+import HexRenderer from './HexRenderer.js';
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
 
+import WorldRenderer from './WorldRenderer.js';
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
+
 //Receives input for the game
+import GameInput from './GameInput.js';
 var game_input = new GameInput(world, view);     //<--controller
+
 //draws mouse interactions
+import HUDRenderer from './HUDRenderer.js';
 var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
 //hud_renderer.clearButtons();
 //hud_renderer.update_function();
@@ -60,8 +73,9 @@ var hud_renderer = new HUDRenderer(world, game_input, real_hex_renderer);
 
 
 
-
-
+import Unit from './Unit.js'
+import {Point} from './utilities/Hex.js'
+import Hex from './utilities/Hex.js'
 
 //Put the first city in a random position on the "equator"
 var start_hex;
@@ -75,12 +89,16 @@ if (!start_hex)
 
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
+console.log(start_hex);
 
 first_city.pop = 20;
 
 let inverted_point = new Point( -world.getPoint( start_hex.add(new Hex(2,0.5)) ).x, 
                                 -world.getPoint( start_hex.add(new Hex(2,0.5)) ).y   );
 view.setCenter(inverted_point);
+
+
+
 
 //clear some clouds
 world.clearClouds(start_hex, 2);

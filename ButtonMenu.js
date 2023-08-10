@@ -1,12 +1,13 @@
 
+import Events from './utilities/Events.js'
 
-function ButtonMenu(menu_id, unit_input) {
+export default function ButtonMenu(menu_id, unit_input) {
 
 	this.menu_id = menu_id;
   this.unit_input = unit_input;
 
-  listenForEvent('hex_hovered_changed', this.updateHover.bind(this) );
-  listenForEvent('hex_clicked', this.update_function.bind(this) );
+  Events.on('hex_hovered_changed', this.updateHover.bind(this) );
+  Events.on('hex_clicked', this.update_function.bind(this) );
 }
 
 ButtonMenu.p = ButtonMenu.prototype;
@@ -37,7 +38,7 @@ ButtonMenu.prototype.update_function = function() {
     this.updateActionButtons(this.unit_input.world, actor, position);
   } else {
     this.clearButtons();
-    this.writeMessage("", 'city-resources');
+    //this.writeMessage("", 'city-resources');
   }
 }
 
@@ -251,7 +252,7 @@ ButtonMenu.prototype.selectFirstActionIfNoneSelected = function() {
 
   //test if an action is already selected
   let radio_elements = document.getElementById('action-buttons').getElementsByClassName('button-input');
-  for (radio of radio_elements) {
+  for (let radio of radio_elements) {
     if (radio.checked) 
       return;
   }
@@ -447,7 +448,8 @@ ButtonMenu.prototype.addTooltipTile = function(hex_hovered) {
 
 ButtonMenu.prototype.writeMessage = function(message, element) {
   if (!element) 
-    var element = 'free-ants';
+    element = 'free-ants';
+
   document.getElementById(element).innerHTML = message;
 }
 

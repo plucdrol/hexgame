@@ -6,10 +6,10 @@
 //
 ////////////////////////////////////
 
-//module.export Action;
+import ActionPathfinder from './ActionPathfinder.js'
 
 //All actions inherit from this action
-function Action() {
+export default function Action() {
 
   //default action settings
   this.minimum_elevation = 2;

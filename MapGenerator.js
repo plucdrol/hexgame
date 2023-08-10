@@ -15,10 +15,15 @@
 ///////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////*/
 
+import Unit from './Unit.js'
+import Hex from './utilities/Hex.js'
+import {HexMap} from './utilities/Hex.js'
+import SimplexNoise from './utilities/Noise.js'
+import PerlinTileGenerator from './TileGenerator.js'
+import {RandomTileGenerator} from './TileGenerator.js'
+import RiverGenerator from './RiverGenerator.js'
 
-//module.exports = MapGenerator;
-
-MapGenerator = function(map_type) {
+export default function MapGenerator(map_type) {
   this.map = new HexMap();
   this.simplex = new SimplexNoise();
   this.radius = 0;
@@ -81,6 +86,8 @@ MapGenerator = function(map_type) {
 }
 
 MapGenerator.prototype.makeTileGenerator = function(type) {
+  let tile_generator;
+
   switch (type){
     case 'perlin':
       tile_generator = new PerlinTileGenerator();  

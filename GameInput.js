@@ -8,13 +8,17 @@
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
-
+import Hex from './utilities/Hex.js'
+import {Point, HexLayout, HexMap} from './utilities/Hex.js'
+import UnitInput from './UnitInput.js';
+import Events from './utilities/Events.js'
 
 var render_update = false;
 
-function GameInput(world, view) {
+export default function GameInput(world, view, image_shift_function) {
   this.world = world;
   this.view = view;
+  this.image_shift = image_shift_function;
 
   this.world_drag = new Point(0,0);
   this.screen_drag = new Point(0,0);
@@ -34,22 +38,22 @@ function GameInput(world, view) {
 
 
 
-	listenForEvent('canvas_zoom', function(e){
+	Events.on('canvas_zoom', function(e){
     self.zoomViewEvent(e.detail.amount);
   } );
-  listenForEvent('canvas_drag', function(e){
+  Events.on('canvas_drag', function(e){
     self.dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
   } );
-  listenForEvent('canvas_resize', function(e){
+  Events.on('canvas_resize', function(e){
     self.resizeEvent(e.detail.width, e.detail.height);
   } );
-  listenForEvent('canvas_click', function(e){
+  Events.on('canvas_click', function(e){
     self.clickScreenEvent(e.detail.click_pos, 'mouse');
   }); 
-  listenForEvent('canvas_touch', function(e){
+  Events.on('canvas_touch', function(e){
     self.clickScreenEvent(e.detail.click_pos, 'touch');
   }); 
-  listenForEvent('canvas_hover', function(e){
+  Events.on('canvas_hover', function(e){
     self.hoverEvent(e.detail.mousepos);
   });
 
@@ -67,7 +71,7 @@ function GameInput(world, view) {
     if (event.keyCode === 187 || event.keyCode === 27) { // escape
         self.unit_input.selectNothing();
         this.unit_input.button_menu.update_function(this.unit_input.world, this.unit_input);
-        emitEvent('hex_hovered_changed', this.hex_hovered);
+        Events.emit('hex_hovered_changed', this.hex_hovered);
     }
     return false;
   }
@@ -112,10 +116,6 @@ function GameInput(world, view) {
 
     this.view.shiftPosition(this.world_drag);
 
-    //shift the image inside the temporary canvas
-    var temp_context = canvas.getContext('2d');
-    temp_context.drawImage(canvas, -this.screen_drag.x, -this.screen_drag.y);
-
     this.world_drag = new Point(0,0);
     this.screen_drag = new Point(0,0);
   }
@@ -137,7 +137,7 @@ function GameInput(world, view) {
 
     //if the mouse moved to a new hex, redraw the screen
     if ( !Hex.equals(this.hex_hovered, this.hex_hovered_previous) ) {
-      emitEvent('hex_hovered_changed', this.hex_hovered);
+      Events.emit('hex_hovered_changed', this.hex_hovered);
     }
 
     //remember the currently hovered hex
@@ -153,13 +153,11 @@ function GameInput(world, view) {
       var world_position = this.view.screenToWorld(screen_position);
       let hex_clicked = this.world.getHex(world_position);
 
-      //Only reference to unit controller in WorldInterface
       if (device_type == "mouse" || Hex.equals(hud_renderer.last_hover, hex_clicked)) {
-        emitEvent('hex_clicked', hex_clicked);
+        Events.emit('hex_clicked', hex_clicked);
       }
-        //this.unit_input.clickHex(hex_clicked);
 
-      emitEvent('hex_hovered_changed', this.hex_hovered);
+      Events.emit('hex_hovered_changed', this.hex_hovered);
       
     }
   }

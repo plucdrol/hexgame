@@ -12,18 +12,20 @@
 //Receives input and affects actors inside a single World
 
 //Dependencies
-//  Hex.js
-//  PathFinder.js 
-//  ButtonMenu.js
+import Hex from './utilities/Hex.js'
+import PathFinder from './utilities/Pathfinder.js'
+import ButtonMenu from './ButtonMenu.js'
+import Events from './utilities/Events.js'
+
+import {listContainsHex} from './utilities/Hex.js'
 
 
 
-
-function UnitInput(world) {
+export default function UnitInput(world) {
   this.world = world;
   this.hex_selected = undefined;
 
-  listenForEvent('hex_clicked', this.clickHex.bind(this) );
+  Events.on('hex_clicked', this.clickHex.bind(this) );
   
   this.button_menu = new ButtonMenu('action-buttons', this);
 }
@@ -176,7 +178,7 @@ UnitInput.p.updateActionTargetsIndirectly = function() {
 
   if (action) {
     action.updateActionTargets(this.world, actor, this.hex_selected);
-    world.highlightRange(action.range, 'brown');
+    this.world.highlightRange(action.range, 'brown');
   } else {
     action.range = [];
   }

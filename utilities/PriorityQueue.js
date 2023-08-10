@@ -36,7 +36,7 @@ while (!pairwiseQueue.isEmpty()) {
 
 
 
-function PriorityQueue(comparator = (a, b) => a > b) {
+export default function PriorityQueue(comparator = (a, b) => a > b) {
 
   var top = 0;
   var parent = i => ((i + 1) >>> 1) - 1;

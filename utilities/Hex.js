@@ -16,12 +16,12 @@
 
 // HEX OBJECT
 
-function hex(q,r) {
+export function hex(q,r) {
   return new Hex(q,r);
 
 }
 
-function Hex(q,r) { //stores a hex unit
+export default function Hex(q,r) { //stores a hex unit
   this.q = q;
   this.r = r;
 }
@@ -50,7 +50,7 @@ Hex.prototype.getS = function() {
 //uses Szudzik's function turns 2 numbers into a 
 //unique number, increasing away from the origin
 
-function listContainsHex(hex, list) {
+export function listContainsHex(hex, list) {
     var i;
     for (i = 0; i < list.length; i++) {
         if (Hex.equals(list[i],hex)) {
@@ -173,13 +173,13 @@ Hex.areNeighbors = function(hex1, hex2) {
 // FRACTIONAL FUNCTIONS
 
 Hex.round = function(fractional_hex) {
-  q = Math.round(fractional_hex.getQ());
-  r = Math.round(fractional_hex.getR());
-  s = Math.round(fractional_hex.getS());
+  let q = Math.round(fractional_hex.getQ());
+  let r = Math.round(fractional_hex.getR());
+  let s = Math.round(fractional_hex.getS());
 
-  qdiff = Math.abs(q-fractional_hex.getQ());
-  rdiff = Math.abs(r-fractional_hex.getR());
-  sdiff = Math.abs(s-fractional_hex.getS());
+  let qdiff = Math.abs(q-fractional_hex.getQ());
+  let rdiff = Math.abs(r-fractional_hex.getR());
+  let sdiff = Math.abs(s-fractional_hex.getS());
 
     if (qdiff > rdiff && qdiff > sdiff) {
         q = -r - s;
@@ -217,8 +217,8 @@ Hex.line = function(hex_a,hex_b) {
 
 Hex.circle = function(center, N) {
   var hex_array = [];
-  for (q=-N; q<=N; q++)
-    for (r=Math.max(-N, -q-N); r<=Math.min(N, -q+N); r++)
+  for (let q=-N; q<=N; q++)
+    for (let r=Math.max(-N, -q-N); r<=Math.min(N, -q+N); r++)
       hex_array.push(center.add( new Hex(q, r)));
   return hex_array;
 }
@@ -256,7 +256,7 @@ Hex.ring = function(center, radius) {
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 
-function Vertex(hex,direction_number) {
+export function Vertex(hex,direction_number) {
   this.hex = hex;
   this.direction_number = direction_number;
 }
@@ -326,7 +326,7 @@ function Vertex(hex,direction_number) {
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-function Edge(hex,direction_number) {
+export function Edge(hex,direction_number) {
   this.hex = hex;
   this.direction_number = direction_number;
 }
@@ -558,7 +558,7 @@ Edge.sort = function(unsorted_edges) {
 */
 
 //value can be anything, even an array. use as needed
-function HexMap() {
+export function HexMap() {
 
   this.values = {};
 }
@@ -629,7 +629,7 @@ HexMap.prototype.getHexArray = function() {
   var hexarray = [];
   //look at each item in this map
   //for (var i=0;i<this.values.length; i++) {
-  for (key in this.values) {
+  for (let key in this.values) {
     let hex = this.getHex(key);
     //add the hex to the result if it has a value
     if (this.containsHex(hex)) {
@@ -774,7 +774,7 @@ function isEven(n) {
 // The Point class is a simple cartesian coordinate 
 // with some helper functions
 
-function Point (x,y) {
+export function Point (x,y) {
   this.x = x;
   this.y = y;
 
@@ -839,7 +839,7 @@ function getOrientation(string) {
 //It positions the virtual grid points in space
 
 
-function HexLayout (orientation_string, size, origin) {
+export function HexLayout (orientation_string, size, origin) {
   
   this.orientation = getOrientation(orientation_string);
   this.size = size;     //point object

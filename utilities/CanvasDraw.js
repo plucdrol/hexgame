@@ -21,7 +21,7 @@
 //This draws directly on the Canvas using the canvas coordinates given
 //this should have no notions of hexagons or even tile-based game
 
-//module.exports = CanvasDraw;
+export default CanvasDraw;
 
 function CanvasDraw (canvas) {
   this.canvas = canvas;
@@ -72,7 +72,7 @@ function CanvasDraw (canvas) {
     //polygon outline
     line.beginPath();
     line.moveTo(Math.floor(points[0].x), Math.floor(points[0].y) );
-    for (i=1; i<points.length; i++) {
+    for (let i=1; i<points.length; i++) {
 
       if (next == "move") {
         line.moveTo(Math.floor(points[i].x), Math.floor(points[i].y) );
