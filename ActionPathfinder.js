@@ -26,12 +26,6 @@ export default function ActionPathfinder(action) {
 
 
 
-
-
-
-
-
-
  ActionPathfinder.prototype.getPathfinder = function() {
   return this.pathfinder;
  }
@@ -73,7 +67,7 @@ export default function ActionPathfinder(action) {
       let is_coastal_start = false;
       if (this.action.coastal_start)
         for (let origin of origins) {
-          if (Hex.equals(hex,origin))
+          if (hex.equals(origin))
             is_coastal_start = true;
         }
         if (is_coastal_start)
@@ -173,7 +167,7 @@ export default function ActionPathfinder(action) {
       //coastal starts cannot enter water except from their start position
       if ( action.coastal_start && !action.embark_at_cities) {
         for (let origin of origins) {
-          if (Hex.equals(origin, hex))
+          if (hex.equals(origin))
             continue;
           else
             return undefined;
