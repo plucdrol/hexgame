@@ -89,7 +89,6 @@ if (!start_hex)
 
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
-console.log(start_hex);
 
 first_city.pop = 20;
 
