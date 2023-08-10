@@ -15,10 +15,9 @@ import Events from './utilities/Events.js'
 
 var render_update = false;
 
-export default function GameInput(world, view, image_shift_function) {
+export default function GameInput(world, view) {
   this.world = world;
   this.view = view;
-  this.image_shift = image_shift_function;
 
   this.world_drag = new Point(0,0);
   this.screen_drag = new Point(0,0);
@@ -166,8 +165,6 @@ export default function GameInput(world, view, image_shift_function) {
       
     }
   }
-
-
 
 }
 
