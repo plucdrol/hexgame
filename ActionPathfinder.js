@@ -6,7 +6,6 @@
   /////////////////////////////////////////////////////////
 
 import PathFinder from './utilities/PathFinder.js'
-import Hex from './utilities/Hex.js'
 
 
 export default function ActionPathfinder(action) {
@@ -89,7 +88,7 @@ export default function ActionPathfinder(action) {
 
   //NEIGHBORS FUNCTION (for pathfinder)
   ActionPathfinder.prototype.getNeighborsFunction = function(world, hex) {
-    return world.world_map.getNeighbors(hex);
+    return world.getNeighbors(hex);
   }
 
 
@@ -108,12 +107,12 @@ export default function ActionPathfinder(action) {
     let action = this.action;
 
     //going into clouds
-    if (next_tile.hidden)
+    if (world.onClouds(next_hex))
       if (!action.can_explore)
         return undefined;
 
     //going into moutains
-    if (next_tile.elevation > 13)
+    if (world.onMountains(next_hex))
       return undefined;
 
     if (world.onWater(next_hex)) {
@@ -140,7 +139,7 @@ export default function ActionPathfinder(action) {
     }
 
     //stepping onto a river from dry land
-    if( !world.onRiver(hex) && world.onRiver(next_hex) && next_tile.river.water_level != 7) {
+    if( !world.onRiver(hex) && world.onRiver(next_hex)) {
       if (!action.river_only && !action.can_river)
         return undefined;
     }

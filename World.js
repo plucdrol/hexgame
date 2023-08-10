@@ -141,6 +141,10 @@ World.prototype.getMapValue = function(hex) {
 }
 World.prototype.getTile = World.prototype.getMapValue;
 
+World.prototype.getNeighbors = function(hex) {
+  return this.world_map.getNeighbors(hex);
+}
+
 World.prototype.getActor = function(hex) {
   return this.getUnit(hex);
 }
@@ -417,7 +421,17 @@ World.prototype.alongRiver = function(position1, position2) {
 
 World.prototype.onRiver = function(position) {
   let tile = this.getTile(position);
-  return tile && tile.river && tile.river.water_level >= 7;
+  return tile && tile.river && tile.river.water_level > 7;
+}
+
+World.prototype.onClouds = function(position) {
+  let tile = this.getTile(position);
+  return tile.hidden;
+}
+
+World.prototype.onMountains = function(position) {
+  let tile = this.getTile(position);
+  return tile.elevation > 13;
 }
 
 World.prototype.sameRiver = function(position1, position2) {
