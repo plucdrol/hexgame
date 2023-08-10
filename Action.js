@@ -6,6 +6,7 @@
 //
 ////////////////////////////////////
 
+//module.export Action;
 
 //All actions inherit from this action
 function Action() {

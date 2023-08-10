@@ -16,7 +16,7 @@
 //  PathFinder.js 
 //  ButtonMenu.js
 
-//import ButtonMenu from './ButtonMenu.js'
+
 
 
 function UnitInput(world) {
@@ -181,8 +181,4 @@ UnitInput.p.updateActionTargetsIndirectly = function() {
     action.range = [];
   }
 };
-
-
-
-
 
