@@ -127,7 +127,7 @@ function CanvasDraw (canvas) {
     
     //line style
     line.lineWidth = width;
-    line.lineCap = "butt";
+    line.lineCap = "round";
     line.strokeStyle = color;  
     //line.lineCap = "round";
     line.alpha = false;   
