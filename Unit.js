@@ -7,7 +7,7 @@
 var unit_id_incrementer = 1000;
 
 import actionExpand from './ActionList.js'
-import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,actionCreateCityByAir} from './ActionList.js'
+import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,actionCreateCityByAir, actionExpandAll} from './ActionList.js'
 
 
 export default function Unit(unit_type, owner) {
@@ -87,9 +87,9 @@ Unit.prototype.setType = function(unit_type) {
     this.pop =  1;
     this.setGraphic(city_color,4);
     this.can_move = true;
-    //this.addAction( new actionExploit(12, false));
-    this.addAction( new actionExpand(5));
-    this.addAction( new actionExplore(12));
+    //this.addAction( new actionExploit(5, false));
+    this.addAction( new actionExpand(10));
+    //this.addAction( new actionExplore(12));
     //this.addAction( new actionMoveCity(8) );
     //this.addAction( new actionExpandAll() );
 

@@ -2,6 +2,11 @@
 import Hex from './utilities/Hex.js'
 import Action from './Action.js'
 
+//this function is currently set out to be an all-encompassing action that can 
+// -capture a single resource
+// -create a small settlement of 1 radius (equivalent to village+lighthouse)
+// -expand an existing settlement to more radius (up to 5)
+
 export default function actionExpand(distance) {
   Action.call(this);
 
@@ -33,7 +38,6 @@ export default function actionExpand(distance) {
   this.min_distance = 0;
   this.max_distance = distance;
 
-  this.also_build_road = false;
   this.hover_radius = 3;
 
   this.destroy_resource = true;
@@ -380,10 +384,12 @@ export function actionMoveCity() {
     ( world.hasResource(target) || world.nearCoast(target) || world.nearRiver(target) ) ;
   }
 
+  //If ACTIVATION returns true, and the selected unit has this action, the action will appear in its menu, greyed out
   this.activation = function(world, actor, position,target) {
     return (actor.can_move /*&& world.bonusEnabled('moveable-cities')*/ );
   }
 
+  //if REQUIREMENT also returns true, then the button will no longer be grayed out
   this.requirement = function(world, actor, position,target) {
     return (actor.can_move && world.getPopulation() >= 1);
   }
