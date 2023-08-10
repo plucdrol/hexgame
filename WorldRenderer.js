@@ -32,35 +32,8 @@ export default function WorldRenderer (world, hex_renderer, layer_number) {
 WorldRenderer.p = WorldRenderer.prototype;
 
 
-WorldRenderer.p.drawWorldByPortions = function() {
-
-  this.render_portions = Math.floor(this.world.radius/3);
-  this.render_start = 0;
-
-  var self = this; 
-  this.stop_rendering = setInterval( self.drawWorldPortion.bind(self), 2 );
-}   
-
-WorldRenderer.p.drawWorldPortion = function() {
-
-  var hexarray = this.world.quick_hexarray;
-
-  let sections = Math.floor(hexarray.length/this.render_portions);
-  hexarray = hexarray.slice(this.render_start*sections, (this.render_start+1)*sections );
-  this.render_start++;
-
-  if (this.render_start >= this.render_portions) {
-    //this.render_start = 0;
-    clearInterval(this.stop_rendering);
-  }
-
-  this.renderLayer(hexarray);
-
-
-}
-
 WorldRenderer.p.drawWorld = function() {
-  var hexarray = this.world.quick_hexarray;
+  var hexarray = this.world.getHexArray();
 
   /*
   this.drawTiles(hexarray);

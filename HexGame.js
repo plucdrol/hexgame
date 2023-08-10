@@ -151,11 +151,7 @@ let resource_renderer = create_layer_renderer('thing_canvas', 4);
 canv_input.windowResize();
 
 
-tile_renderer.drawWorld();
-river_renderer.drawWorld();
-road_renderer.drawWorld();
-unit_renderer.drawWorld();
-resource_renderer.drawWorld();
+updateWorldRender();
 
 var screen_context = canvas.getContext('2d');
 
@@ -168,6 +164,7 @@ function step(timestamp) {
   let now = new Date().getTime();
 
   drawScreen();
+  updateWorldRender();
 
   if (then)
     while (now-then < 30) {
@@ -186,11 +183,11 @@ window.requestAnimationFrame(step);
 function updateWorldRender() {
 
 
-  tile_renderer.drawWorldByPortions();
-  river_renderer.drawWorldByPortions();
+  tile_renderer.drawWorld();
+  river_renderer.drawWorld();
   road_renderer.drawWorld();
-  unit_renderer.drawWorldByPortions();
-  resource_renderer.drawWorldByPortions();
+  unit_renderer.drawWorld();
+  resource_renderer.drawWorld();
 
 }
 
