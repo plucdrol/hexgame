@@ -19,7 +19,6 @@ function HexRenderer(renderer, hexlayout) {
 
 
   
-  this.wheat = document.getElementById('wheat-icon');
 
 }
 
@@ -73,7 +72,7 @@ HexRenderer.p.drawImage = function(hex) {
   let world_point = this.hexToPoint(hex);
 
   
-  this.renderer.drawImage(this.wheat, world_point, 60);
+  //this.renderer.drawImage(this.wheat, world_point, 60);
 
 
 

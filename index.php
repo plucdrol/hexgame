@@ -48,7 +48,6 @@
 		</div>
 		
 
-		<img src='wheat-transparency.png' id='wheat-icon'>
 
 		<div id='tooltip'>
 			Nothing
