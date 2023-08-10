@@ -7,11 +7,8 @@
 var unit_id_incrementer = 1000;
 
 import actionExpand from './ActionList.js'
-import actionGrowRoots from './ActionList.js'
-import actionExplore from './ActionList.js'
-import actionMoveCity from './ActionList.js'
-import actionExploit from './ActionList.js'
-import actionCreateCityByAir from './ActionList.js'
+import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,actionCreateCityByAir} from './ActionList.js'
+
 
 export default function Unit(unit_type, owner) {
   
