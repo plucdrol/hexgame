@@ -16,6 +16,8 @@
 /////////////////////////////////////////////////////////*/
 
 
+//module.exports = MapGenerator;
+
 MapGenerator = function(map_type) {
   this.map = new HexMap();
   this.simplex = new SimplexNoise();

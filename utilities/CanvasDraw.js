@@ -21,7 +21,7 @@
 //This draws directly on the Canvas using the canvas coordinates given
 //this should have no notions of hexagons or even tile-based game
 
-module.exports = CanvasDraw;
+//module.exports = CanvasDraw;
 
 function CanvasDraw (canvas) {
   this.canvas = canvas;

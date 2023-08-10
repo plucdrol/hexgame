@@ -13,7 +13,7 @@
 // CanvasDraw
 // Hex
 
-import CanvasDraw from './CanvasDraw';
+//import CanvasDraw from './CanvasDraw';
 
 function HexRenderer(renderer, hexlayout) {
   this.renderer = renderer; 

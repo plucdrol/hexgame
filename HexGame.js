@@ -14,6 +14,7 @@ var canvas = document.createElement("canvas");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+//import CanvasDraw from './utilities/CanvasDraw.js';
 //Interface for rendering on the Canvas
 var canv_draw = new CanvasDraw(canvas);
 var real_canv_draw = new CanvasDraw(real_canvas);

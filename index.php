@@ -23,9 +23,13 @@
 					$filename != '.\HexGame.js');
 			}
 
-			function include_script($filename) {
-				echo "<script src='".$filename."'></script>";
-			}
+			/*function include_script($filename) {
+				echo "<script type='module' src='".$filename."'></script>";
+			}*/
+
+      function include_script($filename) {
+        echo "<script src='".$filename."'></script>";
+      }
 
 		?>
 
