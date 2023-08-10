@@ -115,14 +115,14 @@ WorldRenderer.p.drawTiles = function(hexarray) {
       else
        // this.drawTile(hex, {elevation: 32}, 'aqua' );
       this.drawTile(hex, this.getTile(hex));
-      //this.drawTile(hex, {elevation: 32}, lighter( greenscale_colors(this.getTile(hex).elevation) ) );
+      //this.drawTile(hex, {elevation: 32}, lighter( color_scale(this.getTile(hex).elevation) ) );
       continue;
     }
 
     //actual tiles, darker when highlights are on
     if (this.getTile(hex).elevation >= 0) {
       //if (this.world.highlights_on)
-        //this.drawTile(hex, {elevation: 32}, darker( greenscale_colors(this.getTile(hex).elevation) ) );
+        //this.drawTile(hex, {elevation: 32}, darker( color_scale(this.getTile(hex).elevation) ) );
       //else
         this.drawTile(hex, this.getTile(hex));
     }
@@ -278,7 +278,7 @@ WorldRenderer.p.drawTile = function(hex, tile, color) {
 
   //analyze tile
   var height = Math.floor(tile.elevation);
-  style.fill_color = greenscale_colors(height);
+  style.fill_color = color_scale(height);
   if (color)
     style.fill_color = color;
 
@@ -378,7 +378,7 @@ var getWindArrowCharacter = function(direction) {
 
 
 //colors of different tiles depending on height
-var greenscale_colors = function (i) {
+var color_scale = function (i) {
 
   var oldgreenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
                     '#080','#062', //grass 3 4
@@ -431,7 +431,7 @@ var greenscale_colors = function (i) {
 
 
                     
- return rockscale[i];
+ return oldgreenscale[i];
 
 }
 
