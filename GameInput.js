@@ -95,25 +95,20 @@ export default function GameInput(world, view, image_shift_function) {
 
 	}
 	
+
+
+
   //React to dragging across the screen with finger or mouse
 	this.dragEvent = function(mouse, previous_mouse) {
 
 	  //get the movement the mouse has moved since last tick
 	  var x_move = this.view.screenToWorld1D(previous_mouse.x-mouse.x);
 	  var y_move = this.view.screenToWorld1D(previous_mouse.y-mouse.y);
+    var drag_move = new Point(x_move, y_move);
 
-/*
+    //shift the view by that movement
+    this.view.shiftPosition(drag_move);
 
-//saved from merge HEAD
-    this.world_drag.x += x_move;
-    this.world_drag.y += y_move;
-
-    this.screen_drag.x += previous_mouse.x-mouse.x;
-    this.screen_drag.y += previous_mouse.y-mouse.y;
-
-    if ( Math.pow(this.screen_drag.x, 2) + Math.pow(this.screen_drag.y, 2) > 1000 ) 
-      this.actuallyDrag();
-*/
     //shift the image in the temporary canvas
     var temp_context = canvas.getContext('2d');
     temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));

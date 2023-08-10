@@ -11,8 +11,8 @@
 /////////////////////////////////////////////////////////
 
 //Dependencies:
-//  CanvasDraw.js
-//  View.js
+import CanvasDraw from './CanvasDraw.js'
+import View from './View.js'
 
 //this is a style for renderer
 export function RenderStyle() {

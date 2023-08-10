@@ -34,7 +34,7 @@ WorldRenderer.p = WorldRenderer.prototype;
 
 WorldRenderer.p.drawWorldByPortions = function() {
 
-  this.render_portions = Math.floor(world.radius/3);
+  this.render_portions = Math.floor(this.world.radius/3);
   this.render_start = 0;
 
   var self = this; 

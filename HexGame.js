@@ -17,7 +17,6 @@ canvas.height = window.innerHeight;
 //Interface for rendering on the Canvas
 import CanvasDraw from './utilities/CanvasDraw.js';
 var canv_draw = new CanvasDraw(canvas);
-var real_canv_draw = new CanvasDraw(real_canvas);
 
 //Interface for receiving input from the page
 import CanvasInput from './utilities/CanvasInput.js';
@@ -30,7 +29,6 @@ var view = new View('canvas');
 //Has functions for drawing to the screen
 import Renderer from './utilities/Renderer.js';
 var renderer = new Renderer('canvas', view);
-var real_renderer = new Renderer(real_canv_draw, view);
 
 
 //-------------Game-specific elements------------
@@ -44,7 +42,6 @@ var world = new World( world_radius );// <-- model
 
 import HexRenderer from './HexRenderer.js';
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
-var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
 
 import WorldRenderer from './WorldRenderer.js';
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
@@ -57,7 +54,6 @@ var game_input = new GameInput(world, view);     //<--controller
 //draws mouse interactions
 import HUDRenderer from './HUDRenderer.js';
 var hud_renderer = new HUDRenderer(world, game_input, hex_renderer);
-hud_renderer.clearButtons();
 
 
 
@@ -166,9 +162,9 @@ canv_input.windowResize();
 
 tile_renderer.drawWorld();
 river_renderer.drawWorld();
-road_renderer.drawWorldByPortions();
-unit_renderer.drawWorldByPortions();
-resource_renderer.drawWorldByPortions();
+road_renderer.drawWorld();
+unit_renderer.drawWorld();
+resource_renderer.drawWorld();
 
 var screen_context = canvas.getContext('2d');
 
@@ -201,7 +197,7 @@ function updateWorldRender() {
 
   tile_renderer.drawWorldByPortions();
   river_renderer.drawWorldByPortions();
-  road_renderer.drawWorldByPortions();
+  road_renderer.drawWorld();
   unit_renderer.drawWorldByPortions();
   resource_renderer.drawWorldByPortions();
 
