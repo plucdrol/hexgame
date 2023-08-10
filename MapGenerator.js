@@ -269,17 +269,13 @@ MapGenerator.prototype.addIcePoles = function() {
 
   for (let thishex of this.map.getHexArray()) {  
     //ice rim around the edge of the map
-    if (Hex.distance(origin, thishex) > 0.9*size && Math.random() < 0.5) {
+    if (Hex.distance(origin, thishex) > size-8 && Math.random() < 0.5) {
       this.setElevation(thishex, 18);
     }
-    if (Hex.distance(origin, thishex) == size) {
+    if (Hex.distance(origin, thishex) >= size-5) {
       this.setElevation(thishex, 18);
     }
 
-    //ice pole in the center
-    //if (Hex.distance(origin, thishex) < 0.2*size && this.getElevation(thishex) >= 1) {
-      //this.setElevation(thishex, 18);
-    //}
   }
 }
 
