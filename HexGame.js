@@ -133,19 +133,11 @@ function create_layer_renderer(canvas_name, layer_number ) {
   return world_renderer; 
 }
 
- var earth_canvas = document.getElementById('earth_canvas');
- var road_canvas = document.getElementById('road_canvas');
- var unit_canvas = document.getElementById('unit_canvas');
- var resource_canvas = document.getElementById('resource_canvas');
- var thing_canvas = document.getElementById('thing_canvas');
+var earth_canvas = document.getElementById('earth_canvas');
+var thing_canvas = document.getElementById('thing_canvas');
 
 let     tile_renderer = create_layer_renderer('earth_canvas', 0);
 let    river_renderer = create_layer_renderer('earth_canvas', 1);
-
-/*
-let     road_renderer = create_layer_renderer('road_canvas', 2);
-let     unit_renderer = create_layer_renderer('unit_canvas', 3);
-let resource_renderer = create_layer_renderer('resource_canvas', 4);*/
 
 let     road_renderer = create_layer_renderer('thing_canvas', 2);
 let     unit_renderer = create_layer_renderer('thing_canvas', 3);
@@ -157,7 +149,6 @@ let resource_renderer = create_layer_renderer('thing_canvas', 4);
 
 //world.clearClouds();
 canv_input.windowResize();
-
 
 
 tile_renderer.drawWorld();
