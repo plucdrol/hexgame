@@ -962,7 +962,7 @@ export function actionCreateLighthouse(distance) {
   this.name = "lighthouse";
   this.type = "target";
   this.target = "land";
-  this.new_unit_type = 'lighthouse';
+  this.new_unit_type = 'old-lighthouse';
 
   this.nextSelection = "target";
   this.min_distance = 0;
@@ -1069,3 +1069,93 @@ function actionGetResource(max_distance, multi_target) {
 
 
 }
+
+
+
+
+
+function actionCollectRiverFish(max_distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "collect-river-fish";
+  this.type = "target";
+  this.target = "land";
+  this.min_distance = 1;
+  this.max_distance = max_distance;
+  this.hover_radius = 0;
+  this.cloud_clear = 0;
+  this.river_only = true;
+  this.stop_on_rivers = false;
+
+  this.also_build_road = true;
+
+  this.destroy_resource = false;
+
+  this.free_pop_cost = -1;
+  this.total_pop_cost = -2;
+
+  this.multi_target = true;
+  this.new_unit_type = 'colony';
+
+  this.description = "Harvest river";
+  this.extra_description = "Get all the fish resources in this river";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.sameRiver(position, target)
+         && world.countResources(Hex.circle(target, 0), 'food', 1);
+  }
+
+  this.activation = function(world, actor, position) {
+    return world.onRiver(position);
+  }
+
+
+  this.effect = function(world,actor,position,target) {
+    actor.addPop(1);
+  }
+}
+
+
+
+export function actionGoFishing(max_distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 1;
+  this.maximum_elevation = 1;
+
+  this.name = "fishing";
+  this.type = "target";
+  this.target = "land";
+  this.min_distance = 1;
+  this.max_distance = max_distance;
+  this.hover_radius = 0;
+  this.cloud_clear = 0;
+
+  this.destroy_resource = false;
+
+  this.free_pop_cost = -1;
+  this.total_pop_cost = -2;
+
+  this.multi_target = true;
+  this.new_unit_type = 'fishing-boat';
+
+
+
+  this.description = "Go fishing";
+  this.extra_description = "Get all the sea resources up to "+this.max_distance+" tiles away";
+
+  this.targetFilterFunction = function(world, actor, position, target) {
+    return !world.unitAtLocation(target) && world.countResources(Hex.circle(target, 0), 'food', 1);
+  }
+
+  this.requirement = function(world, actor, position) {
+    return world.nearCoast(position);
+  }
+
+  this.effect = function(world,actor,position,target) {
+    actor.addPop(1);
+  }
+}
+

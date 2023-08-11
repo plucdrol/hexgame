@@ -7,7 +7,7 @@
 var unit_id_incrementer = 1000;
 
 import actionExpand from './ActionList.js'
-import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,actionCreateCityByAir, actionCreateLighthouse,actionExpandAll,actionCreateHarbor} from './ActionList.js'
+import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,actionCreateCityByAir, actionGoFishing,actionCreateLighthouse,actionExpandAll,actionCreateHarbor} from './ActionList.js'
 
 
 export default function Unit(unit_type, owner) {
@@ -113,7 +113,13 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateCityByAir( 10 ));
     break;
 
-
+  case 'old-lighthouse':
+    this.name = "Lighthouse";
+    this.pop = 2;
+    this.transfer_pop = true;
+    this.setGraphic('lightblue',4);
+    this.addAction( new actionGoFishing(3));
+    break;
 
 
 ////// START OF OLD UNITS
@@ -161,13 +167,7 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateCityByAir());
     break;
 
-  case 'old-lighthouse':
-    this.name = "Lighthouse";
-    this.pop = 2;
-    this.transfer_pop = true;
-    this.setGraphic('lightblue',4);
-    this.addAction( new actionGoFishing(3));
-    break;
+
 
   case 'old-harbor':
     this.name = "Harbor";
