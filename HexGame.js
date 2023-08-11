@@ -192,6 +192,7 @@ function updateWorldRender() {
 function drawScreen() {
 
   //clear the real canvas
+  renderer.clear();
 
   //copy the temporary canvas to the real canvas
   renderer.blitCanvas(earth_canvas);
