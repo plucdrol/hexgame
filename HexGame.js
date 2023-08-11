@@ -144,7 +144,21 @@ let     unit_renderer = create_layer_renderer('thing_canvas', 3);
 let resource_renderer = create_layer_renderer('thing_canvas', 4);
 
 //-------------------------------------------------
+function updateWorldRender() {
 
+
+  tile_renderer.drawWorld();
+  river_renderer.drawWorld();
+  road_renderer.drawWorld();
+  unit_renderer.drawWorld();
+  resource_renderer.drawWorld();
+
+}
+
+import Events from './utilities/Events.js'
+Events.on('canvas_resize', function(e){
+  updateWorldRender();
+} );
 
 
 //world.clearClouds();
@@ -180,16 +194,7 @@ window.requestAnimationFrame(step);
 
 
 
-function updateWorldRender() {
 
-
-  tile_renderer.drawWorld();
-  river_renderer.drawWorld();
-  road_renderer.drawWorld();
-  unit_renderer.drawWorld();
-  resource_renderer.drawWorld();
-
-}
 
 function drawScreen() {
 
