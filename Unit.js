@@ -100,7 +100,7 @@ Unit.prototype.setType = function(unit_type) {
   case 'village':
     this.name = "Village";
     this.setGraphic('#040',2);
-        this.addAction( new actionExpand(5));
+    this.addAction( new actionExpand(5));
     this.addAction( new actionExplore(12));
     
     
@@ -113,15 +113,83 @@ Unit.prototype.setType = function(unit_type) {
     this.addAction( new actionCreateCityByAir( 10 ));
     break;
 
-  case 'lighthouse':
-    this.name = "Lighthouse";
-    this.setGraphic('lightblue',4);
-    this.addAction( new actionGetShallowFish(3));
-    //this.addAction( new actionHydroDam());
+
+
+
+////// START OF OLD UNITS
+  case 'old-village':
+    this.name = "Village";
+    this.pop = 2;
+    this.transfer_pop = true;
+    this.setGraphic('white',4);
+    
+    let actionGetResource2 = new actionGetResource(2, false);
+    actionGetResource2.name = 'another-name';
+    actionGetResource2.description = 'Get one extra resource';
+    actionGetResource2.extra_description = 'Can reach 2 tiles away<br>But only once';
+
+
+    this.addAction( new actionGetResource(1, true));
+    this.addAction( actionGetResource2 );
+
+    this.addAction( new actionCreateRiverDock(1));
+
+    this.addAction( new actionCreateLighthouse(1));
+    //this.addAction( new actionCreateVillage(4));
     break;
 
+  case 'old-expedition-center':
+    this.name = "Expedition Center";
+    this.pop = 4;
+    this.setGraphic('pink',5);
+    this.addAction( new actionCreateCity(12));
+    this.council_connected = false;
+    break;
 
+  case 'old-river-dock':
+    this.name = "River dock";
+    this.pop = 2;
+    this.transfer_pop = true;
+    this.setGraphic('grey',4);
+    this.addAction( new actionCollectRiverFish(12));
+    break;
 
+  case 'old-airport':
+    this.name = "Airport";
+    this.pop = 6;
+    this.setGraphic('grey',6);
+    this.addAction( new actionCreateCityByAir());
+    break;
+
+  case 'old-lighthouse':
+    this.name = "Lighthouse";
+    this.pop = 2;
+    this.transfer_pop = true;
+    this.setGraphic('lightblue',4);
+    this.addAction( new actionGoFishing(3));
+    break;
+
+  case 'old-harbor':
+    this.name = "Harbor";
+    this.pop = 4;
+    this.transfer_pop = true;
+    this.setGraphic('brown',5);
+    this.addAction( new actionCreateCityBySea(15));
+    this.addAction( new actionCreateLighthouse(10));
+    break;
+
+  case 'old-colony':
+    this.name = "Colony";
+    this.setGraphic('white',3);
+    this.setResource('colony',1);
+    break;
+
+  case 'old-fishing-boat':
+    this.name = "Fishing boat";
+    this.setGraphic('white',3);
+    this.setResource('colony',1);
+    break;
+/////// END OF OLD UNITS
 
 
 
