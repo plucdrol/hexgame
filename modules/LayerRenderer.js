@@ -26,7 +26,7 @@ LayerRenderer.prototype.drawEarth = function() {
 }
 
 LayerRenderer.prototype.drawThings = function() {
-  this.world_renderer.drawRoads();
+  //this.world_renderer.drawRoads();
   this.world_renderer.drawUnits();
   this.world_renderer.drawResources();
 }

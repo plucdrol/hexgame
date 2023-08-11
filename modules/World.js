@@ -72,7 +72,7 @@ export default function World(radius) {
 
   this.resources = new HexMap();
   this.generateResources();
-  this.generateUnknown();
+  //this.generateUnknown();
 
 
 
@@ -312,7 +312,7 @@ World.prototype.hasResource = function(hex) {
 }
 
 World.prototype.destroyResource = function(hex) {
-  this.resources.remove(hex);
+  this.resources.delete(hex);
   if (this.getResource(hex))
     this.total_resources -= 1;
 }

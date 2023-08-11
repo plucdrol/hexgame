@@ -166,7 +166,7 @@ WorldRenderer.p.drawRoads = function() {
     if (tile.hidden) continue;
 
     if (tile.road_from)
-      drawRoadHalf(tile.road_to)
+      drawRoadHalf(tile.road_from)
 
     if (tile.road_to) 
       drawRoadHalf(tile.road_to)
