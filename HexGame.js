@@ -111,9 +111,13 @@ while (count > 0) {
 world.destroyResource(start_hex);
 
 
-//---------------SETUP WORLD RENDERING------------------------------------------
+//---------------SETUP WORLD RENDERING IN LAYERS------------------------------------------
+//these functions should go into the layer renderer
 
 
+import Events from './modules/u/Events.js'
+Events.on('click', rebuildWorldRender);
+Events.on('canvas_resize', ()=>updateWorldRender() );
 
 var earth_canvas = document.getElementById('earth_canvas');
 var thing_canvas = document.getElementById('thing_canvas');
@@ -125,22 +129,15 @@ let     road_renderer = create_layer_renderer('thing_canvas', 2);
 let     unit_renderer = create_layer_renderer('thing_canvas', 3);
 let resource_renderer = create_layer_renderer('thing_canvas', 4);
 
-Events.on('click', rebuildWorldRender);
-
-import Events from './modules/u/Events.js'
-Events.on('canvas_resize', function(e){
-  updateWorldRender();
-} );
-
-//world.clearClouds();
 canv_input.windowResize();
-
 updateWorldRender();
 
 var screen_context = canvas.getContext('2d');
 canv_input.windowResize();
 
 //-----------------LAYER RENDERING FUNCTIONS--------------
+
+//these functions should go into the layer renderer
 
 function create_layer_renderer(canvas_name, layer_number ) {
 
