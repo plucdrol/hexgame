@@ -58,9 +58,9 @@ var hud_renderer = new HUDRenderer(world, game_input, hex_renderer);
 
 
 
+//INITIALIZE THE GAME MAP
 
 import Unit from './modules/Unit.js'
-import {Point} from './modules/u/Hex.js'
 import Hex from './modules/u/Hex.js'
 
 //Put the first city in a random position on the "equator"
@@ -78,18 +78,15 @@ world.units.set(start_hex, first_city);
 
 first_city.pop = 20;
 
-let inverted_point = new Point( -world.getPoint( start_hex.add(new Hex(2,0.5)) ).x, 
-                                -world.getPoint( start_hex.add(new Hex(2,0.5)) ).y   );
+let inverted_point = { x: -world.getPoint( start_hex.add(new Hex(2,0.5)) ).x, 
+                       y: -world.getPoint( start_hex.add(new Hex(2,0.5)) ).y }
 view.setCenter(inverted_point);
-
-
-
 
 //clear some clouds
 world.clearClouds(start_hex, 2);
 //world.clearClouds();
 
-//add resources
+//add starting area resources
 let count = 5;
 while (count > 0) {
   let circle = Hex.ring(start_hex, 3);
@@ -114,7 +111,36 @@ while (count > 0) {
 world.destroyResource(start_hex);
 
 
-//setup temp world rendering-------------------------------------------------
+//---------------SETUP WORLD RENDERING------------------------------------------
+
+
+
+var earth_canvas = document.getElementById('earth_canvas');
+var thing_canvas = document.getElementById('thing_canvas');
+
+let     tile_renderer = create_layer_renderer('earth_canvas', 0);
+let    river_renderer = create_layer_renderer('earth_canvas', 1);
+
+let     road_renderer = create_layer_renderer('thing_canvas', 2);
+let     unit_renderer = create_layer_renderer('thing_canvas', 3);
+let resource_renderer = create_layer_renderer('thing_canvas', 4);
+
+Events.on('click', rebuildWorldRender);
+
+import Events from './modules/u/Events.js'
+Events.on('canvas_resize', function(e){
+  updateWorldRender();
+} );
+
+//world.clearClouds();
+canv_input.windowResize();
+
+updateWorldRender();
+
+var screen_context = canvas.getContext('2d');
+canv_input.windowResize();
+
+//-----------------LAYER RENDERING FUNCTIONS--------------
 
 function create_layer_renderer(canvas_name, layer_number ) {
 
@@ -133,17 +159,6 @@ function create_layer_renderer(canvas_name, layer_number ) {
   return world_renderer; 
 }
 
-var earth_canvas = document.getElementById('earth_canvas');
-var thing_canvas = document.getElementById('thing_canvas');
-
-let     tile_renderer = create_layer_renderer('earth_canvas', 0);
-let    river_renderer = create_layer_renderer('earth_canvas', 1);
-
-let     road_renderer = create_layer_renderer('thing_canvas', 2);
-let     unit_renderer = create_layer_renderer('thing_canvas', 3);
-let resource_renderer = create_layer_renderer('thing_canvas', 4);
-
-//-------------------------------------------------
 function rebuildWorldRender() {
 
   tile_renderer.clear()
@@ -155,10 +170,7 @@ function rebuildWorldRender() {
   updateWorldRender();
 }
 
-Events.on('click', rebuildWorldRender);
-
 function updateWorldRender() {
-
 
   tile_renderer.drawWorld();
   river_renderer.drawWorld();
@@ -167,46 +179,6 @@ function updateWorldRender() {
   resource_renderer.drawWorld();
 
 }
-
-import Events from './modules/u/Events.js'
-Events.on('canvas_resize', function(e){
-  updateWorldRender();
-} );
-
-
-//world.clearClouds();
-canv_input.windowResize();
-
-
-updateWorldRender();
-
-var screen_context = canvas.getContext('2d');
-
-////////////////////////// DRAWING TO THE CANVAS //////////////////
-canv_input.windowResize();
-
-let then = 0;
-function step(timestamp) {
-
-  let now = new Date().getTime();
-
-  drawScreen();
-  updateWorldRender();
-
-  if (then)
-    while (now-then < 30) {
-      world_renderer.drawWorld();
-      now = new Date().getTime();
-    }
-
-
-  then = now;
-  window.requestAnimationFrame(step);
-}
-window.requestAnimationFrame(step);
-
-
-
 
 
 function drawScreen() {
@@ -237,6 +209,36 @@ function drawScreen() {
 
     context.drawImage(canvas_layer, x, y, w, h, 0, 0, canvas.width, canvas.height );
   }
+
+
+
+
+
+
+
+////////////////////////// ANIMATION STEP//////////////////
+
+let then = 0;
+function step(timestamp) {
+
+  let now = new Date().getTime();
+
+  drawScreen();
+  updateWorldRender();
+
+  if (then)
+    while (now-then < 30) {
+      world_renderer.drawWorld();
+      now = new Date().getTime();
+    }
+
+
+  then = now;
+  window.requestAnimationFrame(step);
+}
+window.requestAnimationFrame(step);
+
+
 
 
 
