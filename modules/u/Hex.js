@@ -560,34 +560,33 @@ Edge.sort = function(unsorted_edges) {
 //value can be anything, even an array. use as needed
 export function HexMap() {
 
-  this.values = {};
+  this.hexes = new Map();
+  this.values = new Map();
 }
 
 HexMap.prototype.set = function(hex,value) {
   let key = Hex.getKey(hex);
-  this.values[key] = value;
+  this.hexes.set(key,hex);
+  this.values.set(key,value);
 }
-//This makes the value as undefined
-HexMap.prototype.remove = function(hex) {
-  if (this.containsHex(hex)) {
-    this.set(hex,undefined);
-  }
-}
-//This removes the value from the array entirely
+
 HexMap.prototype.delete = function(hex) {
   if (this.containsHex(hex)) {
     let key = Hex.getKey(hex);
-    delete this.values[key];
+    this.hexes.delete(key);
+    this.values.delete(key);
   }
 }
 HexMap.prototype.removeAll = function() {
-  this.values = {};
+  this.values = new Map();
+  this.hexes = new Map();
 }
 
 HexMap.prototype.getValue = function(hex) {
   var key = Hex.getKey(hex);
-  if (this.values[key] != undefined) {
-    return this.values[key];
+
+  if (this.containsHex(hex)) {
+    return this.values.get(key);
   } else {
     return false;
   }
@@ -612,7 +611,7 @@ HexMap.prototype.getHex = function(key) {
   return new Hex(q,r);
 };
 HexMap.prototype.size = function() {
-  return this.values.length;
+  return this.values.size;
 }
 HexMap.prototype.getNeighbors = function(hex) {
   let all_neighbors = hex.getNeighbors();
@@ -626,67 +625,31 @@ HexMap.prototype.getNeighbors = function(hex) {
 }
 //returns a simple array of each hex contained in this map
 HexMap.prototype.getHexArray = function() {
-  var hexarray = [];
-  //look at each item in this map
-  //for (var i=0;i<this.values.length; i++) {
-  for (let key in this.values) {
-    let hex = this.getHex(key);
-    //add the hex to the result if it has a value
-    if (this.containsHex(hex)) {
-      hexarray.push(hex);
-    }
-  }
-  return hexarray;
+  return this.hexes.values();
 }
 //HexMap getValues returns an array of each defined value
 HexMap.prototype.getValues = function() {
-  var value_array = [];
-  //look at each item in this map
-  //for (var i=0;i<this.values.length; i++) {
-  for (key in this.values) {
-    let hex = this.getHex(key);
-    //add the hex to the result if it is defined
-    if (this.containsHex(hex)) {
-      value_array.push(this.getValue(hex));
-    }
-  }
-  return value_array;
+  return this.values.values();
 }
 
 //HexMap contains: finds if the hex is part of the map 
 //by checking if its value is defined
 HexMap.prototype.containsHex = function(hex) {
-  if (this.getValue(hex)) {
-    return true;
-  } else {
-    return false;
-  }
+  let key = Hex.getKey(hex)
+  return this.values.has(key)
 }
 
 //HexMap containsKey: finds if the key is defined by 
 //checking for the key directly 
 HexMap.prototype.containsKey = function(key) {
-  //if (this.getValueByKey(key) !== undefined) {
-  if (key in this.values) {
+  if (this.values.has(key)) {
     return true;
   } else {
     return false;
   }
 }
 
-//HexMap flip: if the value of hex is in the 'values' 
-//array, changes it to the next value in the array
-HexMap.prototype.flip = function(hex,values) {
-  if (this.containsHex(hex)) {
-    for (var i=0; i < values.length; i++) {
-      if (this.getValue(hex) == values[i]) {
-        this.set(hex,values[(i+1)%values.length]);
-        return true;
-      }
-    }
-  }
-  return false;
-}
+
 
 
 
