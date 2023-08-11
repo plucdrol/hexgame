@@ -20,9 +20,9 @@ import {RenderStyle} from './u/Renderer.js'
 
 
 
-export default function WorldRenderer (world, hex_renderer) {
+export default function WorldRenderer (world, renderer) {
   
-  this.hex_renderer = hex_renderer;
+  this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
   this.world = world;
 
   var self = this; 

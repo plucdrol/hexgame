@@ -16,9 +16,8 @@ export default function LayerRenderer(canvas_name, world) {
   full_view.setOutput(0, 0, temp_canvas.width, temp_canvas.height);  //canvas coordinates
 
   var renderer = new Renderer(canvas_name, full_view);
-  var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 
-  this.world_renderer = new WorldRenderer(world, hex_renderer); 
+  this.world_renderer = new WorldRenderer(world, renderer); 
 }
 
 LayerRenderer.prototype.drawEarth = function() {

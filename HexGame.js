@@ -18,7 +18,6 @@ import View from './modules/u/View.js';
 
 
 import GameInput from './modules/GameInput.js';
-import HexRenderer from './modules/HexRenderer.js';
 import HUDRenderer from './modules/HUDRenderer.js';
 import World from './modules/World.js';
 import Unit from './modules/Unit.js'
@@ -54,13 +53,12 @@ let world_radius = 35;
 var world = new World( world_radius );// <-- model
 
 //Has functions for drawing hexes to the screen
-var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 
 //Receives input for the game
 var game_input = new GameInput(world, view);     //<--controller
 
 //draws mouse interactions
-var hud_renderer = new HUDRenderer(world, game_input, hex_renderer);
+var hud_renderer = new HUDRenderer(world, game_input, renderer);
 
 
 
@@ -194,7 +192,6 @@ function updateWorldRender() {
 function drawScreen() {
 
   //clear the real canvas
-  hex_renderer.clear();
 
   //copy the temporary canvas to the real canvas
   renderer.blitCanvas(earth_canvas);

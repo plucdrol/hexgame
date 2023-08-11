@@ -1,15 +1,16 @@
 
 import Events from './u/Events.js'
 import Hex from './u/Hex.js'
+import HexRenderer from './HexRenderer.js';
 import RenderStyle from './u/Renderer.js'
 
-export default function HUDRenderer(world, game_input, hex_renderer) {
+export default function HUDRenderer(world, game_input, renderer) {
 
   this.game_input = game_input;
   this.world = world;
   this.unit_input = game_input.unit_input;
   this.action_menu = this.unit_input.button_menu;
-  this.hex_renderer = hex_renderer;
+  this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
   this.action_path = [];
   this.action_targets = [];
 
