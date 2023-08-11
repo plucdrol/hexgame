@@ -139,6 +139,7 @@ export default function Action() {
 
     world.clearClouds(target, this.cloud_clear);
 
+    //preEffect defined by individual actions
     this.preEffect(world, actor, position, target);
 
     if (this.takes_city_pop)       
