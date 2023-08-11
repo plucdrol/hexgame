@@ -285,6 +285,14 @@ World.prototype.getRoadLevel = function(hex1,hex2) {
     return 0;
 }
 
+World.prototype.biggestRoad = function(hex) {
+  let road_level = 0;
+  for (let hex2 of this.getNeighbors(hex))
+    road_level = Math.max(road_level, this.getRoadLevel(hex,hex2));    
+  return road_level
+
+}
+
 
 
 World.prototype.removeRoads = function(hex) {
