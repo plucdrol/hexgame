@@ -144,6 +144,19 @@ let     unit_renderer = create_layer_renderer('thing_canvas', 3);
 let resource_renderer = create_layer_renderer('thing_canvas', 4);
 
 //-------------------------------------------------
+function rebuildWorldRender() {
+
+  tile_renderer.clear()
+  river_renderer.clear()
+  road_renderer.clear()
+  unit_renderer.clear()
+  resource_renderer.clear()
+
+  updateWorldRender();
+}
+
+Events.on('click', rebuildWorldRender);
+
 function updateWorldRender() {
 
 
