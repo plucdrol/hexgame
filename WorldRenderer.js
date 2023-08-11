@@ -29,21 +29,15 @@ export default function WorldRenderer (world, hex_renderer, layer_number) {
   var self = this; 
 
 }
+
 WorldRenderer.p = WorldRenderer.prototype;
 
+WorldRenderer.p.clear = function() {
+  this.hex_renderer.clear();
+}
 
 WorldRenderer.p.drawWorld = function() {
-  var hexarray = this.world.getHexArray();
-
-  /*
-  this.drawTiles(hexarray);
-  this.drawRivers(hexarray);
-  this.drawRoads(hexarray);
-  this.drawUnits(hexarray);
-  this.drawResources(hexarray);
-  */
-
-  
+  var hexarray = this.world.getHexArray();  
   this.renderLayer(hexarray);
 }
 
@@ -301,14 +295,16 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
   let zoom = view.getZoom();
 
-  //draw a square or hexagon
-  if (unit.size > 4 || (unit.pop && unit.pop > 9)) {
-    this.hex_renderer.drawHex(hex, unit_style);
-  } else {
-    if (unit.pop && unit.pop < 2)
-      this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size/2, 15*unit.size/2/zoom ), unit_style);
-    else
-      this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size, 15*unit.size/zoom ), unit_style);
+  if (this.world.biggestRoad(hex) <= 2) {
+    //draw a square or hexagon
+    if (unit.size > 4 || (unit.pop && unit.pop > 9)) {
+      this.hex_renderer.drawHex(hex, unit_style);
+    } else {
+      if (unit.pop && unit.pop < 2)
+        this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size/2, 15*unit.size/2/zoom ), unit_style);
+      else
+        this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size, 15*unit.size/zoom ), unit_style);
+    }
   }
 
   
