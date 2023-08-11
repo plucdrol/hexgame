@@ -12,12 +12,12 @@
 //Receives input and affects actors inside a single World
 
 //Dependencies
-import Hex from './utilities/Hex.js'
-import PathFinder from './utilities/Pathfinder.js'
+import Hex from './u/Hex.js'
+import PathFinder from './u/Pathfinder.js'
 import ButtonMenu from './ButtonMenu.js'
-import Events from './utilities/Events.js'
+import Events from './u/Events.js'
 
-import {listContainsHex} from './utilities/Hex.js'
+import {listContainsHex} from './u/Hex.js'
 
 
 

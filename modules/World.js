@@ -13,8 +13,8 @@
 //A hex-shaped array of tiles, with each tile having some information inside them
 
 //Dependencies
-import Hex from './utilities/Hex.js'
-import {Point, HexLayout, HexMap} from './utilities/Hex.js'
+import Hex from './u/Hex.js'
+import {Point, HexLayout, HexMap} from './u/Hex.js'
 import MapGenerator from './MapGenerator.js'
 import BonusList from './BonusList.js'
 import Unit from './Unit.js'

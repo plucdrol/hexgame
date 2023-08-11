@@ -11,10 +11,10 @@
 // Sole responsibility: drawing hexagons on a regular grid using the Renderer 
 
 
-import CanvasDraw from './utilities/CanvasDraw.js'
-import Hex from './utilities/Hex.js'
-import {Point} from './utilities/Hex.js'
-import {RenderStyle} from './utilities/Renderer.js'
+import CanvasDraw from './u/CanvasDraw.js'
+import Hex from './u/Hex.js'
+import {Point} from './u/Hex.js'
+import {RenderStyle} from './u/Renderer.js'
 
 export default function HexRenderer(renderer, hexlayout) {
   this.renderer = renderer; 

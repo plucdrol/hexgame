@@ -1,5 +1,5 @@
 
-import Hex from './utilities/Hex.js'
+import Hex from './u/Hex.js'
 import Action from './Action.js'
 
 //this function is currently set out to be an all-encompassing action that can 

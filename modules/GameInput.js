@@ -8,10 +8,10 @@
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
-import Hex from './utilities/Hex.js'
-import {Point, HexLayout, HexMap} from './utilities/Hex.js'
+import Hex from './u/Hex.js'
+import {Point, HexLayout, HexMap} from './u/Hex.js'
 import UnitInput from './UnitInput.js';
-import Events from './utilities/Events.js'
+import Events from './u/Events.js'
 
 var render_update = false;
 

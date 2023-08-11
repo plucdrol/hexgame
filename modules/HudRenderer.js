@@ -1,7 +1,7 @@
 
-import Events from './utilities/Events.js'
-import Hex from './utilities/Hex.js'
-import RenderStyle from './utilities/Renderer.js'
+import Events from './u/Events.js'
+import Hex from './u/Hex.js'
+import RenderStyle from './u/Renderer.js'
 
 export default function HUDRenderer(world, game_input, hex_renderer) {
 

@@ -5,7 +5,7 @@
                     // ACTION PATHFINDER SETTINGS //
   /////////////////////////////////////////////////////////
 
-import PathFinder from './utilities/PathFinder.js'
+import PathFinder from './u/PathFinder.js'
 
 
 export default function ActionPathfinder(action) {

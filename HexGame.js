@@ -15,19 +15,19 @@ canvas.height = window.innerHeight;
 
 
 //Interface for rendering on the Canvas
-import CanvasDraw from './utilities/CanvasDraw.js';
+import CanvasDraw from './modules/u/CanvasDraw.js';
 var canv_draw = new CanvasDraw(canvas);
 
 //Interface for receiving input from the page
-import CanvasInput from './utilities/CanvasInput.js';
+import CanvasInput from './modules/u/CanvasInput.js';
 var canv_input = new CanvasInput('canvas');
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
-import View from './utilities/View.js';
+import View from './modules/u/View.js';
 var view = new View('canvas');
 //Has functions for drawing to the screen
-import Renderer from './utilities/Renderer.js';
+import Renderer from './modules/u/Renderer.js';
 var renderer = new Renderer('canvas', view);
 
 
@@ -35,33 +35,33 @@ var renderer = new Renderer('canvas', view);
 //Contains a world map, units, and resources
 
 let world_radius = 35;
-import World from './World.js';
+import World from './modules/World.js';
 var world = new World( world_radius );// <-- model
 
 //Has functions for drawing hexes to the screen
 
-import HexRenderer from './HexRenderer.js';
+import HexRenderer from './modules/HexRenderer.js';
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 
-import WorldRenderer from './WorldRenderer.js';
+import WorldRenderer from './modules/WorldRenderer.js';
 var world_renderer = new WorldRenderer(world, hex_renderer);  	//<---view  
 
 
 //Receives input for the game
-import GameInput from './GameInput.js';
+import GameInput from './modules/GameInput.js';
 var game_input = new GameInput(world, view);     //<--controller
 
 //draws mouse interactions
-import HUDRenderer from './HUDRenderer.js';
+import HUDRenderer from './modules/HUDRenderer.js';
 var hud_renderer = new HUDRenderer(world, game_input, hex_renderer);
 
 
 
 
 
-import Unit from './Unit.js'
-import {Point} from './utilities/Hex.js'
-import Hex from './utilities/Hex.js'
+import Unit from './modules/Unit.js'
+import {Point} from './modules/u/Hex.js'
+import Hex from './modules/u/Hex.js'
 
 //Put the first city in a random position on the "equator"
 var start_hex;
@@ -168,7 +168,7 @@ function updateWorldRender() {
 
 }
 
-import Events from './utilities/Events.js'
+import Events from './modules/u/Events.js'
 Events.on('canvas_resize', function(e){
   updateWorldRender();
 } );

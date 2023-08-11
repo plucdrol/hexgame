@@ -12,8 +12,8 @@
 /////////////////////////////////////////////////////////////////////////*/
 
 
-import SimplexNoise from './utilities/Noise.js'
-import Hex from './utilities/Hex.js'
+import SimplexNoise from './u/Noise.js'
+import Hex from './u/Hex.js'
 
 
 export function PerlinConfiguration (config_name) {

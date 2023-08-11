@@ -5,8 +5,8 @@
 ///////////////          RIVER  GENERATION //////////////////////
 /////////////////////////////////////////////////////////
 
-import Hex from './utilities/Hex.js'
-import {HexMap} from './utilities/Hex.js'
+import Hex from './u/Hex.js'
+import {HexMap} from './u/Hex.js'
 
 export default function RiverGenerator (world_map) {
   var visited = new HexMap();

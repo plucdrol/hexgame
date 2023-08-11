@@ -1,5 +1,5 @@
 
-import Events from './utilities/Events.js'
+import Events from './u/Events.js'
 
 export default function ButtonMenu(menu_id, unit_input) {
 

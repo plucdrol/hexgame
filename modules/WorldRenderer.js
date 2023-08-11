@@ -10,13 +10,13 @@
 ///////////////////////////////////////////////////////
 
 
-import CanvasDraw from './utilities/CanvasDraw.js'
+import CanvasDraw from './u/CanvasDraw.js'
 import World from './World.js'
 import Unit from './Unit.js'
-import Hex from './utilities/Hex.js'
-import View from './utilities/View.js'
+import Hex from './u/Hex.js'
+import View from './u/View.js'
 import HexRenderer from './HexRenderer.js'
-import {RenderStyle} from './utilities/Renderer.js'
+import {RenderStyle} from './u/Renderer.js'
 
 
 export default function WorldRenderer (world, hex_renderer, layer_number) {

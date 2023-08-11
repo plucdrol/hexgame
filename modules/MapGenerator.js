@@ -16,9 +16,9 @@
 /////////////////////////////////////////////////////////*/
 
 import Unit from './Unit.js'
-import Hex from './utilities/Hex.js'
-import {HexMap} from './utilities/Hex.js'
-import SimplexNoise from './utilities/Noise.js'
+import Hex from './u/Hex.js'
+import {HexMap} from './u/Hex.js'
+import SimplexNoise from './u/Noise.js'
 import PerlinTileGenerator from './TileGenerator.js'
 import {RandomTileGenerator} from './TileGenerator.js'
 import RiverGenerator from './RiverGenerator.js'
