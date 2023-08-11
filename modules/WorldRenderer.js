@@ -43,6 +43,33 @@ WorldRenderer.p.drawWorld = function() {
   this.drawResources();
 }
 
+WorldRenderer.p.drawWorldByPortions = function() {
+
+  this.render_portions = Math.floor(world.radius/3);
+  this.render_start = 0;
+
+  var self = this; 
+  this.stop_rendering = setInterval( self.drawWorldPortion.bind(self), 2 );
+}   
+
+WorldRenderer.p.drawWorldPortion = function() {
+
+  var hexarray = this.world.quick_hexarray;
+
+  let sections = Math.floor(hexarray.length/this.render_portions);
+  hexarray = hexarray.slice(this.render_start*sections, (this.render_start+1)*sections );
+  this.render_start++;
+
+  if (this.render_start >= this.render_portions) {
+    //this.render_start = 0;
+    clearInterval(this.stop_rendering);
+  }
+
+  this.renderLayer(hexarray);
+
+
+}
+
 
 
 
@@ -159,6 +186,8 @@ WorldRenderer.p.drawRoads = function() {
   let zoom = this.hex_renderer.renderer.view.getZoom();
   let road_color = '#040';
 
+  let self=this;
+
   //draw the roads
   for (let hex of hexarray) {
     let tile = this.getTile(hex);
@@ -166,7 +195,7 @@ WorldRenderer.p.drawRoads = function() {
     if (tile.hidden) continue;
 
     if (tile.road_from)
-      drawRoadHalf(tile.road_to)
+      drawRoadHalf(tile.road_from)
 
     if (tile.road_to) 
       drawRoadHalf(tile.road_to)
@@ -179,16 +208,10 @@ WorldRenderer.p.drawRoads = function() {
         road_color = '#040';
         if (road_size > 12) 
           road_color = 'saddlebrown'; 
-
-        if (tile.elevation < 2 || this.world.alongRiver(hex, from) || this.world.enteringRiver(hex, from) || this.world.leavingRiver(hex, from) ) {
-          this.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
-        } else {
-          this.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
-        }
+        
+        self.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
       }
     }
-
-
   }
 }
 
