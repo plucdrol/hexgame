@@ -1,36 +1,11 @@
 <html>
+
+
 	<head>
 		<link rel="stylesheet" type="text/css" href="style.css">
-		
-    <script type="module" src="Action.js" ></script>
-    <script type="module" src="ActionPathfinder.js" ></script>
-    <script type="module" src="ActionList.js" ></script>
-    <script type="module" src="BonusList.js" ></script>
-    <script type="module" src="ButtonMenu.js" ></script>
-    <script type="module" src="GameInput.js" ></script>
-    <script type="module" src="HexRenderer.js" ></script>
-		<script type="module" src="HudRenderer.js" ></script>
-		<script type="module" src="MapGenerator.js" ></script>
-		<script type="module" src="RiverGenerator.js" ></script>
-		<script type="module" src="TileGenerator.js" ></script>
-		<script type="module" src="Unit.js" ></script>
-		<script type="module" src="UnitInput.js" ></script>
-		<script type="module" src="World.js" ></script>
-		<script type="module" src="WorldRenderer.js" ></script>
-		
-		<script type="module" src="utilities/CanvasDraw.js" ></script>
-		<script type="module" src="utilities/CanvasInput.js" ></script>
-		<script type="module" src="utilities/Events.js" ></script>
-		<script type="module" src="utilities/Hex.js" ></script>
-		<script type="module" src="utilities/Noise.js" ></script>
-    <script type="module" src="utilities/PathFinder.js" ></script>
-		<script type="module" src="utilities/Queue.js" ></script>
-    <script type="module" src="utilities/Renderer.js" ></script>
-		<script type="module" src="utilities/Tools.js" ></script>
-		<script type="module" src="utilities/View.js" ></script>	
-
-
 	</head>
+
+
 	<body>
 		
 		<div id='world-bar'>
@@ -38,14 +13,18 @@
 			<span id='total-ants'></span>
 		</div>
 
-		<form id='action-buttons' style="position:absolute; bottom: 1em; left: 1em;";>
-	  </form>	
-	  
-		<div style="float:left;">
-			<canvas id="real_canvas" width="600" height="400">
-				Your system does not support Canvas.
-			</canvas>
-		</div>
+    <form id='action-buttons' style="position:absolute; bottom: 1em; left: 1em;";>
+    </form> 
+    <form id='bonus-buttons' style="position:absolute; bottom: 1em; right: 1em;";>
+    </form> 
+    
+    <div style="float:left;">
+      <canvas id="canvas" width="600" height="400">
+        Your system does not support Canvas.
+      </canvas>
+      <canvas id="earth_canvas" style="display: none;"></canvas>
+      <canvas id="thing_canvas" style="display: none;"></canvas>
+    </div>
 
 		<div id='tooltip'>
 			Tooltip
@@ -58,9 +37,7 @@
 
 
 	<script type="module" src="HexGame.js">
-
-		
-	</script>
+  </script>
 
 	
 </html>
