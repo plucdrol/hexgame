@@ -19,12 +19,11 @@ import HexRenderer from './HexRenderer.js'
 import {RenderStyle} from './u/Renderer.js'
 
 
-export default function WorldRenderer (world, hex_renderer, layer_number) {
 
+export default function WorldRenderer (world, hex_renderer) {
   
   this.hex_renderer = hex_renderer;
   this.world = world;
-  this.render_layer = layer_number;
 
   var self = this; 
 
@@ -37,33 +36,23 @@ WorldRenderer.p.clear = function() {
 }
 
 WorldRenderer.p.drawWorld = function() {
-  var hexarray = this.world.getHexArray();  
-  this.renderLayer(hexarray);
+  this.drawTiles();
+  this.drawRivers();
+  this.drawRoads();
+  this.drawUnits();
+  this.drawResources();
 }
 
-WorldRenderer.p.renderLayer = function(hexarray) {
-    switch (this.render_layer) {
-    case 0:
-    this.drawTiles(hexarray);
-    break;
 
-    case 1:
-    this.drawRivers(hexarray);
-    break;
 
-    case 2:
-    this.drawRoads(hexarray);
-    break;
 
-    case 3:
-    this.drawUnits(hexarray);
-    break;
 
-    case 4:
-    this.drawResources(hexarray);
-    break;
-  }
-}
+
+
+
+
+
+
 
 WorldRenderer.p.drawBigHex = function(radius) {
 
@@ -78,7 +67,10 @@ WorldRenderer.p.drawBigHex = function(radius) {
   this.hex_renderer.renderer.drawPolygon(big_corners, style);
 }
 
-WorldRenderer.p.drawTiles = function(hexarray) {
+
+WorldRenderer.p.drawTiles = function() {
+
+  var hexarray = this.world.getHexArray();  
 
   let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
   let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
@@ -125,7 +117,9 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 
 
 
-WorldRenderer.p.drawRivers = function(hexarray) {
+WorldRenderer.p.drawRivers = function() {
+
+  var hexarray = this.world.getHexArray();  
 
   let water_draw_level = 7;
   let max_draw_level = 150;
@@ -157,7 +151,9 @@ WorldRenderer.p.drawRivers = function(hexarray) {
   }
 }
 
-WorldRenderer.p.drawRoads = function(hexarray) {
+WorldRenderer.p.drawRoads = function() {
+
+  var hexarray = this.world.getHexArray();  
 
   let road_style = 'half only'
   let zoom = this.hex_renderer.renderer.view.getZoom();
@@ -221,7 +217,10 @@ WorldRenderer.p.drawRoads = function(hexarray) {
 
 
 //draw the units and their resource-collection area
-WorldRenderer.p.drawUnits = function(hexarray) {
+WorldRenderer.p.drawUnits = function() {
+
+  var hexarray = this.world.getHexArray();  
+
   for (let hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     //draw units
@@ -233,18 +232,16 @@ WorldRenderer.p.drawUnits = function(hexarray) {
 }
 
 //draw the resource icons
-WorldRenderer.p.drawResources = function(hexarray) {
+WorldRenderer.p.drawResources = function() {
+
+  var hexarray = this.world.getHexArray();  
+
   //draw resources
   for (let hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
     var this_resource = this.world.getResource(hex);
     if (this_resource != undefined && this_resource.resources) {
-        
-        //if (this.hex_renderer.renderer.view.getZoom() > 1.5 && this_resource.type != 'fish')
-         // this.hex_renderer.drawImage(hex);
-        //else
-          this.drawUnit(this_resource,hex,0);
-
+      this.drawUnit(this_resource,hex,0);
     }
   }
 }

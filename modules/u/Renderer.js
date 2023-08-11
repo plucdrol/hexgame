@@ -28,6 +28,8 @@ export function RenderStyle() {
 export default function Renderer(canvas_element_id, view) {
 
     var canvas = document.getElementById(canvas_element_id);
+    this.canvas = canvas;
+
     this.canvas_draw  = new CanvasDraw(canvas);
 
     this.view = view;
@@ -109,6 +111,23 @@ Renderer.prototype.drawLines = function(points,style, width) {
       this.drawLine(points[i], points[i+1], style);
   }
 };
+
+Renderer.prototype.blitCanvas = function(source_canvas) {
+
+  let context = this.canvas.getContext('2d');
+
+  let input_size = this.view.getInputRect().size;
+  let output_size = this.view.getOutputRect().size;
+  let center = this.view.getCenter();
+
+
+  let x = source_canvas.width/2  + center.x - this.view.screenToWorld1D(output_size.x/2);
+  let y = source_canvas.height/2 + center.y - this.view.screenToWorld1D(output_size.y/2);
+  let w = input_size.x;
+  let h = input_size.y;
+
+  context.drawImage(source_canvas, x, y, w, h, 0, 0, this.canvas.width, this.canvas.height );
+}
 
 
 Renderer.prototype.clear = function() {
