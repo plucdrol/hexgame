@@ -70,7 +70,7 @@ export default function actionExpand(distance) {
       actor.pop -= 2;
       world.getUnit(target).pop++;
 
-      world.highlightRange(Hex.circle(target, world.getUnit(target).pop), 'green');
+      //world.highlightRange(Hex.circle(target, world.getUnit(target).pop), 'green');
 
       //grow to connect more resources around city
       let grow_roots_action = new actionGrowRoots( world.getUnit(target).pop );
@@ -96,8 +96,10 @@ export default function actionExpand(distance) {
     }
 
     //add a village if clicling directly on a resource
-    if (world.getResource(target) && !world.getResource(target).resources['unknown'])
+    if (world.getResource(target) && !world.getResource(target).resources['unknown']) {
       world.addUnit(target, 'village', actor);
+      world.highlightRange(Hex.circle(target, 1), 'green');
+    }
 
   }
 
@@ -164,6 +166,7 @@ export function actionGrowRoots(max_distance) {
     actor.addPop(1);
     this.createRoad(world, position, target);
     world.addUnit(target, 'village', actor);
+    world.highlightRange(Hex.circle(target, 1), 'green');
   }
 }
 
