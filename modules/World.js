@@ -101,12 +101,11 @@ World.prototype.setHex = function(hex,value) {
 }
 
 World.prototype.getPoint = function(hex) {
-  return this.layout.hexToPoint(hex);
-}
-World.prototype.getInvertedPoint = function(hex) {
+  //for some reason layout is giving out inverted points!
   let point = this.layout.hexToPoint(hex);
   return {x: -point.x, y:-point.y}
 }
+
 
 World.prototype.getHexArray = function() {
   return this.world_map.getHexArray();
@@ -482,7 +481,7 @@ World.prototype.onLand = function(position) {
   return (this.getTile(position).elevation >= 2);
 }
 
-World.prototype.onDesert = function(position) {
+World.prototype.onSand = function(position) {
   return (this.getTile(position).elevation == 2);
 }
 

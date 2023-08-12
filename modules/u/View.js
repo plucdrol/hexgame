@@ -140,10 +140,9 @@ export default function View (canvas_element_id, initial_zoom_level) {
 
       //scales the view by n but keeps the screen centered 
       //on the same location
-      var w = input.size.x;
-      var h = input.size.y;
+      input.size.x *= n;
+      input.size.y *= n;
 
-      input.size = new Point( w*n , h*n );
       this.setCenter(center_point);
   };
 

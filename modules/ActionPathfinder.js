@@ -121,7 +121,7 @@ export default function ActionPathfinder(action) {
       if (!action.can_water)
         return undefined;
 
-    if (world.onDesert(next_hex))
+    if (world.onSand(next_hex))
       if (!action.can_desert)
         return undefined;
 

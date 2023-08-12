@@ -44,23 +44,24 @@ var game_input = new GameInput(world, view);     //<--controller
 var renderer = new Renderer('canvas', view);
 var game_renderer = new GameRenderer(world, game_input, renderer);
 
+
+
+
+
 //-----------Initialize the game map----------
 
-//Put the first city in a random position on the "equator"
-var start_hex;
-for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) {
-  if (world.countLand(hex, 1,3) && world.onLand(hex) && !world.onRiver(hex) && !(world.getTile(hex).elevation==2)) {
+//Put the first city in a random position on the "equator" ring
+var start_hex = new Hex(0,0);
+for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) 
+  if (world.countLand(hex, 1,3) && world.onLand(hex) && !world.onRiver(hex)) 
     start_hex = hex;
-  }
-}
-if (!start_hex)
-  start_hex = new Hex(0,0);
+
 
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
 first_city.pop = 20;
 
-let start_point = world.getInvertedPoint( start_hex.add(new Hex(0.5,0.5)) )
+let start_point = world.getPoint( start_hex )
 view.setCenter(start_point);
 
 //clear some clouds
@@ -70,13 +71,7 @@ world.destroyResource(start_hex);
 
 
 
-
-
-
-
-
-
-////////////////////////// START ANIMATION LOOP //////////////////
+//-----------Start animation loop----------
 
 
 game_renderer.startDrawing();
