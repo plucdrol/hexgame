@@ -20,7 +20,7 @@ function WorldRenderer (world, hex_renderer) {
   this.hex_renderer = hex_renderer;
   this.world = world;
   this.render_start = 0;
-  this.render_portions = Math.floor(world.radius/3);
+  this.render_portions = 1;//Math.floor(world.radius/3);
   if (world.type == 'system')
     this.render_portions = 1;
 
