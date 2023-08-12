@@ -74,8 +74,16 @@ WorldRenderer.p.drawWorldPortion = function() {
 
 
 
+WorldRenderer.prototype.drawEarth = function() {
+  this.drawTiles();
+  this.drawRivers();
+}
 
-
+WorldRenderer.prototype.drawThings = function() {
+  this.drawRoads();
+  this.drawUnits();
+  this.drawResources();
+}
 
 
 
@@ -332,7 +340,7 @@ WorldRenderer.prototype.ocillate = function(length) {
 
 
 WorldRenderer.p.drawPath = function(range,destination) {
-  
+
   //draw the path
   if (range.containsHex(destination)) {
     var hex_style = new RenderStyle();

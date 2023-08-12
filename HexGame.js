@@ -16,9 +16,8 @@ import Renderer from './modules/u/Renderer.js';
 import View from './modules/u/View.js';
 
 
-
+import GameRenderer from './modules/GameRenderer.js'
 import GameInput from './modules/GameInput.js';
-import HUDRenderer from './modules/HUDRenderer.js';
 import World from './modules/World.js';
 import Unit from './modules/Unit.js'
 
@@ -39,10 +38,12 @@ var canv_draw = new CanvasDraw(canvas);
 
 //Interface for receiving input from the page
 var canv_input = new CanvasInput('canvas');
+canv_input.windowResize();
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
 var view = new View('canvas');
+
 //Has functions for drawing to the screen
 var renderer = new Renderer('canvas', view);
 
@@ -56,11 +57,6 @@ var world = new World( world_radius );// <-- model
 
 //Receives input for the game
 var game_input = new GameInput(world, view);     //<--controller
-
-//draws mouse interactions
-var hud_renderer = new HUDRenderer(world, game_input, renderer);
-
-
 
 
 //INITIALIZE THE GAME MAP
@@ -113,16 +109,36 @@ while (count > 0) {
 world.destroyResource(start_hex);
 
 
+////////////////////////////////////////////
+
+
+
+var game_renderer = new GameRenderer(world, game_input, renderer);
+
+Events.on('click', rebuildWorldRender);
+function rebuildWorldRender() {
+
+  game_renderer.clear()
+  updateWorldRender();
+}
+
+Events.on('canvas_resize', updateWorldRender);
+function updateWorldRender() {
+
+  game_renderer.updateLayers();
+
+}
 
 
 ////////////////////////// ANIMATION STEP//////////////////
+
 
 let then = 0;
 function step(timestamp) {
 
   let now = new Date().getTime();
 
-  drawScreen();
+  game_renderer.draw();
   updateWorldRender();
 
   if (then)
@@ -135,73 +151,6 @@ function step(timestamp) {
   window.requestAnimationFrame(step);
 }
 window.requestAnimationFrame(step);
-
-function drawScreen() {
-
-  //clear the real canvas
-  renderer.clear();
-
-  //copy the temporary canvas to the real canvas
-  renderer.blitCanvas(earth_canvas);
-  renderer.blitCanvas(thing_canvas);
-
-  //draw the HUD on top
-  hud_renderer.drawHUD();
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//---------------SETUP WORLD RENDERING IN LAYERS------------------------------------------
-//these functions should go into the layer renderer
-
-import LayerRenderer from './modules/LayerRenderer.js'
-
-let     earth_layer = new LayerRenderer('earth_canvas', world);
-let     thing_layer = new LayerRenderer('thing_canvas', world);
-
-
-canv_input.windowResize();
-
-
-//-----------------LAYER RENDERING FUNCTIONS--------------
-
-//these functions should go into the layer renderer
-
-
-
-Events.on('click', rebuildWorldRender);
-function rebuildWorldRender() {
-
-  earth_layer.clear()
-  thing_layer.clear()
-
-  updateWorldRender();
-}
-
-Events.on('canvas_resize', updateWorldRender);
-function updateWorldRender() {
-
-  earth_layer.drawEarth();
-  thing_layer.drawThings();
-
-}
-
-
-
 
 
 
