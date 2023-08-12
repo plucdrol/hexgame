@@ -31,7 +31,7 @@ ButtonMenu.prototype.update_function = function() {
   this.writeMessage("Free: "+free_res, 'free-ants');
   this.writeMessage("Total: "+total_res, 'total-ants');
 
-  this.updateBonusButtons(this.unit_input.world.bonus_list, this.unit_input.world);
+  //this.updateBonusButtons(this.unit_input.world.bonus_list, this.unit_input.world);
   
 
   if (actor && actor.selectable) {

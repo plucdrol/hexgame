@@ -307,9 +307,9 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
       this.hex_renderer.drawHex(hex, unit_style);
     } else {
       if (unit.pop && unit.pop < 2)
-        this.hex_renderer.renderer.drawDot(position, Math.min(10*size/2, 15*size/2/zoom ), unit_style);
+        this.hex_renderer.renderer.drawDot(position, Math.min(size/2, 1.5*size/2/zoom ), unit_style);
       else
-        this.hex_renderer.renderer.drawDot(position, Math.min(10*size, 15*size/zoom ), unit_style);
+        this.hex_renderer.renderer.drawDot(position, Math.min(size, 1.5*size/zoom ), unit_style);
     }
   }
 

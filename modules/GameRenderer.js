@@ -9,16 +9,20 @@ import Events from './u/Events.js';
 
 export default function GameRenderer(world, game_input, renderer) {
 
+  //let space_layer = new LayerRenderer('space_canvas', world);
   let earth_layer = new LayerRenderer('earth_canvas', world);
   let thing_layer = new LayerRenderer('thing_canvas', world);
   let hud_renderer = new HUDRenderer(world, game_input, renderer);
 
   function clear() {
+    //space_layer.clear();
     earth_layer.clear();
     thing_layer.clear();
   }
 
   function updateLayers() {
+
+    //space_layer.drawThings();
     earth_layer.drawEarth();
     thing_layer.drawThings();
   }
@@ -29,6 +33,7 @@ export default function GameRenderer(world, game_input, renderer) {
     renderer.clear();
 
     //copy the temporary canvas to the real canvas
+    //renderer.blitCanvas(space_canvas);
     renderer.blitCanvas(earth_canvas);
     renderer.blitCanvas(thing_canvas);
 
