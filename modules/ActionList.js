@@ -206,10 +206,6 @@ export function actionExplore(distance) {
   this.name = "city-by-land";
   this.new_unit_type = 'colony';
 
-  //this.pop_action = 1/3;
-
-  //this.hover_action = new actionExploit(2, true);
-
   this.stop_on_coast = true;
 
   this.can_river = true;
@@ -244,8 +240,6 @@ export function actionExplore(distance) {
   }
 
   this.effect = function(world, actor, position, target) {
-
-    //world.getUnit(target).pop = 1;
   }
 }
 
@@ -299,13 +293,9 @@ export function actionExpandAll() {
 
   this.multi_target = true;
 
-
-
   this.nextSelection = "self";
   this.min_distance = 0;
   this.max_distance = 200000;
-
-  //this.pop_action = 1/3;
 
   this.also_build_road = true;
   this.hover_radius = 1;
@@ -336,7 +326,6 @@ export function actionExpandAll() {
       if (world.onLand(hex))
         world.getTile(hex).elevation = 3+Math.floor(Math.random()*4);
 
-    //actor.pop++;
   }
   
 
