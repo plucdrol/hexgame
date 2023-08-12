@@ -127,7 +127,6 @@ export default function GameInput(world, view) {
   //React to the window being resized
 	this.resizeEvent = function(width, height) {
 	  this.view.resizeOutput(width, height);
-	    //updateWorldRender();
 	}
 
 

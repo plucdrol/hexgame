@@ -3,6 +3,9 @@ import View from './u/View.js'
 import Renderer from './u/Renderer.js';
 import WorldRenderer from './WorldRenderer.js';
 import HUDRenderer from './HUDRenderer.js';
+import Events from './u/Events.js';
+
+
 
 export default function GameRenderer(world, game_input, renderer) {
 
@@ -10,17 +13,17 @@ export default function GameRenderer(world, game_input, renderer) {
   let thing_layer = new LayerRenderer('thing_canvas', world);
   let hud_renderer = new HUDRenderer(world, game_input, renderer);
 
-  this.clear = function() {
+  function clear() {
     earth_layer.clear();
     thing_layer.clear();
   }
 
-  this.updateLayers = function() {
+  function updateLayers() {
     earth_layer.drawEarth();
     thing_layer.drawThings();
   }
 
-  this.draw = function() {
+  function draw() {
 
     //clear the real canvas
     renderer.clear();
@@ -33,7 +36,55 @@ export default function GameRenderer(world, game_input, renderer) {
     hud_renderer.drawHUD();
 
   }
+
+  function loop(callback, time) {
+    let then = new Date().getTime();
+
+    function step() {
+
+      let now = new Date().getTime();
+
+      //if the required time hasnt elapsed yet, wait till next frame
+      if (now-then < time) { 
+       window.requestAnimationFrame(step);
+       return;
+      }
+
+      callback();
+
+      now = then = new Date().getTime();
+      window.requestAnimationFrame(step);
+    }
+    step();
+  }
+
+  this.startDrawing = function() {
+    loop(draw, 30);
+    loop(updateLayers, 300);
+  }
+
+
+  Events.on('click', updateLayers);
+  Events.on('canvas_resize', updateLayers);
+  updateLayers();
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function LayerRenderer(canvas_name, world) {
@@ -52,10 +103,14 @@ function LayerRenderer(canvas_name, world) {
 }
 
 LayerRenderer.prototype.drawEarth = function() {
-  this.world_renderer.drawEarth();
+  this.world_renderer.drawTiles();
+  this.world_renderer.drawRivers();
 }
+
 LayerRenderer.prototype.drawThings = function() {
-  this.world_renderer.drawThings();
+  this.world_renderer.drawRoads();
+  this.world_renderer.drawUnits();
+  this.world_renderer.drawResources();
 }
 
 LayerRenderer.prototype.clear = function () {

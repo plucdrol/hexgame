@@ -50,7 +50,7 @@ var renderer = new Renderer('canvas', view);
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
-let world_radius = 35;
+let world_radius = 45;
 var world = new World( world_radius );// <-- model
 
 //Has functions for drawing hexes to the screen
@@ -109,48 +109,19 @@ while (count > 0) {
 world.destroyResource(start_hex);
 
 
-////////////////////////////////////////////
 
 
+
+
+
+
+
+
+////////////////////////// START ANIMATION LOOP //////////////////
 
 var game_renderer = new GameRenderer(world, game_input, renderer);
+game_renderer.startDrawing();
 
-Events.on('click', rebuildWorldRender);
-function rebuildWorldRender() {
-
-  game_renderer.clear()
-  updateWorldRender();
-}
-
-Events.on('canvas_resize', updateWorldRender);
-function updateWorldRender() {
-
-  game_renderer.updateLayers();
-
-}
-
-
-////////////////////////// ANIMATION STEP//////////////////
-
-
-let then = 0;
-function step(timestamp) {
-
-  let now = new Date().getTime();
-
-  game_renderer.draw();
-  updateWorldRender();
-
-  if (then)
-    while (now-then < 30) {
-      now = new Date().getTime();
-    }
-
-
-  then = now;
-  window.requestAnimationFrame(step);
-}
-window.requestAnimationFrame(step);
 
 
 

@@ -74,17 +74,6 @@ WorldRenderer.p.drawWorldPortion = function() {
 
 
 
-WorldRenderer.prototype.drawEarth = function() {
-  this.drawTiles();
-  this.drawRivers();
-}
-
-WorldRenderer.prototype.drawThings = function() {
-  this.drawRoads();
-  this.drawUnits();
-  this.drawResources();
-}
-
 
 
 
