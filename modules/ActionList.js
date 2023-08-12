@@ -43,7 +43,7 @@ export default function actionExpand(distance) {
   this.destroy_resource = true;
   this.collect_resource = true;
 
-  this.cloud_clear = 6;
+  this.cloud_clear = 8;
 
   //this.free_pop_cost = 2;
   //this.takes_city_pop = false;

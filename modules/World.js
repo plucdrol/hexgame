@@ -74,6 +74,7 @@ export default function World(radius) {
   this.generateResources();
   //this.generateUnknown();
 
+  this.makeCloudsEverywhere();
 
 
 }
@@ -101,6 +102,10 @@ World.prototype.setHex = function(hex,value) {
 
 World.prototype.getPoint = function(hex) {
   return this.layout.hexToPoint(hex);
+}
+World.prototype.getInvertedPoint = function(hex) {
+  let point = this.layout.hexToPoint(hex);
+  return {x: -point.x, y:-point.y}
 }
 
 World.prototype.getHexArray = function() {
