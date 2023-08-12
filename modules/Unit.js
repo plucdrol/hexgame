@@ -247,18 +247,23 @@ Unit.prototype.setType = function(unit_type) {
 
   case 'star':
     this.setGraphic('yellow',8);
+    this.setResource('food',5);
     break;
   case 'earth':
     this.setGraphic('blue',3);
+    this.setResource('food',5);
     break;
   case 'asteroid':
     this.setGraphic('grey',1);
+    this.setResource('food',5);
     break;
   case 'planet':
     this.setGraphic('brown',3);
+    this.setResource('food',3);
     break;
   case 'giant':
     this.setGraphic('red',5);
+    this.setResource('food',5);
     break;
 
 

@@ -7,9 +7,9 @@ import Events from './u/Events.js';
 
 
 
-export default function GameRenderer(world, game_input, renderer) {
+export default function GameRenderer(world, system, game_input, renderer) {
 
-  let space_layer = new LayerRenderer('space_canvas', world);
+  let space_layer = new LayerRenderer('space_canvas', system);
   let earth_layer = new LayerRenderer('earth_canvas', world);
   let thing_layer = new LayerRenderer('thing_canvas', world);
   let hud_renderer = new HUDRenderer(world, game_input, renderer);

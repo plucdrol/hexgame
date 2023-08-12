@@ -41,13 +41,13 @@ export default function World(radius, type) {
 
   //configure world dimensions
   if (type == 'system') {
-    let scale = 80;
+    let scale = 1;
     var tile_size = new Point(35*scale, 35*scale);  
     var origin = new Point(0,0);
   } else {// == 'earth'
     let scale = 1;
     var tile_size = new Point(35*scale, 35*scale);  
-    var origin = new Point(1800,0);
+    var origin = new Point(0,0);
   }
 
   this.layout = new HexLayout('pointy', tile_size, origin);  
@@ -61,7 +61,9 @@ export default function World(radius, type) {
     this.units.set(new Hex(0,0), new Unit('star'));
     //create resources map
     this.resources = new HexMap();
-    this.resources = this.generateSystemResources();
+    this.generateSystemResources();
+    console.log(this.resources)
+    this.clearClouds();
 
   } else {
 
@@ -666,7 +668,7 @@ World.prototype.generateResources = function() {
 }
 
 World.prototype.generateSystemResources = function() {
-  var resources = new HexMap();
+
 
   for (let hex of this.world_map.getHexArray() )  {
     let terrain = this.getTile(hex);
@@ -677,7 +679,7 @@ World.prototype.generateSystemResources = function() {
     }
     if ((Hex.distanceToCenter(hex) >= this.radius*0.4) && (Hex.distanceToCenter(hex) <= this.radius*0.5) 
     || (Hex.distanceToCenter(hex) >= this.radius*0.9)) {
-      resources.set(hex, new Unit('asteroid'));
+      this.addResource(hex, 'asteroid');
     }
 
 
@@ -691,23 +693,19 @@ World.prototype.generateSystemResources = function() {
 
     //sometimes a gas giant
     if (Math.random() < 0.3) {
-      resources.set(hex, new Unit('giant'));
+      this.resources.set(hex, new Unit('giant'));
       for (let neighbor of hex.getNeighbors()) {
         if (Math.random() < 0.3) {
-          resources.set(neighbor, new Unit('planet'));
+          this.addResource(neighbor, 'planet');
         }
       }
       continue;
     }
 
     //otherwise a rocky planet
-    resources.set(hex, new Unit('planet'));
-    
+    this.addResource(hex, 'planet'); 
   }
-
-  //resources.set(new Hex(7,0), new Unit('earth'));
-  return resources;
-  }
+}
 
 World.prototype.makeCloudsEverywhere = function() {
   for (let hex of this.world_map.getHexArray()) {
