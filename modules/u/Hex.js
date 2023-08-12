@@ -748,6 +748,9 @@ export function Point (x,y) {
   this.offset = function(xi,yi) {
     return new Point(this.x+xi,this.y+yi);
   }
+  this.add = function(point) {
+    return new Point(this.x+point.x,this.y+point.y);
+  }
   this.invert = function() {
     return new Point(-this.x,-this.y);
   }

@@ -114,7 +114,7 @@ World.prototype.setHex = function(hex,value) {
 World.prototype.getPoint = function(hex) {
   //for some reason layout is giving out inverted points!
   let point = this.layout.hexToPoint(hex);
-  return {x: -point.x, y:-point.y}
+  return {x: point.x, y:point.y}
 }
 
 
