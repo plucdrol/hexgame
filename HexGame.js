@@ -47,8 +47,7 @@ var view = new View('canvas');
 var game_input = new GameInput(world, view);     //<--controller
 
 //Has functions for drawing to the screen
-var renderer = new Renderer('canvas', view);
-var game_renderer = new GameRenderer(world, system, game_input, renderer);
+var game_renderer = new GameRenderer(world, system, game_input, view);
 //THE GAME USED TO CREATE A WORLD AND HUD RENDERER FOR EACH
 //LIKE THIS var space_renderer = new WorldRenderer(space, space_hex_renderer);    //<---view 
 //LIKE THIS var space_hud_renderer = new HUDRenderer(space, space_game_input, real_space_hex_renderer);

@@ -7,7 +7,9 @@ import Events from './u/Events.js';
 
 
 
-export default function GameRenderer(world, system, game_input, renderer) {
+export default function GameRenderer(world, system, game_input, view) {
+
+  let renderer = new Renderer('canvas', view);
 
   let space_layer = new LayerRenderer('space_canvas', system);
   let earth_layer = new LayerRenderer('earth_canvas', world);
@@ -33,6 +35,8 @@ export default function GameRenderer(world, system, game_input, renderer) {
     renderer.clear();
 
     //copy the temporary canvas to the real canvas
+
+    //replace this with 
     renderer.blitCanvas(space_canvas);
     renderer.blitCanvas(earth_canvas);
     renderer.blitCanvas(thing_canvas);
@@ -102,9 +106,9 @@ export default function GameRenderer(world, system, game_input, renderer) {
 function LayerRenderer(canvas_name, world) {
 
   let tilesize = world.layout.size.x;
-  let worldwidth = 5*tilesize*world.radius;
+  let worldwidth = 4*tilesize*world.radius;
 
-  //here the canvas is bigger when the world is bigger
+  //a canvas is created large enough to draw the whole world
   var temp_canvas = document.getElementById(canvas_name);
   temp_canvas.width = worldwidth;
   temp_canvas.height = worldwidth;
@@ -114,20 +118,41 @@ function LayerRenderer(canvas_name, world) {
   full_view.setOutput(0, 0, worldwidth, worldwidth);  //canvas coordinates
 
   var renderer = new Renderer(canvas_name, full_view);
-
-  //this world renderer has a full view, and therefore renders the entire world
+  //this temp world renderer draws the entire layer into a full-sized canvas
+  //later on, it must blit a section of this canvas to the final canvas
   this.world_renderer = new WorldRenderer(world, renderer); 
 }
 
+//draw onto the temp canvas
 LayerRenderer.prototype.drawEarth = function() {
   this.world_renderer.drawTiles();
   this.world_renderer.drawRivers();
 }
 
+//draw onto the temp canvas
 LayerRenderer.prototype.drawThings = function() {
   this.world_renderer.drawRoads();
   this.world_renderer.drawUnits();
   this.world_renderer.drawResources();
+}
+
+//draw a portion of the temp canvas onto the screen
+LayerRenderer.prototype.blit = function(source_canvas, target_canvas, view) {
+
+
+
+  //generate a two-step view which goes from temp_coordinates to world_coordinates
+
+  //insert that view into a renderer which goes from temp_canvas to screen
+  var renderer = new Renderer(target_canvas, temp_to_world_VIEW);
+  renderer.blitCanvas(temp_canvas);
+  
+  /*
+  let input_size = view.getInputRect().size;
+  let output_size = view.getOutputRect().size;
+  let center = view.getCenter();
+  */
+
 }
 
 LayerRenderer.prototype.clear = function () {

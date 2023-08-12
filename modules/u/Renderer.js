@@ -112,6 +112,8 @@ Renderer.prototype.drawLines = function(points,style, width) {
   }
 };
 
+//uses the view to render a section of the source canvas to the canvas
+//but this section is wrong
 Renderer.prototype.blitCanvas = function(source_canvas) {
 
   let context = this.canvas.getContext('2d');
