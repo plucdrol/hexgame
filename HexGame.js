@@ -35,6 +35,7 @@ var world = new World(20, 'earth');// <-- model
 var hex_renderer = new HexRenderer(renderer, world.getLayout() );
 var real_hex_renderer = new HexRenderer(real_renderer, world.getLayout() );
 var world_renderer = new WorldRenderer(world, hex_renderer);    //<---view  
+view.setCenter(world.origin);
 
 var space = new World(35, 'system');// <-- model
 var space_hex_renderer = new HexRenderer(renderer, space.getLayout() );

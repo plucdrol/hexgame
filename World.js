@@ -35,16 +35,16 @@ function World(radius, type) {
   if (type == 'system') {
     this.zoom = 35*80;
     var tile_size = new Point(this.zoom, this.zoom);  
-    var origin = new Point(0,0);
+    this.origin = new Point(0,0);
   } else {
     this.zoom = 35;
     var tile_size = new Point(this.zoom, this.zoom);  
-    var origin = new Point(35*64*15.1,0);
+    this.origin = new Point(35*64*15.1,0);
   }
   
 
   
-  this.layout = new HexLayout('pointy', tile_size, origin);
+  this.layout = new HexLayout('pointy', tile_size, this.origin);
 
   //create tile map
   this.world_map = new HexMap();
