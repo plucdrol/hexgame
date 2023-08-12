@@ -30,7 +30,7 @@ var canv_input = new CanvasInput('canvas');
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
-let world_radius = 45;
+let world_radius = 35;
 var world = new World( world_radius );// <-- model
 
 //-----------Game Engine elements-------------
@@ -58,38 +58,13 @@ if (!start_hex)
 
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
-
 first_city.pop = 20;
 
-
-let start_point = world.getInvertedPoint( start_hex.add(new Hex(0.5,0.5)) ) 
+let start_point = world.getInvertedPoint( start_hex.add(new Hex(0.5,0.5)) )
 view.setCenter(start_point);
 
 //clear some clouds
 world.clearClouds(start_hex, 8);
-
-//add starting area resources
-let count = 5;
-while (count > 0) {
-  let circle = Hex.ring(start_hex, 3);
-  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
-  count--;
-}
-
-count = 3;
-while (count > 0) {
-  let circle = Hex.ring(start_hex, 2);
-  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
-  count--;
-}
-
-count = 3;
-while (count > 0) {
-  let circle = Hex.ring(start_hex, 1);
-  world.addLocalResource(circle[Math.floor(Math.random()*circle.length)]);
-  count--;
-}
-
 world.destroyResource(start_hex);
 
 
