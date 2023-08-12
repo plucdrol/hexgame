@@ -33,18 +33,18 @@ function World(radius, type) {
   
   //configure world dimensions
   if (type == 'system') {
-    this.zoom = 35*80;
-    var tile_size = new Point(this.zoom, this.zoom);  
+    let scale = 80;
+    this.tile_size = new Point(35*scale, 35*scale);  
     this.origin = new Point(0,0);
   } else {
-    this.zoom = 35;
-    var tile_size = new Point(this.zoom, this.zoom);  
+    let scale = 1;
+    this.tile_size = new Point(35*scale, 35*scale);  
     this.origin = new Point(35*64*15.1,0);
   }
   
 
   
-  this.layout = new HexLayout('pointy', tile_size, this.origin);
+  this.layout = new HexLayout('pointy', this.tile_size, this.origin);
 
   //create tile map
   this.world_map = new HexMap();
@@ -97,7 +97,7 @@ function World(radius, type) {
 }
 
 World.prototype.getZoom = function() {
-  return this.zoom/35;
+  return this.tile_size.x/35;
 }
 World.prototype.totalPopulation = function() {
   return Math.floor(this.total_population);
