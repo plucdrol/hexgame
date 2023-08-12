@@ -90,13 +90,17 @@ export default function GameRenderer(world, game_input, renderer) {
 function LayerRenderer(canvas_name, world) {
 
   let r = world.radius;
+  let size = world.layout.size.x;
+  let worldwidth = 5*size*world.radius;
+
+  //here the canvas is bigger when the world is bigger
   var temp_canvas = document.getElementById(canvas_name);
-  temp_canvas.width = 1.7*2*r*r;
-  temp_canvas.height = 1.7*2*r*r;
+  temp_canvas.width = worldwidth;
+  temp_canvas.height = worldwidth;
 
   var full_view = new View(canvas_name);
-  full_view.setInput(-1.7*r*r, -1.7*r*r, 1.7*2*r*r, 1.7*2*r*r); //world coordinates
-  full_view.setOutput(0, 0, temp_canvas.width, temp_canvas.height);  //canvas coordinates
+  full_view.setInput(-worldwidth/2, -worldwidth/2, worldwidth, worldwidth); //world coordinates
+  full_view.setOutput(0, 0, worldwidth, worldwidth);  //canvas coordinates
 
   var renderer = new Renderer(canvas_name, full_view);
 
