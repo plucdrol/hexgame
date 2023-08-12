@@ -4,10 +4,13 @@
 //
 //           GENERIC UNIT --------------------//
 
+
 var unit_id_incrementer = 1000;
 
-import actionExpand from './ActionList.js'
-import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,actionCreateCityByAir, actionGoFishing,actionCreateLighthouse,actionExpandAll,actionCreateHarbor} from './ActionList.js'
+import actionExpand from './ActionList.js';
+import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,
+        actionCreateCityByAir, actionGoFishing,actionCreateLighthouse,
+        actionExpandAll,actionCreateHarbor} from './ActionList.js'
 
 
 export default function Unit(unit_type, owner) {
@@ -32,6 +35,7 @@ export default function Unit(unit_type, owner) {
 Unit.prototype.getGroupPositions = function() {
   return this.group.getGroupPositions();
 }
+
 Unit.prototype.addPop = function(pop_amount) {
   if (this.owner && this.type != 'city') 
     this.owner.addPop(pop_amount);
@@ -94,7 +98,6 @@ Unit.prototype.setType = function(unit_type) {
     //this.addAction( new actionExplore(12));
     //this.addAction( new actionMoveCity(8) );
     //this.addAction( new actionExpandAll() );
-
     break;
 
   case 'village':
@@ -102,8 +105,6 @@ Unit.prototype.setType = function(unit_type) {
     this.setGraphic('#040',2);
     this.addAction( new actionExpand(5));
     this.addAction( new actionExplore(12));
-    
-    
     break;
 
 
@@ -215,18 +216,21 @@ Unit.prototype.setType = function(unit_type) {
 
 
 
+
   case 'fish':
     this.setGraphic('lightblue',1);
     this.setResource('food',1);
     this.setResource('fish',1);
     break;
   case 'food':
+
     this.setGraphic('#f33',1);
     this.setResource('food',1);
     break;
   case 'wood':
     this.setGraphic('#f33',1);
     this.setResource('food',1);
+
     this.setResource('forest',1);
     break;
   case 'stone':
@@ -239,6 +243,24 @@ Unit.prototype.setType = function(unit_type) {
     this.setResource('unknown',1);
     this.setResource('food',2);
     break;
+
+
+  case 'star':
+    this.setGraphic('yellow',8);
+    break;
+  case 'earth':
+    this.setGraphic('blue',3);
+    break;
+  case 'asteroid':
+    this.setGraphic('grey',1);
+    break;
+  case 'planet':
+    this.setGraphic('brown',3);
+    break;
+  case 'giant':
+    this.setGraphic('red',5);
+    break;
+
 
   case 'terrain':
     this.elevation = 0;
@@ -308,10 +330,11 @@ Unit.prototype.setCitySize = function(size) {
 
 
 
+
 var group_id_incrementer = 1000;
 
 
-export function Group() {
+function Group() {
 
   this.units = [];
   this.id = group_id_incrementer++;
@@ -329,6 +352,4 @@ export function Group() {
   this.getGroupPositions = function() {
 
   }
-
 }
-

@@ -1,4 +1,5 @@
 
+
 import Events from './u/Events.js'
 import Hex from './u/Hex.js'
 import HexRenderer from './HexRenderer.js';
@@ -28,6 +29,7 @@ HUDRenderer.prototype.updateHover = function(hex_hovered) {
                                              self.updateActionPath(hex_hovered.detail); }, 100);
 
 }
+
 
 
 /////////////////////////////////////////////////////
@@ -174,7 +176,6 @@ HUDRenderer.prototype.drawActorRange = function() {
 
   if (this.actorHasRenderableRange(actor)) {
     this.hex_renderer.drawHexes(actor.range, range_style);
-
   }
 }
 
@@ -204,4 +205,5 @@ HUDRenderer.prototype.ocillate = function(length) {
   let time = new Date().getTime()%length;
   let opacity = Math.abs(time/length-0.5);
   return opacity;
+
 }

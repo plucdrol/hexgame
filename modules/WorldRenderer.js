@@ -10,6 +10,7 @@
 ///////////////////////////////////////////////////////
 
 
+
 import CanvasDraw from './u/CanvasDraw.js'
 import World from './World.js'
 import Unit from './Unit.js'
@@ -69,13 +70,8 @@ WorldRenderer.p.drawWorldPortion = function() {
   this.renderLayer(hexarray);
 
 
+
 }
-
-
-
-
-
-
 
 
 
@@ -83,6 +79,7 @@ WorldRenderer.p.drawBigHex = function(radius) {
 
   let big_corners = [];
   let center = new Hex(0,0);
+
   for (let corner of center.getNeighbors()) {
     big_corners.push(this.hex_renderer.hexToPoint(Hex.multiply(corner,this.world.radius)));
   }
@@ -173,10 +170,12 @@ WorldRenderer.p.drawRivers = function(hexarray) {
             this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(Math.min(up_level,max_draw_level)*9)), '#22D', 'half only' );
         }
       }
-
     }
   }
 }
+
+
+
 
 WorldRenderer.p.drawRoads = function(hexarray) {
 
@@ -225,6 +224,7 @@ WorldRenderer.p.drawUnits = function(hexarray) {
     hexarray = this.world.getHexArray();   
 
   for (let hex of hexarray) {
+
     if (this.getTile(hex).hidden) continue;
     //draw units
     var this_unit = this.world.getUnit(hex);
@@ -237,6 +237,7 @@ WorldRenderer.p.drawUnits = function(hexarray) {
 //draw the resource icons
 WorldRenderer.p.drawResources = function(hexarray) {
 
+
   if (!hexarray)
     hexarray = this.world.getHexArray();  
 
@@ -246,6 +247,7 @@ WorldRenderer.p.drawResources = function(hexarray) {
     var this_resource = this.world.getResource(hex);
     if (this_resource != undefined && this_resource.resources) {
       this.drawUnit(this_resource,hex,0);
+
     }
   }
 }
@@ -268,6 +270,7 @@ WorldRenderer.p.getTile = function(hex) {
 }
 
 WorldRenderer.p.drawTile = function(hex, tile, color) {
+
   
   var style = new RenderStyle();  
 
@@ -282,8 +285,8 @@ WorldRenderer.p.drawTile = function(hex, tile, color) {
 
 WorldRenderer.p.drawUnit = function(unit,hex,height) {
 
-  let view = this.hex_renderer.renderer.view;
 
+  let view = this.hex_renderer.renderer.view;
 
   var position = this.hex_renderer.hexToPoint(hex);
   position = position.offset(0,-height);
@@ -291,10 +294,12 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
   var unit_style = new RenderStyle();
   unit_style.fill_color = unit.color;
 
+
   if (unit.type == 'unknown')
     unit_style.fill_color = "rgba("+(128+127*this.ocillate(1000))+","+(255*this.ocillate(1000))+","+(128-128*this.ocillate(1000))+",1)";
 
   let zoom = view.getZoom();
+  let size = 10*unit.size*this.world.getZoom();
 
   if (this.world.biggestRoad(hex) <= 2) {
     //draw a square or hexagon
@@ -302,9 +307,9 @@ WorldRenderer.p.drawUnit = function(unit,hex,height) {
       this.hex_renderer.drawHex(hex, unit_style);
     } else {
       if (unit.pop && unit.pop < 2)
-        this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size/2, 15*unit.size/2/zoom ), unit_style);
+        this.hex_renderer.renderer.drawDot(position, Math.min(10*size/2, 15*size/2/zoom ), unit_style);
       else
-        this.hex_renderer.renderer.drawDot(position, Math.min(10*unit.size, 15*unit.size/zoom ), unit_style);
+        this.hex_renderer.renderer.drawDot(position, Math.min(10*size, 15*size/zoom ), unit_style);
     }
   }
 
@@ -329,7 +334,6 @@ WorldRenderer.prototype.ocillate = function(length) {
 
 
 WorldRenderer.p.drawPath = function(range,destination) {
-
   //draw the path
   if (range.containsHex(destination)) {
     var hex_style = new RenderStyle();
@@ -352,6 +356,21 @@ WorldRenderer.p.drawPath = function(range,destination) {
 }
 
 
+WorldRenderer.p.drawCityRadius = function(hex, unit) {
+  
+  var radius_style = new RenderStyle();
+  radius_style.fill_color = 'rgba(0,0,0,0)';
+  radius_style.line_color = unit.civ.line_color;
+
+  let radius_array = Hex.circle(hex, unit.cityRadius);
+  this.hex_renderer.drawHexes(radius_array, radius_style);
+}
+
+
+
+
+
+
 
 
 
@@ -361,7 +380,6 @@ WorldRenderer.p.drawPath = function(range,destination) {
 
 
 var getWindArrowCharacter = function(direction) {
-
     switch (direction) {
         case 0: return 8594; break;
         case 1: return 8599; break;
@@ -375,6 +393,7 @@ var getWindArrowCharacter = function(direction) {
 
 
 //colors of different tiles depending on height
+
 var color_scale = function (i) {
 
   var oldgreenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
@@ -387,10 +406,12 @@ var color_scale = function (i) {
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
 
+
   var greenscale = [224,190,61, //ocean coast sand 0 1 2
                     90,100, //grass 3 4
                     100,105,110,120, //forest 5 6 7 8
                     34,35,36,37,38];  //hills 9 10 11 12 13
+
 
   var newgreenscale = ['#115','#22D','#994', //ocean coast sand 0 1 2
                     '#282','#163', //grass 3 4
@@ -428,6 +449,7 @@ var color_scale = function (i) {
  return oldgreenscale[i];
 
 }
+
 
 function darker(col) {
   return LightenDarkenColor(col, -0.7);

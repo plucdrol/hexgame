@@ -159,7 +159,33 @@ MapGenerator.prototype.makeMap = function(radius) {
 
 
 
+MapGenerator.prototype.makeSystemMap = function(radius) {
+  
+  this.map = new HexMap();
+  this.radius = radius;
 
+  var type = this.map_type;
+  var hex = new Hex(0,0);
+  //contains the position and content of each tile
+  var value = {}; 
+
+  // Iterates over the giant hexagon
+  var qmin = -radius;
+  var qmax = radius;
+  for (var q = qmin; q <= qmax; q++) {
+    var rmin = Math.max(-radius, -q - radius);
+    var rmax = Math.min(+radius, -q + radius);
+
+    for (var r = rmin; r <= rmax; r++) {
+      
+      //put in map
+      hex = new Hex(q,r);
+      this.setElevation(hex, 1);
+    }
+  }
+
+  return this.map;
+}
 
 
 

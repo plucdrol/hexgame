@@ -10,6 +10,7 @@
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
+
 //A hex-shaped array of tiles, with each tile having some information inside them
 
 //Dependencies
@@ -20,8 +21,6 @@ import BonusList from './BonusList.js'
 import Unit from './Unit.js'
 
 
-//  WorldMap
-//  UnitMap
 
 var land_tiles = [
 'ocean',
@@ -35,57 +34,62 @@ var land_tiles = [
 'clouds'
 ];
 
-export default function World(radius) {
+export default function World(radius,type) {
 
   this.radius = radius;
-  
+  this.type = type;
+
   //configure world dimensions
-  var tile_size = new Point(35, 35);
-  var origin = new Point(0,0);
-  this.layout = new HexLayout('pointy', tile_size, origin);
-  
-  //create land map
-  this.world_map = new MapGenerator('perlin').makeMap(radius);
+  if (type == 'system') {
+    let scale = 80;
+    this.tile_size = new Point(35*scale, 35*scale);  
+    this.origin = new Point(0,0);
+  } else {
+    let scale = 1;
+    this.tile_size = new Point(35*scale, 35*scale);  
+    this.origin = new Point(0,0);
+    //this.origin = new Point(35*64*15.1,0);
+  }
 
-  this.bonus_list = new BonusList();
-  this.bonus_list.enableBonus('moveable-cities');
-  this.bonus_list.enableBonus('can-create-waterdens');
-  this.bonus_list.enableBonus('can-create-villages');
-  this.bonus_list.enableBonus('expedition-centers');
+  this.layout = new HexLayout('pointy', this.tile_size, this.origin);  
+  this.world_map = new HexMap();
 
+  if (type == 'system') {
+    
+    this.world_map = new MapGenerator('space').makeSystemMap(radius);
+    //create units map
+    this.units = new HexMap();
+    this.units.set(new Hex(0,0), new Unit('star'));
+    //create resources map
+    this.resources = new HexMap();
+    this.resources = this.generateSystemResources();
 
-  this.highlights_on = false;
+  } else {
 
+    //create land map
+    this.world_map = new MapGenerator('perlin').makeMap(radius);
+    this.highlights_on = false;
+    this.makeCloudsEverywhere();
 
-  //this.makeCloudsEverywhere();
+    //create units map
+    this.units = new HexMap();
 
-  //create units map
-  this.units = new HexMap();
+    //create resources map
+    this.resources_gotten = 0;
+    this.total_resources = 0;
+    this.resources_available = 10;
 
-
-
-  //create resources map
-  this.resources_gotten = 0;
-  this.total_resources = 0;
-  this.resources_available = 10;
-
-
-  this.resources = new HexMap();
-  this.generateResources();
-  //this.generateUnknown();
-
-  this.makeCloudsEverywhere();
+    this.resources = new HexMap();
+    this.generateResources();
+  }
 
 
 }
 
-////////////////////////////////////////////////////
-/////////// LAYOUT FUNCTIONS
-////////////////////////////////////////////////////
 
-
-
-
+World.prototype.getZoom = function() {
+  return this.tile_size.x/35;
+}
 
 World.prototype.getLayout = function() {
   return this.layout;
@@ -96,9 +100,16 @@ World.prototype.getHex = function(world_position) {
   return hex;
 }
 
+
+World.prototype.getPoint = function(hex) {
+  return this.layout.hexToPoint(hex);
+}
+
+
 World.prototype.setHex = function(hex,value) {
   this.world_map.set(hex, value);
 }
+
 
 World.prototype.getPoint = function(hex) {
   //for some reason layout is giving out inverted points!
@@ -153,6 +164,7 @@ World.prototype.getActor = function(hex) {
   return this.getUnit(hex);
 }
 
+
 World.prototype.getRandomHex = function() {
 
   let hex_array = this.world_map.getHexArray();
@@ -164,15 +176,13 @@ World.prototype.getUnit = function(hex) {
   return this.units.get(hex);
 }
 
-World.prototype.addUnit = function(hex, unit_type, owner) {
 
+World.prototype.addUnit = function(hex, unit_type, owner) {
     let new_unit = new Unit(unit_type, owner);
     this.units.set(hex, new_unit);
 }
 
 World.prototype.destroyUnit = function(hex) {
-
-
     this.units.remove(hex);
 }
 
@@ -190,16 +200,18 @@ World.prototype.buildRoad = function(hexarray, road_level) {
 
   if (!road_level)
       road_level = 1;
-      
 
   for (let hex of hexarray) {
     if (previous_hex && this.getTile(hex)) {
       this.addRoadTile(previous_hex, hex, road_level);
       this.clearClouds(hex,1);
+
     }
     previous_hex = hex;
   }
 }
+
+
 World.prototype.addRoadTile = function(hex1, hex2, road_level) {
 
   if (!road_level)
@@ -302,6 +314,7 @@ World.prototype.biggestRoad = function(hex) {
 World.prototype.removeRoads = function(hex) {
   this.getTile(hex).road_from = null;
   this.getTile(hex).road_to = null;
+
 }
 
 World.prototype.getResource = function(hex) {
@@ -367,10 +380,12 @@ World.prototype.countUnits = function(hexarray, unit_type, minimum_count) {
 
   return (count >= minimum_count) 
 
+
 }
 
 World.prototype.countResources = function(hexarray, resource_type, minimum_count) {
   let count = 0;
+
 
   for (let hex of hexarray) {
     if (this.getResource(hex) && 
@@ -381,6 +396,7 @@ World.prototype.countResources = function(hexarray, resource_type, minimum_count
 
   return (count >= minimum_count) 
 }
+
 
 World.prototype.areRoadConnected = function(hex1, hex2) {
 
@@ -527,6 +543,7 @@ World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
     min = min_tiles;
 
   for (let neighbor of position.getNeighbors()) {
+
     if (this.getTile(neighbor) && 
         this.getTile(neighbor).elevation <= 1)
       count++;
@@ -538,6 +555,7 @@ World.prototype.nearCoast = function(position, min_tiles, max_tiles) {
 //'unit' is overlooked, leave it undefined to avoid that
 World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) {
   let area = Hex.circle(position, radius);
+
   for (let hex of area) {
     //skip position_to_ignore
     if (position_to_ignore && Hex.equals(hex, position_to_ignore))
@@ -547,11 +565,13 @@ World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) 
     if (this.units.containsHex(hex) ) {
       if (this.getUnit(hex).type=='city')
         return false;
+
     }
   }
   //no cities
   return true;
 }
+
 
 //'unit' is overlooked, leave it undefined to avoid that
 World.prototype.noUnitTypeInArea = function(position, radius, unit_type, position_to_ignore) {
@@ -570,6 +590,7 @@ World.prototype.noUnitTypeInArea = function(position, radius, unit_type, positio
   //no cities
   return true;
 }
+
 
 
 
@@ -645,12 +666,53 @@ World.prototype.generateResources = function() {
   }
 }
 
+World.prototype.generateSystemResources = function() {
+  var resources = new HexMap();
+
+  for (let hex of this.world_map.getHexArray() )  {
+    let terrain = this.getTile(hex);
+    
+    //only 20% of the land gets these resources
+    if (Math.random() < 0.8) {
+      continue;
+    }
+    if ((Hex.distanceToCenter(hex) >= this.radius*0.4) && (Hex.distanceToCenter(hex) <= this.radius*0.5) 
+    || (Hex.distanceToCenter(hex) >= this.radius*0.9)) {
+      resources.set(hex, new Unit('asteroid'));
+    }
+
+
+    //only 1% of land gets these resources
+    if (Math.random() < 0.97) {
+      continue;
+    }
+    if (Math.random() < Hex.distanceToCenter(hex)/(this.radius)) {
+      continue;
+    }
+
+    //sometimes a gas giant
+    if (Math.random() < 0.3) {
+      resources.set(hex, new Unit('giant'));
+      for (let neighbor of hex.getNeighbors()) {
+        if (Math.random() < 0.3) {
+          resources.set(neighbor, new Unit('planet'));
+        }
+      }
+      continue;
+    }
+
+    //otherwise a rocky planet
+    resources.set(hex, new Unit('planet'));
+    
+  }
+
+  //resources.set(new Hex(7,0), new Unit('earth'));
+  return resources;
+  }
+
 World.prototype.makeCloudsEverywhere = function() {
   for (let hex of this.world_map.getHexArray()) {
-    //if (Hex.distance(new Hex(0,0), hex) > 0)
       this.world_map.get(hex).hidden = true;
-    //else
-     //this.world_map.get(hex).hidden = false;
   }
 }
 
@@ -741,6 +803,8 @@ World.prototype.clearClouds = function(position, radius) {
 
 
 
+
+
   ////////////////////////////////////////////////
 /////        BONUS-RELATED FUNCTION          //
 ////////////////////////////////////////////////
@@ -748,3 +812,4 @@ World.prototype.clearClouds = function(position, radius) {
 World.prototype.bonusEnabled = function(bonus_name) {
   return this.bonus_list.bonusEnabled(bonus_name);
 }
+

@@ -30,25 +30,36 @@ var canv_input = new CanvasInput('canvas');
 
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
+
 let world_radius = 35;
 var world = new World( world_radius );// <-- model
+//let system_radius = 35;
+//var system = new World(system_radius, 'system');// <-- model
+ 
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
 var view = new View('canvas');
+//view.setCenter(world.origin);
+
 
 //Receives input for the game
+//var space_game_input = new GameInput(system, view);     //<--controller
 var game_input = new GameInput(world, view);     //<--controller
 
 //Has functions for drawing to the screen
 var renderer = new Renderer('canvas', view);
 var game_renderer = new GameRenderer(world, game_input, renderer);
+//THE GAME USED TO CREATE A WORLD AND HUD RENDERER FOR EACH
+//LIKE THIS var space_renderer = new WorldRenderer(space, space_hex_renderer);    //<---view 
+//LIKE THIS var space_hud_renderer = new HUDRenderer(space, space_game_input, real_space_hex_renderer);
 
 
 
 
 
 //-----------Initialize the game map----------
+
 
 //Put the first city in a random position on the "equator" ring
 var start_hex = new Hex(0,0);
@@ -60,6 +71,7 @@ for (var hex of Hex.ring(new Hex(0,0), world_radius/2 ))
 let first_city =  new Unit('city');
 world.units.set(start_hex, first_city);
 first_city.pop = 20;
+
 
 let start_point = world.getPoint( start_hex )
 view.setCenter(start_point);
@@ -75,5 +87,16 @@ world.destroyResource(start_hex);
 
 
 game_renderer.startDrawing();
+
+
+/* This used to decide which HUD to render 
+  //draw the HUD on top
+  if (view.getZoom() <= 0.08)
+    space_hud_renderer.drawHUD();
+  else
+    hud_renderer.drawHUD();
+*/
+
+
 
 

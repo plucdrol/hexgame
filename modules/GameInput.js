@@ -89,9 +89,7 @@ export default function GameInput(world, view) {
       this.view.zoom(this.zoom_amount);
       //console.log(this.zoom_amount);
       this.zoom_amount = 1;
-
     }
-
 	}
 	
 
@@ -111,8 +109,6 @@ export default function GameInput(world, view) {
     //shift the image in the temporary canvas
     var temp_context = canvas.getContext('2d');
     temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));
-	 
-
 	}
 
   this.actuallyDrag = function() {
