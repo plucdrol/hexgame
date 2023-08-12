@@ -1,21 +1,20 @@
 
 import View from './u/View.js'
 import Renderer from './u/Renderer.js';
-import HexRenderer from './HexRenderer.js';
 import WorldRenderer from './WorldRenderer.js';
 
 
-export default function LayerRenderer(canvas_name, world) {
+export default function LayerRenderer(layer_canvas_id, world) {
 
-  var temp_canvas = document.getElementById(canvas_name);
+  var temp_canvas = document.getElementById(layer_canvas_id);
   temp_canvas.width = 1.7*2*35*35;
   temp_canvas.height = 1.7*2*35*35;
 
-  var full_view = new View(canvas_name);
+  var full_view = new View(layer_canvas_id);
   full_view.setInput(-1.7*35*35, -1.7*35*35, 1.7*2*35*35, 1.7*2*35*35); //world coordinates
   full_view.setOutput(0, 0, temp_canvas.width, temp_canvas.height);  //canvas coordinates
 
-  var renderer = new Renderer(canvas_name, full_view);
+  var renderer = new Renderer(layer_canvas_id, full_view);
 
   this.world_renderer = new WorldRenderer(world, renderer); 
 }

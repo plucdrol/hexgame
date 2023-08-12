@@ -2,7 +2,7 @@
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
-                                                                
+
            //WORLD RENDERER
 
 ///////////////////////////////////////////////////////
@@ -43,18 +43,19 @@ WorldRenderer.p.drawWorld = function() {
   this.drawResources();
 }
 
+//rewrite this function so it returns the next portion of hexarray to draw instead of drawing directly
 WorldRenderer.p.drawWorldByPortions = function() {
 
   this.render_portions = Math.floor(world.radius/3);
   this.render_start = 0;
 
   var self = this; 
-  this.stop_rendering = setInterval( self.drawWorldPortion.bind(self), 2 );
+  this.stop_rendering = setInterval( self.drawWorldPortion.bind(self), 200 );
 }   
 
 WorldRenderer.p.drawWorldPortion = function() {
 
-  var hexarray = this.world.quick_hexarray;
+  var hexarray = this.world.getHexArray();
 
   let sections = Math.floor(hexarray.length/this.render_portions);
   hexarray = hexarray.slice(this.render_start*sections, (this.render_start+1)*sections );
@@ -95,9 +96,10 @@ WorldRenderer.p.drawBigHex = function(radius) {
 }
 
 
-WorldRenderer.p.drawTiles = function() {
+WorldRenderer.p.drawTiles = function(hexarray) {
 
-  var hexarray = this.world.getHexArray();  
+  if (!hexarray)
+    hexarray = this.world.getHexArray();  
 
   let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
   let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
@@ -144,9 +146,10 @@ WorldRenderer.p.drawTiles = function() {
 
 
 
-WorldRenderer.p.drawRivers = function() {
+WorldRenderer.p.drawRivers = function(hexarray) {
 
-  var hexarray = this.world.getHexArray();  
+  if (!hexarray)
+    hexarray = this.world.getHexArray();  
 
   let water_draw_level = 7;
   let max_draw_level = 150;
@@ -178,9 +181,10 @@ WorldRenderer.p.drawRivers = function() {
   }
 }
 
-WorldRenderer.p.drawRoads = function() {
+WorldRenderer.p.drawRoads = function(hexarray) {
 
-  var hexarray = this.world.getHexArray();  
+  if (!hexarray)
+    hexarray = this.world.getHexArray();  
 
   let road_style = 'half only'
   let zoom = this.hex_renderer.renderer.view.getZoom();
@@ -218,9 +222,10 @@ WorldRenderer.p.drawRoads = function() {
 
 
 //draw the units and their resource-collection area
-WorldRenderer.p.drawUnits = function() {
+WorldRenderer.p.drawUnits = function(hexarray) {
 
-  var hexarray = this.world.getHexArray();  
+  if (!hexarray)
+    hexarray = this.world.getHexArray();   
 
   for (let hex of hexarray) {
     if (this.getTile(hex).hidden) continue;
@@ -233,9 +238,10 @@ WorldRenderer.p.drawUnits = function() {
 }
 
 //draw the resource icons
-WorldRenderer.p.drawResources = function() {
+WorldRenderer.p.drawResources = function(hexarray) {
 
-  var hexarray = this.world.getHexArray();  
+  if (!hexarray)
+    hexarray = this.world.getHexArray();  
 
   //draw resources
   for (let hex of hexarray) {
@@ -326,7 +332,7 @@ WorldRenderer.prototype.ocillate = function(length) {
 
 
 WorldRenderer.p.drawPath = function(range,destination) {
-    
+  
   //draw the path
   if (range.containsHex(destination)) {
     var hex_style = new RenderStyle();
@@ -422,9 +428,6 @@ var color_scale = function (i) {
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
 
-
-
-                    
  return oldgreenscale[i];
 
 }

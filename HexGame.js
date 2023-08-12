@@ -136,7 +136,19 @@ function step(timestamp) {
 }
 window.requestAnimationFrame(step);
 
+function drawScreen() {
 
+  //clear the real canvas
+  renderer.clear();
+
+  //copy the temporary canvas to the real canvas
+  renderer.blitCanvas(earth_canvas);
+  renderer.blitCanvas(thing_canvas);
+
+  //draw the HUD on top
+  hud_renderer.drawHUD();
+
+}
 
 
 
@@ -189,19 +201,7 @@ function updateWorldRender() {
 }
 
 
-function drawScreen() {
 
-  //clear the real canvas
-  renderer.clear();
-
-  //copy the temporary canvas to the real canvas
-  renderer.blitCanvas(earth_canvas);
-  renderer.blitCanvas(thing_canvas);
-
-  //draw the HUD on top
-  hud_renderer.drawHUD();
-
-}
 
 
 
