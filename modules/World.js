@@ -34,7 +34,7 @@ var land_tiles = [
 'clouds'
 ];
 
-export default function World(radius,type) {
+export default function World(radius, type) {
 
   this.radius = radius;
   this.type = type;
@@ -42,16 +42,15 @@ export default function World(radius,type) {
   //configure world dimensions
   if (type == 'system') {
     let scale = 80;
-    this.tile_size = new Point(35*scale, 35*scale);  
-    this.origin = new Point(0,0);
-  } else {
+    var tile_size = new Point(35*scale, 35*scale);  
+    var origin = new Point(0,0);
+  } else {// == 'earth'
     let scale = 1;
-    this.tile_size = new Point(35*scale, 35*scale);  
-    this.origin = new Point(0,0);
-    //this.origin = new Point(35*64*15.1,0);
+    var tile_size = new Point(35*scale, 35*scale);  
+    var origin = new Point(1800,0);
   }
 
-  this.layout = new HexLayout('pointy', this.tile_size, this.origin);  
+  this.layout = new HexLayout('pointy', tile_size, origin);  
   this.world_map = new HexMap();
 
   if (type == 'system') {
@@ -88,7 +87,7 @@ export default function World(radius,type) {
 
 
 World.prototype.getZoom = function() {
-  return this.tile_size.x/35;
+  return this.layout.size.x/35;
 }
 
 World.prototype.getLayout = function() {

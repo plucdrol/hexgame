@@ -39,6 +39,13 @@ export default function GameRenderer(world, game_input, renderer) {
 
     //draw the HUD on top
     hud_renderer.drawHUD();
+    /* This used to decide which HUD to render 
+    //draw the HUD on top
+    if (view.getZoom() <= 0.08)
+      space_hud_renderer.drawHUD();
+    else
+      hud_renderer.drawHUD();
+     */
 
   }
 

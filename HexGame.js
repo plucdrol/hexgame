@@ -32,16 +32,14 @@ var canv_input = new CanvasInput('canvas');
 //Contains a world map, units, and resources
 
 let world_radius = 20;
-
 var world = new World( world_radius );// <-- model
-//let system_radius = 35;
-//var system = new World(system_radius, 'system');// <-- model
+let system_radius = 35;
+var system = new World(system_radius, 'system');// <-- model
  
 
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
 var view = new View('canvas');
-//view.setCenter(world.origin);
 
 
 //Receives input for the game
@@ -74,11 +72,10 @@ world.units.set(start_hex, first_city);
 first_city.pop = 20;
 
 let start_point = world.getPoint( start_hex )
-
 view.setCenter(start_point);
 
 //clear some clouds
-world.clearClouds(start_hex, 8);
+world.clearClouds(start_hex, 18);
 world.destroyResource(start_hex);
 
 
@@ -90,13 +87,7 @@ world.destroyResource(start_hex);
 game_renderer.startDrawing();
 
 
-/* This used to decide which HUD to render 
-  //draw the HUD on top
-  if (view.getZoom() <= 0.08)
-    space_hud_renderer.drawHUD();
-  else
-    hud_renderer.drawHUD();
-*/
+
 
 
 
