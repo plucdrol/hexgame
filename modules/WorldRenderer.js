@@ -435,7 +435,17 @@ var color_scale = function (i) {
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
 
- return oldgreenscale[i];
+  var dustscale = ['#222','#222','#BBB', //ocean coast sand 0 1 2
+                    '#B1B6B4', '#B1B5B2','#B5B2B7', //grass 3 4 5
+                    '#B1B5B6', '#B2B6B','#BB7B5', //forest  6 7 8
+                    '#B1BB3', '#B4B1B3','#B5B1B4', //hills 9 10 11 12 13
+                    '#BB1B2', '#B4B1B4',
+                    '#B4B4B8', '#B4B1B8','#B1B6B7', //mountains 14 15 16
+                    '#CCC','#DDD','#EEE', //mountains 17 18 19
+                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
+                    '#CCC']; //clouds
+
+ return dustscale[i];
 
 }
 
