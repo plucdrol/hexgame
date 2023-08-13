@@ -7,203 +7,206 @@ import RenderStyle from './u/Renderer.js'
 
 export default function HUDRenderer(world, world_input, renderer) {
 
-  this.world_input = world_input;
-  this.world = world;
-  this.unit_input = world_input.getUnitInput();
-  this.action_menu = this.unit_input.button_menu;
-  this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
-  this.action_path = [];
-  this.action_targets = [];
-
-  Events.on('hex_hovered_changed', this.updateHover.bind(this) );
-}
 
 
-HUDRenderer.prototype.updateHover = function(hex_hovered) {
+  var unit_input = world_input.getUnitInput();
+  var action_menu = unit_input.button_menu;
+  var hex_renderer = new HexRenderer(renderer, world.getLayout() );
+  var action_path = [];
+  var action_targets = [];
 
-  this.action_targets = [];
-  let self = this;
-  if (this.hoverTimeout)
-    clearTimeout(this.hoverTimeout);
-  this.hoverTimeout = setTimeout(function(){ self.updateActionTargets(hex_hovered.detail);
-                                             self.updateActionPath(hex_hovered.detail); }, 100);
-
-}
+  Events.on('hex_hovered_changed', updateHover );
 
 
 
-/////////////////////////////////////////////////////
-//          Functions about map overlay information
-/////////////////////////////////////////////////////
-HUDRenderer.prototype.drawHUD = function() {
+  function updateHover(hex_hovered) {
+
+    var action_targets = [];
+    let self = this;
+    if (this.hoverTimeout)
+      clearTimeout(this.hoverTimeout);
+    this.hoverTimeout = setTimeout(function(){ updateActionTargets(hex_hovered.detail);
+                                               updateActionPath(hex_hovered.detail); }, 100);
+
+  }
 
 
-  var hex_hovered = this.world_input.getHexHovered();
-  var hex_selected = this.unit_input.getHexSelected();
 
-  if (hex_selected) {
-    let actor = this.unit_input.getActorSelected();
-
-    //this.drawSelectionHex(hex_selected);
-
-    if (hex_hovered) {
-      this.drawHoveredHex(hex_hovered);
-    }
-
-    if (actor) {
-      let action = this.action_menu.getActionSelected(actor);
-      if (action /*&& action.name != 'city-by-air'*/) {
-        //this.drawActorRange();
+  /////////////////////////////////////////////////////
+  //          Functions about map overlay information
+  /////////////////////////////////////////////////////
+  this.drawHUD = function() {
 
 
-        if (this.action_path.length > 0) {
-          this.drawActionPath(hex_hovered);
-          
-          if (this.action_targets.length > 0) {
-           this.drawActionTargets(hex_hovered);
-          }
-        }
+    var hex_hovered = world_input.getHexHovered();
+    var hex_selected = unit_input.getHexSelected();
 
+    if (hex_selected) {
+      let actor = unit_input.getActorSelected();
 
+      //drawSelectionHex(hex_selected);
+
+      if (hex_hovered) {
+        drawHoveredHex(hex_hovered);
       }
-    } 
 
-  } else {
-    if (hex_hovered ) {
-      this.drawHoveredHex(hex_hovered);
+      if (actor) {
+        let action = action_menu.getActionSelected(actor);
+        if (action /*&& action.name != 'city-by-air'*/) {
+          //drawActorRange();
+
+
+          if (action_path.length > 0) {
+            drawActionPath(hex_hovered);
+            
+            if (action_targets.length > 0) {
+             drawActionTargets(hex_hovered);
+            }
+          }
+
+
+        }
+      } 
+
+    } else {
+      if (hex_hovered ) {
+        drawHoveredHex(hex_hovered);
+      }
     }
   }
-}
 
 
 
 
 
-HUDRenderer.prototype.updateActionPath = function (hex_hovered) {
-  
-  let actor = this.unit_input.getActorSelected();
-  let action = this.action_menu.getActionSelected(actor);
-  let hex_selected = this.unit_input.hex_selected;
+  function updateActionPath (hex_hovered) {
+    
+    let actor = unit_input.getActorSelected();
+    let action = action_menu.getActionSelected(actor);
+    let hex_selected = unit_input.hex_selected;
 
-  if (action && actor && hex_selected) {
-    this.action_path = action.getActionPath(this.world, actor, hex_selected, hex_hovered, action.max_distance);
-  } else {
-    this.action_path = [];
+    if (action && actor && hex_selected) {
+      action_path = action.getActionPath(world, actor, hex_selected, hex_hovered, action.max_distance);
+    } else {
+      action_path = [];
+    }
   }
-}
 
-HUDRenderer.prototype.drawActionPath = function (hex_hovered) {
+  function drawActionPath (hex_hovered) {
 
-  let actor = this.unit_input.getActorSelected();
-  let action = this.action_menu.getActionSelected(actor);
+    let actor = unit_input.getActorSelected();
+    let action = action_menu.getActionSelected(actor);
 
-  //draw a line from actor to target
-  let color = '#C50';
-  if ( action.targetFilterFunction(this.world, actor, hex_hovered) )
-    color = '#5C0';
+    //draw a line from actor to target
+    let color = '#C50';
+    if ( action.targetFilterFunction(world, actor, hex_hovered) )
+      color = '#5C0';
 
-  this.drawPath(this.action_path, color);
-}
-
+    drawPath(action_path, color);
+  }
 
 
-HUDRenderer.prototype.updateActionTargets = function (hex_hovered) {
-  
-  let actor = this.unit_input.getActorSelected();
-  let action = this.action_menu.getActionSelected(actor);
 
-  this.action_targets = [];
+  function updateActionTargets (hex_hovered) {
+    
+    let actor = unit_input.getActorSelected();
+    let action = action_menu.getActionSelected(actor);
 
-  if (action && actor && action.hover_action) {
-    if (!action.targetFilterFunction(this.world, actor, hex_hovered))
-      return;
+    action_targets = [];
 
-    let hover_action = action.hover_action;
-    this.action_targets = hover_action.getActionTargets(this.world, actor, hex_hovered );
-  } 
-}
+    if (action && actor && action.hover_action) {
+      if (!action.targetFilterFunction(world, actor, hex_hovered))
+        return;
 
-HUDRenderer.prototype.drawActionTargets = function (hex_hovered) {
+      let hover_action = action.hover_action;
+      action_targets = hover_action.getActionTargets(world, actor, hex_hovered );
+    } 
+  }
 
-  let actor = this.unit_input.getActorSelected();
-  let action = this.action_menu.getActionSelected(actor);
-  
-  let hex_selected = this.unit_input.hex_selected;
-  
-  var hover_style = new RenderStyle();
-  hover_style.fill_color = "rgba(50,200,50,0)";
-  hover_style.line_width = 6;
-  hover_style.line_color = "rgba(50,200,50,1)";
+  function drawActionTargets (hex_hovered) {
 
-  for (let target of this.action_targets) {
-    if (!this.world.getTile(target).hidden)
-      this.hex_renderer.drawHex( target, hover_style );
+    let actor = unit_input.getActorSelected();
+    let action = action_menu.getActionSelected(actor);
+    
+    let hex_selected = unit_input.hex_selected;
+    
+    var hover_style = new RenderStyle();
+    hover_style.fill_color = "rgba(50,200,50,0)";
+    hover_style.line_width = 6;
+    hover_style.line_color = "rgba(50,200,50,1)";
+
+    for (let target of action_targets) {
+      if (!world.getTile(target).hidden)
+        hex_renderer.drawHex( target, hover_style );
+
+    }
+    
+  }
+
+
+  function drawPath(hexarray, color) {
+    /*var previous = hexarray[0];
+    if (hexarray.length > 0)
+      for (hex of hexarray) {
+        hex_renderer.drawCenterLine(hex, previous, 6, color );
+        previous = hex;
+      }*/
+
+    //var previous = hexarray[0];
+    for (let i = 0; i < hexarray.length-1; i++) {
+      if (!world.areRoadConnected(hexarray[i], hexarray[i+1]))  
+        hex_renderer.drawCenterLine(hexarray[i], hexarray[i+1], 6, color );
+    }
+  }
+
+  function actorHasRenderableRange(actor) {
+    return (actor && actor.selectable && actor.range.length > 0)
+  }
+
+
+
+  function drawActorRange() {
+    //draw range of selected actor
+    var actor = unit_input.getActorSelected();
+    
+    //range style
+    var range_style = new RenderStyle();
+    range_style.fill_color = "rgba(255,255,150, "+ocillate(900)+")";
+    range_style.line_color = "rgba(255,255,100,"+(0.5+0.5*ocillate(900))+")";
+
+    if (actorHasRenderableRange(actor)) {
+      hex_renderer.drawHexes(actor.range, range_style);
+    }
+  }
+
+  function drawHoveredHex(hex_hovered) {
+    //draw hovered hex
+    var hover_style = new RenderStyle();
+    hover_style.fill_color = "rgba(200,200,200,0.4)";
+    hover_style.line_width = 0;
+    hex_renderer.drawHex( hex_hovered, hover_style );
+  }
+
+  function drawSelectionHex(hex_selected) {
+      //draw selection hex
+      var select_style = new RenderStyle();
+
+      select_style.fill_color = "rgba(200,200,0,"+ocillate(500)+")";
+      select_style.line_width = 2;
+      //hex_renderer.drawHex(hex_selected, select_style);
+      hex_renderer.drawCenterLine(
+            hex_selected,
+            Hex.add(hex_selected,new Hex(20,-40)),
+            16*unit_input.getActorSelected().size, 
+            "rgba(0,200,200,"+(0.3+0.7*ocillate(1000))+")" );
+  }
+
+  function ocillate(length) {
+    let time = new Date().getTime()%length;
+    let opacity = Math.abs(time/length-0.5);
+    return opacity;
 
   }
-  
-}
 
-
-HUDRenderer.prototype.drawPath = function(hexarray, color) {
-  /*var previous = hexarray[0];
-  if (hexarray.length > 0)
-    for (hex of hexarray) {
-      this.hex_renderer.drawCenterLine(hex, previous, 6, color );
-      previous = hex;
-    }*/
-
-  //var previous = hexarray[0];
-  for (let i = 0; i < hexarray.length-1; i++) {
-    if (!this.world.areRoadConnected(hexarray[i], hexarray[i+1]))  
-      this.hex_renderer.drawCenterLine(hexarray[i], hexarray[i+1], 6, color );
-  }
-}
-
-HUDRenderer.prototype.actorHasRenderableRange = function(actor) {
-  return (actor && actor.selectable && actor.range.length > 0)
-}
-
-
-
-HUDRenderer.prototype.drawActorRange = function() {
-  //draw range of selected actor
-  var actor = this.unit_input.getActorSelected();
-  
-  //range style
-  var range_style = new RenderStyle();
-  range_style.fill_color = "rgba(255,255,150, "+this.ocillate(900)+")";
-  range_style.line_color = "rgba(255,255,100,"+(0.5+0.5*this.ocillate(900))+")";
-
-  if (this.actorHasRenderableRange(actor)) {
-    this.hex_renderer.drawHexes(actor.range, range_style);
-  }
-}
-
-HUDRenderer.prototype.drawHoveredHex = function(hex_hovered) {
-  //draw hovered hex
-  var hover_style = new RenderStyle();
-  hover_style.fill_color = "rgba(200,200,200,0.4)";
-  hover_style.line_width = 0;
-  this.hex_renderer.drawHex( hex_hovered, hover_style );
-}
-
-HUDRenderer.prototype.drawSelectionHex = function(hex_selected) {
-    //draw selection hex
-    var select_style = new RenderStyle();
-
-    select_style.fill_color = "rgba(200,200,0,"+this.ocillate(500)+")";
-    select_style.line_width = 2;
-    //this.hex_renderer.drawHex(hex_selected, select_style);
-    this.hex_renderer.drawCenterLine(
-          hex_selected,
-          Hex.add(hex_selected,new Hex(20,-40)),
-          16*this.unit_input.getActorSelected().size, 
-          "rgba(0,200,200,"+(0.3+0.7*this.ocillate(1000))+")" );
-}
-
-HUDRenderer.prototype.ocillate = function(length) {
-  let time = new Date().getTime()%length;
-  let opacity = Math.abs(time/length-0.5);
-  return opacity;
 
 }
