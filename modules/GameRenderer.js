@@ -7,7 +7,7 @@ import Events from './u/Events.js';
 
 
 
-export default function GameRenderer(world, system, game_input, view) {
+export default function GameRenderer(world, system, world_input, view) {
 
   let renderer = new Renderer('canvas', view);
 
@@ -15,8 +15,8 @@ export default function GameRenderer(world, system, game_input, view) {
   let earth_layer = new LayerRenderer('earth_canvas', world);
   let thing_layer = new LayerRenderer('thing_canvas', world);
 
-  let hud_renderer = new HUDRenderer(world, game_input, renderer);
-  //let space_hud_renderer = new HUDRenderer(system, game_input, renderer);
+  let hud_renderer = new HUDRenderer(world, world_input, renderer);
+  //let space_hud_renderer = new HUDRenderer(system, world_input, renderer);
 
   function clear() {
     space_layer.clear();

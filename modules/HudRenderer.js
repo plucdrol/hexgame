@@ -5,11 +5,11 @@ import Hex from './u/Hex.js'
 import HexRenderer from './HexRenderer.js';
 import RenderStyle from './u/Renderer.js'
 
-export default function HUDRenderer(world, game_input, renderer) {
+export default function HUDRenderer(world, world_input, renderer) {
 
-  this.game_input = game_input;
+  this.world_input = world_input;
   this.world = world;
-  this.unit_input = game_input.getUnitInput();
+  this.unit_input = world_input.getUnitInput();
   this.action_menu = this.unit_input.button_menu;
   this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
   this.action_path = [];
@@ -38,7 +38,7 @@ HUDRenderer.prototype.updateHover = function(hex_hovered) {
 HUDRenderer.prototype.drawHUD = function() {
 
 
-  var hex_hovered = this.game_input.getHexHovered();
+  var hex_hovered = this.world_input.getHexHovered();
   var hex_selected = this.unit_input.getHexSelected();
 
   if (hex_selected) {

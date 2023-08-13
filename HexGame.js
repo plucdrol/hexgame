@@ -9,7 +9,7 @@ import View from './modules/u/View.js';
 
 
 import GameRenderer from './modules/GameRenderer.js'
-import GameInput from './modules/GameInput.js';
+import WorldInput from './modules/WorldInput.js';
 import World from './modules/World.js';
 import Unit from './modules/Unit.js'
 import ViewInput from './modules/ViewInput.js';
@@ -45,11 +45,11 @@ var view = new View('canvas');
 
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
-var game_input = new GameInput(world, view);
+var world_input = new WorldInput(world, view);
 var view_input = new ViewInput(view); 
 
 //Has functions for drawing to the screen
-var game_renderer = new GameRenderer(world, system, game_input, view);
+var game_renderer = new GameRenderer(world, system, world_input, view);
 
 
 

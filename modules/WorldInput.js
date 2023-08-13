@@ -16,7 +16,7 @@ import Events from './u/Events.js'
 
 
 
-export default function GameInput(world, view) {
+export default function WorldInput(world, view) {
 
 
 
