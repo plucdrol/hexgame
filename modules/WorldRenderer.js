@@ -354,15 +354,6 @@ WorldRenderer.p.drawPath = function(range,destination) {
 }
 
 
-WorldRenderer.p.drawCityRadius = function(hex, unit) {
-  
-  var radius_style = new RenderStyle();
-  radius_style.fill_color = 'rgba(0,0,0,0)';
-  radius_style.line_color = unit.civ.line_color;
-
-  let radius_array = Hex.circle(hex, unit.cityRadius);
-  this.hex_renderer.drawHexes(radius_array, radius_style);
-}
 
 
 

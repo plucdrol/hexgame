@@ -187,13 +187,7 @@ World.prototype.destroyUnit = function(hex) {
     this.units.remove(hex);
 }
 
-World.prototype.getGroupPositions = function(group) {
-  let position_array = [];
-  for (let hex of this.units.getHexArray())
-    if (this.getUnit(hex) && this.getUnit(hex).group.id == group.id)
-      position_array.push(hex);
-  return position_array;
-}
+
 
 
 World.prototype.buildRoad = function(hexarray, road_level) {
