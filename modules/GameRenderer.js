@@ -137,18 +137,18 @@ function LayerRenderer(canvas_name, world) {
   this.world_renderer = new WorldRenderer(world, renderer); 
 }
 
-LayerRenderer.prototype.worldToTempCanvasCoords = function(point) {
-  return this.full_view.worldToScreen1D(point);
-}
 
 LayerRenderer.prototype.RendererFromTempCanvasToScreen = function(canvas_name, view) {
   let blitview = new View(canvas_name);
   
+  //view.getPosition returns a position in the world, say 0,0
+  //full_view.worldToScreen( view.getPosition) 
+
   blitview.setInput(
-    this.worldToTempCanvasCoords( view.getPosition().x  ),
-    this.worldToTempCanvasCoords( view.getPosition().y  ),
-    this.worldToTempCanvasCoords( view.getInputSize().x ),
-    this.worldToTempCanvasCoords( view.getInputSize().y ),
+    this.full_view.worldToScreen( view.getPosition() ).x,
+    this.full_view.worldToScreen( view.getPosition() ).y,
+    this.full_view.worldToScreen1D( view.getInputSize().x ),
+    this.full_view.worldToScreen1D( view.getInputSize().y ),
   );
 
   return new Renderer(canvas_name, blitview);

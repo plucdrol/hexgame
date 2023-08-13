@@ -41,13 +41,13 @@ export default function World(radius, type) {
 
   //configure world dimensions
   if (type == 'system') {
-    let scale = 3;
+    let scale = 20;
     var tile_size = new Point(35*scale, 35*scale);  
     var origin = new Point(0,0);
   } else {// == 'earth'
-    let scale = 0.01;
+    let scale = 1;
     var tile_size = new Point(35*scale, 35*scale);  
-    var origin = new Point(800, 9);
+    var origin = new Point(35*10*32,0);
   }
 
   this.layout = new HexLayout('pointy', tile_size, origin);  

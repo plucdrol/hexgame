@@ -31,7 +31,7 @@ var canv_input = new CanvasInput('canvas');
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
 
-let world_radius = 20;
+let world_radius = 35;
 var world = new World( world_radius );// <-- model
 let system_radius = 35;
 var system = new World(system_radius, 'system');// <-- model
@@ -71,10 +71,10 @@ world.units.set(start_hex, first_city);
 first_city.pop = 20;
 
 let start_point = world.getPoint( start_hex )
-//view.setCenter(start_point);
+view.setCenter(start_point);
 
 //clear some clouds
-world.clearClouds(start_hex, 18);
+world.clearClouds(start_hex, 100);
 world.destroyResource(start_hex);
 
 

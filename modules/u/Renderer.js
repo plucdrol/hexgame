@@ -118,13 +118,11 @@ Renderer.prototype.blitCanvas = function(source_canvas) {
 
   let context = this.canvas.getContext('2d');
 
-  let input_size = this.view.getInputRect().size;
-  let output_size = this.view.getOutputRect().size;
-  let center = this.view.getCenter();
+  let input_position = this.view.getInputRect().position;
+  let input_size = this.view.getInputRect().size; //input is a section of the temp_canvas
 
-
-  let x = source_canvas.width/2  + center.x - this.view.screenToWorld1D(output_size.x/2);
-  let y = source_canvas.height/2 + center.y - this.view.screenToWorld1D(output_size.y/2);
+  let x = input_position.x; 
+  let y = input_position.y; 
   let w = input_size.x;
   let h = input_size.y;
 

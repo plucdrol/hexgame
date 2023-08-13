@@ -15,9 +15,9 @@ export function Rect(position, size) {
 //output: screen coordinates
 
 
-export default function View (canvas_element_id, initial_zoom_level) {
+export default function View (canvas_name, initial_zoom_level) {
 
-  var canvas = document.getElementById(canvas_element_id);
+  var canvas = document.getElementById(canvas_name);
 
   if (initial_zoom_level == undefined) {
     var initial_zoom_level = 1;
