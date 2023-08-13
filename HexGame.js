@@ -43,16 +43,12 @@ var view = new View('canvas');
 
 
 //Receives input for the game
+//Having two game_inputs makes the drag event fire twice, moving too fast
 //var space_game_input = new GameInput(system, view);     //<--controller
 var game_input = new GameInput(world, view);     //<--controller
 
 //Has functions for drawing to the screen
 var game_renderer = new GameRenderer(world, system, game_input, view);
-//THE GAME USED TO CREATE A WORLD AND HUD RENDERER FOR EACH
-//LIKE THIS var space_renderer = new WorldRenderer(space, space_hex_renderer);    //<---view 
-//LIKE THIS var space_hud_renderer = new HUDRenderer(space, space_game_input, real_space_hex_renderer);
-
-
 
 
 
