@@ -8,6 +8,9 @@
 ////////////////////////////////////////////////
 ////////////////////////////////////////////////
 
+//receives input events from Canv_Input and affects both the View and the World
+//separate this into GameInput(view) and WorldInput(world)
+
 import Hex from './u/Hex.js'
 import {Point, HexLayout, HexMap} from './u/Hex.js'
 import UnitInput from './UnitInput.js';
@@ -58,6 +61,7 @@ export default function GameInput(world, view) {
 
   document.addEventListener('keydown', logKey);
 
+  //this one goes into WorldInput(world)
   function logKey(event) {
     console.log(event.keyCode);
     if (event.keyCode === 189 || event.keyCode === 173) { // minus
@@ -75,6 +79,7 @@ export default function GameInput(world, view) {
     return false;
   }
 
+  //This one should go into ViewInput(view)
   //React to either mouse scrolling or finger pinching
   this.zoomViewEvent = function(zoom) {
 
@@ -94,7 +99,7 @@ export default function GameInput(world, view) {
 	
 
 
-
+  //this one should go into ViewInput(view)
   //React to dragging across the screen with finger or mouse
 	this.dragEvent = function(mouse, previous_mouse) {
 
@@ -111,6 +116,7 @@ export default function GameInput(world, view) {
     temp_context.drawImage(canvas, -(previous_mouse.x-mouse.x), -(previous_mouse.y-mouse.y));
 	}
 
+  //this one should go into ViewInput(view)
   this.actuallyDrag = function() {
 
     this.view.shiftPosition(this.world_drag);
@@ -120,12 +126,14 @@ export default function GameInput(world, view) {
   }
 
 
+  //this one should go into ViewInput(view)
   //React to the window being resized
 	this.resizeEvent = function(width, height) {
 	  this.view.resizeOutput(width, height);
 	}
 
 
+  //this one should go into WorldInput(world)
   //React to the mouse hovering at screen_position
   this.hoverEvent = function(screen_position) {
   
@@ -144,6 +152,7 @@ export default function GameInput(world, view) {
   }
 
 
+  //this one should go into GameInput(world)
   //React to the screen being clicked at screen_position
   this.clickScreenEvent = function(screen_position, device_type) {
     

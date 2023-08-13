@@ -14,7 +14,9 @@ export default function GameRenderer(world, system, game_input, view) {
   let space_layer = new LayerRenderer('space_canvas', system);
   let earth_layer = new LayerRenderer('earth_canvas', world);
   let thing_layer = new LayerRenderer('thing_canvas', world);
+
   let hud_renderer = new HUDRenderer(world, game_input, renderer);
+  //let space_hud_renderer = new HUDRenderer(system, game_input, renderer);
 
   function clear() {
     space_layer.clear();
