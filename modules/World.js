@@ -55,7 +55,7 @@ export default function World(radius, type) {
 
   if (type == 'system') {
     
-    this.world_map = new MapGenerator('space').makeSystemMap(radius);
+    this.world_map = new MapGenerator().makeSystemMap(radius);
     //create units map
     this.units = new HexMap();
     this.units.set(new Hex(0,0), new Unit('star'));
@@ -68,7 +68,7 @@ export default function World(radius, type) {
   } else {
 
     //create land map
-    this.world_map = new MapGenerator('perlin').makeMap(radius);
+    this.world_map = new MapGenerator('perlin').makeWorldMap(radius);
     this.highlights_on = false;
     this.makeCloudsEverywhere();
 
