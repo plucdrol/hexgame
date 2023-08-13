@@ -12,6 +12,7 @@ import GameRenderer from './modules/GameRenderer.js'
 import GameInput from './modules/GameInput.js';
 import World from './modules/World.js';
 import Unit from './modules/Unit.js'
+import ViewInput from './modules/ViewInput.js';
 
 
 //---------------HTML5 Canvas elements-----------

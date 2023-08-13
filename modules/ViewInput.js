@@ -16,8 +16,7 @@ import Events from './u/Events.js'
 
 var render_update = false;
 
-export default function GameInput(world, view) {
-  this.world = world;
+export default function ViewInput(view) {
   this.view = view;
 
   this.world_drag = new Point(0,0);
@@ -29,10 +28,6 @@ export default function GameInput(world, view) {
   //Event handling
   var self = this;
 
-
-
-
-
   Events.on('canvas_zoom', function(e){
     self.zoomViewEvent(e.detail.amount);
   } );
@@ -42,15 +37,6 @@ export default function GameInput(world, view) {
   Events.on('canvas_resize', function(e){
     self.resizeEvent(e.detail.width, e.detail.height);
   } );
-  Events.on('canvas_click', function(e){
-    self.clickScreenEvent(e.detail.click_pos, 'mouse');
-  }); 
-  Events.on('canvas_touch', function(e){
-    self.clickScreenEvent(e.detail.click_pos, 'touch');
-  }); 
-  Events.on('canvas_hover', function(e){
-    self.hoverEvent(e.detail.mousepos);
-  });
   document.addEventListener('keydown', logKey);
 
 
