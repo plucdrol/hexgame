@@ -126,9 +126,15 @@ export default function View (canvas_element_id, initial_zoom_level) {
       input.position.y += point.y;
   };
 
+  this.getPosition = function() { 
+      return input.position;
+  };
   this.setPosition = function(point) { 
       input.position = point; 
   };
+  this.getInputSize = function() {
+    return  input.size;
+  }
 
   this.getZoom = function() {
     return output.size.x/input.size.x;
@@ -173,5 +179,10 @@ export default function View (canvas_element_id, initial_zoom_level) {
 
     return corners;
   }
+
+  this.convertCoords = function(callback) {
+
+  }
 };
+
 

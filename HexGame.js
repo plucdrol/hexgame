@@ -71,7 +71,7 @@ world.units.set(start_hex, first_city);
 first_city.pop = 20;
 
 let start_point = world.getPoint( start_hex )
-view.setCenter(start_point);
+//view.setCenter(start_point);
 
 //clear some clouds
 world.clearClouds(start_hex, 18);
