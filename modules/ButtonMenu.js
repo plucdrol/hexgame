@@ -261,7 +261,7 @@ ButtonMenu.prototype.selectFirstActionIfNoneSelected = function() {
   let first_action = radio_elements[0];
   if (first_action && !first_action.disabled) {
     first_action.checked = true;
-    this.unit_input.updateActionTargetsIndirectly();
+    this.updateActionTargets();
   }
 
 
@@ -271,14 +271,7 @@ ButtonMenu.prototype.selectFirstActionIfNoneSelected = function() {
 
 ButtonMenu.prototype.addActionClickDetection = function() {
   let self = this;
-
-  this.addButtonClickDetection('action-buttons', function(){ self.unit_input.updateActionTargetsIndirectly() });
-
-  /*
-  //add the click-detection code
-  for (let button of document.getElementById('action-buttons').getElementsByClassName('button-input')) {
-    button.addEventListener('click', function(){ self.unit_input.updateActionTargetsIndirectly(); });
-  }*/
+  this.addButtonClickDetection('action-buttons', self.updateActionTargets );
 }
 
 ButtonMenu.prototype.clearButtons = function() {
@@ -348,6 +341,19 @@ ButtonMenu.prototype.clearBonusButtons = function() {
 
 
 
+ButtonMenu.prototype.updateActionTargets = function() {
+
+    let actor = this.unit_input.getActorSelected();
+    let action = this.getActionSelected(actor);
+    let hex_selected = this.unit_input.getHexSelected();
+
+    if (action) {
+      action.updateActionTargets( this.world, actor, hex_selected);
+      this.world.highlightRange(action.range, 'brown');
+    } else {
+      action.range = [];
+    }
+  };
 
 
 

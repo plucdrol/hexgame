@@ -22,9 +22,10 @@ import {listContainsHex} from './u/Hex.js'
 
 
 export default function UnitInput(world) {
+  
   var hex_selected = undefined;
+  var button_menu = new ButtonMenu('action-buttons', this, world);
 
-  Events.on('hex_clicked', clickHex );
 
   this.selectNothing = selectNothing;
   this.getHexSelected = getHexSelected
@@ -32,9 +33,9 @@ export default function UnitInput(world) {
   this.getActionSelected = getActionSelected
   this.updateActionTargetsIndirectly = updateActionTargetsIndirectly
 
-
+  Events.on('hex_clicked', clickHex );
   
-  var button_menu = new ButtonMenu('action-buttons', this, world);
+
 
   //-------1---------2---------3---------4---------5---------6--------7---------8--------
 
