@@ -9,7 +9,7 @@ export default function HUDRenderer(world, game_input, renderer) {
 
   this.game_input = game_input;
   this.world = world;
-  this.unit_input = game_input.unit_input;
+  this.unit_input = game_input.getUnitInput();
   this.action_menu = this.unit_input.button_menu;
   this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
   this.action_path = [];
@@ -38,8 +38,8 @@ HUDRenderer.prototype.updateHover = function(hex_hovered) {
 HUDRenderer.prototype.drawHUD = function() {
 
 
-  var hex_hovered = this.game_input.hex_hovered;
-  var hex_selected = this.unit_input.hex_selected;
+  var hex_hovered = this.game_input.getHexHovered();
+  var hex_selected = this.unit_input.getHexSelected();
 
   if (hex_selected) {
     let actor = this.unit_input.getActorSelected();
