@@ -43,9 +43,9 @@ var view = new View('canvas');
 
 
 //Receives input for the game
-//Having two game_inputs makes the drag event fire twice, moving too fast
-//var space_game_input = new GameInput(system, view);     //<--controller
-var game_input = new GameInput(world, view);     //<--controller
+//var space_game_input = new GameInput(system, view);
+var game_input = new GameInput(world, view);
+var view_input = new ViewInput(view); 
 
 //Has functions for drawing to the screen
 var game_renderer = new GameRenderer(world, system, game_input, view);
