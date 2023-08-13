@@ -1,10 +1,11 @@
 
 import Events from './u/Events.js'
 
-export default function ButtonMenu(menu_id, unit_input) {
+export default function ButtonMenu(menu_id, unit_input, world) {
 
 	this.menu_id = menu_id;
   this.unit_input = unit_input;
+  this.world = world;
 
   Events.on('hex_hovered_changed', this.updateHover.bind(this) );
   Events.on('hex_clicked', this.update_function.bind(this) );
@@ -24,10 +25,9 @@ ButtonMenu.prototype.update_function = function() {
   let actor = this.unit_input.getActorSelected();
   let position = this.unit_input.getHexSelected();
 
-  let free_res = this.unit_input.world.getPopulation();
-  let total_res = this.unit_input.world.resources_collected;
+  let free_res = this.world.getPopulation();
+  let total_res = this.world.resources_collected;
 
-  let resources = this.unit_input.world.total_resources;
   this.writeMessage("Free: "+free_res, 'free-ants');
   this.writeMessage("Total: "+total_res, 'total-ants');
 
@@ -35,7 +35,7 @@ ButtonMenu.prototype.update_function = function() {
   
 
   if (actor && actor.selectable) {
-    this.updateActionButtons(this.unit_input.world, actor, position);
+    this.updateActionButtons(this.world, actor, position);
   } else {
     this.clearButtons();
     //this.writeMessage("", 'city-resources');

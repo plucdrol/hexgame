@@ -52,7 +52,6 @@ export default function WorldInput(world, view) {
 
     if (event.keyCode === 187 || event.keyCode === 27) { // escape
         unit_input.selectNothing();
-        unit_input.button_menu.update_function(unit_input.world, unit_input);
         Events.emit('hex_hovered_changed', hex_hovered);
     }
     return false;

@@ -10,7 +10,6 @@ export default function HUDRenderer(world, world_input, renderer) {
 
 
   var unit_input = world_input.getUnitInput();
-  var action_menu = unit_input.button_menu;
   var hex_renderer = new HexRenderer(renderer, world.getLayout() );
   var action_path = [];
   var action_targets = [];
@@ -51,7 +50,7 @@ export default function HUDRenderer(world, world_input, renderer) {
       }
 
       if (actor) {
-        let action = action_menu.getActionSelected(actor);
+        let action = unit_input.getActionSelected();
         if (action /*&& action.name != 'city-by-air'*/) {
           //drawActorRange();
 
@@ -82,8 +81,8 @@ export default function HUDRenderer(world, world_input, renderer) {
   function updateActionPath (hex_hovered) {
     
     let actor = unit_input.getActorSelected();
-    let action = action_menu.getActionSelected(actor);
-    let hex_selected = unit_input.hex_selected;
+    let action = unit_input.getActionSelected();
+    let hex_selected = unit_input.getHexSelected();
 
     if (action && actor && hex_selected) {
       action_path = action.getActionPath(world, actor, hex_selected, hex_hovered, action.max_distance);
@@ -95,7 +94,7 @@ export default function HUDRenderer(world, world_input, renderer) {
   function drawActionPath (hex_hovered) {
 
     let actor = unit_input.getActorSelected();
-    let action = action_menu.getActionSelected(actor);
+    let action = unit_input.getActionSelected();
 
     //draw a line from actor to target
     let color = '#C50';
@@ -110,7 +109,7 @@ export default function HUDRenderer(world, world_input, renderer) {
   function updateActionTargets (hex_hovered) {
     
     let actor = unit_input.getActorSelected();
-    let action = action_menu.getActionSelected(actor);
+    let action = unit_input.getActionSelected();
 
     action_targets = [];
 
@@ -126,9 +125,8 @@ export default function HUDRenderer(world, world_input, renderer) {
   function drawActionTargets (hex_hovered) {
 
     let actor = unit_input.getActorSelected();
-    let action = action_menu.getActionSelected(actor);
-    
-    let hex_selected = unit_input.hex_selected;
+    let action = unit_input.getActionSelected();
+    let hex_selected = unit_input.getHexSelected();
     
     var hover_style = new RenderStyle();
     hover_style.fill_color = "rgba(50,200,50,0)";

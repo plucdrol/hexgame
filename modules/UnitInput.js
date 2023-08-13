@@ -22,165 +22,186 @@ import {listContainsHex} from './u/Hex.js'
 
 
 export default function UnitInput(world) {
-  this.world = world;
-  this.hex_selected = undefined;
+  var hex_selected = undefined;
 
-  Events.on('hex_clicked', this.clickHex.bind(this) );
+  Events.on('hex_clicked', clickHex );
+
+  this.selectNothing = selectNothing;
+  this.getHexSelected = getHexSelected
+  this.getActorSelected = getActorSelected
+  this.getActionSelected = getActionSelected
+  this.updateActionTargetsIndirectly = updateActionTargetsIndirectly
+
+
   
-  this.button_menu = new ButtonMenu('action-buttons', this);
-}
-//-------1---------2---------3---------4---------5---------6--------7---------8--------
-UnitInput.p = UnitInput.prototype;
+  var button_menu = new ButtonMenu('action-buttons', this, world);
 
-UnitInput.p.clickHex = function(hex) {
+  //-------1---------2---------3---------4---------5---------6--------7---------8--------
 
-  //if there is already a unit on the hex selected
-  if (this.anActorIsSelected() ) {
-    this.clickWithSelection(hex.detail);
-    return;
-  }
+  function clickHex(hex) {
+
+    //if there is already a unit on the hex selected
+    if (anActorIsSelected() ) {
+      clickWithSelection(hex.detail);
+      return;
+    }
+      
+    //if there is no unit selected
+    clickWithNoSelection(hex.detail);
+  };
+
+  //selecting a tile
+  function selectHex(hex) {
+
+    button_menu.unselectActions();
+
+    if (hex) {
+      if (world.getActor(hex)) {
+
+        hex_selected = hex;
+
+        /* ----Do not clear the range----
+        //look if there is a unit
+        var actor = getActorSelected();
+        if (actor) { 
+          clearRange(actor);
+        }*/
+      } 
+    } else {
+      hex_selected = undefined;
+      selectNothing();
+    }
+  };
+
+
+  function selectNothing() {
+    //getActorSelected().range = undefined;
+    hex_selected = undefined;
+    updateButtons();
+  };
+
+  function aHexIsSelected() {
+    return (hex_selected instanceof Hex);
+  };
+
+  function getHexSelected()  {
+    if (aHexIsSelected())
+      return hex_selected;
+    else
+      return false;
+  };
+
+  function anActorIsSelected() {
     
-  //if there is no unit selected
-  this.clickWithNoSelection(hex.detail);
-};
+    if (!aHexIsSelected()) 
+      return false;
 
-//selecting a tile
-UnitInput.p.selectHex = function(hex) {
+    var maybe_actor = world.getActor(getHexSelected());
+    if (maybe_actor) {
+      return (maybe_actor.selectable);
+    } else {
+      return false;
+    }
+  };
 
-  this.button_menu.unselectActions();
+  function getActorSelected() {
+    if (anActorIsSelected()) {
+      return world.getActor(getHexSelected());
+    } else {
+      return false;
+    }
+  };
 
-  if (hex) {
-    if (this.world.getActor(hex)) {
+  function getActionSelected() {
+    if (anActorIsSelected()) {
+      let actor = getActorSelected();
+      return button_menu.getActionSelected(actor);
+    } else {
+      return false;
+    }
+  };
 
-      this.hex_selected = hex;
+  function clickWithNoSelection(target) {
+    selectHex(target);
+  };
 
-      /* ----Do not clear the range----
-      //look if there is a unit
-      var actor = this.getActorSelected();
-      if (actor) { 
-        this.clearRange(actor);
-      }*/
-    } 
-  } else {
-    this.hex_selected = undefined;
-    this.selectNothing();
+  //This is where target-actions should take effect
+  //Instant effects will happen when the button is pressed instead
+  function clickWithSelection(target) {
+    
+    var actor = getActorSelected();
+    var action = button_menu.getActionSelected(actor);
+
+
+    if (action && !action.infinite_range && !action.range ) {
+      clickOutsideRange(target);
+      return 0;
+    }
+
+    //if you are clicking inside the actor's range
+    if ((action && action.infinite_range) || (action.range && listContainsHex(target, action.range)) ) {
+      clickInsideRange(target);
+
+    //if you are clicking outside the actor's range
+    } else {
+      clickOutsideRange(target);
+    }
+  };
+
+  function clickInsideRange(target) {
+
+    let origin = hex_selected;
+    let actor = getActorSelected();
+    let action = button_menu.getActionSelected(actor);
+
+    if (action.requirement(world, actor, origin)) {
+      action.doAction(world, actor, origin, target);
+      if (action.nextSelection == 'target') {
+        selectHex(target); 
+      } 
+
+      if (action.nextSelection == 'new_unit_if_exists' && world.unitAtLocation(target) ) {
+        selectHex(target); 
+      } 
+    }
+
+    button_menu.update_function(world, this);
+
+  };
+
+
+  function clickOutsideRange(target) {
+
+    if (world.unitAtLocation(target)) {
+      selectNothing();
+      clickHex(target);
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+  function updateActionTargetsIndirectly() {
+
+    let actor = getActorSelected();
+    let action = button_menu.getActionSelected(actor);
+
+    if (action) {
+      action.updateActionTargets(world, actor, hex_selected);
+      world.highlightRange(action.range, 'brown');
+    } else {
+      action.range = [];
+    }
+  };
+
+  function updateButtons() {
+    button_menu.update_function(world, this);
   }
-};
 
-
-UnitInput.p.selectNothing = function() {
-  //this.getActorSelected().range = undefined;
-  this.hex_selected = undefined;
-};
-
-UnitInput.p.aHexIsSelected = function() {
-  return (this.hex_selected instanceof Hex);
-};
-
-UnitInput.p.getHexSelected = function()  {
-  if (this.aHexIsSelected())
-    return this.hex_selected;
-  else
-    return false;
-};
-
-UnitInput.p.anActorIsSelected = function() {
-  
-  if (!this.aHexIsSelected()) 
-    return false;
-
-  var maybe_actor = this.world.getActor(this.getHexSelected());
-  if (maybe_actor) {
-    return (maybe_actor.selectable);
-  } else {
-    return false;
-  }
-};
-
-UnitInput.p.getActorSelected = function() {
-  if (this.anActorIsSelected()) {
-    return this.world.getActor(this.getHexSelected());
-  } else {
-    return false;
-  }
-};
-
-UnitInput.p.clickWithNoSelection = function(target) {
-  this.selectHex(target);
-};
-
-//This is where target-actions should take effect
-//Instant effects will happen when the button is pressed instead
-UnitInput.p.clickWithSelection = function(target) {
-  
-  var actor = this.getActorSelected();
-  var action = this.button_menu.getActionSelected(actor);
-
-
-  if (action && !action.infinite_range && !action.range ) {
-    this.clickOutsideRange(target);
-    return 0;
-  }
-
-  //if you are clicking inside the actor's range
-  if ((action && action.infinite_range) || (action.range && listContainsHex(target, action.range)) ) {
-    this.clickInsideRange(target);
-
-  //if you are clicking outside the actor's range
-  } else {
-    this.clickOutsideRange(target);
-  }
-};
-
-UnitInput.p.clickInsideRange = function(target) {
-
-  let origin = this.hex_selected;
-  let actor = this.getActorSelected();
-  let action = this.button_menu.getActionSelected(actor);
-
-  if (action.requirement(this.world, actor, origin)) {
-    action.doAction(this.world, actor, origin, target);
-    if (action.nextSelection == 'target') {
-      this.selectHex(target); 
-    } 
-
-    if (action.nextSelection == 'new_unit_if_exists' && this.world.unitAtLocation(target) ) {
-      this.selectHex(target); 
-    } 
-  }
-
-  this.button_menu.update_function(this.world, this);
-
-};
-
-
-UnitInput.p.clickOutsideRange = function(target) {
-
-  if (this.world.unitAtLocation(target)) {
-    this.selectNothing();
-    this.clickHex(target);
-  }
-};
-
-
-
-
-
-
-
-
-
-
-UnitInput.p.updateActionTargetsIndirectly = function() {
-
-  let actor = this.getActorSelected();
-  let action = this.button_menu.getActionSelected(actor);
-
-  if (action) {
-    action.updateActionTargets(this.world, actor, this.hex_selected);
-    this.world.highlightRange(action.range, 'brown');
-  } else {
-    action.range = [];
-  }
-};
-
+}
