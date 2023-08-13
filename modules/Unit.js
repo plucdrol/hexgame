@@ -298,11 +298,8 @@ Unit.prototype.setType = function(unit_type) {
       this.setResource('food',5);
       break;
 
+      
 
-    case 'terrain':
-      this.elevation = 0;
-      this.wind = 0;
-      break;
     default:
       this.setGraphic('yellow',2);
       break;

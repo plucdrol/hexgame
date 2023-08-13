@@ -15,7 +15,6 @@
 ///////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////*/
 
-import Unit from './Unit.js'
 import Hex from './u/Hex.js'
 import {HexMap} from './u/Hex.js'
 import SimplexNoise from './u/Noise.js'
@@ -132,11 +131,11 @@ export default function MapGenerator(map_type) {
 
   function setWind(hex,new_value) {
     var current_tile = map.getValue(hex);
-    if (current_tile instanceof Unit) {
+    if (current_tile instanceof Object) {
       current_tile.wind = new_value;  
     } else {
       //get value
-      var new_tile = new Unit('terrain');
+      var new_tile = new Object();
       new_tile.wind = new_value;
       map.set(hex,new_tile)
     }
@@ -145,11 +144,11 @@ export default function MapGenerator(map_type) {
 
   function setElevation(hex,new_value) {
     var current_tile = map.getValue(hex);
-    if (current_tile instanceof Unit) {
+    if (current_tile instanceof Object) {
       current_tile.elevation = new_value;  
     } else {
       //get value
-      var new_tile = new Unit('terrain');
+      var new_tile = new Object();
       new_tile.elevation = new_value;
       map.set(hex,new_tile)
     }
@@ -158,11 +157,11 @@ export default function MapGenerator(map_type) {
 
   function setVariable(hex,variable,new_value) {
     var current_tile = map.getValue(hex);
-    if (current_tile instanceof Unit) {
+    if (current_tile instanceof Object) {
       current_tile[variable] = new_value;  
     } else {
       //get value
-      var new_tile = new Unit('terrain');
+      var new_tile = new Object();
       new_tile[variable] = new_value;
       map.set(hex,new_tile)
     }
