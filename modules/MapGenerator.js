@@ -71,7 +71,7 @@ export default function MapGenerator(map_type) {
     //trim oceans
     trimPoints(0, [0], 2, 1 );
 
-    map = new RiverGenerator(map).getMap();
+    //map = new RiverGenerator(map).getMap();
 
     //turn big rivers into coast tiles (fjords)
     for (hex of map.getHexes()) {

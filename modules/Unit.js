@@ -255,11 +255,11 @@ Unit.prototype.setType = function(unit_type) {
       break;
     case 'food':
 
-      this.setGraphic('#f33',1);
+      this.setGraphic('#555',1);
       this.setResource('food',1);
       break;
     case 'wood':
-      this.setGraphic('#f33',1);
+      this.setGraphic('#555',1);
       this.setResource('food',1);
 
       this.setResource('forest',1);
