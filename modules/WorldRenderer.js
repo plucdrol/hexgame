@@ -255,7 +255,8 @@ WorldRenderer.p.drawTile = function(hex, tile, color) {
   if (color)
     style.fill_color = color;
 
-  this.hex_renderer.drawHex(hex, style);
+  if ( tile.elevation >= 0 )
+    this.hex_renderer.drawHex(hex, style);
 }
 
 WorldRenderer.p.drawUnit = function(unit,hex,height) {

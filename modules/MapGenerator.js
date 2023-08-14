@@ -106,7 +106,7 @@ export default function MapGenerator(map_type) {
         
         //put in map
         hex = new Hex(q,r);
-        setElevation(hex, 1);
+        setElevation(hex, -1);
       }
     }
 
