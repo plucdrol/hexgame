@@ -67,7 +67,7 @@ export default function WorldInput(world, view) {
     hex_hovered = world.getHex(world_position);
 
     //if the mouse moved to a new hex, redraw the screen
-    if ( !Hex.equals(hex_hovered, hex_hovered_previous) ) {
+    if ( !hex_hovered.equals(hex_hovered_previous) ) {
       Events.emit('hex_hovered_changed', hex_hovered);
 
     }
@@ -86,7 +86,7 @@ export default function WorldInput(world, view) {
       var world_position = view.screenToWorld(screen_position);
       let hex_clicked = world.getHex(world_position);
 
-      if (device_type == "mouse" || Hex.equals(hud_renderer.last_hover, hex_clicked)) {
+      if (device_type == "mouse" || hex_clicked.equals(hud_renderer.last_hover)) {
         Events.emit('hex_clicked', hex_clicked);
       }
 

@@ -238,7 +238,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
       }
       
       //Stop if target is reached
-      if (target && Hex.equals(coord,target))
+      if (target && target.equals(coord))
           break;
       
     } while (!all_coords_to_visit.isEmpty()) 

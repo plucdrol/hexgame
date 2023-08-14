@@ -527,7 +527,7 @@ function actionHydroDam() {
   this.extra_description = "Dam the river to get lots of resources";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return world.isUpstreamOf(target, position) /*&& Hex.equals(world.getTile(target).river.downstream_hex, position);
+    return world.isUpstreamOf(target, position) /*&& position.equals(world.getTile(target).river.downstream_hex);
   }
 
   this.activation = function(world, actor, position) {

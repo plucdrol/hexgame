@@ -66,7 +66,6 @@ var start_hex = new Hex(0,0);
 for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) 
   if (earth.countLand(hex, 1,3) && earth.onLand(hex) && !earth.onRiver(hex)) 
     start_hex = hex;
-console.log(start_hex)
 
 let first_city =  new Unit('city');
 earth.units.set(start_hex, first_city);
@@ -74,7 +73,7 @@ earth.destroyResource(start_hex);
 first_city.pop = 20;
 
 //for some reason I need to invert the starting hex to move the view there
-let start_point = earth.getPoint( Hex.multiply(start_hex,-1) );
+let start_point = earth.getPoint( start_hex.multiply(-1) );
 view.setCenter( start_point );
 
 //clear some clouds

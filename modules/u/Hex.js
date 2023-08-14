@@ -53,7 +53,7 @@ Hex.prototype.getS = function() {
 export function listContainsHex(hex, list) {
     var i;
     for (i = 0; i < list.length; i++) {
-        if (Hex.equals(list[i],hex)) {
+        if (hex.equals(list[i])) {
             return true;
         }
     }
@@ -75,12 +75,9 @@ Hex.getKey = function(hex) {
   return Math.floor(2*C);
 }
 
-Hex.equals = function(hex_a,hex_b) {
-  return hex_a.getQ()==hex_b.getQ() 
-      && hex_a.getR()==hex_b.getR();
-}
 Hex.prototype.equals = function(hex_b) {
-  return Hex.equals(this,hex_b);
+    return this.getQ()==hex_b.getQ() 
+        && this.getR()==hex_b.getR();
 }
 
 Hex.add = function(hex_a, hex_b)  {
@@ -91,14 +88,14 @@ Hex.prototype.add = function(hex_b) {
   return Hex.add(this,hex_b);
 }
 
-Hex.substract = function(hex_a, hex_b)  {
-  return new Hex( hex_a.getQ()-hex_b.getQ(), 
-                  hex_a.getR()-hex_b.getR() );
+Hex.prototype.minus = function(hex_b)  {
+  return new Hex( this.getQ()-hex_b.getQ(), 
+                  this.getR()-hex_b.getR() );
 }
 
 //Multiply the hex with a scalar
-Hex.multiply = function(hex, k)  {
-  return new Hex( hex.getQ()*k, hex.getR()*k );
+Hex.prototype.multiply = function(k)  {
+  return new Hex( this.getQ()*k, this.getR()*k );
 }
 
 //returns distance from origin
@@ -110,7 +107,7 @@ Hex.distanceToCenter = function(hex) {
 
 //Returns the distance in hexes along a line
 Hex.distance = function(hex_a,hex_b) {
-  return Hex.distanceToCenter(Hex.substract(hex_a,hex_b));
+  return Hex.distanceToCenter(hex_a.minus(hex_b));
 }
 
 //gives the 6 hex neighbor direction in layout-independent hex coordinates
@@ -226,7 +223,7 @@ Hex.circle = function(center, N) {
 Hex.ring = function(center, radius) {
   var hex_array = [];
    
-  var hex = Hex.add(center, Hex.multiply(hex_direction[4], radius));
+  var hex = Hex.add(center, hex_direction[4].multiply(radius));
   for (let i=0; i<6; i++) {
     for (let j=0; j<radius; j++) {
       hex_array.push(hex);
@@ -297,7 +294,8 @@ export function Vertex(hex,direction_number) {
     let shrink = shrink_ratio || 1;
 
     //returns the fractional hex coordinates of the corner
-    var corner = Hex.multiply(hex_corner[this.direction_number], shrink);
+    let corner_hex = hex_corner[this.direction_number];
+    var corner = corner_hex.multiply(shrink);
     return Hex.add( this.hex, corner );
   };
 
@@ -332,12 +330,12 @@ export function Edge(hex,direction_number) {
 }
   Edge.prototype.equals = function(other_edge) {
     //same hex, same direction
-    if (Hex.equals(this.getInnerHex(),other_edge.getInnerHex()) 
+    if (this.getInnerHex().equals(other_edge.getInnerHex()) 
         && this.direction_number == other_edge.direction_number) {
       return true;
     }
     //opposite hex, opposite direction
-    if (Hex.equals(this.getInnerHex(),other_edge.getOuterHex()) 
+    if (this.getInnerHex().equals(other_edge.getOuterHex()) 
       && this.direction_number == (other_edge.direction_number+3)%6) {
       return true;
     }

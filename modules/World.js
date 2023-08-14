@@ -216,7 +216,7 @@ World.prototype.addRoadTile = function(hex1, hex2, road_level) {
   let none_equal = true;
   
   for (let hex of this.getTile(hex2).road_from.getHexes() )
-    if (Hex.equals(hex1, hex))
+    if (hex.equals(hex1))
       none_equal = false;
 
   if (none_equal) {
@@ -246,7 +246,7 @@ World.prototype.addRoadTile = function(hex1, hex2, road_level) {
 
   none_equal = true;
   for (let hex of this.getTile(hex1).road_to.getHexes() )
-    if (Hex.equals(hex2, hex))
+    if (hex.equals(hex2))
       none_equal = false;
 
   if (none_equal) {
@@ -395,22 +395,22 @@ World.prototype.areRoadConnected = function(hex1, hex2) {
 
   if (tile1.road_from)
     for (var from1 of tile1.road_from.getHexes())
-      if (Hex.equals(from1, hex2))
+      if (hex2.equals(from1))
         return true;
 
   if (tile1.road_to)
     for (var to1 of tile1.road_to.getHexes())
-      if (Hex.equals(to1, hex2))
+      if (hex2.equals(to1))
         return true;
 
   if (tile2.road_from)
     for (var from2 of tile2.road_from.getHexes())
-      if (Hex.equals(from2, hex1))
+      if (hex1.equals(from2))
         return true;
 
   if (tile2.road_to)
     for (var to2 of tile2.road_to.getHexes())
-      if (Hex.equals(to2, hex1))
+      if (hex1.equals(to2))
         return true;
 
   //else
@@ -432,8 +432,8 @@ World.prototype.nearRiver = function(position, max_distance) {
 
 World.prototype.alongRiver = function(position1, position2) {
   return (this.sameRiver(position1, position2) && 
-        (Hex.equals(this.getTile(position1).river.downstream_hex, position2) ||
-        Hex.equals(this.getTile(position2).river.downstream_hex, position1))
+        (position2.equals(this.getTile(position1).river.downstream_hex) ||
+        position1.equals(this.getTile(position2).river.downstream_hex))
         );
 }
 
@@ -465,7 +465,7 @@ World.prototype.isUpstreamOf = function(upstream_position, position) {
   if (upstream_tile.river.river_starts_here)
     return false;
 
-  if (Hex.equals(upstream_tile.river.downstream_hex, position) )
+  if (position.equals(upstream_tile.river.downstream_hex) )
     return true;
 
   return this.isUpstreamOf(upstream_tile.river.downstream_hex, position);
@@ -548,7 +548,7 @@ World.prototype.noCitiesInArea = function(position, radius, position_to_ignore) 
 
   for (let hex of area) {
     //skip position_to_ignore
-    if (position_to_ignore && Hex.equals(hex, position_to_ignore))
+    if (position_to_ignore && hex.equals(position_to_ignore))
       continue;
 
     //returns false if a city is here
@@ -568,7 +568,7 @@ World.prototype.noUnitTypeInArea = function(position, radius, unit_type, positio
   let area = Hex.circle(position, radius);
   for (let hex of area) {
     //skip position_to_ignore
-    if (position_to_ignore && Hex.equals(hex, position_to_ignore))
+    if (position_to_ignore && hex.equals(position_to_ignore))
       continue;
     
     //returns false if a city is here
