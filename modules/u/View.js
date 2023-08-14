@@ -56,6 +56,13 @@ export default function View (canvas_name, initial_zoom_level) {
       input.position.y = point.y-input.size.y/2;
   }
 
+  //moves the View so the two points match
+  this.matchPoints = function(screenpoint, worldpoint) {
+
+      input.position.x = worldpoint.x - (this.screenToWorld1D(screenpoint.x));
+      input.position.y = worldpoint.y - (this.screenToWorld1D(screenpoint.y));
+  }
+
   this.setInput = function(x,y,w,h) {
     input.position.x = x;
     input.position.y=y;
@@ -140,16 +147,23 @@ export default function View (canvas_name, initial_zoom_level) {
     return output.size.x/input.size.x;
   }
 
-  this.zoom = function(n) {
+  this.zoom = function(n, screenpoint) {
 
-      var center_point = this.getCenter();
+    var center_point = this.getCenter();
+    if (screenpoint) {
+      var worldpoint = this.screenToWorld(screenpoint)
+    }
 
-      //scales the view by n but keeps the screen centered 
-      //on the same location
-      input.size.x *= n;
-      input.size.y *= n;
+    //scales the view by n but keeps the screen centered 
+    //on the same location
+    input.size.x *= n;
+    input.size.y *= n;
 
+    if (worldpoint) {
+      this.matchPoints(screenpoint,worldpoint);
+    } else {
       this.setCenter(center_point);
+    }
   };
 
   this.getScale = function() { 

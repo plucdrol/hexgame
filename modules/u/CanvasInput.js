@@ -98,8 +98,10 @@ CanvasInput.prototype.mouseWheel = function(event) {
   var e = window.event || event; // old IE support
   var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
+  this.mouse_pos = this.getCursorPosition(event);
+
   //HERE a message should be sent to the rest of the engine
-  Events.emit('canvas_zoom', {amount: 1-delta*0.2} );
+  Events.emit('canvas_zoom', {amount: 1-delta*0.2, mouse_pos: this.mouse_pos} );
 
   return false;   
 }

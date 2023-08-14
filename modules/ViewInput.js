@@ -24,7 +24,7 @@ export default function ViewInput(view) {
 
   //Event listening
   Events.on('canvas_zoom', function(e){
-    zoomViewEvent(e.detail.amount);
+    zoomViewEvent(e.detail.amount, e.detail.mouse_pos);
   } );
   Events.on('canvas_drag', function(e){
     dragEvent(e.detail.mousepos,e.detail.mouseposprevious);
@@ -52,17 +52,18 @@ export default function ViewInput(view) {
 
 
   //React to either mouse scrolling or finger pinching
-  function zoomViewEvent(zoom) {
+  function zoomViewEvent(zoom, pivot) {
 
     zoom_amount *= zoom; //1.2 or 0.8
+    
 
     if (1-zoom_amount <= -0.2) { // 1 - 1.1 = -=0.1     1 - 1.3 = -0.3
-      view.zoom(zoom_amount);
+      view.zoom(zoom_amount, pivot);
       //console.log(zoom_amount);
       zoom_amount = 1;
     }
     if (1-zoom_amount <= 0.2) { // 1 - 0.7 = 0.3,  1-0.9 = 0.1
-      view.zoom(zoom_amount);
+      view.zoom(zoom_amount, pivot);
       //console.log(zoom_amount);
       zoom_amount = 1;
     }
@@ -88,13 +89,6 @@ export default function ViewInput(view) {
   }
 
 
-  function actuallyDrag() {
-
-    view.shiftPosition(world_drag);
-
-    world_drag = new Point(0,0);
-    screen_drag = new Point(0,0);
-  }
 
 
   //React to the window being resized
