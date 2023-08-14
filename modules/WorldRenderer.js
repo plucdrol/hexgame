@@ -60,10 +60,10 @@ WorldRenderer.p.drawBigHex = function(radius) {
 }
 
 
-WorldRenderer.p.drawTiles = function(hexarray) {
+WorldRenderer.p.drawTiles = function(hexes) {
 
-  if (!hexarray)
-    hexarray = this.world.getHexArray();  
+  if (!hexes)
+    hexes = this.world.getHexes();  
 
   let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
   let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
@@ -71,7 +71,7 @@ WorldRenderer.p.drawTiles = function(hexarray) {
   let blue = ['#216','#126','#114'];
 
   //draw the land colors
-  for (let hex of hexarray) {
+  for (let hex of hexes) {
     let tile = this.getTile(hex);
 
     //draw clouds if not explored
@@ -114,16 +114,16 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 
 
 
-WorldRenderer.p.drawRivers = function(hexarray) {
+WorldRenderer.p.drawRivers = function(hexes) {
 
-  if (!hexarray)
-    hexarray = this.world.getHexArray();  
+  if (!hexes)
+    hexes = this.world.getHexes();  
 
   let water_draw_level = 7;
   let max_draw_level = 150;
 
   //draw the rivers
-  for (let hex of hexarray) {
+  for (let hex of hexes) {
     let tile = this.getTile(hex);
     if (tile.hidden) continue;
     if (tile.river) {
@@ -152,10 +152,10 @@ WorldRenderer.p.drawRivers = function(hexarray) {
 
 
 
-WorldRenderer.p.drawRoads = function(hexarray) {
+WorldRenderer.p.drawRoads = function(hexes) {
 
-  if (!hexarray)
-    hexarray = this.world.getHexArray();  
+  if (!hexes)
+    hexes = this.world.getHexes();  
 
   let road_style = 'half only'
   let zoom = this.hex_renderer.renderer.view.getZoom();
@@ -164,7 +164,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
   let self=this;
 
   //draw the roads
-  for (let hex of hexarray) {
+  for (let hex of hexes) {
     let tile = this.getTile(hex);
     if (!tile) continue;
     if (tile.hidden) continue;
@@ -176,7 +176,7 @@ WorldRenderer.p.drawRoads = function(hexarray) {
       drawRoadHalf(tile.road_to)
 
     function drawRoadHalf(road_fromto) {
-      for (let from of road_fromto.getHexArray()) {
+      for (let from of road_fromto.getHexes()) {
         let road_size = road_fromto.getValue(from);
         if (road_size < 2) continue;
 
@@ -193,12 +193,12 @@ WorldRenderer.p.drawRoads = function(hexarray) {
 
 
 //draw the units and their resource-collection area
-WorldRenderer.p.drawUnits = function(hexarray) {
+WorldRenderer.p.drawUnits = function(hexes) {
 
-  if (!hexarray)
-    hexarray = this.world.getHexArray();   
+  if (!hexes)
+    hexes = this.world.getHexes();   
 
-  for (let hex of hexarray) {
+  for (let hex of hexes) {
     let tile = this.getTile(hex)
     if (tile.hidden) continue;
     //draw units
@@ -210,14 +210,14 @@ WorldRenderer.p.drawUnits = function(hexarray) {
 }
 
 //draw the resource icons
-WorldRenderer.p.drawResources = function(hexarray) {
+WorldRenderer.p.drawResources = function(hexes) {
 
 
-  if (!hexarray)
-    hexarray = this.world.getHexArray();  
+  if (!hexes)
+    hexes = this.world.getHexes();  
 
   //draw resources
-  for (let hex of hexarray) {
+  for (let hex of hexes) {
     if (this.getTile(hex).hidden) continue;
     var this_resource = this.world.getResource(hex);
     if (this_resource != undefined && this_resource.resources) {

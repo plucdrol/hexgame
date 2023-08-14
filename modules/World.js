@@ -121,8 +121,8 @@ World.prototype.getPoint = function(hex) {
 }
 
 
-World.prototype.getHexArray = function() {
-  return this.world_map.getHexArray();
+World.prototype.getHexes = function() {
+  return this.world_map.getHexes();
 }
 
 
@@ -170,7 +170,7 @@ World.prototype.getActor = function(hex) {
 
 World.prototype.getRandomHex = function() {
 
-  let hex_array = this.world_map.getHexArray();
+  let hex_array = this.world_map.getHexes();
   let random_hex = hex_array[Math.floor(Math.random()*hex_array.length)];
   return random_hex;
 }
@@ -222,7 +222,7 @@ World.prototype.addRoadTile = function(hex1, hex2, road_level) {
 
   let none_equal = true;
   
-  for (let hex of this.getTile(hex2).road_from.getHexArray() )
+  for (let hex of this.getTile(hex2).road_from.getHexes() )
     if (Hex.equals(hex1, hex))
       none_equal = false;
 
@@ -252,7 +252,7 @@ World.prototype.addRoadTile = function(hex1, hex2, road_level) {
   }
 
   none_equal = true;
-  for (let hex of this.getTile(hex1).road_to.getHexArray() )
+  for (let hex of this.getTile(hex1).road_to.getHexes() )
     if (Hex.equals(hex2, hex))
       none_equal = false;
 
@@ -277,9 +277,9 @@ World.prototype.addRoadTile = function(hex1, hex2, road_level) {
 World.prototype.countRoads = function(hex) {
   let count = 0;
   if (this.getTile(hex).road_from)
-    count += this.getTile(hex).road_from.getHexArray().length;
+    count += this.getTile(hex).road_from.size();
   if (this.getTile(hex).road_to)
-    count += this.getTile(hex).road_to.getHexArray().length;
+    count += this.getTile(hex).road_to.size();
   return count;
 
 }
@@ -401,22 +401,22 @@ World.prototype.areRoadConnected = function(hex1, hex2) {
   let tile2 = this.getTile(hex2);
 
   if (tile1.road_from)
-    for (var from1 of tile1.road_from.getHexArray())
+    for (var from1 of tile1.road_from.getHexes())
       if (Hex.equals(from1, hex2))
         return true;
 
   if (tile1.road_to)
-    for (var to1 of tile1.road_to.getHexArray())
+    for (var to1 of tile1.road_to.getHexes())
       if (Hex.equals(to1, hex2))
         return true;
 
   if (tile2.road_from)
-    for (var from2 of tile2.road_from.getHexArray())
+    for (var from2 of tile2.road_from.getHexes())
       if (Hex.equals(from2, hex1))
         return true;
 
   if (tile2.road_to)
-    for (var to2 of tile2.road_to.getHexArray())
+    for (var to2 of tile2.road_to.getHexes())
       if (Hex.equals(to2, hex1))
         return true;
 
@@ -653,7 +653,7 @@ World.prototype.addLocalResource = function(hex) {
 }
 
 World.prototype.generateResources = function() {
-  for (let hex of this.world_map.getHexArray() )  {
+  for (let hex of this.world_map.getHexes() )  {
     
     //only 20% of the land gets resources
     if (Math.random() < 0.8) 
@@ -666,7 +666,7 @@ World.prototype.generateResources = function() {
 World.prototype.generateSystemResources = function() {
 
 
-  for (let hex of this.world_map.getHexArray() )  {
+  for (let hex of this.world_map.getHexes() )  {
     let terrain = this.getTile(hex);
     
     //only 20% of the land gets these resources
@@ -704,7 +704,7 @@ World.prototype.generateSystemResources = function() {
 }
 
 World.prototype.makeCloudsEverywhere = function() {
-  for (let hex of this.world_map.getHexArray()) {
+  for (let hex of this.world_map.getHexes()) {
       this.world_map.get(hex).hidden = true;
   }
 }
@@ -712,7 +712,7 @@ World.prototype.makeCloudsEverywhere = function() {
 World.prototype.clearClouds = function(position, radius) {
 
   if (!position) {
-    for (var hex of this.world_map.getHexArray())
+    for (var hex of this.world_map.getHexes())
       this.world_map.get(hex).hidden = false;
     return;
   }

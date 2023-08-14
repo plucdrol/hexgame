@@ -316,7 +316,7 @@ export function actionExpandAll() {
     return !world.unitAtLocation(target) && world.noUnitTypeInArea (target,1, 'colony');
   }
   this.effect = function(world, actor, position, target) {
-    for (let hex of world.getHexArray()) {
+    for (let hex of world.getHexes()) {
       if (world.countRoads(hex) >= 3)
         if (world.onLand(hex) && !world.unitAtLocation(hex))
           world.addUnit(hex, 'village', actor);

@@ -104,9 +104,9 @@ export default function RiverGenerator (map) {
   }
 
   function getRandomNext() {
-    var array_length = next.getHexArray().length;
+    var array_length = next.size();
     var random_number = getRandomInt(array_length);
-    return next.getHexArray()[random_number];
+    return next.getHexes()[random_number];
   }
 
   function growRiver(hex) {
@@ -180,7 +180,7 @@ export default function RiverGenerator (map) {
   function addRivers() {
     //1. Finding coastal tiles
     //check all tiles in the world
-    for (let hex of map.getHexArray() ) {
+    for (let hex of map.getHexes() ) {
       //find their coastal neighbor
       let water_neighbor = oceanNeighbor(hex);
       //skip if water tile
@@ -197,7 +197,7 @@ export default function RiverGenerator (map) {
 
     //2. Growing rivers inland
     //as long as there are tiles in the bag
-    while (next.getHexArray().length > 0) {
+    while (next.size() > 0) {
 
       //pick a tile randomly from the bag
       let nextHex = getRandomNext();
@@ -207,11 +207,11 @@ export default function RiverGenerator (map) {
       growRiver(nextHex);
       //add its neighbors to the bag
       addNeighbors(nextHex);
-      //console.log(next.getHexArray().length);
+      //console.log(next.size());
     }
 
     //3. Simulate terrain erosion
-    for (let hex of map.getHexArray() ) {
+    for (let hex of map.getHexes() ) {
       var tile = map.get(hex);
       if (tile.river) {
         if (tile.river.water_level <= 2 && tile.elevation >= 3) {

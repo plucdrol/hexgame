@@ -74,7 +74,7 @@ export default function MapGenerator(map_type) {
     map = new RiverGenerator(map).getMap();
 
     //turn big rivers into coast tiles (fjords)
-    for (hex of map.getHexArray()) {
+    for (hex of map.getHexes()) {
       if (map.get(hex).river && map.get(hex).river.water_level > 150)
         setElevation(hex, 1);
     }
@@ -204,7 +204,7 @@ export default function MapGenerator(map_type) {
     
     var value;
 
-    for (let thishex of map.getHexArray()) {
+    for (let thishex of map.getHexes()) {
 
       value = Math.floor(getElevation(thishex));
 
@@ -223,7 +223,7 @@ export default function MapGenerator(map_type) {
       tiles_modified = 0;
 
       //run this code on each hex
-      for (let thishex of map.getHexArray()) {
+      for (let thishex of map.getHexes()) {
 
         //if the tile is of land_type
         if (getElevation(thishex) == land_type) {
@@ -261,7 +261,7 @@ export default function MapGenerator(map_type) {
     var value;
 
     //run this code on each hex
-    for (let thishex of map.getHexArray()) {
+    for (let thishex of map.getHexes()) {
     
       //analyse map
       var distance_to_center = Hex.distance(origin, thishex);
@@ -290,7 +290,7 @@ export default function MapGenerator(map_type) {
     
     let origin = new Hex(0,0);
 
-    for (let thishex of map.getHexArray()) {  
+    for (let thishex of map.getHexes()) {  
       //ice rim around the edge of the map
       if (Hex.distance(origin, thishex) > radius-5 && Math.random() < 0.5) {
         setElevation(thishex, 22);
@@ -339,7 +339,7 @@ export default function MapGenerator(map_type) {
     var neighbors = [];
 
     //for each hex
-    for (let thishex of map.getHexArray()) {
+    for (let thishex of map.getHexes()) {
       
       //if the hex is deep water
       if (getElevation(thishex) == 0) {

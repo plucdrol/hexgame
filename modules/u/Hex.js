@@ -624,7 +624,7 @@ HexMap.prototype.getNeighbors = function(hex) {
   return neighbors_on_map;
 }
 //returns a simple array of each hex contained in this map
-HexMap.prototype.getHexArray = function() {
+HexMap.prototype.getHexes = function() {
   return this.hexes.values();
 }
 //HexMap getValues returns an array of each defined value
