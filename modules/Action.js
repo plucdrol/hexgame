@@ -218,8 +218,9 @@ export default function Action() {
   this.triggerMultiAction = function( world, actor, position) {
 
     this.updateActionTargets(world, actor, position);
-    if (this.range.length > 0)
+    if (this.range.length > 0){
       this.doAction(world, actor, position );
+    }
   }
 
   this.updateActionTargets = function(world, actor, position) {

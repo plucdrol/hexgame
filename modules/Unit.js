@@ -254,12 +254,11 @@ Unit.prototype.setType = function(unit_type) {
       this.setResource('fish',1);
       break;
     case 'food':
-
-      this.setGraphic('#555',1);
+      this.setGraphic('#888',1);
       this.setResource('food',1);
       break;
     case 'wood':
-      this.setGraphic('#555',1);
+      this.setGraphic('#aaa',1);
       this.setResource('food',1);
 
       this.setResource('forest',1);

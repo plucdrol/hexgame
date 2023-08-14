@@ -123,10 +123,13 @@ export function actionGrowRoots(max_distance) {
   this.cloud_clear = 2;
 
   this.can_water = true;
-  this.can_ocean = false;
+  this.can_ocean = true;
   this.can_river = true;
   this.stop_on_rivers = true;
-  this.no_climbing_ashore = true;
+  this.stop_on_water = false;
+  this.stop_on_coast = true;
+
+  this.no_climbing_ashore = false;
   this.coastal_start = true;
 
   this.also_build_road = true;
@@ -151,9 +154,6 @@ export function actionGrowRoots(max_distance) {
   this.targetFilterFunction = function(world, actor, target) {
     if (world.unitAtLocation(target)) 
       return false;
-
-    //if (world.countRoads(target) >= 1)
-      //return false;
 
     if (!world.countResources(Hex.circle(target, 0), 'food', 1))
       return false;

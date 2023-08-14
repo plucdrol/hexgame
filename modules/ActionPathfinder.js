@@ -61,17 +61,9 @@ export default function ActionPathfinder(action) {
     //stepping from land to water, without a river      
     if (world.onLand(hex) && world.onWater(next_hex) && !world.leavingRiver(hex, next_hex) && !world.enteringRiver(hex,next_hex)) { 
 
+      //stop if you must stop_on_water
       if (this.action.stop_on_water)
         return true;
-
-      let is_coastal_start = false;
-      if (this.action.coastal_start)
-        for (let origin of origins) {
-          if (hex.equals(origin))
-            is_coastal_start = true;
-        }
-        if (is_coastal_start)
-          return true;
     }
 
     
