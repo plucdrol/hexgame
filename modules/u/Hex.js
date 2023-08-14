@@ -826,7 +826,7 @@ export function HexLayout (orientation_string, size, origin) {
     var ori = this.orientation;
     var x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
     var y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
-    return new Point(x + this.origin.x, y + this.origin.y );
+    return new Point(this.origin.x + x, this.origin.y + y);
   }
 
   HexLayout.prototype.pointToHex = function(point) {

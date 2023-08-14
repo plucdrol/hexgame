@@ -74,8 +74,10 @@ Renderer.prototype.drawLine=function(point1,point2,style) {
   var p2 = this.worldToScreen(point2);
   var newwidth = this.worldToScreen1D(style.line_width);
   var color = style.line_color;
+  if (style.line_caps)
+    var linecaps = style.line_caps
 
-  this.canvas_draw.drawLine(p1, p2, newwidth, color);
+  this.canvas_draw.drawLine(p1, p2, newwidth, color, linecaps);
 };
 
 //Transform coordinates and draw a polyon using CanvasDraw

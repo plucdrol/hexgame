@@ -112,7 +112,7 @@ function CanvasDraw (canvas) {
   };
 
   //Draw a line on the canvas from p1 to p2 with optional width and color
-  CanvasDraw.prototype.drawLine = function(p1,p2,width,color) {
+  CanvasDraw.prototype.drawLine = function(p1,p2,width,color,linecaps) {
 
     //express this function as a polygon
     var line = this.canvas.getContext('2d');
@@ -126,10 +126,15 @@ function CanvasDraw (canvas) {
     if (typeof width === 'undefined') {
       let width = 0;
     }
+
+    //default line caps
+    if (typeof linecaps === 'undefined') {
+      let linecaps = 'round';
+    }
     
     //line style
     line.lineWidth = width;
-    line.lineCap = "round";
+    line.lineCap = linecaps;
     line.strokeStyle = color;  
     //line.lineCap = "round";
     line.alpha = false;   
