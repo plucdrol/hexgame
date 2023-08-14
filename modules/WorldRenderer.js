@@ -97,6 +97,7 @@ WorldRenderer.p.drawTiles = function(hexarray) {
   let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
   let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
   let brown = ['#421','#412','#431','#421','#412','#431','#421','#412','#431'];
+  let blue = ['#216','#126','#114'];
 
   //draw the land colors
   for (let hex of hexarray) {
@@ -117,7 +118,9 @@ WorldRenderer.p.drawTiles = function(hexarray) {
           else
             this.drawTile(hex, {elevation: 32}, brown[this.getTile(hex).elevation%7] );
           
-
+          //water that is highlighted brown
+      } else if (this.getTile(hex).highlighted['brown']) {
+        this.drawTile(hex, {elevation: 32}, blue[this.getTile(hex).elevation%7] );
       }
         
       else
