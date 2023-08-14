@@ -18,8 +18,6 @@ import ViewInput from './modules/ViewInput.js';
 
 //---------------HTML5 Canvas elements-----------
 
-var earth_canvas = document.getElementById('earth_canvas');
-var thing_canvas = document.getElementById('thing_canvas');
 var canvas       = document.getElementById("canvas");
 
 canvas.width = window.innerWidth;
@@ -34,10 +32,10 @@ var canv_input = new CanvasInput('canvas');
 //Contains a world map, units, and resources
 
 let earth_radius = 35;
-var earth = new World( earth_radius,'doesntmatter' );// <-- model
+var earth = new World( earth_radius,'dust', new Point(35*10*80, 0) );// <-- model
 
-let mars_radius = 20;
-var mars = new World( mars_radius,'mars', new Point(-35*10*80, -35*10*80) )// <-- model
+let mars_radius = 60;
+var mars = new World( mars_radius,'earth', new Point(-35*10*80, -35*10*80) )// <-- model
 
 let system_radius = 35;
 var system = new World(system_radius, 'system');// <-- model
@@ -54,6 +52,7 @@ var earth_input = new WorldInput(earth, view);
 var view_input = new ViewInput(view); 
 
 //Has functions for drawing to the screen
+//renders the worlds in the order they are listed
 var game_renderer = new GameRenderer([system, earth, mars], earth_input, view);
 
 
@@ -73,11 +72,11 @@ earth.destroyResource(start_hex);
 first_city.pop = 20;
 
 //for some reason I need to invert the starting hex to move the view there
-let start_point = earth.getPoint( start_hex.multiply(-1) );
+let start_point = earth.getPoint( start_hex );
 view.setCenter( start_point );
 
 //clear some clouds
-earth.clearClouds(start_hex, 100);
+earth.clearClouds(start_hex, 1000);
 mars.clearClouds(new Hex(0,0), 100)
 
 

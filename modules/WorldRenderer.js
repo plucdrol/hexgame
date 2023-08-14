@@ -222,7 +222,7 @@ WorldRenderer.p.drawHex = function(hex, elevation, color) {
 
   //analyze tile
   var height = Math.floor(elevation);
-  style.fill_color = color_scale(height);
+  style.fill_color = color_scale(height, this.world.type);
   if (color)
     style.fill_color = color;
 
@@ -407,9 +407,17 @@ var getWindArrowCharacter = function(direction) {
 
 //colors of different tiles depending on height
 
-var color_scale = function (i) {
+var color_scale = function (i, colortype) {
 
-  var oldgreenscale = ['#005','#00D','#AA3', //ocean coast sand 0 1 2
+  if (!colortype)
+    var colortype = "earth";
+
+
+
+  switch (colortype) {
+
+  case 'earth': var colors = 
+                    ['#005','#00D','#AA3', //ocean coast sand 0 1 2
                     '#080','#062', //grass 3 4
                     '#052','#042','#032','#020', //forest 5 6 7 8
                     '#310','#310','#320', //hills 9 10 11 12 13
@@ -418,15 +426,11 @@ var color_scale = function (i) {
                     '#888','#888','#888', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
+                      return colors[i];
 
 
-  var greenscale = [224,190,61, //ocean coast sand 0 1 2
-                    90,100, //grass 3 4
-                    100,105,110,120, //forest 5 6 7 8
-                    34,35,36,37,38];  //hills 9 10 11 12 13
-
-
-  var newgreenscale = ['#115','#22D','#994', //ocean coast sand 0 1 2
+  case 'newgreenscale' : var colors = 
+                    ['#115','#22D','#994', //ocean coast sand 0 1 2
                     '#282','#163', //grass 3 4
                     '#363','#242','#232','#231', //forest 5 6 7 8
                     '#321','#312','#331', //hills 9 10 11 12 13
@@ -435,10 +439,12 @@ var color_scale = function (i) {
                     '#888','#888','#888', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
+                      return colors[i];
 
 
 
-  var even_greenscale = ['#222255','#2222DD','#999944', //ocean coast sand 0 1 2
+  case 'even_greenscale': var colors = 
+                    ['#222255','#2222DD','#999944', //ocean coast sand 0 1 2
                     '#228822','#226633', //grass 3 4
                     '#336644','#446633','#336622','#225533', //forest 5 6 7 8
                     '#664433','#663344','#666633', //hills 9 10 11 12 13
@@ -447,9 +453,10 @@ var color_scale = function (i) {
                     '#888888','#888888','#888888', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
+                      return colors[i];
 
 
-  var rockscale = ['#115','#22D','#443', //ocean coast sand 0 1 2
+  case 'rock' : var colors = ['#115','#22D','#443', //ocean coast sand 0 1 2
                     '#333','#444','#413937', //grass 3 4 5
                     '#333','#444','#414241', //forest  6 7 8
                     '#474047','#404740','#404747', //hills 9 10 11 12 13
@@ -458,18 +465,22 @@ var color_scale = function (i) {
                     '#CCC','#DDD','#EEE', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
+                    return colors[i];
 
-  var dustscale = ['#222','#222','#BBB', //ocean coast sand 0 1 2
+  default:
+  case 'mars' : var colors = ['#222','#222','#BBB', //DUST SCALE
                     '#B1B6B4', '#B1B5B2','#B5B2B7', //grass 3 4 5
-                    '#B1B5B6', '#B2B6B','#BB7B5', //forest  6 7 8
-                    '#B1BB3', '#B4B1B3','#B5B1B4', //hills 9 10 11 12 13
-                    '#BB1B2', '#B4B1B4',
+                    '#B1B5B6', '#B2B6B','#B6B7B5', //forest  6 7 8
+                    '#B1B2B3', '#B4B1B3','#B5B1B4', //hills 9 10 11 12 13
+                    '#B6B1B2', '#B4B1B4',
                     '#B4B4B8', '#B4B1B8','#B1B6B7', //mountains 14 15 16
                     '#CCC','#DDD','#EEE', //mountains 17 18 19
                     '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
                     '#CCC']; //clouds
+                      return colors[i];
 
- return dustscale[i];
+  }
+
 
 }
 
