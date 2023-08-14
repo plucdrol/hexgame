@@ -48,7 +48,7 @@ export default function WorldInput(world, view) {
 
   //React to keys affecting units in this world
   function logKey(event) {
-    console.log(event.keyCode);
+    //console.log(event.keyCode);
 
     if (event.keyCode === 187 || event.keyCode === 27) { // escape
         unit_input.selectNothing();

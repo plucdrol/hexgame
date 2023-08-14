@@ -39,7 +39,7 @@ export default function ViewInput(view) {
 
   //this one goes into WorldInput(world)
   function logKey(event) {
-    console.log(event.keyCode);
+    //console.log(event.keyCode);
     if (event.keyCode === 189 || event.keyCode === 173) { // minus
         zoomViewEvent(1.2);
     }
