@@ -52,7 +52,7 @@ var earth_input = new WorldInput(earth, view);
 var view_input = new ViewInput(view); 
 
 //Has functions for drawing to the screen
-var game_renderer = new GameRenderer(earth, mars, system, earth_input, view);
+var game_renderer = new GameRenderer([system, earth, mars], earth_input, view);
 
 
 

@@ -22,9 +22,6 @@ export default function ButtonMenu(menu_id, unit_input, world) {
     let free_res = world.getPopulation();
     let total_res = world.resources_collected;
 
-    writeMessage("Free: "+free_res, 'free-ants');
-    writeMessage("Total: "+total_res, 'total-ants');
-
     //updateBonusButtons(unit_input.world.bonus_list, unit_input.world);
     
 

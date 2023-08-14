@@ -7,34 +7,29 @@ import Events from './u/Events.js';
 
 
 
-export default function GameRenderer(earth, mars, system, world_input, view) {
+export default function GameRenderer(worlds, world_input, view) {
 
   let renderer = new Renderer('canvas', view);
+  let layers = [];
 
-  let space_layer = new LayerRenderer('space_canvas', system);
-  let earth_layer = new LayerRenderer('earth_canvas', earth);
-  let thing_layer = new LayerRenderer('thing_canvas', earth);
-  let mars_layer  = new LayerRenderer('mars_canvas', mars);
+  for (let world of worlds) {
+    layers.push(new LayerRenderer(world))
+  }
 
-  let hud_renderer = new HUDRenderer(earth, world_input, renderer);
+  let hud_renderer = new HUDRenderer(worlds[1], world_input, renderer);
   //let space_hud_renderer = new HUDRenderer(system, world_input, renderer);
 
-  function clear() {
-    space_layer.clear();
-    earth_layer.clear();
-    thing_layer.clear();
 
-    mars_layer.clear();
+  function clear() {
+    for (let layer of layers)
+      layer.clear();
   }
 
   function updateLayers() {
-
-    //draw to 3 temporary canvases
-    space_layer.drawThings();
-    earth_layer.drawEarth();
-    thing_layer.drawThings();
-
-    mars_layer.drawEarth();
+    for (let layer of layers) {
+      layer.drawGround();
+      layer.drawThings();
+    }
   }
 
   function draw() {
@@ -43,10 +38,10 @@ export default function GameRenderer(earth, mars, system, world_input, view) {
     renderer.clear();
 
     //blit the temporary canvases to the final canvas
-    space_layer.blit('canvas',view);
-    earth_layer.blit('canvas',view);
-    thing_layer.blit('canvas',view);
-    mars_layer.blit('canvas',view);
+    for (let layer of layers) {
+      layer.blit('canvas', view)
+    }
+
 
     //draw the HUD on top
     hud_renderer.drawHUD();
@@ -109,16 +104,20 @@ export default function GameRenderer(earth, mars, system, world_input, view) {
 
 
 
+var layer_ids = 1;
 
+function LayerRenderer(world) {
 
-function LayerRenderer(canvas_name, world) {
+  let canvas_name = 'canvas_'+layer_ids;
+  layer_ids++;
+
+  this.temp_canvas = this.createCanvas(canvas_name);
 
   let tilesize = world.layout.size.x;
   let worldwidth = 4*tilesize*world.radius;
   let canvaswidth = 4*35*world.radius;
 
   //a canvas is created large enough to draw the whole world
-  this.temp_canvas = document.getElementById(canvas_name);
   this.temp_canvas.width = canvaswidth;
   this.temp_canvas.height = canvaswidth;
 
@@ -138,6 +137,13 @@ function LayerRenderer(canvas_name, world) {
   this.world_renderer = new WorldRenderer(world, renderer); 
 }
 
+LayerRenderer.prototype.createCanvas = function(canvas_name) {
+  let canvas = document.createElement('canvas');
+  canvas.id = canvas_name;
+  canvas.style.display = 'none';
+  document.body.appendChild(canvas)
+  return canvas;
+}
 
 LayerRenderer.prototype.RendererFromTempCanvasToScreen = function(canvas_name, view) {
   let blitview = new View(canvas_name);
@@ -161,7 +167,7 @@ LayerRenderer.prototype.blit = function(canvas_name, view) {
 }
 
 //draw onto the temp canvas
-LayerRenderer.prototype.drawEarth = function() {
+LayerRenderer.prototype.drawGround = function() {
   this.world_renderer.drawTiles();
   this.world_renderer.drawRivers();
 }
