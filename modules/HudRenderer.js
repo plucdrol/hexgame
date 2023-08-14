@@ -194,7 +194,7 @@ export default function HUDRenderer(world, world_input, renderer) {
       //hex_renderer.drawHex(hex_selected, select_style);
       hex_renderer.drawCenterLine(
             hex_selected,
-            Hex.add(hex_selected,new Hex(20,-40)),
+            hex_selected.add(new Hex(20,-40)),
             16*unit_input.getActorSelected().size, 
             "rgba(0,200,200,"+(0.3+0.7*ocillate(1000))+")" );
   }

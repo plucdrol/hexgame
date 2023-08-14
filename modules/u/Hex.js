@@ -65,9 +65,9 @@ Hex.prototype.toString = function() {
   return "Hex ("+this.getQ()+","+this.getR()+")";
 }
 
-Hex.getKey = function(hex) {
-  var q = hex.getQ();
-  var r = hex.getR();
+Hex.prototype.getKey = function() {
+  var q = this.getQ();
+  var r = this.getR();
 
   var A = (q >= 0 ? 2 * q : -2 * q - 1);
   var B = (r >= 0 ? 2 * r : -2 * r - 1);
@@ -80,13 +80,11 @@ Hex.prototype.equals = function(hex_b) {
         && this.getR()==hex_b.getR();
 }
 
-Hex.add = function(hex_a, hex_b)  {
-  return new Hex( hex_a.getQ()+hex_b.getQ(), 
-                  hex_a.getR()+hex_b.getR() );
-}
 Hex.prototype.add = function(hex_b) {
-  return Hex.add(this,hex_b);
+  return new Hex( this.getQ()+hex_b.getQ(), 
+                  this.getR()+hex_b.getR() );
 }
+Hex.prototype.plus = Hex.prototype.add;
 
 Hex.prototype.minus = function(hex_b)  {
   return new Hex( this.getQ()-hex_b.getQ(), 
@@ -142,7 +140,7 @@ Hex.corners = function (hex) {
   var corners = [];
   //individually add each corner to the hex position
   for (var i=0;i<6;i++) {
-    corners[i] = Hex.add(hex,hex_corner[i]);
+    corners[i] = hex.add(hex_corner[i]);
   }
   return corners;
 }              
@@ -150,7 +148,7 @@ Hex.corners = function (hex) {
 Hex.prototype.getNeighbor = function(direction_number) {
   //takes a hex and a direction (from 0 to 6), and 
   //returns a neighboring hex
-  return Hex.add(this, hex_direction[direction_number%6] );
+  return this.add(hex_direction[direction_number%6] );
 }
 
 //takes a hex and returns all 6 neighbors
@@ -223,7 +221,7 @@ Hex.circle = function(center, N) {
 Hex.ring = function(center, radius) {
   var hex_array = [];
    
-  var hex = Hex.add(center, hex_direction[4].multiply(radius));
+  var hex = center.add(hex_direction[4].multiply(radius));
   for (let i=0; i<6; i++) {
     for (let j=0; j<radius; j++) {
       hex_array.push(hex);
@@ -296,7 +294,7 @@ export function Vertex(hex,direction_number) {
     //returns the fractional hex coordinates of the corner
     let corner_hex = hex_corner[this.direction_number];
     var corner = corner_hex.multiply(shrink);
-    return Hex.add( this.hex, corner );
+    return corner.add( this.hex);
   };
 
 
@@ -563,14 +561,14 @@ export function HexMap() {
 }
 
 HexMap.prototype.set = function(hex,value) {
-  let key = Hex.getKey(hex);
+  let key = hex.getKey();
   this.hexes.set(key,hex);
   this.values.set(key,value);
 }
 
 HexMap.prototype.delete = function(hex) {
   if (this.containsHex(hex)) {
-    let key = Hex.getKey(hex);
+    let key = hex.getKey();
     this.hexes.delete(key);
     this.values.delete(key);
   }
@@ -581,7 +579,7 @@ HexMap.prototype.removeAll = function() {
 }
 
 HexMap.prototype.getValue = function(hex) {
-  var key = Hex.getKey(hex);
+  var key = hex.getKey();
 
   if (this.containsHex(hex)) {
     return this.values.get(key);
@@ -637,7 +635,7 @@ HexMap.prototype.getValues = function() {
 //HexMap contains: finds if the hex is part of the map 
 //by checking if its value is defined
 HexMap.prototype.containsHex = function(hex) {
-  let key = Hex.getKey(hex)
+  let key = hex.getKey()
   return this.values.has(key)
 }
 
