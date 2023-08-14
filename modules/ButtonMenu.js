@@ -5,16 +5,16 @@ export default function ButtonMenu(menu_id, unit_input, world) {
 
   this.getActionSelected = getActionSelected
   this.unselectActions = unselectActions
-  this.update_function = update_function
+  this.updateFunction = updateFunction
 
 
-  Events.on('hex_clicked', update_function );
+  Events.on('hex_clicked', updateFunction );
 
   /////////////////////////////////////////////////////
   //           Function which updates all the menus
   /////////////////////////////////////////////////////
 
-  function update_function() { 
+  function updateFunction() { 
 
     let actor = unit_input.getActorSelected();
     let position = unit_input.getHexSelected();
@@ -135,12 +135,12 @@ export default function ButtonMenu(menu_id, unit_input, world) {
 
   function addInstantButtonClickDetection(menu_name, bonus_list) {
 
-    let self = this;
+
     //add the click-detection code
     for (let button of document.getElementById(menu_name).getElementsByClassName('button-do')) {
 
       button.addEventListener('click', function(){ bonus_list.enableBonus(button.id); 
-                                                   self.update_function(); });
+                                                   updateFunction(); });
     }
   }
 

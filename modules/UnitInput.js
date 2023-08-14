@@ -166,7 +166,7 @@ export default function UnitInput(world) {
       } 
     }
 
-    button_menu.update_function(world, this);
+    button_menu.updateFunction(world, this);
 
   };
 
@@ -202,7 +202,7 @@ export default function UnitInput(world) {
   };
 
   function updateButtons() {
-    button_menu.update_function(world, this);
+    button_menu.updateFunction(world, this);
   }
 
 }
