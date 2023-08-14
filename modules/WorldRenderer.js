@@ -35,41 +35,12 @@ WorldRenderer.p.clear = function() {
 }
 
 WorldRenderer.p.drawWorld = function() {
-
-  var hexarray = this.world.getHexArray();
   
-  this.drawTiles(hexarray);
-  this.drawRivers(hexarray);
-  this.drawRoads(hexarray);
-  this.drawUnits(hexarray);
-  this.drawResources(hexarray);
-}
-
-//rewrite this function so it returns the next portion of hexarray to draw instead of drawing directly
-WorldRenderer.p.drawWorldByPortions = function() {
-
-  this.render_portions = Math.floor(world.radius/3);
-  this.render_start = 0;
-
-  var self = this; 
-  this.stop_rendering = setInterval( self.drawWorldPortion.bind(self), 200 );
-}   
-
-WorldRenderer.p.drawWorldPortion = function() {
-
-  var hexarray = this.world.getHexArray();
-
-  let sections = Math.floor(hexarray.length/this.render_portions);
-  hexarray = hexarray.slice(this.render_start*sections, (this.render_start+1)*sections );
-  this.render_start++;
-
-  if (this.render_start >= this.render_portions) {
-    //this.render_start = 0;
-    clearInterval(this.stop_rendering);
-  }
-
-  this.renderLayer(hexarray);
-
+  this.drawTiles();
+  this.drawRivers();
+  this.drawRoads();
+  this.drawUnits();
+  this.drawResources();
 }
 
 
@@ -101,41 +72,42 @@ WorldRenderer.p.drawTiles = function(hexarray) {
 
   //draw the land colors
   for (let hex of hexarray) {
+    let tile = this.getTile(hex);
 
     //draw clouds if not explored
-    if (this.getTile(hex).hidden) {
+    if (tile.hidden) {
       this.drawTile(hex, {elevation: 32});
       continue;
     }
 
     //draw tiles lighter if highlighted
-    if (this.getTile(hex).highlighted) {
-      //this.drawTile(hex, this.getTile(hex));
-      if (this.getTile(hex).elevation >= 2) {
-        if (this.getTile(hex).highlighted['brown'])
-          if (this.getTile(hex).highlighted['green'])
-            this.drawTile(hex, {elevation: 32}, green[this.getTile(hex).elevation%7] );
+    if (tile.highlighted) {
+      //this.drawTile(hex, tile);
+      if (tile.elevation >= 2) {
+        if (tile.highlighted['brown'])
+          if (tile.highlighted['green'])
+            this.drawTile(hex, {elevation: 32}, green[tile.elevation%7] );
           else
-            this.drawTile(hex, {elevation: 32}, brown[this.getTile(hex).elevation%7] );
+            this.drawTile(hex, {elevation: 32}, brown[tile.elevation%7] );
           
           //water that is highlighted brown
-      } else if (this.getTile(hex).highlighted['brown']) {
-        this.drawTile(hex, {elevation: 32}, blue[this.getTile(hex).elevation%7] );
+      } else if (tile.highlighted['brown']) {
+        this.drawTile(hex, {elevation: 32}, blue[tile.elevation%7] );
       }
         
       else
        // this.drawTile(hex, {elevation: 32}, 'aqua' );
-      this.drawTile(hex, this.getTile(hex));
-      //this.drawTile(hex, {elevation: 32}, lighter( color_scale(this.getTile(hex).elevation) ) );
+      this.drawTile(hex, tile);
+      //this.drawTile(hex, {elevation: 32}, lighter( color_scale(tile.elevation) ) );
       continue;
     }
 
     //actual tiles, darker when highlights are on
-    if (this.getTile(hex).elevation >= 0) {
+    if (tile.elevation >= 0) {
       //if (this.world.highlights_on)
-        //this.drawTile(hex, {elevation: 32}, darker( color_scale(this.getTile(hex).elevation) ) );
+        //this.drawTile(hex, {elevation: 32}, darker( color_scale(tile.elevation) ) );
       //else
-        this.drawTile(hex, this.getTile(hex));
+        this.drawTile(hex, tile);
     }
   }
 }
@@ -152,17 +124,18 @@ WorldRenderer.p.drawRivers = function(hexarray) {
 
   //draw the rivers
   for (let hex of hexarray) {
-    if (this.getTile(hex).hidden) continue;
-    if (this.getTile(hex).river) {
+    let tile = this.getTile(hex);
+    if (tile.hidden) continue;
+    if (tile.river) {
 
       //downstream river first
-      let downstream_hex = this.getTile(hex).river.downstream_hex;
-      let water_level = this.getTile(hex).river.water_level;
+      let downstream_hex = tile.river.downstream_hex;
+      let water_level = tile.river.water_level;
       if (downstream_hex instanceof Hex && water_level >= water_draw_level)
         this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(Math.min(water_level,max_draw_level)*9)), '#22D', 'half only' );
 
       //upstream rivers next
-      let upstream_hexes = this.getTile(hex).river.upstream_hexes;
+      let upstream_hexes = tile.river.upstream_hexes;
       if (upstream_hexes instanceof Array) {
         for (let upstream_hex of upstream_hexes) {
           if (!this.getTile(upstream_hex).river)
@@ -226,8 +199,8 @@ WorldRenderer.p.drawUnits = function(hexarray) {
     hexarray = this.world.getHexArray();   
 
   for (let hex of hexarray) {
-
-    if (this.getTile(hex).hidden) continue;
+    let tile = this.getTile(hex)
+    if (tile.hidden) continue;
     //draw units
     var this_unit = this.world.getUnit(hex);
     if (this_unit != undefined) {
