@@ -34,9 +34,11 @@ var canv_input = new CanvasInput('canvas');
 //Contains a world map, units, and resources
 
 let earth_radius = 35;
-var earth = new World( earth_radius,'earth' );// <-- model
+var earth = new World( earth_radius,'doesntmatter' );// <-- model
+
 let mars_radius = 20;
-var mars = new World( mars_radius,'earth', new Point(-35*10*80, -35*10*80) )// <-- model
+var mars = new World( mars_radius,'mars', new Point(-35*10*80, -35*10*80) )// <-- model
+
 let system_radius = 35;
 var system = new World(system_radius, 'system');// <-- model
  
@@ -64,15 +66,16 @@ var start_hex = new Hex(0,0);
 for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) 
   if (earth.countLand(hex, 1,3) && earth.onLand(hex) && !earth.onRiver(hex)) 
     start_hex = hex;
-
+console.log(start_hex)
 
 let first_city =  new Unit('city');
 earth.units.set(start_hex, first_city);
 earth.destroyResource(start_hex);
 first_city.pop = 20;
 
-let start_point = earth.getPoint( start_hex )
-view.setCenter(start_point);
+//for some reason I need to invert the starting hex to move the view there
+let start_point = earth.getPoint( Hex.multiply(start_hex,-1) );
+view.setCenter( start_point );
 
 //clear some clouds
 earth.clearClouds(start_hex, 100);

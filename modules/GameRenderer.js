@@ -79,7 +79,7 @@ export default function GameRenderer(worlds, world_input, view) {
 
   this.startDrawing = function() {
     loop(draw, 30);
-    loop(updateLayers, 300);
+    loop(updateLayers, 300); //this makes a bit of lag every 300. This process should be done in little bits instead
   }
 
 
@@ -147,9 +147,6 @@ LayerRenderer.prototype.createCanvas = function(canvas_name) {
 
 LayerRenderer.prototype.RendererFromTempCanvasToScreen = function(canvas_name, view) {
   let blitview = new View(canvas_name);
-  
-  //view.getPosition returns a position in the world, say 0,0
-  //full_view.worldToScreen( view.getPosition) 
 
   blitview.setInput(
     this.full_view.worldToScreen( view.getPosition() ).x,
