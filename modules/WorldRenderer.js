@@ -35,11 +35,14 @@ WorldRenderer.p.clear = function() {
 }
 
 WorldRenderer.p.drawWorld = function() {
-  this.drawTiles();
-  this.drawRivers();
-  this.drawRoads();
-  this.drawUnits();
-  this.drawResources();
+
+  var hexarray = this.world.getHexArray();
+  
+  this.drawTiles(hexarray);
+  this.drawRivers(hexarray);
+  this.drawRoads(hexarray);
+  this.drawUnits(hexarray);
+  this.drawResources(hexarray);
 }
 
 //rewrite this function so it returns the next portion of hexarray to draw instead of drawing directly
@@ -66,8 +69,6 @@ WorldRenderer.p.drawWorldPortion = function() {
   }
 
   this.renderLayer(hexarray);
-
-
 
 }
 
