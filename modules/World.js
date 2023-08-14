@@ -64,7 +64,6 @@ export default function World(radius, type, origin) {
     //create resources map
     this.resources = new HexMap();
     this.generateSystemResources();
-    console.log(this.resources)
     this.clearClouds();
 
   } else {

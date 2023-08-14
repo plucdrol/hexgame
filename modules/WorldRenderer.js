@@ -24,6 +24,8 @@ export default function WorldRenderer (world, renderer) {
   this.hex_renderer = new HexRenderer(renderer, world.getLayout() );
   this.world = world;
 
+  this.render_portion = 1;
+
   var self = this; 
 
 }
@@ -60,170 +62,99 @@ WorldRenderer.p.drawBigHex = function(radius) {
 }
 
 
-WorldRenderer.p.drawTiles = function(hexes) {
 
-  if (!hexes)
-    hexes = this.world.getHexes();  
 
-  let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
-  let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
-  let brown = ['#421','#412','#431','#421','#412','#431','#421','#412','#431'];
-  let blue = ['#216','#126','#114'];
 
-  //draw the land colors
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+WorldRenderer.p.drawTiles = function() {
+
+  let hexes = this.world.getHexes();  
+
   for (let hex of hexes) {
     let tile = this.getTile(hex);
 
-    //draw clouds if not explored
-    if (tile.hidden) {
-      this.drawTile(hex, {elevation: 32});
-      continue;
-    }
-
-    //draw tiles lighter if highlighted
-    if (tile.highlighted) {
-      //this.drawTile(hex, tile);
-      if (tile.elevation >= 2) {
-        if (tile.highlighted['brown'])
-          if (tile.highlighted['green'])
-            this.drawTile(hex, {elevation: 32}, green[tile.elevation%7] );
-          else
-            this.drawTile(hex, {elevation: 32}, brown[tile.elevation%7] );
-          
-          //water that is highlighted brown
-      } else if (tile.highlighted['brown']) {
-        this.drawTile(hex, {elevation: 32}, blue[tile.elevation%7] );
-      }
-        
-      else
-       // this.drawTile(hex, {elevation: 32}, 'aqua' );
-      this.drawTile(hex, tile);
-      //this.drawTile(hex, {elevation: 32}, lighter( color_scale(tile.elevation) ) );
-      continue;
-    }
-
-    //actual tiles, darker when highlights are on
-    if (tile.elevation >= 0) {
-      //if (this.world.highlights_on)
-        //this.drawTile(hex, {elevation: 32}, darker( color_scale(tile.elevation) ) );
-      //else
-        this.drawTile(hex, tile);
-    }
+    this.drawTile(hex,tile)
   }
 }
 
 
 
-WorldRenderer.p.drawRivers = function(hexes) {
+WorldRenderer.p.drawRivers = function() {
 
-  if (!hexes)
-    hexes = this.world.getHexes();  
+  let hexes = this.world.getHexes();  
 
-  let water_draw_level = 7;
-  let max_draw_level = 150;
-
-  //draw the rivers
   for (let hex of hexes) {
     let tile = this.getTile(hex);
     if (tile.hidden) continue;
-    if (tile.river) {
 
-      //downstream river first
-      let downstream_hex = tile.river.downstream_hex;
-      let water_level = tile.river.water_level;
-      if (downstream_hex instanceof Hex && water_level >= water_draw_level)
-        this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(Math.min(water_level,max_draw_level)*9)), '#22D', 'half only' );
-
-      //upstream rivers next
-      let upstream_hexes = tile.river.upstream_hexes;
-      if (upstream_hexes instanceof Array) {
-        for (let upstream_hex of upstream_hexes) {
-          if (!this.getTile(upstream_hex).river)
-            continue;
-          let up_level = this.getTile(upstream_hex).river.water_level;
-          if (up_level >= water_draw_level)
-            this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(Math.min(up_level,max_draw_level)*9)), '#22D', 'half only' );
-        }
-      }
-    }
+    this.drawRiver(hex,tile);
   }
 }
 
 
 
 
-WorldRenderer.p.drawRoads = function(hexes) {
+WorldRenderer.p.drawRoads = function() {
 
-  if (!hexes)
-    hexes = this.world.getHexes();  
+  let hexes = this.world.getHexes();  
 
-  let road_style = 'half only'
-  let zoom = this.hex_renderer.renderer.view.getZoom();
-  let road_color = '#040';
-
-  let self=this;
-
-  //draw the roads
   for (let hex of hexes) {
     let tile = this.getTile(hex);
-    if (!tile) continue;
     if (tile.hidden) continue;
 
-    if (tile.road_from)
-      drawRoadHalf(tile.road_from)
-
-    if (tile.road_to) 
-      drawRoadHalf(tile.road_to)
-
-    function drawRoadHalf(road_fromto) {
-      for (let from of road_fromto.getHexes()) {
-        let road_size = road_fromto.getValue(from);
-        if (road_size < 2) continue;
-
-        road_color = '#040';
-        if (road_size > 12) 
-          road_color = 'saddlebrown'; 
-        
-        self.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
-      }
-    }
+    this.drawRoad(hex,tile);
   }
 }
 
 
 
 //draw the units and their resource-collection area
-WorldRenderer.p.drawUnits = function(hexes) {
+WorldRenderer.p.drawUnits = function() {
 
-  if (!hexes)
-    hexes = this.world.getHexes();   
+  let hexes = this.world.getHexes();   
 
   for (let hex of hexes) {
     let tile = this.getTile(hex)
     if (tile.hidden) continue;
-    //draw units
-    var this_unit = this.world.getUnit(hex);
-    if (this_unit != undefined) {
-        this.drawUnit(this_unit,hex,0);
-    }
+
+    let unit = this.world.getUnit(hex);
+    if (unit)
+      this.drawUnit(hex, unit, 0);
   }
 }
 
 //draw the resource icons
-WorldRenderer.p.drawResources = function(hexes) {
+WorldRenderer.p.drawResources = function() {
 
-
-  if (!hexes)
-    hexes = this.world.getHexes();  
+  let hexes = this.world.getHexes();  
 
   //draw resources
   for (let hex of hexes) {
-    if (this.getTile(hex).hidden) continue;
-    var this_resource = this.world.getResource(hex);
-    if (this_resource != undefined && this_resource.resources) {
-      this.drawUnit(this_resource,hex,0);
+    let tile = this.getTile(hex)
+    if (tile.hidden) continue;
 
-    }
+    let resource = this.world.getResource(hex);
+    if (resource && resource.resources)
+      this.drawUnit(hex, resource, 0);
   }
 }
 
@@ -244,23 +175,113 @@ WorldRenderer.p.getTile = function(hex) {
     return this.world.getTile(hex);
 }
 
-WorldRenderer.p.drawTile = function(hex, tile, color) {
+WorldRenderer.p.drawTile = function(hex, tile) {
+  
+  let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
+  let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
+  let brown = ['#421','#412','#431','#421','#412','#431','#421','#412','#431'];
+  let blue = ['#216','#126','#114'];
+
+  //draw clouds if not explored
+  if (tile.hidden) {
+    this.drawHex(hex, 32);
+    return;
+  }
+
+  if (this.elevation < 0)
+    return;
+
+  if (!tile.highlighted) {
+    this.drawHex(hex, tile.elevation);
+    return;
+  }
+
+  if (tile.highlighted['brown'] && tile.elevation < 2) {
+    this.drawHex(hex, tile.elevation, blue[tile.elevation%7] );
+    return;
+  }
+
+  if (tile.highlighted['green']) {
+    this.drawHex(hex, tile.elevation, green[tile.elevation%7] );
+    return;
+  }
+
+  if (tile.highlighted['brown']) {
+    this.drawHex(hex, tile.elevation, brown[tile.elevation%7] );
+    return;
+  }
 
   
+}
+
+WorldRenderer.p.drawHex = function(hex, elevation, color) {
+
   var style = new RenderStyle();  
 
   //analyze tile
-  var height = Math.floor(tile.elevation);
+  var height = Math.floor(elevation);
   style.fill_color = color_scale(height);
   if (color)
     style.fill_color = color;
 
-  if ( tile.elevation >= 0 )
-    this.hex_renderer.drawHex(hex, style);
+  this.hex_renderer.drawHex(hex, style);
 }
 
-WorldRenderer.p.drawUnit = function(unit,hex,height) {
+WorldRenderer.p.drawRiver = function(hex, tile) {
 
+  let water_draw_level = 7;
+  let max_draw_level = 150;
+
+  if (tile.river) {
+
+    //downstream river first
+    let downstream_hex = tile.river.downstream_hex;
+    let water_level = tile.river.water_level;
+    if (downstream_hex instanceof Hex && water_level >= water_draw_level)
+      this.hex_renderer.drawCenterLine(hex, downstream_hex, Math.floor(Math.sqrt(Math.min(water_level,max_draw_level)*9)), '#22D', 'half only' );
+
+    //upstream rivers next
+    let upstream_hexes = tile.river.upstream_hexes;
+    if (upstream_hexes instanceof Array) {
+      for (let upstream_hex of upstream_hexes) {
+        if (!this.getTile(upstream_hex).river)
+          continue;
+        let up_level = this.getTile(upstream_hex).river.water_level;
+        if (up_level >= water_draw_level)
+          this.hex_renderer.drawCenterLine(hex, upstream_hex, Math.floor(Math.sqrt(Math.min(up_level,max_draw_level)*9)), '#22D', 'half only' );
+      }
+    }
+  }
+}
+
+WorldRenderer.p.drawRoad = function(hex, tile) {
+  
+  let self = this;  
+  let road_style = 'half only'
+  let zoom = this.hex_renderer.renderer.view.getZoom();
+  let road_color = '#040';
+
+  if (tile.road_from)
+    drawRoadHalf(tile.road_from)
+
+  if (tile.road_to) 
+    drawRoadHalf(tile.road_to)
+
+  function drawRoadHalf(road_fromto) {
+    for (let from of road_fromto.getHexes()) {
+      let road_size = road_fromto.getValue(from);
+      if (road_size < 2) continue;
+
+      road_color = '#040';
+      if (road_size > 12) 
+        road_color = 'saddlebrown'; 
+      
+      self.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
+    }
+  }
+}
+
+WorldRenderer.p.drawUnit = function(hex, unit, height) {
 
   let view = this.hex_renderer.renderer.view;
 
