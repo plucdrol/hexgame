@@ -6,6 +6,7 @@ import Events from './modules/u/Events.js'
 import Hex from './modules/u/Hex.js'
 import Renderer from './modules/u/Renderer.js';
 import View from './modules/u/View.js';
+import {Point} from './modules/u/Hex.js'
 
 
 import GameRenderer from './modules/GameRenderer.js'
@@ -32,8 +33,10 @@ var canv_input = new CanvasInput('canvas');
 //-------------Game-specific elements------------
 //Contains a world map, units, and resources
 
-let world_radius = 35;
-var world = new World( world_radius );// <-- model
+let earth_radius = 35;
+var earth = new World( earth_radius,'earth' );// <-- model
+let mars_radius = 20;
+var mars = new World( mars_radius,'earth', new Point(-35*10*80, -35*10*80) )// <-- model
 let system_radius = 35;
 var system = new World(system_radius, 'system');// <-- model
  
@@ -45,11 +48,11 @@ var view = new View('canvas');
 
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
-var world_input = new WorldInput(world, view);
+var earth_input = new WorldInput(earth, view);
 var view_input = new ViewInput(view); 
 
 //Has functions for drawing to the screen
-var game_renderer = new GameRenderer(world, system, world_input, view);
+var game_renderer = new GameRenderer(earth, mars, system, earth_input, view);
 
 
 
@@ -58,21 +61,23 @@ var game_renderer = new GameRenderer(world, system, world_input, view);
 
 //Put the first city in a random position on the "equator" ring
 var start_hex = new Hex(0,0);
-for (var hex of Hex.ring(new Hex(0,0), world_radius/2 )) 
-  if (world.countLand(hex, 1,3) && world.onLand(hex) && !world.onRiver(hex)) 
+for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) 
+  if (earth.countLand(hex, 1,3) && earth.onLand(hex) && !earth.onRiver(hex)) 
     start_hex = hex;
 
 
 let first_city =  new Unit('city');
-world.units.set(start_hex, first_city);
+earth.units.set(start_hex, first_city);
+earth.destroyResource(start_hex);
 first_city.pop = 20;
 
-let start_point = world.getPoint( start_hex )
+let start_point = earth.getPoint( start_hex )
 view.setCenter(start_point);
 
 //clear some clouds
-world.clearClouds(start_hex, 100);
-world.destroyResource(start_hex);
+earth.clearClouds(start_hex, 100);
+mars.clearClouds(new Hex(0,0), 100)
+
 
 
 

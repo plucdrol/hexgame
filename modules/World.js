@@ -34,7 +34,7 @@ var land_tiles = [
 'clouds'
 ];
 
-export default function World(radius, type) {
+export default function World(radius, type, origin) {
 
   this.radius = radius;
   this.type = type;
@@ -43,11 +43,13 @@ export default function World(radius, type) {
   if (type == 'system') {
     let scale = 60;
     var tile_size = new Point(35*scale, 35*scale);  
-    var origin = new Point(0,0);
+    if (!origin)
+      var origin = new Point(0,0);
   } else {// == 'earth'
     let scale = 1;
     var tile_size = new Point(35*scale, 35*scale);  
-    var origin = new Point(35*10*80,0);
+    if (!origin)
+      var origin = new Point(15*10*80, 0);
   }
 
   this.layout = new HexLayout('pointy', tile_size, origin);  
