@@ -623,6 +623,10 @@ HexMap.prototype.getNeighbors = function(hex) {
   }
   return neighbors_on_map;
 }
+
+HexMap.prototype.getRandomHex = function() {
+  return [...this.hexes.values()][Math.floor(Math.random() * this.hexes.size)]
+}
 //returns a simple array of each hex contained in this map
 HexMap.prototype.getHexes = function() {
   return this.hexes.values();

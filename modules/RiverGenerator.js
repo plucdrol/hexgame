@@ -104,9 +104,7 @@ export default function RiverGenerator (map) {
   }
 
   function getRandomNext() {
-    var array_length = next.size();
-    var random_number = getRandomInt(array_length);
-    return next.getHexes()[random_number];
+    return next.getRandomHex();
   }
 
   function growRiver(hex) {
