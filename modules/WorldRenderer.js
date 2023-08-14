@@ -38,7 +38,7 @@ WorldRenderer.p.clear = function() {
 
 WorldRenderer.p.drawWorld = function() {
   
-  this.drawTiles();
+  this.drawLands();
   this.drawRivers();
   this.drawRoads();
   this.drawUnits();
@@ -85,14 +85,12 @@ WorldRenderer.p.drawBigHex = function(radius) {
 
 
 
-WorldRenderer.p.drawTiles = function() {
+WorldRenderer.p.drawLands = function() {
 
   let hexes = this.world.getHexes();  
 
   for (let hex of hexes) {
-    let tile = this.getTile(hex);
-
-    this.drawTile(hex,tile)
+    this.drawLand(hex)
   }
 }
 
@@ -103,10 +101,7 @@ WorldRenderer.p.drawRivers = function() {
   let hexes = this.world.getHexes();  
 
   for (let hex of hexes) {
-    let tile = this.getTile(hex);
-    if (tile.hidden) continue;
-
-    this.drawRiver(hex,tile);
+    this.drawRiver(hex);
   }
 }
 
@@ -118,43 +113,29 @@ WorldRenderer.p.drawRoads = function() {
   let hexes = this.world.getHexes();  
 
   for (let hex of hexes) {
-    let tile = this.getTile(hex);
-    if (tile.hidden) continue;
-
-    this.drawRoad(hex,tile);
+    this.drawRoad(hex);
   }
 }
 
 
 
-//draw the units and their resource-collection area
+
 WorldRenderer.p.drawUnits = function() {
 
   let hexes = this.world.getHexes();   
 
   for (let hex of hexes) {
-    let tile = this.getTile(hex)
-    if (tile.hidden) continue;
-
-    let unit = this.world.getUnit(hex);
-    if (unit)
-      this.drawUnit(hex, unit, 0);
+    this.drawUnit(hex);
   }
 }
 
-//draw the resource icons
+
 WorldRenderer.p.drawResources = function() {
 
   let hexes = this.world.getHexes();  
 
-  //draw resources
   for (let hex of hexes) {
-    let tile = this.getTile(hex)
-    if (tile.hidden) continue;
-
-    let resource = this.world.getResource(hex);
-    if (resource && resource.resources)
-      this.drawUnit(hex, resource, 0);
+    this.drawResource(hex);
   }
 }
 
@@ -175,7 +156,9 @@ WorldRenderer.p.getTile = function(hex) {
     return this.world.getTile(hex);
 }
 
-WorldRenderer.p.drawTile = function(hex, tile) {
+WorldRenderer.p.drawLand= function(hex) {
+
+  let tile = this.getTile(hex)
   
   let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
   let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];
@@ -188,7 +171,7 @@ WorldRenderer.p.drawTile = function(hex, tile) {
     return;
   }
 
-  if (this.elevation < 0)
+  if (tile.elevation < 0)
     return;
 
   if (!tile.highlighted) {
@@ -227,7 +210,10 @@ WorldRenderer.p.drawHex = function(hex, elevation, color) {
   this.hex_renderer.drawHex(hex, style);
 }
 
-WorldRenderer.p.drawRiver = function(hex, tile) {
+WorldRenderer.p.drawRiver = function(hex) {
+
+  let tile = this.getTile(hex)
+  if (tile.hidden) return;
 
   let water_draw_level = 7;
   let max_draw_level = 150;
@@ -254,7 +240,10 @@ WorldRenderer.p.drawRiver = function(hex, tile) {
   }
 }
 
-WorldRenderer.p.drawRoad = function(hex, tile) {
+WorldRenderer.p.drawRoad = function(hex) {
+
+  let tile = this.getTile(hex);
+  if (tile.hidden) return;
   
   let self = this;  
   let road_style = 'half only'
@@ -281,12 +270,29 @@ WorldRenderer.p.drawRoad = function(hex, tile) {
   }
 }
 
-WorldRenderer.p.drawUnit = function(hex, unit, height) {
+WorldRenderer.p.drawUnit = function(hex) {
+
+  let unit = this.world.getUnit(hex);
+  if (unit)
+    this.drawEntity(hex, unit);
+}
+
+WorldRenderer.p.drawResource = function(hex) {
+
+  let resource = this.world.getResource(hex);
+  if (resource && resource.resources)
+    this.drawEntity(hex, resource);
+}
+
+//units and resources are both "unit" objects
+WorldRenderer.p.drawEntity = function(hex, unit) {
+  
+  let tile = this.getTile(hex)
+  if (tile.hidden) return;
 
   let view = this.hex_renderer.renderer.view;
 
   var position = this.hex_renderer.hexToPoint(hex);
-  position = position.offset(0,-height);
  
   var unit_style = new RenderStyle();
   unit_style.fill_color = unit.color;

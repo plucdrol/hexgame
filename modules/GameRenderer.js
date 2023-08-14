@@ -165,7 +165,7 @@ LayerRenderer.prototype.blit = function(canvas_name, view) {
 
 //draw onto the temp canvas
 LayerRenderer.prototype.drawGround = function() {
-  this.world_renderer.drawTiles();
+  this.world_renderer.drawLands();
   this.world_renderer.drawRivers();
 }
 
