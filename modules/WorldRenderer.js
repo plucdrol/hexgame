@@ -80,10 +80,29 @@ WorldRenderer.p.drawBigHex = function(radius) {
 
 
 
+WorldRenderer.p.drawSomeLands = function() {
+  
+  if (!this.landHexes)
+    this.landHexes = this.world.getHexes();
+
+  let count = 1000;
+
+  while (count) {
+    let next = this.landHexes.next()
+
+    if (next.done) {
+      this.landHexes = this.world.getHexes();
+      break;
+    }
+
+    this.drawLand(next.value)
+    count--;
 
 
 
+  }
 
+}
 
 WorldRenderer.p.drawLands = function() {
 
@@ -156,9 +175,9 @@ WorldRenderer.p.getTile = function(hex) {
     return this.world.getTile(hex);
 }
 
-WorldRenderer.p.drawLand= function(hex) {
+WorldRenderer.p.drawLand = function(hex) {
 
-  let tile = this.getTile(hex)
+  let tile = this.getTile(hex);
   
   let purple = ['#924','#915','#925','#926','#936','#926','#924' ];
   let green = ['#228822','#226633', '#337744','#336633','#337722','#225533','#228822'];

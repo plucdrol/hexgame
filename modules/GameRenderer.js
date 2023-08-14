@@ -79,7 +79,7 @@ export default function GameRenderer(worlds, world_input, view) {
 
   this.startDrawing = function() {
     loop(draw, 30);
-    loop(updateLayers, 300); //this makes a bit of lag every 300. This process should be done in little bits instead
+    loop(updateLayers, 30); //this makes a bit of lag every 300. This process should be done in little bits instead
   }
 
 
@@ -165,7 +165,7 @@ LayerRenderer.prototype.blit = function(canvas_name, view) {
 
 //draw onto the temp canvas
 LayerRenderer.prototype.drawGround = function() {
-  this.world_renderer.drawLands();
+  this.world_renderer.drawSomeLands();
   this.world_renderer.drawRivers();
 }
 
