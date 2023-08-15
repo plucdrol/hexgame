@@ -335,7 +335,7 @@ export default function ButtonMenu(menu_id, unit_input, world) {
 
       if (action) {
         action.updateActionTargets( world, actor, hex_selected);
-        world.highlightRange(action.range, 'brown');
+        world.highlightRange(action.range, 'brown'); //brown is the color of COLONIZABLE
       } else {
         action.range = [];
       }

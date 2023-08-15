@@ -12,24 +12,19 @@ export default function actionExpand(distance) {
 
   this.name = "city-by-land-2";
 
-  this.nextSelection = 'self';//new_unit_if_exists';
-  //this.new_unit_type = 'city';
+  this.nextSelection = 'self';
 
   this.hover_action = new actionGrowRoots(1);
-
-
 
   this.can_river = true;
   this.stop_on_rivers = true;
 
-  this.stay_on_rivers = false;
   this.can_leave_rivers_on_first_step = true;
-  this.stop_on_river_exit=true;
+  this.stop_on_river_exit = true;
 
   this.stop_on_coast = true;
   this.can_water = true;
   this.can_ocean = true;
-  this.coastal_start = false;
   this.embark_at_cities = true;
   this.disembark_at_cities = true;
 
@@ -43,13 +38,12 @@ export default function actionExpand(distance) {
   this.destroy_resource = true;
   this.collect_resource = true;
 
-  this.cloud_clear = 8;
+  this.cloud_clear = 2;
 
   //this.free_pop_cost = 2;
   //this.takes_city_pop = false;
 
   this.also_build_road = true;
-
   this.can_use_roads = true;
   this.double_road_speed = false;
   this.double_highway_speed = true;
@@ -72,27 +66,16 @@ export default function actionExpand(distance) {
 
       //world.highlightRange(Hex.circle(target, world.getUnit(target).pop), 'green');
 
-      //grow to connect more resources around city
-      let grow_roots_action = new actionGrowRoots( world.getUnit(target).pop );
-      grow_roots_action.triggerMultiAction( world, actor, target) 
+      let target_pop = world.getUnit(target).pop;
+      new actionGrowRoots( target_pop ).triggerMultiAction( world, actor, target) 
     }
 
     //grow road and build a city if clicking somewhere else
     if (!world.unitAtLocation(target)) {
-
       actor.pop -= 2;
-
-      //builds a city if clicking on rivers or on a road
-      world.highlightRange(Hex.circle(target, 1), 'green');
       world.addUnit(target, 'city', actor);
-
-      //automatically connect resources around new city
-      let grow_roots_action = new actionGrowRoots( 1 );
-      grow_roots_action.triggerMultiAction( world, actor, target) 
-
-      //create highway to new city     
+      new actionGrowRoots( 1 ).triggerMultiAction( world, actor, target)    
       this.createRoad(world, position, target, 2);
-
     }
 
     //add a village if clicling directly on a resource

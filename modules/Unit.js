@@ -115,7 +115,7 @@ Unit.prototype.setType = function(unit_type) {
       //this.addAction( new actionExploit(5, false));
       this.addAction( new actionExpand(10));
       this.addAction( new actionCreateHarbor() );
-      this.addAction( new actionCreateLighthouse(5) )
+      //this.addAction( new actionCreateLighthouse(5) )
       //this.addAction( new actionExplore(12));
       //this.addAction( new actionMoveCity(8) );
       //this.addAction( new actionExpandAll() );

@@ -69,14 +69,14 @@ for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 ))
 let first_city =  new Unit('city');
 earth.units.set(start_hex, first_city);
 earth.destroyResource(start_hex);
-first_city.pop = 20;
+first_city.pop = 5;
 
 //for some reason I need to invert the starting hex to move the view there
-let start_point = earth.getPoint( start_hex );
+let start_point = earth.getPoint( start_hex.multiply(-1) );
 view.setCenter( start_point );
 
 //clear some clouds
-earth.clearClouds(start_hex, 1000);
+earth.clearClouds(start_hex, 3);
 mars.clearClouds(new Hex(0,0), 100)
 
 

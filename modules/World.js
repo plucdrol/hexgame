@@ -756,20 +756,23 @@ World.prototype.clearClouds = function(position, radius) {
         if (counter >= range.length)
           return;
 
-        if (!world.getTile(hex).highlighted)
-          world.getTile(hex).highlighted = [];
+        let tile = world.getTile(hex);
+        
+        if (!tile.highlighted)
+          tile.highlighted = [];
 
         //skip tiles if already the right color
-        if (world.getTile(hex).highlighted[color]) {
+        if (tile.highlighted[color]) {
           counter++;
           stepByStepHighlight();
         } else {
 
           //color the tile with the new color
           if (color) {
-            world.getTile(hex).highlighted[color] = true;
+            tile.highlighted[color] = true;
+            tile.hidden = false;
           } else {
-            world.getTile(hex).highlighted['neutral'] = true;
+            tile.highlighted['neutral'] = true;
           }
 
           //go to the next tile in 100ms

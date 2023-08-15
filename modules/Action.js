@@ -54,6 +54,7 @@ export default function Action() {
   this.coastal_start = false;
   this.embark_at_cities = false;
   this.disembark_at_cities = false;
+  this.can_leave_rivers_on_first_step = true;
 
   this.takes_city_pop = false; //true makes resources LOCAL, false makes resources GLOBAL
 
@@ -142,6 +143,7 @@ export default function Action() {
     //preEffect defined by individual actions
     this.preEffect(world, actor, position, target);
 
+    //generic effects applied to all actions depending on their qualities listed below
     if (this.takes_city_pop)       
       if (this.transfer_resources)
         actor.owner.addPop(-this.free_pop_cost);
@@ -209,7 +211,7 @@ export default function Action() {
           //console.log('clearing clouds for '+new_unit_action.name);
           let new_action_range = new_unit_action.getActionRange(world, actor, position);
           for (let hex of new_action_range) {
-            world.clearClouds(hex);
+            //world.clearClouds(hex);
           }
         }
       }
