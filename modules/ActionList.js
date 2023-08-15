@@ -81,7 +81,7 @@ export default function actionExpand(distance) {
     //add a village if clicling directly on a resource
     if (world.getResource(target) && !world.getResource(target).resources['unknown']) {
       world.addUnit(target, 'village', actor);
-      world.highlightRange(Hex.circle(target, 1), 'green');
+      world.highlightRange(Hex.circle(target, 1), 'green'); //green is the color around captured resources
     }
 
   }

@@ -199,11 +199,12 @@ WorldRenderer.p.drawLand = function(hex) {
   }
 
   if (tile.highlighted['brown'] && tile.elevation < 2) {
-    this.drawHex(hex, tile.elevation, blue[tile.elevation%7] );
+    this.drawHex(hex, tile.elevation);
+    //this.drawHex(hex, tile.elevation, blue[tile.elevation%7] );
     return;
   }
 
-  if (tile.highlighted['green']) {
+  if (tile.highlighted['green'] && tile.elevation >= 2) {
     this.drawHex(hex, tile.elevation, green[tile.elevation%7] );
     return;
   }
