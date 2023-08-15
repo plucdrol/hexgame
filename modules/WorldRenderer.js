@@ -271,22 +271,20 @@ WorldRenderer.p.drawRoad = function(hex) {
   let zoom = this.hex_renderer.renderer.view.getZoom();
   let road_color = '#040';
 
-  if (tile.road_from)
-    drawRoadHalf(tile.road_from)
 
   if (tile.road_to) 
     drawRoadHalf(tile.road_to)
 
-  function drawRoadHalf(road_fromto) {
-    for (let from of road_fromto.getHexes()) {
-      let road_size = road_fromto.getValue(from);
+  function drawRoadHalf(road_to) {
+    for (let road of road_to.getHexes()) {
+      let road_size = road_to.getValue(road);
       if (road_size < 1) continue;
 
       road_color = '#040';
       if (road_size > 12) 
         road_color = 'saddlebrown'; 
       
-      self.hex_renderer.drawCenterLine(hex, from, 3+road_size, road_color, 'half only');
+      self.hex_renderer.drawCenterLine(hex, road, 3+road_size, road_color, 'half only');
     }
   }
 }

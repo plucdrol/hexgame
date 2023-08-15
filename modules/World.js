@@ -217,30 +217,30 @@ World.prototype.addRoadTile = function(hex1, hex2, road_level) {
       road_level = 1;
       
   //road on tile 2
-  if (!this.getTile(hex2).road_from) {
-    this.getTile(hex2).road_from = new HexMap();
-    this.getTile(hex2).road_from_level = new HexMap();
+  if (!this.getTile(hex2).road_to) {
+    this.getTile(hex2).road_to = new HexMap();
+    this.getTile(hex2).road_to_level = new HexMap();
   }
 
   let none_equal = true;
   
-  for (let hex of this.getTile(hex2).road_from.getHexes() )
+  for (let hex of this.getTile(hex2).road_to.getHexes() )
     if (hex.equals(hex1))
       none_equal = false;
 
   if (none_equal) {
     //road does not already exist
-    this.getTile(hex2).road_from.set(hex1, 1);
-    this.getTile(hex2).road_from_level.set(hex1, road_level );
+    this.getTile(hex2).road_to.set(hex1, 1);
+    this.getTile(hex2).road_to_level.set(hex1, road_level );
   } else {
     //road already exists
-    let road_size = this.getTile(hex2).road_from.getValue(hex1);
+    let road_size = this.getTile(hex2).road_to.getValue(hex1);
     if (road_size < 32) {
-      this.getTile(hex2).road_from.set(hex1, road_size+1 );
+      this.getTile(hex2).road_to.set(hex1, road_size+1 );
     }
-    let current_road_level = this.getTile(hex2).road_from_level.getValue(hex1);
+    let current_road_level = this.getTile(hex2).road_to_level.getValue(hex1);
     if (road_level > current_road_level){
-      this.getTile(hex2).road_from_level.set(hex1, road_level );
+      this.getTile(hex2).road_to_level.set(hex1, road_level );
     }
   }
 
@@ -278,8 +278,6 @@ World.prototype.addRoadTile = function(hex1, hex2, road_level) {
 
 World.prototype.countRoads = function(hex) {
   let count = 0;
-  if (this.getTile(hex).road_from)
-    count += this.getTile(hex).road_from.size();
   if (this.getTile(hex).road_to)
     count += this.getTile(hex).road_to.size();
   return count;
@@ -290,9 +288,6 @@ World.prototype.getRoadLevel = function(hex1,hex2) {
 
   if (!this.areRoadConnected(hex1,hex2))
     return 0;
-
-  if (this.getTile(hex1).road_from_level)
-    return this.getTile(hex1).road_from_level.getValue(hex2);
 
   if (this.getTile(hex1).road_to_level)
     return this.getTile(hex1).road_to_level.getValue(hex2);
@@ -311,7 +306,6 @@ World.prototype.biggestRoad = function(hex) {
 
 
 World.prototype.removeRoads = function(hex) {
-  this.getTile(hex).road_from = null;
   this.getTile(hex).road_to = null;
 
 }
@@ -361,13 +355,9 @@ World.prototype.getRectangleSubMap = function(qmin, qmax,rmin, rmax) {
 ///////////////////////////////////////////////////
 
 World.prototype.unitAtLocation = function(hex) {
-  if (this.getUnit(hex) instanceof Unit) {
-    return true;
-  }
-
-  return false
-
+  return (this.getUnit(hex) instanceof Unit);
 }
+
 World.prototype.countUnits = function(hexarray, unit_type, minimum_count) {
 
   let count = 0;
@@ -402,23 +392,13 @@ World.prototype.areRoadConnected = function(hex1, hex2) {
   let tile1 = this.getTile(hex1);
   let tile2 = this.getTile(hex2);
 
-  if (tile1.road_from)
-    for (var from1 of tile1.road_from.getHexes())
-      if (hex2.equals(from1))
-        return true;
-
   if (tile1.road_to)
-    for (var to1 of tile1.road_to.getHexes())
+    for (let to1 of tile1.road_to.getHexes())
       if (hex2.equals(to1))
         return true;
 
-  if (tile2.road_from)
-    for (var from2 of tile2.road_from.getHexes())
-      if (hex1.equals(from2))
-        return true;
-
   if (tile2.road_to)
-    for (var to2 of tile2.road_to.getHexes())
+    for (let to2 of tile2.road_to.getHexes())
       if (hex1.equals(to2))
         return true;
 
