@@ -261,8 +261,8 @@ World.prototype.getRoadLevel = function(hex1,hex2) {
   if (!this.areRoadConnected(hex1,hex2))
     return 0;
 
-  if (this.getTile(hex1).road_to_level)
-    return this.getTile(hex1).road_to_level.getValue(hex2);
+  if (this.getTile(hex1).road_to)
+    return this.getTile(hex1).road_to.getValue(hex2);
   else 
     return 0;
 }

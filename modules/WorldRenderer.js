@@ -324,20 +324,25 @@ WorldRenderer.p.drawEntity = function(hex, unit) {
   let zoom = view.getZoom();
   let size = 10*unit.size*this.world.getZoom();
 
-  if (this.world.biggestRoad(hex) <= 2) {
-    //draw a square or hexagon
-    if (unit.size > 4 || (unit.pop && unit.pop > 9)) {
-      this.hex_renderer.drawHex(hex, unit_style);
-    } else {
-      if (unit.pop && unit.pop < 2)
-        this.hex_renderer.renderer.drawDot(position, Math.min(size/2, 1.5*size/2/zoom ), unit_style);
-      else
-        this.hex_renderer.renderer.drawDot(position, Math.min(size, 1.5*size/zoom ), unit_style);
-    }
-  }
 
+  //large units
+  if (unit.size > 4 || (unit.pop && unit.pop > 9))
+    this.hex_renderer.drawHex(hex, unit_style);
   
+  //medium units
+  if (unit.pop && unit.pop >= 2) 
+    this.hex_renderer.renderer.drawDot(position, Math.min(size, 1.5*size/zoom ), unit_style);
 
+  //small units
+  if (this.world.biggestRoad(hex) <= 12) 
+    if (unit.pop && unit.pop < 2) 
+        this.hex_renderer.renderer.drawDot(position, Math.min(size/2, 1.5*size/2/zoom ), unit_style);
+
+  //resources and colonies
+  if (this.world.biggestRoad(hex) <= 12) 
+    if (!unit.pop)
+      this.hex_renderer.renderer.drawDot(position, Math.min(size, 1.5*size/zoom ), unit_style);
+  
   //draw a number on the unit
   if (unit.pop && unit.pop >= 2) {
     let text_style = new RenderStyle();
