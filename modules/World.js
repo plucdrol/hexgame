@@ -770,7 +770,7 @@ World.prototype.clearClouds = function(position, radius) {
           //color the tile with the new color
           if (color) {
             tile.highlighted[color] = true;
-            tile.hidden = false;
+            world.clearClouds(hex,3);
           } else {
             tile.highlighted['neutral'] = true;
           }

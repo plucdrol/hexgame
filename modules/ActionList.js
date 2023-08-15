@@ -40,16 +40,13 @@ export default function actionExpand(distance) {
 
   this.cloud_clear = 2;
 
-  //this.free_pop_cost = 2;
-  //this.takes_city_pop = false;
-
   this.also_build_road = true;
   this.can_use_roads = true;
   this.double_road_speed = false;
   this.double_highway_speed = true;
 
   this.description = "Expand";
-  this.extra_description = "Create a new node far away.";
+  this.extra_description = "Grow your base";
 
   this.targetFilterFunction = function(world, actor, target) {
     return true;//world.onLand(target);
@@ -67,15 +64,18 @@ export default function actionExpand(distance) {
       //world.highlightRange(Hex.circle(target, world.getUnit(target).pop), 'green');
 
       let target_pop = world.getUnit(target).pop;
-      new actionGrowRoots( target_pop ).triggerMultiAction( world, actor, target) 
+
+      let after_action = new actionGrowRoots( target_pop );
+      after_action.triggerMultiAction( world, actor, target) 
     }
 
     //grow road and build a city if clicking somewhere else
     if (!world.unitAtLocation(target)) {
       actor.pop -= 2;
       world.addUnit(target, 'city', actor);
-      new actionGrowRoots( 1 ).triggerMultiAction( world, actor, target)    
-      this.createRoad(world, position, target, 2);
+
+      let after_action = new actionGrowRoots( 1 );
+      after_action.triggerMultiAction( world, actor, target)  
     }
 
     //add a village if clicling directly on a resource
@@ -122,12 +122,7 @@ export function actionGrowRoots(max_distance) {
   this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
   this.destroy_resource = true;
 
-  //this.free_pop_cost = -1;
-  //this.total_pop_cost = -1;
-  //this.takes_city_pop = true;
-
   this.multi_target = true;
-  //this.new_unit_type = 'colony';
 
 
 
@@ -147,9 +142,8 @@ export function actionGrowRoots(max_distance) {
 
   this.effect = function(world,actor,position,target) {
     actor.addPop(1);
-    this.createRoad(world, position, target);
     world.addUnit(target, 'village', actor);
-    world.highlightRange(Hex.circle(target, 1), 'green');
+    world.highlightRange(Hex.circle(target, 2), 'green');
   }
 }
 
@@ -168,63 +162,38 @@ export function actionGrowRoots(max_distance) {
 
 
 
+export function actionExpandByAir(max_distance) {
+  actionExpand.call(this);
 
-
-
-
-
-
-
-
-
-
-
-
-
-export function actionExplore(distance) {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
-
-  this.name = "city-by-land";
-  this.new_unit_type = 'colony';
-
-  this.stop_on_coast = true;
-
-  this.can_river = true;
-  this.stop_on_rivers = false;
-
-  this.can_water = true;
-  this.coastal_start = true;
-
-  this.nextSelection = "self";
+  this.name = 'city-by-air';
+  this.minimum_elevation = 0;
+  this.maximum_elevation = 30;
   this.min_distance = 0;
-  this.max_distance = distance;
-
   this.also_build_road = false;
-  this.hover_radius = 3;
+  this.also_build_road_backwards = false;
+  this.can_use_roads = false;
+  this.sky_action = true;
 
-  this.destroy_resource = true;
-  this.collect_resource = true;
+  this.description = "Seed";
+  this.extra_description = "Launch a new base";
 
-  this.cloud_clear = 6;
-
-  this.free_pop_cost = 1;
-  //this.takes_city_pop = false;
-
-  this.can_use_roads = true;
-  this.double_road_speed = true;
-
-  this.description = "Explore";
-  this.extra_description = "Create a new node far away.";
+  if (max_distance)
+    this.max_distance = max_distance;
+  else
+    this.infinite_range = true;
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && !world.unitAtLocation(target) && !world.countResources([target],'food',1);
+    return world.onLand(target) && !world.onIce(target) && !world.onMountain(target);
   }
 
-  this.effect = function(world, actor, position, target) {
-  }
 }
+
+
+
+
+
+
+
 
 
 
@@ -392,93 +361,63 @@ export function actionMoveCity() {
 
 
 
-export function actionExploit(max_distance, multi_target) {
-  Action.call(this);
-
-  this.name = "get-food";
-  this.min_distance = 1;
-  this.max_distance = max_distance;
-  this.hover_radius = 0;
-  this.cloud_clear = 2;
-
-  this.can_water = true;
-  this.can_river = true;
-  this.stop_on_rivers = true;
-  this.no_climbing_ashore = true;
-  this.coastal_start = true;
-
-  this.also_build_road = true;
-  this.can_use_roads = true;
-  this.double_road_speed = false;
-
-  this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
-  this.destroy_resource = true;
-
-  this.free_pop_cost = -1;
-  this.total_pop_cost = -1;
-  this.takes_city_pop = true;
-
-  this.multi_target = multi_target;
-  //this.new_unit_type = 'colony';
 
 
 
-  this.description = "Claim resources";
-  this.extra_description = "Get all the food";
 
-  this.targetFilterFunction = function(world, actor, target) {
-    if (world.unitAtLocation(target)) 
-      return false;
 
-    if (!world.countResources(Hex.circle(target, 0), 'food', 1))
-      return false;
 
-    return true;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function cutRiver(world, position) {
+  let tile = world.getTile(position);
+  let step_time = 300;
+
+  if (world.onRiver(position)) {
+    var water_level = tile.river.water_level;
+    stepByStepCutRiver();
   }
 
+  
 
-  this.effect = function(world,actor,position,target) {
-    //actor.addPop(1);
+  function stepByStepCutRiver() {   
+    
+    tile.river.water_level -= Math.floor(2*water_level/3);
+    tile = world.getTile(tile.river.downstream_hex);
+
+    if (tile.river.downstream_hex)
+      setTimeout(stepByStepCutRiver, step_time);
+
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -523,32 +462,6 @@ function actionHydroDam() {
     this.hydroDam(world, position);
   }
 }*/
-
-function cutRiver(world, position) {
-  let tile = world.getTile(position);
-  let step_time = 300;
-
-  if (world.onRiver(position)) {
-    var water_level = tile.river.water_level;
-    stepByStepCutRiver();
-  }
-
-  
-
-  function stepByStepCutRiver() {   
-    
-    tile.river.water_level -= Math.floor(2*water_level/3);
-    tile = world.getTile(tile.river.downstream_hex);
-
-    if (tile.river.downstream_hex)
-      setTimeout(stepByStepCutRiver, step_time);
-
-  }
-}
-
-
-
-
 /*
 function hydroDam = function(world, target) {
     
@@ -586,33 +499,6 @@ function hydroDam = function(world, target) {
 
 
 
-export function actionCreateCityByAir(max_distance) {
-  actionCreateCity.call(this);
-  this.name = 'city-by-air';
-  this.minimum_elevation = 0;
-  this.maximum_elevation = 30;
-  this.min_distance = 0;
-  this.also_build_road = false;
-  this.also_build_road_backwards = false;
-  this.can_use_roads = false;
-  this.sky_action = true;
-  this.pop_action = 1/3;
-
-  if (max_distance)
-    this.max_distance = max_distance;
-  else
-    this.infinite_range = true;
-
-  this.targetFilterFunction = function(world, actor, target) {
-    return !world.unitAtLocation(target) && world.onLand(target) 
-           && world.noCitiesInArea(target,5) && !world.onIce(target) && !world.onMountain(target);
-  }
-
-}
-
-
-
-
 
 
 
@@ -637,7 +523,7 @@ export function actionCreateCityByAir(max_distance) {
 
 
 //This action transforms the unit into a camp
-function actionCreateCity(distance, extra) {
+export function actionCreateCity(distance, extra) {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -655,7 +541,6 @@ function actionCreateCity(distance, extra) {
   this.hover_radius = 3;
 
   this.cloud_clear = 6;
-
   this.free_pop_cost = 4;
 
   this.can_use_roads = false;
@@ -667,7 +552,7 @@ function actionCreateCity(distance, extra) {
     return world.onLand(target) && world.noCitiesInArea(target,5);
   }
   this.activation = function(world, actor, position) {
-    return !actor.can_move;
+    return true;//!actor.can_move;
 
   }
 

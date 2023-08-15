@@ -211,11 +211,14 @@ Hex.line = function(hex_a,hex_b) {
 }
 
 Hex.circle = function(center, N) {
-  var hex_array = [];
-  for (let q=-N; q<=N; q++)
-    for (let r=Math.max(-N, -q-N); r<=Math.min(N, -q+N); r++)
-      hex_array.push(center.add( new Hex(q, r)));
-  return hex_array;
+  var hexarray = [];
+  hexarray.push(center)
+
+  for (let r=1; r<N; r++) {
+    for (let hex of Hex.ring(center,r))
+      hexarray.push(hex);
+  }
+  return hexarray;
 }
 
 Hex.ring = function(center, radius) {

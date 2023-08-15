@@ -7,6 +7,7 @@
 ////////////////////////////////////
 
 import ActionPathfinder from './ActionPathfinder.js'
+import Hex from './u/Hex.js'
 
 //All actions inherit from this action
 export default function Action() {
@@ -186,9 +187,8 @@ export default function Action() {
     this.effect(world, actor, position, target);
 
     
-    //do automatic action if one exists
-    if (this.hover_action && this.hover_action.multi_target) {
-      this.hover_action.triggerMultiAction(world, actor, target);
+    if (this.after_action && this.after_action.multi_target) {
+      this.after_action.triggerMultiAction(world, actor, target);
     }
 
 
@@ -280,6 +280,9 @@ export default function Action() {
 
 
   this.getActionPath = function(world, actor, position, target, extra_max_distance) {
+
+    if (this.sky_action)
+      return undefined;
 
     let pathfinder = new ActionPathfinder(this);
 

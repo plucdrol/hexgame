@@ -279,7 +279,7 @@ WorldRenderer.p.drawRoad = function(hex) {
   function drawRoadHalf(road_fromto) {
     for (let from of road_fromto.getHexes()) {
       let road_size = road_fromto.getValue(from);
-      if (road_size < 2) continue;
+      if (road_size < 1) continue;
 
       road_color = '#040';
       if (road_size > 12) 

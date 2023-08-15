@@ -98,7 +98,11 @@ export default function ActionPathfinder(action) {
 
 
     let action = this.action;
+    let cost = 1;
 
+    if (action.sky_action) {
+      return 1;
+    }
 
     // COST IS UNDEFINED FOR THE FOLLOWING IMPOSSIBLE ACTIONS:
 
@@ -185,7 +189,7 @@ export default function ActionPathfinder(action) {
 
     // IF ACTION IS POSSIBLE, DETERMINING THE COST:
 
-    let cost = 1;
+
 
     if (world.onWater(hex) && world.onWater(next_hex))
       cost= 1;
@@ -207,10 +211,12 @@ export default function ActionPathfinder(action) {
       if (action.double_road_speed )
         cost = 0;
 
-      if (action.double_highway_speed && world.getRoadLevel(hex,next_hex) >= 2)
+      if (action.double_highway_speed && world.getRoadLevel(hex,next_hex) >= 1)
         cost = 0;
 
     }
+
+
 
     
 

@@ -8,9 +8,9 @@
 var unit_id_incrementer = 1000;
 
 import actionExpand from './ActionList.js';
-import {actionGrowRoots,actionExplore,actionMoveCity,actionExploit,
-        actionCreateCityByAir, actionGoFishing,actionCreateLighthouse,
-        actionExpandAll,actionCreateHarbor} from './ActionList.js'
+import {actionGrowRoots,actionMoveCity,
+         actionGoFishing,actionCreateLighthouse,
+        actionExpandAll,actionCreateCity,actionCreateHarbor,actionExpandByAir} from './ActionList.js'
 
 
 export default function Unit(unit_type, owner) {
@@ -114,9 +114,7 @@ Unit.prototype.setType = function(unit_type) {
       this.can_move = true;
       //this.addAction( new actionExploit(5, false));
       this.addAction( new actionExpand(10));
-      this.addAction( new actionCreateHarbor() );
-      //this.addAction( new actionCreateLighthouse(5) )
-      //this.addAction( new actionExplore(12));
+      this.addAction( new actionExpandByAir(20));
       //this.addAction( new actionMoveCity(8) );
       //this.addAction( new actionExpandAll() );
       break;
@@ -125,7 +123,7 @@ Unit.prototype.setType = function(unit_type) {
       this.name = "Village";
       this.setGraphic('#040',2);
       this.addAction( new actionExpand(5));
-      this.addAction( new actionExplore(12));
+      //this.addAction( new actionExplore(12));
       break;
 
 

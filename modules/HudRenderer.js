@@ -51,17 +51,16 @@ export default function HUDRenderer(world, world_input, renderer) {
 
       if (actor) {
         let action = unit_input.getActionSelected();
-        if (action /*&& action.name != 'city-by-air'*/) {
-          //drawActorRange();
+        if (action) {
 
+          if (action.sky_action && hex_selected && hex_hovered)
+            drawStraightLine(hex_selected, hex_hovered);
 
-          if (action_path.length > 0) {
+          else if (action_path && action_path.length > 0) 
             drawActionPath(hex_hovered);
-            
-            if (action_targets.length > 0) {
-             drawActionTargets(hex_hovered);
-            }
-          }
+
+          if ((action.sky_action || action_path) && action_targets && action_targets.length > 0)
+            drawActionTargets(hex_hovered);
 
 
         }
@@ -149,12 +148,24 @@ export default function HUDRenderer(world, world_input, renderer) {
         hex_renderer.drawCenterLine(hex, previous, 6, color );
         previous = hex;
       }*/
+    if (!hexarray)
+      return;
 
     //var previous = hexarray[0];
     for (let i = 0; i < hexarray.length-1; i++) {
       if (!world.areRoadConnected(hexarray[i], hexarray[i+1]))  
         hex_renderer.drawCenterLine(hexarray[i], hexarray[i+1], 6, color );
     }
+  }
+
+  function drawStraightLine(hex1, hex2) {
+    let actor = unit_input.getActorSelected();
+    let action = unit_input.getActionSelected();
+
+    let color = '#C50';
+    if ( action.targetFilterFunction(world, actor, hex2) )
+      color = '#5C0';
+    hex_renderer.drawCenterLine(hex1, hex2, 6, color );
   }
 
   function actorHasRenderableRange(actor) {
