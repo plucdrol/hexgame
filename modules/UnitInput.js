@@ -31,7 +31,6 @@ export default function UnitInput(world) {
   this.getHexSelected = getHexSelected
   this.getActorSelected = getActorSelected
   this.getActionSelected = getActionSelected
-  this.updateActionTargetsIndirectly = updateActionTargetsIndirectly
 
   Events.on('hex_clicked', clickHex );
   
@@ -78,7 +77,7 @@ export default function UnitInput(world) {
   function selectNothing() {
     //getActorSelected().range = undefined;
     hex_selected = undefined;
-    updateButtons();
+    button_menu.update();
   };
 
   function aHexIsSelected() {
@@ -166,7 +165,7 @@ export default function UnitInput(world) {
       } 
     }
 
-    button_menu.updateFunction(world, this);
+    button_menu.update();
 
   };
 
@@ -182,27 +181,5 @@ export default function UnitInput(world) {
 
 
 
-
-
-
-
-
-
-  function updateActionTargetsIndirectly() {
-
-    let actor = getActorSelected();
-    let action = button_menu.getActionSelected(actor);
-
-    if (action) {
-      action.updateActionTargets(world, actor, hex_selected);
-      world.highlightRange(action.range, 'brown');
-    } else {
-      action.range = [];
-    }
-  };
-
-  function updateButtons() {
-    button_menu.updateFunction(world, this);
-  }
 
 }

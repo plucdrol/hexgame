@@ -19,6 +19,7 @@ export default function Unit(unit_type, owner) {
   this.position = null;
 
   this.id = unit_id_incrementer++;
+  this.actions = [];
   
   if (owner) 
     this.owner = owner;
@@ -45,17 +46,12 @@ Unit.prototype.getPop = function() {
 }
 
 Unit.prototype.addAction = function( action ) {
-  if (!this.actions) {
-    this.actions = [];
-  }
   this.actions.push( action );
 }
 
 Unit.prototype.getActions = function() {
-  if (this.actions)
-    return this.actions;
-  else
-    return [];
+  return this.actions;
+
 }
 
 Unit.prototype.moveActionToTop = function( action) {

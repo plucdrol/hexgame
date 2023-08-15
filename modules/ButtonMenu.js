@@ -5,16 +5,16 @@ export default function ButtonMenu(menu_id, unit_input, world) {
 
   this.getActionSelected = getActionSelected
   this.unselectActions = unselectActions
-  this.updateFunction = updateFunction
+  this.update = update
 
 
-  Events.on('hex_clicked', updateFunction );
+  Events.on('hex_clicked', update );
 
   /////////////////////////////////////////////////////
   //           Function which updates all the menus
   /////////////////////////////////////////////////////
 
-  function updateFunction() { 
+  function update() { 
 
     let actor = unit_input.getActorSelected();
     let position = unit_input.getHexSelected();
@@ -29,7 +29,6 @@ export default function ButtonMenu(menu_id, unit_input, world) {
       updateActionButtons(world, actor, position);
     } else {
       clearButtons();
-      //writeMessage("", 'city-resources');
     }
   }
 
@@ -97,11 +96,7 @@ export default function ButtonMenu(menu_id, unit_input, world) {
     }
   };
 
-
-
-
-
-
+  //This is the place where REACT should take over
   function makeButton(menu_name, button_id, button_title, text, do_button) {
 
     if (do_button)
@@ -115,12 +110,6 @@ export default function ButtonMenu(menu_id, unit_input, world) {
              + button_title + "<br><span class='extra-description'>" +
              text +"</span>"+do_button+"</div></label></input>";
   }
-
-
-
-
-
-
 
   function addButtonClickDetection(menu_name, function_call) {
     
@@ -137,7 +126,7 @@ export default function ButtonMenu(menu_id, unit_input, world) {
     for (let button of document.getElementById(menu_name).getElementsByClassName('button-do')) {
 
       button.addEventListener('click', function(){ bonus_list.enableBonus(button.id); 
-                                                   updateFunction(); });
+                                                   update(); });
     }
   }
 
