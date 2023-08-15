@@ -1,5 +1,3 @@
-
-
 import Events from './u/Events.js'
 import Hex from './u/Hex.js'
 import HexRenderer from './HexRenderer.js'
@@ -7,8 +5,6 @@ import RenderStyle from './u/Renderer.js'
 import updateTooltip from './Tooltip.js'
 
 export default function HUDRenderer(world, world_input, renderer) {
-
-
 
   var unit_input = world_input.getUnitInput();
   var hex_renderer = new HexRenderer(renderer, world.getLayout() );
@@ -29,37 +25,34 @@ export default function HUDRenderer(world, world_input, renderer) {
   /////////////////////////////////////////////////////
   this.drawHUD = function() {
 
-
     var hex_hovered = world_input.getHexHovered();
     var hex_selected = unit_input.getHexSelected();
 
-    if (hex_hovered) {
+    if (hex_hovered) 
       drawHoveredHex(hex_hovered);
-    }
 
-    if (hex_selected) {
-      let actor = unit_input.getActorSelected();
+    if (!hex_selected) 
+      return
+
+    let actor = unit_input.getActorSelected();
+    if (!actor) 
+      return
+
+    let action = unit_input.getActionSelected();
+    if (!action) 
+      return;
+
+    if (action.sky_action && hex_selected && hex_hovered)
+      drawStraightLine(hex_selected, hex_hovered);
+
+    if (action_path && action_path.length > 0) 
+      drawActionPath(hex_hovered);
+
+    if ((action.sky_action || action_path) && action_targets && action_targets.length > 0)
+      drawActionTargets(hex_hovered);
 
 
-
-      if (actor) {
-        let action = unit_input.getActionSelected();
-        if (action) {
-
-          if (action.sky_action && hex_selected && hex_hovered)
-            drawStraightLine(hex_selected, hex_hovered);
-
-          if (action_path && action_path.length > 0) 
-            drawActionPath(hex_hovered);
-
-          if ((action.sky_action || action_path) && action_targets && action_targets.length > 0)
-            drawActionTargets(hex_hovered);
-
-
-        }
-      } 
-    } 
-  }
+}
 
 
 
@@ -83,7 +76,7 @@ export default function HUDRenderer(world, world_input, renderer) {
       clearTimeout(hover_timeout);
     hover_timeout = setTimeout(function(){ updateActionTargets(hex_hovered);
                                                updateActionPath(hex_hovered); 
-                                               updateTooltip(world, hex_hovered) 
+                                               //updateTooltip(world, hex_hovered) 
                                              }, 100);
 
   }
@@ -230,15 +223,4 @@ export default function HUDRenderer(world, world_input, renderer) {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
