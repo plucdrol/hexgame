@@ -80,12 +80,13 @@ WorldRenderer.p.drawBigHex = function(radius) {
 
 
 
-WorldRenderer.p.drawSomeLands = function() {
+WorldRenderer.p.drawSomeLands = function(count) {
   
   if (!this.landHexes)
     this.landHexes = this.world.getHexes();
 
-  let count = 1000;
+  if (!count)
+    var count = this.world.tileCount();
 
   while (count) {
     let next = this.landHexes.next()

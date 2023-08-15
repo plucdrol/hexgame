@@ -45,7 +45,7 @@ export default function World(radius, type, origin) {
     var tile_size = new Point(35*scale, 35*scale);  
     if (!origin)
       var origin = new Point(0,0);
-  } else {// == 'earth'
+  } else {// == 'planet'
     let scale = 1;
     var tile_size = new Point(35*scale, 35*scale);  
     if (!origin)
@@ -60,7 +60,8 @@ export default function World(radius, type, origin) {
     this.world_map = new MapGenerator().makeSystemMap(radius);
     //create units map
     this.units = new HexMap();
-    this.units.set(new Hex(0,0), new Unit('star'));
+    for (let hex of Hex.circle(new Hex(0,0), 3))
+      this.units.set(hex, new Unit('star'));
     //create resources map
     this.resources = new HexMap();
     this.generateSystemResources();
@@ -115,6 +116,10 @@ World.prototype.setHex = function(hex,value) {
 
 World.prototype.getHexes = function() {
   return this.world_map.getHexes();
+}
+
+World.prototype.tileCount = function() {
+  return this.world_map.size();
 }
 
 

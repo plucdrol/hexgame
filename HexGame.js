@@ -32,10 +32,10 @@ var canv_input = new CanvasInput('canvas');
 //Contains a world map, units, and resources
 
 let earth_radius = 35;
-var earth = new World( earth_radius,'dust', new Point(35*10*80, 0) );// <-- model
+var earth = new World( earth_radius,'dust', new Point(3*35*10*80, 0) );// <-- model
 
 let mars_radius = 60;
-var mars = new World( mars_radius,'earth', new Point(-35*10*80, -35*10*80) )// <-- model
+var mars = new World( mars_radius,'earth', new Point(35*10*80, 0) )// <-- model
 
 let system_radius = 35;
 var system = new World(system_radius, 'system');// <-- model
@@ -49,6 +49,7 @@ var view = new View('canvas');
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
 var earth_input = new WorldInput(earth, view);
+//var mars_input = new WorldInput(mars, view);
 var view_input = new ViewInput(view); 
 
 //Has functions for drawing to the screen

@@ -117,7 +117,6 @@ export default function Action() {
         }
         counter++;
         action.updateActionTargets(world, actor, position);
-        world.highlightRange(action.range, 'brown');
         if (counter < range.length)
           setTimeout(stepByStep, step_time);
         step_time = 500;
@@ -128,7 +127,6 @@ export default function Action() {
     } else {
       action.doSingleAction(world, actor, position, target);
       action.updateActionTargets(world, actor, position);
-      world.highlightRange(action.range, 'brown');
     }
     
 
@@ -228,7 +226,8 @@ export default function Action() {
   this.updateActionTargets = function(world, actor, position) {
 
     this.range = this.getActionTargets(world, actor, position );
-    //world.highlightRange(this.range);
+    world.highlightRange(this.range, 'brown');
+    
 
     //clear the clouds over the area explored
     //for (let hex of actor.range) {
@@ -311,6 +310,7 @@ export default function Action() {
       world.buildRoad(actionPath, road_level);
   }
 
+  //NEVER CALLED, only definition of "action_tree"
   this.buildRoadUsingTree = function(world, actor, origin, target) {
 
     let actionPath = [target];

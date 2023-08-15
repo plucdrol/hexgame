@@ -174,6 +174,8 @@ export function actionExpandByAir(max_distance) {
   this.can_use_roads = false;
   this.sky_action = true;
 
+  this.cloud_clear = 5;
+
   this.description = "Seed";
   this.extra_description = "Launch a new base";
 

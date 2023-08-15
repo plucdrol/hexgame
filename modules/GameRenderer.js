@@ -17,7 +17,7 @@ export default function GameRenderer(worlds, world_input, view) {
   }
 
   let hud_renderer = new HUDRenderer(worlds[1], world_input, renderer);
-  //let space_hud_renderer = new HUDRenderer(system, world_input, renderer);
+  //let mars_hud_renderer = new HUDRenderer(worlds[2], mars_input, renderer);
 
 
   function clear() {
@@ -45,6 +45,7 @@ export default function GameRenderer(worlds, world_input, view) {
 
     //draw the HUD on top
     hud_renderer.drawHUD();
+    //mars_hud_renderer.drawHUD();
 
     /* This used to decide which HUD to render 
     //draw the HUD on top
