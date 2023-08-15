@@ -13,8 +13,9 @@ export default function HUDRenderer(world, world_input, renderer) {
   var hex_renderer = new HexRenderer(renderer, world.getLayout() );
   var action_path = [];
   var action_targets = [];
+  var hover_timeout;
 
-  Events.on('hex_hovered_changed', updateHover );
+  Events.on('hex_hovered_changed', (e) => updateHover(e.detail) );
 
 
 
@@ -77,10 +78,12 @@ export default function HUDRenderer(world, world_input, renderer) {
     action_targets = [];
 
     //use a timeout to only trigger when the mouse stops moving
-    if (this.hoverTimeout)
-      clearTimeout(this.hoverTimeout);
-    this.hoverTimeout = setTimeout(function(){ updateActionTargets(hex_hovered.detail);
-                                               updateActionPath(hex_hovered.detail); }, 100);
+    if (hover_timeout)
+      clearTimeout(hover_timeout);
+    hover_timeout = setTimeout(function(){ updateActionTargets(hex_hovered);
+                                               updateActionPath(hex_hovered); 
+                                             //  updateTooltip(world, hex_hovered) 
+                                             }, 100);
 
   }
 
@@ -226,3 +229,78 @@ export default function HUDRenderer(world, world_input, renderer) {
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /////////////////////////////////////////////////////
+  //              Functions about Tooltip (make into its own module)
+  /////////////////////////////////////////////////////
+
+  function clearTooltip() {
+    document.getElementById('tooltip').innerHTML = "";
+  }
+
+  function getTooltip() {
+    return document.getElementById('tooltip').innerHTML;
+  }
+
+  function addTooltip(message) {
+    document.getElementById('tooltip').innerHTML += message;
+  }
+
+
+
+
+  function updateTooltip(world, hex) {
+    clearTooltip();
+    
+    //skip hidden and out-of-bounds hexes
+    if (!hex) 
+      return;
+    if (!world.tileIsRevealed(hex)) {
+      addTooltip("clouds");
+      return;
+    }
+
+    //HOVERING OVER THINGS
+    addTooltipUnit(world, hex);
+    //if (!getTooltip())
+    addTooltipResource(world, hex);
+    //if (!getTooltip())
+    addTooltipTile(world, hex);
+
+  }
+
+  function addTooltipUnit(world, hex) {
+    let unit = world.getUnit(hex);
+    if (unit && unit.hasOwnProperty('size'))
+      addTooltip(unit.type+", ");
+  }
+
+  function addTooltipResource(world, hex) {
+    let resource = world.getResource(hex);
+    if (resource && resource.resources) 
+      addTooltip(resource.type+", ");
+  }
+
+  function addTooltipTile(world, hex) {
+    let tile = world.getTile(hex);
+    if (tile && tile.hasOwnProperty('elevation')) {
+      addTooltip(world.getTileName(tile.elevation)+", ");
+    }
+    if (tile.river) {
+      addTooltip('river '+tile.river.water_level);
+    }
+  }

@@ -287,67 +287,6 @@ export default function ButtonMenu(menu_id, world) {
 
 
 
-  /////////////////////////////////////////////////////
-  //              Functions about Tooltip
-  /////////////////////////////////////////////////////
-
-  function clearTooltip() {
-    document.getElementById('tooltip').innerHTML = "";
-  }
-
-  function getTooltip() {
-    return document.getElementById('tooltip').innerHTML;
-  }
-
-  function addTooltip(message) {
-    document.getElementById('tooltip').innerHTML += message;
-  }
-
-
-
-
-  function updateTooltip(hex_hovered) {
-    clearTooltip();
-    
-    //skip hidden and out-of-bounds hexes
-    if (!hex_hovered) 
-      return;
-    if (!world.tileIsRevealed(hex_hovered)) {
-      addTooltip("clouds");
-      return;
-    }
-
-    //HOVERING OVER THINGS
-    addTooltipUnit(hex_hovered);
-    //if (!getTooltip())
-      addTooltipResource(hex_hovered);
-    //if (!getTooltip())
-      addTooltipTile(hex_hovered);
-
-  }
-
-  function addTooltipUnit(hex_hovered) {
-    let unit = world.getUnit(hex_hovered);
-    if (unit && unit.hasOwnProperty('size'))
-      addTooltip(unit.type+", ");
-  }
-
-  function addTooltipResource(hex_hovered) {
-    let resource = world.getResource(hex_hovered);
-    if (resource && resource.resources) 
-      addTooltip(resource.type+", ");
-  }
-
-  function addTooltipTile(hex_hovered) {
-    let tile = world.getTile(hex_hovered);
-    if (tile && tile.hasOwnProperty('elevation')) {
-      addTooltip(land_tiles[tile.elevation]+", ");
-    }
-    if (tile.river) {
-      addTooltip('river '+tile.river.water_level);
-    }
-  }
-
 
   /////////////////////////////////////////////////////
   //           Functions about top bar messages

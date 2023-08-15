@@ -34,6 +34,8 @@ var land_tiles = [
 'clouds'
 ];
 
+
+
 export default function World(radius, type, origin) {
 
   this.radius = radius;
@@ -89,6 +91,9 @@ export default function World(radius, type, origin) {
 
 }
 
+World.prototype.getTileName = function(elevation) {
+  return land_tiles[elevation]
+}
 
 World.prototype.getZoom = function() {
   return this.layout.size.x/35;
@@ -504,11 +509,11 @@ World.prototype.onOcean = function(position) {
 }
 
 World.prototype.onMountain = function(position) {
-  return land_tiles[ this.getTile(position).elevation ] == 'mountains';
+  return this.getTileName( this.getTile(position).elevation ) == 'mountains';
 }
 
 World.prototype.onIce = function(position) {
-  return land_tiles[ this.getTile(position).elevation ] == 'ice';
+  return this.getTileName(  this.getTile(position).elevation ) == 'ice';
 }
 
 World.prototype.countLand = function(position, radius, minimum) {

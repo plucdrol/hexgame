@@ -25,28 +25,28 @@ export default function UnitInput(world) {
   
   var hex_selected = undefined;
   var button_menu = new ButtonMenu('action-buttons', world);
-
+  let unit_input = this;
 
   this.selectNothing = selectNothing;
   this.getHexSelected = getHexSelected
   this.getActorSelected = getActorSelected
   this.getActionSelected = getActionSelected
 
+  Events.on('hex_clicked', clickHex );
 
-  
 
 
   //-------1---------2---------3---------4---------5---------6--------7---------8--------
   
-  Events.on('hex_clicked', clickHex );
-  let unit_input = this;
-  function clickHex(hex) {
+ 
+
+  function clickHex(event) {
 
     button_menu.update(unit_input);
     if (anActorIsSelected() ) 
-      clickWithSelection(hex.detail);
+      clickWithSelection(event.detail);
     else
-      clickWithNoSelection(hex.detail);
+      clickWithNoSelection(event.detail);
   };
 
 
