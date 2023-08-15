@@ -42,8 +42,7 @@ export default function actionExpand(distance) {
 
   this.also_build_road = true;
   this.can_use_roads = true;
-  this.double_road_speed = false;
-  this.double_highway_speed = true;
+  this.double_road_speed = true;
 
   this.description = "Expand";
   this.extra_description = "Grow your base";
@@ -170,7 +169,6 @@ export function actionExpandByAir(max_distance) {
   this.maximum_elevation = 30;
   this.min_distance = 0;
   this.also_build_road = false;
-  this.also_build_road_backwards = false;
   this.can_use_roads = false;
   this.sky_action = true;
 
@@ -308,7 +306,6 @@ export function actionMoveCity() {
   this.max_distance = 5;
 
   this.also_build_road = true;
-  this.also_build_road_backwards = true;
   this.hover_radius = 3;
 
   this.hover_action = new actionExploit(3,true);

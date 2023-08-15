@@ -24,7 +24,6 @@ export default function Action() {
   this.auto_explore = true;
 
   this.also_build_road = true;
-  this.also_build_road_backwards = false;
 
   this.cloud_clear = 0;
   this.multi_target = false;
@@ -151,9 +150,6 @@ export default function Action() {
 
     if (this.also_build_road)
       this.createRoad(world, position, target);
-
-    if (this.also_build_road_backwards)
-      this.createRoad(world, target, position);
 
     if (this.new_unit_type) {
       world.addUnit(target, this.new_unit_type, actor);
