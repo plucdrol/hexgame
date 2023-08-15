@@ -2,8 +2,9 @@
 
 import Events from './u/Events.js'
 import Hex from './u/Hex.js'
-import HexRenderer from './HexRenderer.js';
+import HexRenderer from './HexRenderer.js'
 import RenderStyle from './u/Renderer.js'
+import updateTooltip from './Tooltip.js'
 
 export default function HUDRenderer(world, world_input, renderer) {
 
@@ -82,7 +83,7 @@ export default function HUDRenderer(world, world_input, renderer) {
       clearTimeout(hover_timeout);
     hover_timeout = setTimeout(function(){ updateActionTargets(hex_hovered);
                                                updateActionPath(hex_hovered); 
-                                             //  updateTooltip(world, hex_hovered) 
+                                               updateTooltip(world, hex_hovered) 
                                              }, 100);
 
   }
@@ -241,66 +242,3 @@ export default function HUDRenderer(world, world_input, renderer) {
 
 
 
-
-
-
-  /////////////////////////////////////////////////////
-  //              Functions about Tooltip (make into its own module)
-  /////////////////////////////////////////////////////
-
-  function clearTooltip() {
-    document.getElementById('tooltip').innerHTML = "";
-  }
-
-  function getTooltip() {
-    return document.getElementById('tooltip').innerHTML;
-  }
-
-  function addTooltip(message) {
-    document.getElementById('tooltip').innerHTML += message;
-  }
-
-
-
-
-  function updateTooltip(world, hex) {
-    clearTooltip();
-    
-    //skip hidden and out-of-bounds hexes
-    if (!hex) 
-      return;
-    if (!world.tileIsRevealed(hex)) {
-      addTooltip("clouds");
-      return;
-    }
-
-    //HOVERING OVER THINGS
-    addTooltipUnit(world, hex);
-    //if (!getTooltip())
-    addTooltipResource(world, hex);
-    //if (!getTooltip())
-    addTooltipTile(world, hex);
-
-  }
-
-  function addTooltipUnit(world, hex) {
-    let unit = world.getUnit(hex);
-    if (unit && unit.hasOwnProperty('size'))
-      addTooltip(unit.type+", ");
-  }
-
-  function addTooltipResource(world, hex) {
-    let resource = world.getResource(hex);
-    if (resource && resource.resources) 
-      addTooltip(resource.type+", ");
-  }
-
-  function addTooltipTile(world, hex) {
-    let tile = world.getTile(hex);
-    if (tile && tile.hasOwnProperty('elevation')) {
-      addTooltip(world.getTileName(tile.elevation)+", ");
-    }
-    if (tile.river) {
-      addTooltip('river '+tile.river.water_level);
-    }
-  }
