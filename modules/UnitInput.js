@@ -13,7 +13,6 @@
 
 //Dependencies
 import Hex from './u/Hex.js'
-import PathFinder from './u/Pathfinder.js'
 import ButtonMenu from './ButtonMenu.js'
 import Events from './u/Events.js'
 
@@ -23,7 +22,7 @@ import {listContainsHex} from './u/Hex.js'
 
 export default function UnitInput(world) {
   
-  var hex_selected = undefined;
+  var hex_selected;
   var button_menu = new ButtonMenu('action-buttons', world);
   let unit_input = this;
 
@@ -32,7 +31,7 @@ export default function UnitInput(world) {
   this.getActorSelected = getActorSelected
   this.getActionSelected = getActionSelected
 
-  Events.on('hex_clicked', clickHex );
+  Events.on('hex_clicked', (event) => clickHex(event.detail) );
 
 
 
@@ -40,13 +39,14 @@ export default function UnitInput(world) {
   
  
 
-  function clickHex(event) {
+  function clickHex(hex) {
+
+    if (anActorIsSelected() ) 
+      clickWithSelection(hex);
+    else
+      clickWithNoSelection(hex);
 
     button_menu.update(unit_input);
-    if (anActorIsSelected() ) 
-      clickWithSelection(event.detail);
-    else
-      clickWithNoSelection(event.detail);
   };
 
 
@@ -55,37 +55,32 @@ export default function UnitInput(world) {
 
     button_menu.unselectActions();
 
-    if (hex) {
-      if (world.getActor(hex))
-        hex_selected = hex;
-
-    } else {
-      hex_selected = undefined;
+    if (hex && world.getActor(hex))
+      hex_selected = hex;
+    else
       selectNothing();
-    }
   };
 
 
   function selectNothing() {
-    //getActorSelected().range = undefined;
-    hex_selected = undefined;
-    button_menu.update(this);
+    hex_selected = null;
+    button_menu.update(unit_input);
   };
 
   function aHexIsSelected() {
-    return (hex_selected instanceof Hex);
+    if (hex_selected)
+      return true;
   };
 
   function getHexSelected()  {
-    if (aHexIsSelected())
+    if (hex_selected)
       return hex_selected;
     else
       return false;
   };
 
   function anActorIsSelected() {
-    
-    if (!aHexIsSelected()) 
+    if (!hex_selected) 
       return false;
 
     var maybe_actor = world.getActor(getHexSelected());
@@ -117,27 +112,19 @@ export default function UnitInput(world) {
     selectHex(target);
   };
 
-  //This is where target-actions should take effect
-  //Instant effects will happen when the button is pressed instead
+
   function clickWithSelection(target) {
     
-    var actor = getActorSelected();
-    var action = button_menu.getActionSelected(actor);
+    let actor = getActorSelected();
+    let action = button_menu.getActionSelected(actor);
 
-
-    if (action && !action.infinite_range && !action.range ) {
-      clickOutsideRange(target);
-      return 0;
-    }
-
-    //if you are clicking inside the actor's range
-    if ((action && action.infinite_range) || (action.range && listContainsHex(target, action.range)) ) {
+    if (action && action.infinite_range) 
       clickInsideRange(target);
-
-    //if you are clicking outside the actor's range
-    } else {
+    else if (action.range && listContainsHex(target, action.range)) 
+      clickInsideRange(target);
+    else
       clickOutsideRange(target);
-    }
+
   };
 
   function clickInsideRange(target) {
@@ -147,21 +134,17 @@ export default function UnitInput(world) {
     let action = button_menu.getActionSelected(actor);
 
     if (action.requirement(world, actor, origin)) {
+      
       action.doAction(world, actor, origin, target);
-      if (action.nextSelection == 'target') {
-        selectHex(target); 
-      } 
 
-      if (action.nextSelection == 'new_unit_if_exists' && world.unitAtLocation(target) ) {
+      if (action.nextSelection == 'target') 
         selectHex(target); 
-      } 
+
+      if (action.nextSelection == 'new_unit' && world.unitAtLocation(target) ) 
+        selectHex(target); 
+
     }
-
-    button_menu.update(unit_input);
-
   };
-
-
 
 
   function clickOutsideRange(target) {
@@ -171,9 +154,4 @@ export default function UnitInput(world) {
       clickHex(target);
     }
   };
-
-
-
-
-
 }
