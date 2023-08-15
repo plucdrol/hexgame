@@ -214,65 +214,37 @@ World.prototype.buildRoad = function(hexarray, road_level) {
 World.prototype.addRoadTile = function(hex1, hex2, road_level) {
 
   if (!road_level)
-      road_level = 1;
-      
-  //road on tile 2
-  if (!this.getTile(hex2).road_to) {
-    this.getTile(hex2).road_to = new HexMap();
-    this.getTile(hex2).road_to_level = new HexMap();
+    road_level = 1;
+
+  let world = this;
+
+  function addRoadHalf(hexA, hexB) {
+
+    let tile1 = world.getTile(hexA);
+    if (!tile1.road_to) {
+      tile1.road_to = new HexMap();
+    }
+
+    let new_road = true;
+
+    if ( tile1.road_to.containsHex(hexB) )
+      new_road = false;
+
+    if (new_road) {
+      tile1.road_to.set(hexB, road_level);
+
+    } else {
+      let current_road_level = tile1.road_to.getValue(hexB);
+      if (current_road_level < 32) 
+        tile1.road_to.set(hexB, current_road_level+road_level );
+    } 
+
+    
   }
 
-  let none_equal = true;
-  
-  for (let hex of this.getTile(hex2).road_to.getHexes() )
-    if (hex.equals(hex1))
-      none_equal = false;
 
-  if (none_equal) {
-    //road does not already exist
-    this.getTile(hex2).road_to.set(hex1, 1);
-    this.getTile(hex2).road_to_level.set(hex1, road_level );
-  } else {
-    //road already exists
-    let road_size = this.getTile(hex2).road_to.getValue(hex1);
-    if (road_size < 32) {
-      this.getTile(hex2).road_to.set(hex1, road_size+1 );
-    }
-    let current_road_level = this.getTile(hex2).road_to_level.getValue(hex1);
-    if (road_level > current_road_level){
-      this.getTile(hex2).road_to_level.set(hex1, road_level );
-    }
-  }
-
-
-
-
-  //road on tile 1
-  if (!this.getTile(hex1).road_to) {
-    this.getTile(hex1).road_to = new HexMap();
-    this.getTile(hex1).road_to_level = new HexMap();
-  }
-
-  none_equal = true;
-  for (let hex of this.getTile(hex1).road_to.getHexes() )
-    if (hex.equals(hex2))
-      none_equal = false;
-
-  if (none_equal) {
-    //road does not already exist
-    this.getTile(hex1).road_to.set(hex2, 1);
-    this.getTile(hex1).road_to_level.set(hex2, road_level );
-  } else {
-    //road already exists
-    let road_size = this.getTile(hex1).road_to.getValue(hex2);
-    if (road_size < 32) {
-      this.getTile(hex1).road_to.set(hex2, road_size+1 );
-    }
-    let current_road_level = this.getTile(hex1).road_to_level.getValue(hex2);
-    if (road_level > current_road_level){
-      this.getTile(hex1).road_to_level.set(hex2, road_level );
-    }
-  }
+  addRoadHalf(hex2, hex1);
+  addRoadHalf(hex1, hex2);
 
 }
 

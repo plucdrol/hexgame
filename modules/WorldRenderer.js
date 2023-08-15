@@ -268,7 +268,6 @@ WorldRenderer.p.drawRoad = function(hex) {
   
   let self = this;  
   let road_style = 'half only'
-  let zoom = this.hex_renderer.renderer.view.getZoom();
   let road_color = '#040';
 
 
@@ -276,15 +275,17 @@ WorldRenderer.p.drawRoad = function(hex) {
     drawRoadHalf(tile.road_to)
 
   function drawRoadHalf(road_to) {
-    for (let road of road_to.getHexes()) {
-      let road_size = road_to.getValue(road);
-      if (road_size < 1) continue;
+    for (let to of road_to.getHexes()) {
+      
+      let road_size = road_to.getValue(to);
 
-      road_color = '#040';
+      if (road_size < 1) 
+        continue;
+
       if (road_size > 12) 
         road_color = 'saddlebrown'; 
       
-      self.hex_renderer.drawCenterLine(hex, road, 3+road_size, road_color, 'half only');
+      self.hex_renderer.drawCenterLine(hex, to, 3+road_size, road_color, 'half only');
     }
   }
 }

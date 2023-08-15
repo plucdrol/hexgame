@@ -44,20 +44,23 @@ HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
   var style = new RenderStyle();
   style.line_width = width;
   style.line_color = line_color; 
+  style.line_caps = 'round';
+  
   var p1 = this.hexToPoint(hex1);
   var p2 = this.hexToPoint(hex2);
 
-  if (option && option=='half only') {
+  if (option=='half only') {
     p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
+
   }
 
-  if (option && option=='moving dots') {
+  if (option=='moving dots') {
     p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
     p1 = this.fractionalRandomPoint1(p1,p2);
     p2 = p1;
   }
 
-  if (option && option=='moving dots backwards') {
+  if (option=='moving dots backwards') {
     p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
     p1 = this.fractionalRandomPoint1(p2,p1);
     p2 = p1;
