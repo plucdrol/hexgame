@@ -24,7 +24,7 @@ import {listContainsHex} from './u/Hex.js'
 export default function UnitInput(world) {
   
   var hex_selected = undefined;
-  var button_menu = new ButtonMenu('action-buttons', this, world);
+  var button_menu = new ButtonMenu('action-buttons', world);
 
 
   this.selectNothing = selectNothing;
@@ -32,41 +32,33 @@ export default function UnitInput(world) {
   this.getActorSelected = getActorSelected
   this.getActionSelected = getActionSelected
 
-  Events.on('hex_clicked', clickHex );
+
   
 
 
   //-------1---------2---------3---------4---------5---------6--------7---------8--------
-
+  
+  Events.on('hex_clicked', clickHex );
+  let unit_input = this;
   function clickHex(hex) {
 
-    //if there is already a unit on the hex selected
-    if (anActorIsSelected() ) {
+    button_menu.update(unit_input);
+    if (anActorIsSelected() ) 
       clickWithSelection(hex.detail);
-      return;
-    }
-      
-    //if there is no unit selected
-    clickWithNoSelection(hex.detail);
+    else
+      clickWithNoSelection(hex.detail);
   };
 
-  //selecting a tile
+
+
   function selectHex(hex) {
 
     button_menu.unselectActions();
 
     if (hex) {
-      if (world.getActor(hex)) {
-
+      if (world.getActor(hex))
         hex_selected = hex;
 
-        /* ----Do not clear the range----
-        //look if there is a unit
-        var actor = getActorSelected();
-        if (actor) { 
-          clearRange(actor);
-        }*/
-      } 
     } else {
       hex_selected = undefined;
       selectNothing();
@@ -77,7 +69,7 @@ export default function UnitInput(world) {
   function selectNothing() {
     //getActorSelected().range = undefined;
     hex_selected = undefined;
-    button_menu.update();
+    button_menu.update(this);
   };
 
   function aHexIsSelected() {
@@ -165,9 +157,11 @@ export default function UnitInput(world) {
       } 
     }
 
-    button_menu.update();
+    button_menu.update(unit_input);
 
   };
+
+
 
 
   function clickOutsideRange(target) {

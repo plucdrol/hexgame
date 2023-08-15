@@ -203,13 +203,12 @@ export default function Action() {
 
   }
 
-  this.clearAllActionRangeClouds = function(world, actor, position) {
-    for (let new_unit_action of actor.getActions()) {
-        if (new_unit_action.auto_explore && new_unit_action.activation(world, actor, position)) {
-          //console.log('clearing clouds for '+new_unit_action.name);
-          let new_action_range = new_unit_action.getActionRange(world, actor, position);
-          for (let hex of new_action_range) {
-            //world.clearClouds(hex);
+  this.clearAllActionRangeClouds = function(world, new_actor, position) {
+    for (let action of actor.getActions()) {
+        if (action.auto_explore && action.activation(world, new_actor, position)) {
+          let range = action.getActionRange(world, new_actor, position);
+          for (let hex of range) {
+            world.clearClouds(hex);
           }
         }
       }
@@ -227,12 +226,6 @@ export default function Action() {
 
     this.range = this.getActionTargets(world, actor, position );
     world.highlightRange(this.range, 'brown');
-    
-
-    //clear the clouds over the area explored
-    //for (let hex of actor.range) {
-    //  world.clearClouds(hex,0);
-    //}
   };
 
   this.clearActionRange = function(world, actor) {
