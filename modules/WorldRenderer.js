@@ -282,10 +282,10 @@ WorldRenderer.p.drawRoad = function(hex) {
       if (road_size < 1) 
         continue;
 
-      if (road_size > 12) 
+      if (road_size > 8) 
         road_color = 'saddlebrown'; 
       
-      self.hex_renderer.drawCenterLine(hex, to, 3+road_size, road_color, 'half only');
+      self.hex_renderer.drawCenterLine(hex, to, 3+road_size*2, road_color, 'half only');
     }
   }
 }
