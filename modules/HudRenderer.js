@@ -165,9 +165,13 @@ export default function HUDRenderer(world, world_input, renderer) {
     let actor = unit_input.getActorSelected();
     let action = unit_input.getActionSelected();
 
-    let color = '#C50';
+
+
+    let color = '#C50'; //red
     if ( action.targetFilterFunction(world, actor, hex2) )
-      color = '#5C0';
+      color = '#5C0'; //green
+    if (Hex.distance(hex1,hex2) > action.max_distance)
+      color = '#C50'; //red
     hex_renderer.drawCenterLine(hex1, hex2, 6, color );
   }
 

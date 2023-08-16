@@ -330,18 +330,22 @@ WorldRenderer.p.drawEntity = function(hex, unit) {
     this.hex_renderer.drawHex(hex, unit_style);
   
   //medium units
-  if (unit.pop && unit.pop >= 2) 
+  if (unit.pop && unit.pop >= 2 && unit.pop <= 9) {
     this.hex_renderer.renderer.drawDot(position, Math.min(size, 1.5*size/zoom ), unit_style);
+  }
 
-  //small units
-  if (this.world.biggestRoad(hex) <= 12) 
+  
+  if (this.world.biggestRoad(hex) <= 8) {
+    
+    //small units
     if (unit.pop && unit.pop < 2) 
         this.hex_renderer.renderer.drawDot(position, Math.min(size/2, 1.5*size/2/zoom ), unit_style);
-
-  //resources and colonies
-  if (this.world.biggestRoad(hex) <= 12) 
+    //resources and colonies
     if (!unit.pop)
       this.hex_renderer.renderer.drawDot(position, Math.min(size, 1.5*size/zoom ), unit_style);
+  }
+
+
   
   //draw a number on the unit
   if (unit.pop && unit.pop >= 2) {
