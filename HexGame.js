@@ -35,7 +35,7 @@ let earth_radius = 35;
 var earth = new World( earth_radius,'dust', new Point(3*35*10*80, 0) );// <-- model
 
 let mars_radius = 60;
-var mars = new World( mars_radius,'earth', new Point(35*10*80, 0) )// <-- model
+var mars = new World( mars_radius,'earth', new Point(35*8*72+125, 0) )// <-- model
 
 let system_radius = 35;
 var system = new World(system_radius, 'system');// <-- model

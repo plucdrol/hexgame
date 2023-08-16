@@ -814,8 +814,6 @@ export function HexLayout (orientation_string, size, origin) {
   this.size = size;     //point object
   this.origin = origin; //point object
 
-  this.fast_points = [new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0)];
-  this.reusable_point = new Point(0,0);
 }
 
 

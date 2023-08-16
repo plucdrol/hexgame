@@ -47,14 +47,16 @@ export default function World(radius, type, origin) {
     var tile_size = new Point(35*scale, 35*scale);  
     if (!origin)
       var origin = new Point(0,0);
+    this.layout = new HexLayout('orientation_flat', tile_size, origin);  
   } else {// == 'planet'
     let scale = 1;
     var tile_size = new Point(35*scale, 35*scale);  
     if (!origin)
-      var origin = new Point(15*10*80, 0);
+      var origin = new Point(15*10*80, 0);  
+    this.layout = new HexLayout('orientation_pointy', tile_size, origin);  
   }
 
-  this.layout = new HexLayout('pointy', tile_size, origin);  
+
   this.world_map = new HexMap();
 
   if (type == 'system') {
@@ -62,7 +64,8 @@ export default function World(radius, type, origin) {
     this.world_map = new MapGenerator().makeSystemMap(radius);
     //create units map
     this.units = new HexMap();
-    for (let hex of Hex.circle(new Hex(0,0), 3))
+    //for (let hex of Hex.circle(new Hex(0,0), 3))
+    let hex = new Hex(0,0)
       this.units.set(hex, new Unit('star'));
     //create resources map
     this.resources = new HexMap();
