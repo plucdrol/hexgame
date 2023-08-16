@@ -46,7 +46,7 @@ export default function actionExpand(distance) {
   this.double_road_speed = true;
 
   this.description = "Expand";
-  this.extra_description = "Grow your base";
+  this.extra_description = "Click a brown tile to grow there";
 
   this.targetFilterFunction = function(world, actor, target) {
     return true;//world.onLand(target);
@@ -153,10 +153,12 @@ export function actionExpandByAir(max_distance) {
   this.can_use_roads = false;
   this.sky_action = true;
 
+  this.cost = 3;
+
   this.cloud_clear = 5;
 
   this.description = "Seed";
-  this.extra_description = "Launch a new base";
+  this.extra_description = "Click any tile to launch a seed there";
 
   if (max_distance)
     this.max_distance = max_distance;
@@ -180,6 +182,7 @@ export function actionMove(max_distance) {
 
   this.name = "move-city";
   this.can_use_roads = true;
+  this.double_road_speed = true;
 
   this.nextSelection = "target";
   this.min_distance = 0;
@@ -197,10 +200,10 @@ export function actionMove(max_distance) {
   this.collect_resource = true;
   this.destroy_resource = true;
 
-  this.cost = 1;
+  this.cost = 4;
 
   this.description = "Move";
-  this.extra_description = "Move into new lands";
+  this.extra_description = "Move your central node somewhere else";
 
   this.targetFilterFunction = function(world, actor, target) {
     return world.onLand(target) &&  

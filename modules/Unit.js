@@ -101,8 +101,8 @@ Unit.prototype.setType = function(unit_type) {
       this.can_move = true;
       this.addAction( new actionExpand(10));
       this.addAction( new actionExpandByAir());
-      this.addAction( new actionMove(8) );
-      this.addAction( new actionExpandAll() );
+      this.addAction( new actionMove(10) );
+      //this.addAction( new actionExpandAll() );
       break;
 
     case 'village':
