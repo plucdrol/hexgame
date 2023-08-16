@@ -96,7 +96,6 @@ export default function ButtonMenu(menu_id, world) {
   }
 
   function updateActionTargets(actor, position) {
-    console.log('update action targets')
     let action = getActionSelected(actor);
 
     if (action)
@@ -198,7 +197,7 @@ export default function ButtonMenu(menu_id, world) {
       html_menu.appendChild( html_button );
 
       //Add click listeners to each button (DOESNT)
-      html_button.addEventListener('click', () => {console.log('click');updateActionTargets(actor, position)} );
+      html_button.addEventListener('click', () => {updateActionTargets(actor, position)} );
       
       //Show action in grey if its requirement is not met
       if (!action.requirement(world, actor, position))
