@@ -99,10 +99,7 @@ WorldRenderer.p.drawSomeLands = function(count) {
     this.drawLand(next.value)
     count--;
 
-
-
   }
-
 }
 
 WorldRenderer.p.drawLands = function() {
@@ -365,27 +362,7 @@ WorldRenderer.prototype.ocillate = function(length) {
 }
 
 
-WorldRenderer.p.drawPath = function(range,destination) {
-  //draw the path
-  if (range.containsHex(destination)) {
-    var hex_style = new RenderStyle();
-    hex_style.fill_color = "rgba(200, 255, 200, 0.5)";
-    hex_style.width = 2;
 
-    this.hex_renderer.drawHex(destination,hex_style);
-        
-
-    //calculate points of the hexes
-    var hexes = pathfinder.destinationPathfind(range, destination);
-    var points = [];
-    for (let i = 0; i<hexes.length;i++) {
-      points.push(this.hex_renderer.hexToPoint(hexes[i]));
-    }
-
-    //draw on screen
-    this.hex_renderer.renderer.drawLines(points,3);
-  }
-}
 
 
 
@@ -451,19 +428,6 @@ var color_scale = function (i, colortype) {
                     '#CCC']; //clouds
                       return colors[i];
 
-
-
-  case 'even_greenscale': var colors = 
-                    ['#222255','#2222DD','#999944', //ocean coast sand 0 1 2
-                    '#228822','#226633', //grass 3 4
-                    '#336644','#446633','#336622','#225533', //forest 5 6 7 8
-                    '#664433','#663344','#666633', //hills 9 10 11 12 13
-                    '#441122','#442222',
-                    '#777777', '#777777','#777777', //mountains 14 15 16
-                    '#888888','#888888','#888888', //mountains 17 18 19
-                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
-                    '#CCC']; //clouds
-                      return colors[i];
 
 
   case 'rock' : var colors = ['#115','#22D','#443', //ocean coast sand 0 1 2

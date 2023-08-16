@@ -118,9 +118,12 @@ export default function UnitInput(world) {
     let actor = getActorSelected();
     let action = button_menu.getActionSelected(actor);
 
+    action.updateTargets(world, actor, getHexSelected());
+
+    console.log('click with selection')
     if (action && action.infinite_range) 
       clickInsideRange(target);
-    else if (action.range && listContainsHex(target, action.range)) 
+    else if (action.canTarget(target)) 
       clickInsideRange(target);
     else
       clickOutsideRange(target);
@@ -132,9 +135,9 @@ export default function UnitInput(world) {
     let origin = hex_selected;
     let actor = getActorSelected();
     let action = button_menu.getActionSelected(actor);
-
+      console.log('click inside range')
     if (action.requirement(world, actor, origin)) {
-      
+
       action.doAction(world, actor, origin, target);
 
       if (action.nextSelection == 'target') 

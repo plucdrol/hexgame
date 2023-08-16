@@ -95,16 +95,14 @@ Unit.prototype.setType = function(unit_type) {
   switch (unit_type) {
 
     case 'city':
-      this.split = 1;
       this.name = "City";
       this.pop =  1;
       this.setGraphic(city_color,4);
       this.can_move = true;
-      //this.addAction( new actionExploit(5, false));
       this.addAction( new actionExpand(10));
       this.addAction( new actionExpandByAir());
       this.addAction( new actionMove(8) );
-      //this.addAction( new actionExpandAll() );
+      this.addAction( new actionExpandAll() );
       break;
 
     case 'village':

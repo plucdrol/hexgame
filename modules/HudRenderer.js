@@ -88,7 +88,7 @@ export default function HUDRenderer(world, world_input, renderer) {
     let hex_selected = unit_input.getHexSelected();
 
     if (action && actor && hex_selected) {
-      action_path = action.getActionPath(world, hex_selected, hex_hovered, action.max_distance);
+      action_path = action.getPath(world, hex_selected, hex_hovered, action.max_distance);
     } else {
       action_path = [];
     }
@@ -106,7 +106,7 @@ export default function HUDRenderer(world, world_input, renderer) {
         return;
 
       let hover_action = action.hover_action;
-      action_targets = hover_action.getActionTargets(world, actor, hex_hovered );
+      action_targets = hover_action.getTargets(world, actor, hex_hovered );
     } 
   }
 
@@ -173,26 +173,6 @@ export default function HUDRenderer(world, world_input, renderer) {
     if (Hex.distance(hex1,hex2) > action.max_distance)
       color = '#C50'; //red
     hex_renderer.drawCenterLine(hex1, hex2, 6, color );
-  }
-
-
-  function actorHasRenderableRange(actor) {
-    return (actor && actor.selectable && actor.range.length > 0)
-  }
-
-  //never called
-  function drawActorRange() {
-    //draw range of selected actor
-    var actor = unit_input.getActorSelected();
-    
-    //range style
-    var range_style = new RenderStyle();
-    range_style.fill_color = "rgba(255,255,150, "+ocillate(900)+")";
-    range_style.line_color = "rgba(255,255,100,"+(0.5+0.5*ocillate(900))+")";
-
-    if (actorHasRenderableRange(actor)) {
-      hex_renderer.drawHexes(actor.range, range_style);
-    }
   }
 
   function drawHoveredHex(hex_hovered) {

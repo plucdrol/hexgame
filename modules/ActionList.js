@@ -63,7 +63,7 @@ export default function actionExpand(distance) {
 
       let target_pop = world.getUnit(target).pop;
       let after_action = new actionGrowRoots( target_pop );
-      after_action.triggerMultiAction( world, actor, target) 
+      after_action.doMultiAction( world, actor, target) 
     }
 
     //grow road and build a city if clicking somewhere else
@@ -72,7 +72,7 @@ export default function actionExpand(distance) {
       world.addUnit(target, 'city', actor);
 
       let after_action = new actionGrowRoots( 1 );
-      after_action.triggerMultiAction( world, actor, target)  
+      after_action.doMultiAction( world, actor, target)  
     }
 
     //add a village if clicling directly on a resource
@@ -80,12 +80,6 @@ export default function actionExpand(distance) {
       world.addUnit(target, 'village', actor);
       world.highlightRange(Hex.circle(target, 1), 'green'); //green is the color around captured resources
     }
-
-  }
-
-  this.effect = function(world, actor, position, target) {
-
-
   }
 }
 
@@ -148,17 +142,6 @@ export function actionGrowRoots(max_distance) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 export function actionExpandByAir(max_distance) {
   actionExpand.call(this);
 
@@ -188,6 +171,64 @@ export function actionExpandByAir(max_distance) {
 
 
 
+
+//This action transforms the unit into a camp
+export function actionMove(max_distance) {
+  Action.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "move-city";
+  this.can_use_roads = true;
+
+  this.nextSelection = "target";
+  this.min_distance = 0;
+  if (max_distance)
+    this.max_distance = max_distance;
+
+  this.also_build_road = true;
+  this.hover_radius = 3;
+
+  this.hover_action = new actionGrowRoots(3);
+  this.after_action = this.hover_action;
+
+  this.cloud_clear = 6;
+
+  this.collect_resource = true;
+  this.destroy_resource = true;
+
+  this.cost = 1;
+
+  this.description = "Move";
+  this.extra_description = "Move into new lands";
+
+  this.targetFilterFunction = function(world, actor, target) {
+    return world.onLand(target) &&  
+    (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
+    ( world.hasResource(target)  ) ;
+  }
+
+  //If ACTIVATION returns true, and the selected unit has this action, the action will appear in its menu, greyed out
+  this.activation = function(world, actor, position, target) {
+    return (actor.can_move);
+  }
+
+  //if REQUIREMENT also returns true, then the button will no longer be grayed out
+  this.requirement = function(world, actor, position, target) {
+    return (actor.can_move);
+  }
+
+  this.effect = function(world, actor, position, target) {
+
+    actor.moveActionToTop(this);
+    world.units.set(target, actor);
+
+    world.destroyUnit(position);
+    world.addUnit(position, 'city', actor);
+    
+  }
+
+}
 
 
 
@@ -286,68 +327,6 @@ export function actionExpandAll() {
 
 
 
-//This action transforms the unit into a camp
-export function actionMove(max_distance) {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
-
-  this.name = "move-city";
-  this.can_use_roads = true;
-
-  this.nextSelection = "target";
-  this.min_distance = 0;
-  if (max_distance)
-    this.max_distance = max_distance;
-
-  this.also_build_road = true;
-  this.hover_radius = 3;
-
-  this.hover_action = new actionGrowRoots(3);
-  this.after_action = this.hover_action;
-
-  this.cloud_clear = 6;
-
-  this.collect_resource = true;
-  this.destroy_resource = true;
-
-  this.cost = 1;
-
-  this.description = "Move";
-  this.extra_description = "Move into new lands";
-
-  this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) &&  
-    (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
-    ( world.hasResource(target)  ) ;
-  }
-
-  //If ACTIVATION returns true, and the selected unit has this action, the action will appear in its menu, greyed out
-  this.activation = function(world, actor, position,target) {
-    return (actor.can_move);
-  }
-
-  //if REQUIREMENT also returns true, then the button will no longer be grayed out
-  this.requirement = function(world, actor, position,target) {
-    return (actor.can_move);
-  }
-
-  this.effect = function(world, actor, position, target) {
-
-    //actor.moveActionToTop(this);
-
-    world.units.set(target, actor);
-
-    world.destroyUnit(position);
-    world.addUnit(position, 'city', actor);
-    
-
-
-  }
-
-
-
-}
 
 
 
@@ -384,12 +363,12 @@ export function actionMove(max_distance) {
 
 
 
+/*
+
+                   OLD ACTIONS FROM city-style
 
 
-
-
-
-
+*/
 
 function cutRiver(world, position) {
   let tile = world.getTile(position);
@@ -491,26 +470,6 @@ function hydroDam = function(world, target) {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-                   OLD ACTIONS FROM city-style
-
-
-*/
 
 function actionCreateX(distance) {
   Action.call(this);

@@ -8,6 +8,7 @@
 
 import ActionPathfinder from './ActionPathfinder.js'
 import Hex from './u/Hex.js'
+import {listContainsHex} from './u/Hex.js'
 
 //All actions inherit from this action
 export default function Action() {
@@ -92,30 +93,32 @@ export default function Action() {
 
     let pathfinder = new ActionPathfinder(this);
     let tree = pathfinder.getTree( world, position, this.max_distance);
-    let range = this.range.concat(); //make a new range array because I'm going to sort it
+    if (!this.targets) 
+      this.updateTargets(world, actor, position);
+    let targets = this.targets.concat(); //make a new range array because I'm going to sort it
     let action = this;
       
     //Either do a single action or do the action on all targets
     if (this.multi_target) {
 
       //do actions in order from closest to furthest, with a preference for land tiles
-      range.sort((a, b) => (world.onWater(a) && world.onLand(b)) ? 1 : -1);
-      range.sort((a, b) => (tree.currentCell(a).path_cost > tree.currentCell(b).path_cost) ? 1 : -1);
+      targets.sort((a, b) => (world.onWater(a) && world.onLand(b)) ? 1 : -1);
+      targets.sort((a, b) => (tree.currentCell(a).path_cost > tree.currentCell(b).path_cost) ? 1 : -1);
       
 
       let counter = 0;
       let step_time = 500;
 
       function stepByStep() {
-        let hex = range[counter];
+        let hex = targets[counter];
         if (action.targetFilterFunction(world, actor, hex)) {
-          action.doSingleAction(world,actor,position,hex);
+          action.doSingleAction(world, actor, position, hex);
         } else {
           step_time = 20;
         }
         counter++;
-        action.updateActionTargets(world, actor, position);
-        if (counter < range.length)
+        action.updateTargets(world, actor, position);
+        if (counter < targets.length)
           setTimeout(stepByStep, step_time);
         step_time = 500;
       }
@@ -124,14 +127,29 @@ export default function Action() {
 
     } else { //single target
       action.doSingleAction(world, actor, position, target);
-      action.updateActionTargets(world, actor, position);
+      action.updateTargets(world, actor, position);
     }
     
 
 
   };
 
+  this.possibleTargets = function() {
+    return this.targets;
+  }
 
+  this.canTarget = function(target) {
+    if (this.targets && listContainsHex(target, this.targets))
+      return true;
+  }
+
+  this.doMultiAction = function( world, actor, position) {
+
+    this.updateTargets(world, actor, position);
+    if (this.targets.length > 0)
+      this.doAction(world, actor, position );
+
+  }
 
   this.doSingleAction = function(world, actor, position, target) {
 
@@ -153,7 +171,7 @@ export default function Action() {
     if (this.new_unit_type) {
       world.addUnit(target, this.new_unit_type, actor);
       let new_unit = world.getUnit(target);
-      this.clearAllActionRangeClouds(world, new_unit, target);
+      this.clearAllRangeClouds(world, new_unit, target);
     }
 
     if (this.collect_resource) {
@@ -169,7 +187,7 @@ export default function Action() {
     this.effect(world, actor, position, target);
 
     if (this.after_action && this.after_action.multi_target)
-      this.after_action.triggerMultiAction(world, actor, target);
+      this.after_action.doMultiAction(world, actor, target);
 
 
     if (this.collect_resource ) 
@@ -185,38 +203,28 @@ export default function Action() {
 
   }
 
-  this.clearAllActionRangeClouds = function(world, new_actor, position) {
+  this.clearAllRangeClouds = function(world, new_actor, position) {
     for (let action of actor.getActions()) {
       if (action.activation(world, new_actor, position)) {
-        let range = action.getActionRange(world, new_actor, position);
-        for (let hex of range) {
+        let range = action.getRange(world, new_actor, position);
+        for (let hex of range) 
           world.clearClouds(hex);
-        }
       }
     }
   }
 
-  this.triggerMultiAction = function( world, actor, position) {
 
-    this.updateActionTargets(world, actor, position);
-    if (this.range.length > 0){
-      this.doAction(world, actor, position );
-    }
-  }
 
-  this.updateActionTargets = function(world, actor, position) {
-
-    this.range = this.getActionTargets(world, actor, position );
+  this.updateTargets = function(world, actor, position) {
+    //range shows only targets not the land in between
+    this.targets = this.getTargets(world, actor, position );
     
-    let brownrange = this.getActionRange(world, actor, position);
+    //brown highlights on everything in between
+    let brownrange = this.getRange(world, actor, position);
     world.highlightRange(brownrange, 'brown');
   };
 
-  this.clearActionRange = function(world, actor) {
-    actor.range = [];
-  }
-
-  this.getActionRange = function(world, actor, position) {
+  this.getRange = function(world, actor, position) {
 
     if (this.infinite_range) {
       world.clearClouds();
@@ -233,9 +241,9 @@ export default function Action() {
     return action_range;
   };
 
-  this.getActionTargets = function(world, actor, position) {
+  this.getTargets = function(world, actor, position) {
 
-    let action_range = this.getActionRange(world, actor, position);
+    let action_range = this.getRange(world, actor, position);
 
     let suitable_targets = action_range.filter(target => this.targetFilterFunction(world, actor, target));
 
@@ -244,7 +252,7 @@ export default function Action() {
 
 
 
-  this.getActionPath = function(world, origin, target, extra_max_distance) {
+  this.getPath = function(world, origin, target, extra_max_distance) {
 
     if (this.sky_action)
       return undefined;
@@ -262,7 +270,7 @@ export default function Action() {
 
   this.createRoad = function(world, origin, target, road_level) {
 
-    var actionPath = this.getActionPath(world,origin,target,20);
+    var actionPath = this.getPath(world,origin,target,20);
 
     if (!road_level)
       road_level = 1;
