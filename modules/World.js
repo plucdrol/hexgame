@@ -79,10 +79,14 @@ export default function World(radius, type, origin) {
     this.highlights_on = false;
     this.makeCloudsEverywhere();
 
+
     //create units map
     this.units = new HexMap();
     this.resources = new HexMap();
-    this.generateResources();
+      
+    if (type == 'dust') {
+      this.generateResources();
+    }
   }
 
 
