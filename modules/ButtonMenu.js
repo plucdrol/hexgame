@@ -87,7 +87,7 @@ export default function ButtonMenu(menu_id, world) {
 
   function unselectActions() {
     let buttons = getButtonElements('action-buttons');
-    for (button of buttons)
+    for (let button of buttons)
       button.checked = false;
   }
 

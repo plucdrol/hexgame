@@ -11,6 +11,7 @@ export default function actionExpand(distance) {
   Action.call(this);
 
   this.name = "city-by-land-2";
+  this.cost = 2;
 
   this.nextSelection = 'self';
 
@@ -60,10 +61,7 @@ export default function actionExpand(distance) {
       actor.pop -= 2;
       world.getUnit(target).pop++;
 
-      //world.highlightRange(Hex.circle(target, world.getUnit(target).pop), 'green');
-
       let target_pop = world.getUnit(target).pop;
-
       let after_action = new actionGrowRoots( target_pop );
       after_action.triggerMultiAction( world, actor, target) 
     }
@@ -289,7 +287,7 @@ export function actionExpandAll() {
 
 
 //This action transforms the unit into a camp
-export function actionMoveCity() {
+export function actionMove(max_distance) {
   Action.call(this);
 
   this.minimum_elevation = 2;
@@ -299,12 +297,14 @@ export function actionMoveCity() {
 
   this.nextSelection = "target";
   this.min_distance = 0;
-  this.max_distance = 5;
+  if (max_distance)
+    this.max_distance = max_distance;
 
   this.also_build_road = true;
   this.hover_radius = 3;
 
-  this.hover_action = new actionExploit(3,true);
+  this.hover_action = new actionGrowRoots(3);
+  this.after_action = this.hover_action;
 
   this.cloud_clear = 6;
 
@@ -319,12 +319,12 @@ export function actionMoveCity() {
   this.targetFilterFunction = function(world, actor, target) {
     return world.onLand(target) &&  
     (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
-    ( world.hasResource(target) || world.nearCoast(target) || world.nearRiver(target) ) ;
+    ( world.hasResource(target)  ) ;
   }
 
   //If ACTIVATION returns true, and the selected unit has this action, the action will appear in its menu, greyed out
   this.activation = function(world, actor, position,target) {
-    return (actor.can_move /*&& world.bonusEnabled('moveable-cities')*/ );
+    return (actor.can_move);
   }
 
   //if REQUIREMENT also returns true, then the button will no longer be grayed out
@@ -334,7 +334,7 @@ export function actionMoveCity() {
 
   this.effect = function(world, actor, position, target) {
 
-    actor.moveActionToTop(this);
+    //actor.moveActionToTop(this);
 
     world.units.set(target, actor);
 

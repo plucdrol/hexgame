@@ -181,7 +181,7 @@ World.prototype.addUnit = function(hex, unit_type, owner) {
 }
 
 World.prototype.destroyUnit = function(hex) {
-    this.units.remove(hex);
+    this.units.delete(hex);
 }
 
 

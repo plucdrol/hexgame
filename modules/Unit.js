@@ -8,7 +8,7 @@
 var unit_id_incrementer = 1000;
 
 import actionExpand from './ActionList.js';
-import {actionGrowRoots,actionMoveCity,
+import {actionGrowRoots,actionMove,
          actionGoFishing,actionCreateLighthouse,
         actionExpandAll,actionCreateCity,actionCreateHarbor,actionExpandByAir} from './ActionList.js'
 
@@ -21,10 +21,7 @@ export default function Unit(unit_type, owner) {
   this.id = unit_id_incrementer++;
   this.actions = [];
   
-  if (owner) 
-    this.owner = owner;
-  else 
-    this.owner = null;
+  this.owner = owner || null;
 
   this.setType(unit_type);
 };
@@ -55,17 +52,13 @@ Unit.prototype.getActions = function() {
 }
 
 Unit.prototype.moveActionToTop = function( action) {
-  let i;
-  for (i=this.actions.length-1;i>=0; i--) {
+  for (let i=this.actions.length-1;i>=0; i--) {
     if (this.actions[i].name == action.name)
       this.actions.splice(i, 1);
   }
   this.actions.unshift(action);
 }
 
-Unit.prototype.setResourceStores = function(food, wood, stone) {
-  this.resources = {'food':food, 'wood':wood, 'stone':stone};
-}
 
 Unit.prototype.setGraphic = function(color,size) {
   this.color = color;
@@ -76,7 +69,6 @@ Unit.prototype.setResource = function(type, value) {
   if (!this.resources)
     this.resources = [];
   this.resources[type] = value;
-  //this.resource_value = value;
 }
 
 
@@ -111,7 +103,7 @@ Unit.prototype.setType = function(unit_type) {
       //this.addAction( new actionExploit(5, false));
       this.addAction( new actionExpand(10));
       this.addAction( new actionExpandByAir());
-      //this.addAction( new actionMoveCity(8) );
+      this.addAction( new actionMove(8) );
       //this.addAction( new actionExpandAll() );
       break;
 
@@ -119,14 +111,6 @@ Unit.prototype.setType = function(unit_type) {
       this.name = "Village";
       this.setGraphic('#040',2);
       this.addAction( new actionExpand(5));
-      //this.addAction( new actionExplore(12));
-      break;
-
-
-    case 'flesh-canon':
-      this.name = "City canon";
-      this.setGraphic('grey',6);
-      this.addAction( new actionCreateCityByAir( 10 ));
       break;
 
     case 'colony':
@@ -163,12 +147,9 @@ Unit.prototype.setType = function(unit_type) {
       actionGetResource2.description = 'Get one extra resource';
       actionGetResource2.extra_description = 'Can reach 2 tiles away<br>But only once';
 
-
       this.addAction( new actionGetResource(1, true));
       this.addAction( actionGetResource2 );
-
       this.addAction( new actionCreateRiverDock(1));
-
       this.addAction( new actionCreateLighthouse(1));
       //this.addAction( new actionCreateVillage(4));
       break;
@@ -215,11 +196,6 @@ Unit.prototype.setType = function(unit_type) {
       this.addAction( new actionCreateLighthouse(10));
       break;
 
-    case 'old-colony':
-      this.name = "Colony";
-      this.setGraphic('white',3);
-      this.setResource('colony',1);
-      break;
 
     case 'old-fishing-boat':
       this.name = "Fishing boat";
@@ -254,7 +230,6 @@ Unit.prototype.setType = function(unit_type) {
     case 'wood':
       this.setGraphic('#aaa',1);
       this.setResource('food',1);
-
       this.setResource('forest',1);
       break;
     case 'stone':
@@ -290,9 +265,6 @@ Unit.prototype.setType = function(unit_type) {
       this.setGraphic('red',5);
       this.setResource('food',5);
       break;
-
-      
-
     default:
       this.setGraphic('yellow',2);
       break;

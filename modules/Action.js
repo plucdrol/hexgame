@@ -207,7 +207,9 @@ export default function Action() {
   this.updateActionTargets = function(world, actor, position) {
 
     this.range = this.getActionTargets(world, actor, position );
-    world.highlightRange(this.range, 'brown');
+    
+    let brownrange = this.getActionRange(world, actor, position);
+    world.highlightRange(brownrange, 'brown');
   };
 
   this.clearActionRange = function(world, actor) {
