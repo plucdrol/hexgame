@@ -118,7 +118,7 @@ export function actionGrowRoots(max_distance) {
   this.can_use_roads = false;
   this.double_road_speed = false;
 
-  this.collect_resource = false; //should be true but 'takes city pop' relies on free_pop_cost
+  this.collect_resource = false; //should be true but 'takes city pop' relies on cost
   this.destroy_resource = true;
 
   this.multi_target = true;
@@ -218,7 +218,7 @@ export function actionExpandByAir(max_distance) {
 
 
 
-//This action transforms the unit into a camp
+
 export function actionExpandAll() {
   Action.call(this);
 
@@ -226,9 +226,6 @@ export function actionExpandAll() {
   this.new_unit_type = 'colony';
   this.can_use_roads = true;
   this.double_road_speed = true;
-
-  this.can_explore = true;
-  this.auto_explore = false;
 
   this.can_land = true;
   this.can_river = true;
@@ -254,8 +251,7 @@ export function actionExpandAll() {
 
   this.cloud_clear = 7;
 
-  this.free_pop_cost = -1;
-  this.total_pop_cost = -1;
+  this.cost = -1;
 
   this.collect_resource = true;
 
@@ -315,8 +311,7 @@ export function actionMoveCity() {
   this.collect_resource = true;
   this.destroy_resource = true;
 
-  //this.total_pop_cost = 1;
-  this.free_pop_cost = 1;
+  this.cost = 1;
 
   this.description = "Move";
   this.extra_description = "Move into new lands";
@@ -334,7 +329,7 @@ export function actionMoveCity() {
 
   //if REQUIREMENT also returns true, then the button will no longer be grayed out
   this.requirement = function(world, actor, position,target) {
-    return (actor.can_move && world.getPopulation() >= 1);
+    return (actor.can_move);
   }
 
   this.effect = function(world, actor, position, target) {
@@ -440,7 +435,7 @@ function actionHydroDam() {
 
   this.destroy_resource = false;
 
-  this.free_pop_cost = -4;
+  this.cost = -4;
 
   this.multi_target = false;
 
@@ -478,8 +473,6 @@ function hydroDam = function(world, target) {
       world.removeRoads(target);   
       if (!world.noUnitTypeInArea(target, 0, 'colony')) {
         world.getUnit(target).addPop(-1);
-        world.resources_collected -= 1;
-        world.resources_available -= 1;
         if (!world.getResource(target).resources['unknown'])
           world.destroyResource(target);
         world.destroyUnit(target);
@@ -519,15 +512,12 @@ function hydroDam = function(world, target) {
 
 */
 
-
-
-//This action transforms the unit into a camp
-export function actionCreateCity(distance, extra) {
+function actionCreateX(distance) {
   Action.call(this);
 
   this.minimum_elevation = 2;
 
-  this.name = "city-by-land";
+  this.name = "thing-by-land";
   this.type = "target";
   this.target = "land";
   this.new_unit_type = 'city';
@@ -540,7 +530,29 @@ export function actionCreateCity(distance, extra) {
   this.hover_radius = 3;
 
   this.cloud_clear = 6;
-  this.free_pop_cost = 4;
+  this.cost = 4;
+
+  this.can_use_roads = true;
+
+  this.description = "New X";
+  this.extra_description = "";
+
+  this.targetFilterFunction = function(world, actor, target) {
+    return world.onLand(target) && world.noCitiesInArea(target,5);
+  }
+}
+
+//This action transforms the unit into a camp
+export function actionCreateCity(distance) {
+  actionCreateX.call(this);
+
+  this.minimum_elevation = 2;
+
+  this.name = "city-by-land";
+  this.new_unit_type = 'city';
+
+  this.cloud_clear = 6;
+  this.cost = 4;
 
   this.can_use_roads = false;
 
@@ -550,20 +562,6 @@ export function actionCreateCity(distance, extra) {
   this.targetFilterFunction = function(world, actor, target) {
     return world.onLand(target) && world.noCitiesInArea(target,5);
   }
-  this.activation = function(world, actor, position) {
-    return true;//!actor.can_move;
-
-  }
-
-  this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 4;
-  }
-  this.effect = function(world, actor, position, target) {
-    if (extra == 'settled')
-      world.getUnit(target).can_move = false;
-  }
-
-
 
 }
 
@@ -592,112 +590,61 @@ function actionCreateCityBySea(distance) {
 
 //This action transforms the unit into a camp
 function actionCreateAirport(distance) {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
+  actionCreateX.call(this);
 
   this.name = "airport";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'airport';
-  this.can_use_roads = true;
 
-  this.nextSelection = "target";
   this.min_distance = 2;
-  this.max_distance = distance;
 
-  this.also_build_road = true;
   this.hover_radius = 1;
-
   this.cloud_clear = 3;
-
-  this.free_pop_cost = 6;
+  this.cost = 6;
   
   this.description = "Airport (-6 ants)";
-  this.extra_description = "Create a small village to collect some more resources";
+  this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
     return world.onLand(target) && world.noCitiesInArea(target,1);
   }
-
-
-  this.activation = function(world, actor, position) {
-    return world.total_population > 180;
-  }
-
-  this.requirement = function(world, actor, position) {
-    return world.total_population >= 200;
-  }
-
-
-
 }
 
 
 //This action transforms the unit into a camp
 function actionCreateVillage(distance) {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
+  actionCreateX.call(this);
 
   this.name = "village";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'village';
-  this.can_use_roads = true;
 
-  this.nextSelection = "target";
-  this.min_distance = 0;
-  this.max_distance = distance;
-
-  this.also_build_road = true;
   this.hover_radius = 1;
-
   this.cloud_clear = 3;
-
-  this.free_pop_cost = 2;
+  this.cost = 2;
   
   this.description = "Village (-2 ants)";
-  this.extra_description = "Create a small village to collect some more resources";
+  this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
     return world.onLand(target) && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
   }
-
-  this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 2;
-  }
-
-
-
 }
 
 
 //This action transforms the unit into a camp
 function actionCreateRiverDock(distance) {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
+  actionCreateX.call(this);
 
   this.name = "create-river-dock";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'river-dock';
   this.can_use_roads = true;
 
-  this.nextSelection = "target";
-  this.min_distance = 0;
-  this.max_distance = distance;
-
-  this.also_build_road = true;
   this.hover_radius = 0;
 
   this.can_river = true;
   this.stop_on_rivers = true;
 
   this.cloud_clear = 3;
-
-  this.free_pop_cost = 2;
+  this.cost = 2;
   
   this.description = "River docks (-2 ants)";
   this.extra_description = "Can gather all resources on a river";
@@ -708,38 +655,21 @@ function actionCreateRiverDock(distance) {
   this.activation = function(world, actor, position) {
     return world.nearRiver(position, 2);
   }
-  this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 2;
-  }
-
 }
-
-
-
-
-
-
-
 
 
 //This action transforms the unit into a camp
 function actionCreateExpeditionCenter() {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
+  actionCreateX.call(this);
 
   this.name = "expedition-center";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'expedition-center';
 
-  this.nextSelection = "target";
   this.min_distance = 1;
   this.max_distance = 1;
   this.hover_radius = 0;
 
-  this.free_pop_cost = 4;
-
+  this.cost = 4;
   this.cloud_clear = 5;
 
   this.description = "Expedition Center (-4)";
@@ -751,44 +681,22 @@ function actionCreateExpeditionCenter() {
   this.activation = function(world, actor, position) {
     return !world.countUnits(Hex.circle(position, 1), 'expedition-center', 1);
   }
-  this.requirement = function(world, actor, position) {
-    return world.getPopulation() >= 8;
-  }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //This action transforms the unit into a camp
 export function actionCreateHarbor() {
-  Action.call(this);
-
-  this.minimum_elevation = 2;
+  actionCreateX.call(this);
 
   this.name = "harbor";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'harbor';
 
-  this.nextSelection = "target";
-  this.min_distance = 0;
   this.max_distance = 3;
   this.hover_radius = 0;
 
   this.cloud_clear = 5;
-
-  this.free_pop_cost = 4;
+  this.cost = 4;
 
   this.description = "Harbor (-4 ants)";
   this.extra_description = "Explore and settle the sea.";
@@ -797,40 +705,26 @@ export function actionCreateHarbor() {
     return !world.unitAtLocation(target) && world.nearCoast(target, 1, 1);
   }
   this.activation = function(world, actor, position) {
-
     return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1);
   }
   this.requirement = function(world, actor, position) {
-    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1) &&  world.getPopulation() >= 4;
+    return world.countUnits(Hex.circle(position, 3), 'lighthouse', 1);
   }
 }
 
-
-
-
-
-
-
-
 export function actionCreateLighthouse(distance) {
-  Action.call(this);
+  actionCreateX.call(this);
 
   this.minimum_elevation = 1;
   this.stop_elevation_up = 2;
 
   this.name = "lighthouse";
-  this.type = "target";
-  this.target = "land";
   this.new_unit_type = 'old-lighthouse';
 
-  this.nextSelection = "target";
-  this.min_distance = 0;
-  this.max_distance = distance;
   this.hover_radius = 5;
 
   this.cloud_clear = 5;
-
-  this.free_pop_cost = 2;
+  this.cost = 2;
 
   this.can_use_roads = false;
 
@@ -840,12 +734,11 @@ export function actionCreateLighthouse(distance) {
   this.targetFilterFunction = function(world, actor, target) {
     return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.onLand(target))
   }
-
-  this.effect = function(world, actor, position, target) {
-    actor.can_move = false;
-  }
-
 }
+
+
+
+
 
 
 
@@ -876,8 +769,7 @@ function actionGetResource(max_distance, multi_target) {
 
   this.new_unit_type = 'colony';
 
-  this.free_pop_cost = -1;
-  this.total_pop_cost = -2;
+  this.cost = -1;
 
   this.destroy_resource = false;
 
@@ -888,28 +780,13 @@ function actionGetResource(max_distance, multi_target) {
 
     return (
            //dry land food tiles within 3 tiles of the city or...
-           (
-            world.onLand(target) && 
-           !world.onRiver(target) &&
-           !world.unitAtLocation(target) && 
-           world.countResources(Hex.circle(target, 0), 'food', 1)
-           ) 
+           (world.onLand(target) && !world.onRiver(target) && world.countResources(Hex.circle(target, 0), 'food', 1)) 
            ||
            //...or shallow water fish besides the city tile
-           (
-            world.getTile(target).elevation == 1 &&
-           !world.unitAtLocation(target) &&
-           world.countResources(Hex.circle(target, 0), 'food', 1) &&
-           (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village'))
-            )
+           (world.getTile(target).elevation == 1 && world.countResources(Hex.circle(target, 0), 'food', 1))
            ||
            //...or river fish besides the city tile
-           (
-            world.onRiver(target) &&
-           !world.unitAtLocation(target) &&
-           world.countResources(Hex.circle(target, 0), 'food', 1) &&
-           (!world.noCitiesInArea(target, 1) || !world.noUnitTypeInArea(target, 1, 'village'))
-           )
+           (world.onRiver(target) && world.countResources(Hex.circle(target, 0), 'food', 1))
            );
   }
 
@@ -952,8 +829,7 @@ function actionCollectRiverFish(max_distance) {
 
   this.destroy_resource = false;
 
-  this.free_pop_cost = -1;
-  this.total_pop_cost = -2;
+  this.cost = -1;
 
   this.multi_target = true;
   this.new_unit_type = 'colony';
@@ -994,8 +870,7 @@ export function actionGoFishing(max_distance) {
 
   this.destroy_resource = false;
 
-  this.free_pop_cost = -1;
-  this.total_pop_cost = -2;
+  this.cost = -1;
 
   this.multi_target = true;
   this.new_unit_type = 'fishing-boat';

@@ -88,7 +88,7 @@ export default function HUDRenderer(world, world_input, renderer) {
     let hex_selected = unit_input.getHexSelected();
 
     if (action && actor && hex_selected) {
-      action_path = action.getActionPath(world, actor, hex_selected, hex_hovered, action.max_distance);
+      action_path = action.getActionPath(world, hex_selected, hex_hovered, action.max_distance);
     } else {
       action_path = [];
     }

@@ -65,7 +65,7 @@ BonusList.prototype.enableBonus = function(bonus_name) {
 
 //bonus list should not need to refer to the world
 BonusList.prototype.nextBonusCostMet = function(world) {
-	return world.resources_collected >= this.next_bonus[this.number_of_bonuses];
+	//return world.resources_collected >= this.next_bonus[this.number_of_bonuses];
 }
 
 
@@ -92,8 +92,8 @@ function Bonus() {
 		if (!world.bonus_list.nextBonusCostMet(world))
 			return false; 
 
-		if (this.min_collected && world.resources_collected < this.min_collected)
-			return false;
+		//if (this.min_collected && world.resources_collected < this.min_collected)
+			//return false;
 
 		if (this.required_bonus && !world.bonus_list.bonusEnabled(this.required_bonus))
 			return false;

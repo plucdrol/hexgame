@@ -81,12 +81,6 @@ export default function World(radius, type, origin) {
 
     //create units map
     this.units = new HexMap();
-
-    //create resources map
-    this.resources_gotten = 0;
-    this.total_resources = 0;
-    this.resources_available = 10;
-
     this.resources = new HexMap();
     this.generateResources();
   }
@@ -153,10 +147,6 @@ World.prototype.tileCount = function() {
 ///////////         WORLD MAP BASIC FUNCTIONS
 ///////////
 ////////////////////////////////////////////////////
-
-World.prototype.getPopulation = function() {
-  return Math.floor(this.resources_available);
-}
 
 
 World.prototype.getMapValue = function(hex) {

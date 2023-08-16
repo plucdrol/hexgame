@@ -13,9 +13,6 @@ export default function ButtonMenu(menu_id, world) {
     let actor = unit_input.getActorSelected();
     let position = unit_input.getHexSelected();
 
-    let free_res = world.getPopulation();
-    let total_res = world.resources_collected;
-
     //updateBonusButtons(world.bonus_list, world);
 
     if (actor && actor.selectable) {
@@ -189,7 +186,7 @@ export default function ButtonMenu(menu_id, world) {
         html_button.disabled = true;
 
       //Show action in grey if you don't have enough resource to use it
-      if (action.takes_city_pop && (action.free_pop_cost > actor.getPop() ))
+      if (action.takes_city_pop && (action.cost > actor.getPop() ))
         html_button.disabled = true;
     }
   }
