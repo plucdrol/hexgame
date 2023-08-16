@@ -403,7 +403,7 @@ var color_scale = function (i, colortype) {
 
   switch (colortype) {
 
-  case 'earth': var colors = 
+  case 'earth2': var colors = 
                     ['#005','#00D','#AA3', //ocean coast sand 0 1 2
                     '#080','#062', //grass 3 4
                     '#052','#042','#032','#020', //forest 5 6 7 8
@@ -416,7 +416,7 @@ var color_scale = function (i, colortype) {
                       return colors[i];
 
 
-  case 'newgreenscale' : var colors = 
+  case 'earth' : var colors = 
                     ['#115','#22D','#994', //ocean coast sand 0 1 2
                     '#282','#163', //grass 3 4
                     '#363','#242','#232','#231', //forest 5 6 7 8
@@ -424,7 +424,7 @@ var color_scale = function (i, colortype) {
                     '#412','#422',
                     '#777', '#777','#777', //mountains 14 15 16
                     '#888','#888','#888', //mountains 17 18 19
-                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF', //ice
+                    '#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#FFF','#0552','#FFF', //ice
                     '#CCC']; //clouds
                       return colors[i];
 

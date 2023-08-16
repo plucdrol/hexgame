@@ -83,10 +83,10 @@ export default function World(radius, type, origin) {
     //create units map
     this.units = new HexMap();
     this.resources = new HexMap();
-      
-    if (type == 'dust') {
+
+    if (type=='dust')
       this.generateResources();
-    }
+
   }
 
 
@@ -624,8 +624,9 @@ World.prototype.generateSystemResources = function() {
     if (Math.random() < 0.8) {
       continue;
     }
-    if ((Hex.distanceToCenter(hex) >= this.radius*0.4) && (Hex.distanceToCenter(hex) <= this.radius*0.5) 
-    || (Hex.distanceToCenter(hex) >= this.radius*0.9)) {
+    if ((hex.distanceToCenter() >= this.radius*0.4) 
+      && (hex.distanceToCenter() <= this.radius*0.5) 
+      || (hex.distanceToCenter() >= this.radius*0.9)) {
       this.addResource(hex, 'asteroid');
     }
 
@@ -634,7 +635,7 @@ World.prototype.generateSystemResources = function() {
     if (Math.random() < 0.97) {
       continue;
     }
-    if (Math.random() < Hex.distanceToCenter(hex)/(this.radius)) {
+    if (Math.random() < hex.distanceToCenter()/(this.radius)) {
       continue;
     }
 

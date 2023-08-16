@@ -72,11 +72,14 @@ export default function MapGenerator(map_type) {
     trimPoints(0, [0], 2, 1 );
 
     //map = new RiverGenerator(map).getMap();
-
-    //turn big rivers into coast tiles (fjords)
+    
     for (hex of map.getHexes()) {
+      //turn big rivers into coast tiles (fjords)
       if (map.get(hex).river && map.get(hex).river.water_level > 150)
         setElevation(hex, 1);
+
+      if (Math.abs(hex.toDist()) > radius )
+        map.delete(hex)
     }
 
     return map;
@@ -263,9 +266,8 @@ export default function MapGenerator(map_type) {
     //run this code on each hex
     for (let thishex of map.getHexes()) {
     
-      //analyse map
-      var distance_to_center = Hex.distance(origin, thishex);
-      distance_to_center = Math.max(distance_to_center,0);
+      //var distance_to_center = Hex.distance(origin, thishex);
+      var distance_to_center = thishex.toDist();
       var distance_to_edge = radius - distance_to_center;
       var rim_length = rim_size*radius;
       
@@ -292,11 +294,11 @@ export default function MapGenerator(map_type) {
 
     for (let thishex of map.getHexes()) {  
       //ice rim around the edge of the map
-      if (Hex.distance(origin, thishex) > radius-5 && Math.random() < 0.5) {
-        setElevation(thishex, 22);
+      if (thishex.toDist() > radius-5 && Math.random() < 0.5) {
+        setElevation(thishex, 30);
       }
-      if (Hex.distance(origin, thishex) >= radius-2) {
-        setElevation(thishex, 22);
+      if (thishex.toDist() >= radius-2) {
+        setElevation(thishex, 30);
       }
 
     }

@@ -42,6 +42,11 @@ Hex.prototype.getS = function() {
   return -(this.q)-(this.r);
 }
 
+Hex.prototype.toDist = function() {
+  let layout = new HexLayout ('orientation_pointy', new Point(1,1), new Point(0,0));
+  let point = layout.hexToPoint(this);
+  return Math.sqrt(point.x*point.x+point.y*point.y)/1.4;
+}
 
 // BASIC HEX FUNCTIONS
 
@@ -97,15 +102,15 @@ Hex.prototype.multiply = function(k)  {
 }
 
 //returns distance from origin
-Hex.distanceToCenter = function(hex) { 
-  return (Math.abs(hex.getQ()) + 
-          Math.abs(hex.getR()) + 
-          Math.abs(hex.getS())) / 2;
+Hex.prototype.distanceToCenter = function() { 
+  return (Math.abs(this.getQ()) + 
+          Math.abs(this.getR()) + 
+          Math.abs(this.getS())) / 2;
 }
 
 //Returns the distance in hexes along a line
 Hex.distance = function(hex_a,hex_b) {
-  return Hex.distanceToCenter(hex_a.minus(hex_b));
+  return hex_a.minus(hex_b).distanceToCenter();
 }
 
 //gives the 6 hex neighbor direction in layout-independent hex coordinates

@@ -197,7 +197,6 @@ export default function ButtonMenu(menu_id, world) {
       let html_button = makeActionButton(action)
       html_menu.appendChild( html_button );
 
-      console.log(html_menu)
       //Add click listeners to each button (DOESNT)
       html_button.addEventListener('click', () => {console.log('click');updateActionTargets(actor, position)} );
       
