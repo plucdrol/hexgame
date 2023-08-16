@@ -86,7 +86,9 @@ export default function WorldInput(world, view) {
       var world_position = view.screenToWorld(screen_position);
       let hex_clicked = world.getHex(world_position);
 
-      if (device_type == "mouse" || hex_clicked.equals(hud_renderer.last_hover)) {
+      let didnt_move = hex_hovered.equals(hex_hovered_previous)
+
+      if (device_type == "mouse" || didnt_move) {
         Events.emit('hex_clicked', hex_clicked);
       }
 

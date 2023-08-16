@@ -110,7 +110,7 @@ Unit.prototype.setType = function(unit_type) {
       this.can_move = true;
       //this.addAction( new actionExploit(5, false));
       this.addAction( new actionExpand(10));
-      this.addAction( new actionExpandByAir(20));
+      this.addAction( new actionExpandByAir());
       //this.addAction( new actionMoveCity(8) );
       //this.addAction( new actionExpandAll() );
       break;

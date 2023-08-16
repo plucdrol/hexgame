@@ -111,7 +111,7 @@ export function actionGrowRoots(max_distance) {
   this.stop_on_water = false;
   this.stop_on_coast = true;
 
-  this.no_climbing_ashore = false;
+  this.no_climbing_ashore = true;
   this.coastal_start = true;
 
   this.also_build_road = true;

@@ -235,20 +235,15 @@ export default function Action() {
     if (this.pop_action) 
       max_distance += actor.getPop()*this.pop_action;
 
-    if (this.sky_action) {
+    if (this.infinite_range) {
+      world.clearClouds();
+      return [];
+    }     
 
-      //just use a big circle for the action range
+    if (this.sky_action) {
       var actionRange = Hex.circle(position, this.max_distance);
     } else {
-
-      //pathfind to find the action rangee
       let pathfinder = new ActionPathfinder(this);
-
-      if (this.infinite_range) {
-        world.clearClouds();
-        return [];
-      }      
-
       var actionRange = pathfinder.getRange( world, position, max_distance, min_distance );
     }
 
