@@ -32,13 +32,15 @@ var canv_input = new CanvasInput('canvas');
 //Contains a world map, units, and resources
 
 let earth_radius = 35;
-var earth = new World( earth_radius,'dust', new Point(3*35*10*80, 0) );// <-- model
+let earth_location = new Point(3*35*10*80, 0);
+var earth = new World( earth_radius, 'dust', earth_location, );
 
 let mars_radius = 60;
-var mars = new World( mars_radius,'earth', new Point(35*8*72+125, 0) )// <-- model
+let mars_location = new Point(35*8*72+127, 0);
+var mars = new World( mars_radius,'earth', mars_location )
 
 let system_radius = 35;
-var system = new World(system_radius, 'system');// <-- model
+var system = new World(system_radius, 'system');
  
 
 //-----------Game Engine elements-------------
@@ -54,7 +56,8 @@ var view_input = new ViewInput(view);
 
 //Has functions for drawing to the screen
 //renders the worlds in the order they are listed
-var game_renderer = new GameRenderer([system, earth, mars], earth_input, view);
+let worlds = [system, earth, mars];
+var game_renderer = new GameRenderer(worlds, earth_input, view);
 
 
 
@@ -64,15 +67,16 @@ var game_renderer = new GameRenderer([system, earth, mars], earth_input, view);
 //Put the first city in a random position on the "equator" ring
 var start_hex = new Hex(0,0);
 for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) 
-  if (earth.countLand(hex, 1,3) && earth.onLand(hex) && !earth.onRiver(hex)) 
-    start_hex = hex;
+  if (earth.onLand(hex) && !earth.onRiver(hex)) 
+    if (earth.countLand(hex, 1,3))
+      start_hex = hex;
 
 let first_city =  new Unit('city');
 earth.units.set(start_hex, first_city);
 earth.destroyResource(start_hex);
 first_city.pop = 5;
 
-//for some reason I need to invert the starting hex to move the view there
+//for some reason I need to invert the starting hex 
 let start_point = earth.getPoint( start_hex.multiply(-1) );
 view.setCenter( start_point );
 
