@@ -144,13 +144,29 @@ export default function ButtonMenu(menu_id, world) {
   //This is the place where REACT should take over
   function makeHTMLButton(menu_name, button_id, button_title, text) {
 
-    return "<label>"+
-            "<input class='button-input' name='"+menu_name+
-            "' type='radio' id='" +menu_name+ "-" + button_id + "'"
-             +" value='" + button_id + "'>"+
-             "<div class='action-button'>"+ button_title +"<br>"+
-             "<span class='extra-description'>"+ text +"</span>"+
-             "</div></label></input>";
+    let label = document.createElement('label');
+    let input = document.createElement('input');
+      input.className = 'button-input';
+      input.name = menu_name;
+      input.type = 'radio';
+      input.value = button_id;
+      input.id = menu_name+"-"+button_id;
+
+    let div = document.createElement('div')
+      div.className = 'action-button'
+    
+    let span = document.createElement('span');
+      span.className = 'extra-description'
+
+
+    span.appendChild(document.createTextNode(text));
+    div.appendChild(document.createTextNode(button_title));
+    div.appendChild(document.createElement('br'))
+    div.appendChild(span)
+    label.appendChild(input)
+    label.appendChild(div)
+
+    return label;
   }
 
   function updateActionButtons(world, actor, position) {
@@ -178,11 +194,11 @@ export default function ButtonMenu(menu_id, world) {
       if (!action.activation(world, actor, position)) 
         continue;
 
-      html_menu.innerHTML += makeActionButton(action);
-      let html_button = findHTMLButton(action);
+      let html_button = makeActionButton(action)
+      html_menu.appendChild( html_button );
 
-      console.log(html_button)
-      //Add click listeners to each button (DOESNT WORK)
+      console.log(html_menu)
+      //Add click listeners to each button (DOESNT)
       html_button.addEventListener('click', () => {console.log('click');updateActionTargets(actor, position)} );
       
       //Show action in grey if its requirement is not met

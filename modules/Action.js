@@ -73,7 +73,7 @@ export default function Action() {
 
   this.getDescription = function() {    
     if (this.cost > 0)
-      return this.description+" <span style='float-right'>(-"+this.cost+")</span>";
+      return this.description+" (-"+this.cost+")";
     else
       return this.description;  
   }

@@ -118,9 +118,6 @@ export default function UnitInput(world) {
     let actor = getActorSelected();
     let action = button_menu.getActionSelected(actor);
 
-    action.updateTargets(world, actor, getHexSelected());
-
-    console.log('click with selection')
     if (action && action.infinite_range) 
       clickInsideRange(target);
     else if (action.canTarget(target)) 
