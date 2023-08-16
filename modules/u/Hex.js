@@ -16,7 +16,12 @@
 
 // HEX OBJECT
 
-function Hex(q,r) { //stores a hex unit
+export function hex(q,r) {
+  return new Hex(q,r);
+
+}
+
+export default function Hex(q,r) { //stores a hex unit
   this.q = q;
   this.r = r;
 }
@@ -45,10 +50,10 @@ Hex.prototype.getS = function() {
 //uses Szudzik's function turns 2 numbers into a 
 //unique number, increasing away from the origin
 
-function listContainsHex(hex, list) {
+export function listContainsHex(hex, list) {
     var i;
     for (i = 0; i < list.length; i++) {
-        if (Hex.equals(list[i],hex)) {
+        if (hex.equals(list[i])) {
             return true;
         }
     }
@@ -60,9 +65,9 @@ Hex.prototype.toString = function() {
   return "Hex ("+this.getQ()+","+this.getR()+")";
 }
 
-Hex.getKey = function(hex) {
-  var q = hex.getQ();
-  var r = hex.getR();
+Hex.prototype.getKey = function() {
+  var q = this.getQ();
+  var r = this.getR();
 
   var A = (q >= 0 ? 2 * q : -2 * q - 1);
   var B = (r >= 0 ? 2 * r : -2 * r - 1);
@@ -70,30 +75,25 @@ Hex.getKey = function(hex) {
   return Math.floor(2*C);
 }
 
-Hex.equals = function(hex_a,hex_b) {
-  return hex_a.getQ()==hex_b.getQ() 
-      && hex_a.getR()==hex_b.getR();
-}
 Hex.prototype.equals = function(hex_b) {
-  return Hex.equals(this,hex_b);
+    return this.getQ()==hex_b.getQ() 
+        && this.getR()==hex_b.getR();
 }
 
-Hex.add = function(hex_a, hex_b)  {
-  return new Hex( hex_a.getQ()+hex_b.getQ(), 
-                  hex_a.getR()+hex_b.getR() );
-}
 Hex.prototype.add = function(hex_b) {
-  return Hex.add(this,hex_b);
+  return new Hex( this.getQ()+hex_b.getQ(), 
+                  this.getR()+hex_b.getR() );
 }
+Hex.prototype.plus = Hex.prototype.add;
 
-Hex.substract = function(hex_a, hex_b)  {
-  return new Hex( hex_a.getQ()-hex_b.getQ(), 
-                  hex_a.getR()-hex_b.getR() );
+Hex.prototype.minus = function(hex_b)  {
+  return new Hex( this.getQ()-hex_b.getQ(), 
+                  this.getR()-hex_b.getR() );
 }
 
 //Multiply the hex with a scalar
-Hex.multiply = function(hex, k)  {
-  return new Hex( hex.getQ()*k, hex.getR()*k );
+Hex.prototype.multiply = function(k)  {
+  return new Hex( this.getQ()*k, this.getR()*k );
 }
 
 //returns distance from origin
@@ -105,7 +105,7 @@ Hex.distanceToCenter = function(hex) {
 
 //Returns the distance in hexes along a line
 Hex.distance = function(hex_a,hex_b) {
-  return Hex.distanceToCenter(Hex.substract(hex_a,hex_b));
+  return Hex.distanceToCenter(hex_a.minus(hex_b));
 }
 
 //gives the 6 hex neighbor direction in layout-independent hex coordinates
@@ -140,7 +140,7 @@ Hex.corners = function (hex) {
   var corners = [];
   //individually add each corner to the hex position
   for (var i=0;i<6;i++) {
-    corners[i] = Hex.add(hex,hex_corner[i]);
+    corners[i] = hex.add(hex_corner[i]);
   }
   return corners;
 }              
@@ -148,7 +148,7 @@ Hex.corners = function (hex) {
 Hex.prototype.getNeighbor = function(direction_number) {
   //takes a hex and a direction (from 0 to 6), and 
   //returns a neighboring hex
-  return Hex.add(this, hex_direction[direction_number%6] );
+  return this.add(hex_direction[direction_number%6] );
 }
 
 //takes a hex and returns all 6 neighbors
@@ -161,16 +161,20 @@ Hex.prototype.getNeighbors = function() {
   return neighbors;
 }
 
+Hex.areNeighbors = function(hex1, hex2) {
+  return listContainsHex(hex2, hex1.getNeighbors());
+}
+
 // FRACTIONAL FUNCTIONS
 
 Hex.round = function(fractional_hex) {
-  q = Math.round(fractional_hex.getQ());
-  r = Math.round(fractional_hex.getR());
-  s = Math.round(fractional_hex.getS());
+  let q = Math.round(fractional_hex.getQ());
+  let r = Math.round(fractional_hex.getR());
+  let s = Math.round(fractional_hex.getS());
 
-  qdiff = Math.abs(q-fractional_hex.getQ());
-  rdiff = Math.abs(r-fractional_hex.getR());
-  sdiff = Math.abs(s-fractional_hex.getS());
+  let qdiff = Math.abs(q-fractional_hex.getQ());
+  let rdiff = Math.abs(r-fractional_hex.getR());
+  let sdiff = Math.abs(s-fractional_hex.getS());
 
     if (qdiff > rdiff && qdiff > sdiff) {
         q = -r - s;
@@ -207,17 +211,20 @@ Hex.line = function(hex_a,hex_b) {
 }
 
 Hex.circle = function(center, N) {
-  var hex_array = [];
-  for (q=-N; q<=N; q++)
-    for (r=Math.max(-N, -q-N); r<=Math.min(N, -q+N); r++)
-      hex_array.push(center.add( new Hex(q, r)));
-  return hex_array;
+  var hexarray = [];
+  hexarray.push(center)
+
+  for (let r=1; r<N; r++) {
+    for (let hex of Hex.ring(center,r))
+      hexarray.push(hex);
+  }
+  return hexarray;
 }
 
 Hex.ring = function(center, radius) {
   var hex_array = [];
    
-  var hex = Hex.add(center, Hex.multiply(hex_direction[4], radius));
+  var hex = center.add(hex_direction[4].multiply(radius));
   for (let i=0; i<6; i++) {
     for (let j=0; j<radius; j++) {
       hex_array.push(hex);
@@ -247,7 +254,7 @@ Hex.ring = function(center, radius) {
 ///////////////////////////////////////////////
 ///////////////////////////////////////////////
 
-function Vertex(hex,direction_number) {
+export function Vertex(hex,direction_number) {
   this.hex = hex;
   this.direction_number = direction_number;
 }
@@ -288,8 +295,9 @@ function Vertex(hex,direction_number) {
     let shrink = shrink_ratio || 1;
 
     //returns the fractional hex coordinates of the corner
-    var corner = Hex.multiply(hex_corner[this.direction_number], shrink);
-    return Hex.add( this.hex, corner );
+    let corner_hex = hex_corner[this.direction_number];
+    var corner = corner_hex.multiply(shrink);
+    return corner.add( this.hex);
   };
 
 
@@ -317,18 +325,18 @@ function Vertex(hex,direction_number) {
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-function Edge(hex,direction_number) {
+export function Edge(hex,direction_number) {
   this.hex = hex;
   this.direction_number = direction_number;
 }
   Edge.prototype.equals = function(other_edge) {
     //same hex, same direction
-    if (Hex.equals(this.getInnerHex(),other_edge.getInnerHex()) 
+    if (this.getInnerHex().equals(other_edge.getInnerHex()) 
         && this.direction_number == other_edge.direction_number) {
       return true;
     }
     //opposite hex, opposite direction
-    if (Hex.equals(this.getInnerHex(),other_edge.getOuterHex()) 
+    if (this.getInnerHex().equals(other_edge.getOuterHex()) 
       && this.direction_number == (other_edge.direction_number+3)%6) {
       return true;
     }
@@ -549,36 +557,35 @@ Edge.sort = function(unsorted_edges) {
 */
 
 //value can be anything, even an array. use as needed
-function HexMap() {
+export function HexMap() {
 
-  this.values = {};
+  this.hexes = new Map();
+  this.values = new Map();
 }
 
 HexMap.prototype.set = function(hex,value) {
-  let key = Hex.getKey(hex);
-  this.values[key] = value;
+  let key = hex.getKey();
+  this.hexes.set(key,hex);
+  this.values.set(key,value);
 }
-//This makes the value as undefined
-HexMap.prototype.remove = function(hex) {
-  if (this.containsHex(hex)) {
-    this.set(hex,undefined);
-  }
-}
-//This removes the value from the array entirely
+
 HexMap.prototype.delete = function(hex) {
   if (this.containsHex(hex)) {
-    let key = Hex.getKey(hex);
-    delete this.values[key];
+    let key = hex.getKey();
+    this.hexes.delete(key);
+    this.values.delete(key);
   }
 }
 HexMap.prototype.removeAll = function() {
-  this.values = {};
+  this.values = new Map();
+  this.hexes = new Map();
 }
 
 HexMap.prototype.getValue = function(hex) {
-  var key = Hex.getKey(hex);
-  if (this.values[key] != undefined) {
-    return this.values[key];
+  var key = hex.getKey();
+
+  if (this.containsHex(hex)) {
+    return this.values.get(key);
   } else {
     return false;
   }
@@ -603,7 +610,7 @@ HexMap.prototype.getHex = function(key) {
   return new Hex(q,r);
 };
 HexMap.prototype.size = function() {
-  return this.values.length;
+  return this.values.size;
 }
 HexMap.prototype.getNeighbors = function(hex) {
   let all_neighbors = hex.getNeighbors();
@@ -615,69 +622,37 @@ HexMap.prototype.getNeighbors = function(hex) {
   }
   return neighbors_on_map;
 }
+
+HexMap.prototype.getRandomHex = function() {
+  return [...this.hexes.values()][Math.floor(Math.random() * this.hexes.size)]
+}
 //returns a simple array of each hex contained in this map
-HexMap.prototype.getHexArray = function() {
-  var hexarray = [];
-  //look at each item in this map
-  //for (var i=0;i<this.values.length; i++) {
-  for (key in this.values) {
-    let hex = this.getHex(key);
-    //add the hex to the result if it has a value
-    if (this.containsHex(hex)) {
-      hexarray.push(hex);
-    }
-  }
-  return hexarray;
+HexMap.prototype.getHexes = function() {
+  return this.hexes.values();
 }
 //HexMap getValues returns an array of each defined value
 HexMap.prototype.getValues = function() {
-  var value_array = [];
-  //look at each item in this map
-  //for (var i=0;i<this.values.length; i++) {
-  for (key in this.values) {
-    let hex = this.getHex(key);
-    //add the hex to the result if it is defined
-    if (this.containsHex(hex)) {
-      value_array.push(this.getValue(hex));
-    }
-  }
-  return value_array;
+  return this.values.values();
 }
 
 //HexMap contains: finds if the hex is part of the map 
 //by checking if its value is defined
 HexMap.prototype.containsHex = function(hex) {
-  if (this.getValue(hex)) {
-    return true;
-  } else {
-    return false;
-  }
+  let key = hex.getKey()
+  return this.values.has(key)
 }
 
 //HexMap containsKey: finds if the key is defined by 
 //checking for the key directly 
 HexMap.prototype.containsKey = function(key) {
-  //if (this.getValueByKey(key) !== undefined) {
-  if (key in this.values) {
+  if (this.values.has(key)) {
     return true;
   } else {
     return false;
   }
 }
 
-//HexMap flip: if the value of hex is in the 'values' 
-//array, changes it to the next value in the array
-HexMap.prototype.flip = function(hex,values) {
-  if (this.containsHex(hex)) {
-    for (var i=0; i < values.length; i++) {
-      if (this.getValue(hex) == values[i]) {
-        this.set(hex,values[(i+1)%values.length]);
-        return true;
-      }
-    }
-  }
-  return false;
-}
+
 
 
 
@@ -765,7 +740,7 @@ function isEven(n) {
 // The Point class is a simple cartesian coordinate 
 // with some helper functions
 
-function Point (x,y) {
+export function Point (x,y) {
   this.x = x;
   this.y = y;
 
@@ -775,6 +750,9 @@ function Point (x,y) {
   }
   this.offset = function(xi,yi) {
     return new Point(this.x+xi,this.y+yi);
+  }
+  this.add = function(point) {
+    return new Point(this.x+point.x,this.y+point.y);
   }
   this.invert = function() {
     return new Point(-this.x,-this.y);
@@ -830,14 +808,12 @@ function getOrientation(string) {
 //It positions the virtual grid points in space
 
 
-function HexLayout (orientation_string, size, origin) {
+export function HexLayout (orientation_string, size, origin) {
   
   this.orientation = getOrientation(orientation_string);
   this.size = size;     //point object
   this.origin = origin; //point object
 
-  this.fast_points = [new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0),new Point(0,0)];
-  this.reusable_point = new Point(0,0);
 }
 
 
@@ -847,7 +823,7 @@ function HexLayout (orientation_string, size, origin) {
     var ori = this.orientation;
     var x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
     var y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
-    return new Point(x + this.origin.x, y + this.origin.y );
+    return new Point(this.origin.x + x, this.origin.y + y);
   }
 
   HexLayout.prototype.pointToHex = function(point) {

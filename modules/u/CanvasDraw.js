@@ -21,6 +21,8 @@
 //This draws directly on the Canvas using the canvas coordinates given
 //this should have no notions of hexagons or even tile-based game
 
+export default CanvasDraw;
+
 function CanvasDraw (canvas) {
   this.canvas = canvas;
   this.saved_polygon = {};
@@ -70,7 +72,7 @@ function CanvasDraw (canvas) {
     //polygon outline
     line.beginPath();
     line.moveTo(Math.floor(points[0].x), Math.floor(points[0].y) );
-    for (i=1; i<points.length; i++) {
+    for (let i=1; i<points.length; i++) {
 
       if (next == "move") {
         line.moveTo(Math.floor(points[i].x), Math.floor(points[i].y) );
@@ -110,7 +112,7 @@ function CanvasDraw (canvas) {
   };
 
   //Draw a line on the canvas from p1 to p2 with optional width and color
-  CanvasDraw.prototype.drawLine = function(p1,p2,width,color) {
+  CanvasDraw.prototype.drawLine = function(p1,p2,width,color,linecaps) {
 
     //express this function as a polygon
     var line = this.canvas.getContext('2d');
@@ -124,12 +126,17 @@ function CanvasDraw (canvas) {
     if (typeof width === 'undefined') {
       let width = 0;
     }
+
+    //default line caps
+    if (typeof linecaps === 'undefined') {
+      let linecaps = 'round';
+    }
     
     //line style
     line.lineWidth = width;
-    line.lineCap = "butt";
+    line.lineCap = linecaps;
     line.strokeStyle = color;  
-    line.lineCap = "round";
+    //line.lineCap = "round";
     line.alpha = false;   
 
     //polygon outline

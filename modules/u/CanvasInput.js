@@ -9,7 +9,8 @@
 ////////////////////////////////////////////////////////////////////////////
 
 //Dependencies
-//  Event.js
+import Events from './Events.js'
+import {Point} from './Hex.js'
 
 
 //This is the event-detection part of the canvas interface
@@ -17,10 +18,11 @@
 //detect the inputs, then create a message that is sent to the entire system.
 //Each part of the system can then decide how to react to it
 
+export default CanvasInput;
 
-function CanvasInput(canvas) {
+function CanvasInput(canvas_element_id) {
 
-    this.canvas = canvas;
+    this.canvas = document.getElementById(canvas_element_id);
     
     //create the mouse pointer 
     this.mouse_pos = new Object();
@@ -29,6 +31,8 @@ function CanvasInput(canvas) {
     this.is_dragging = false;
 
     this.mouse_down = [];
+
+    this.registerEvents();
 }
 
 //Registers all default functions to methods of CanvasInput
@@ -51,7 +55,9 @@ CanvasInput.prototype.registerEvents = function() {
 //Registers a default HTML event to a method of CanvasInput
 CanvasInput.prototype.registerEvent = function(event_name, callback_name) {
     var callback_function = this[callback_name].bind(this);
-    this.canvas.addEventListener(event_name, callback_function, false);
+     this.canvas.addEventListener(event_name, callback_function, false);
+    //Events.on(event_name, callback_function);
+
 }
 
 //react to clicking canvas 
@@ -63,10 +69,15 @@ CanvasInput.prototype.clickCanvas = function(event) {
   
       //trigger the click event
       var click_pos = this.getCursorPosition(event);
-      emitEvent('canvas_click', {click_pos: click_pos} );
+
+      if (this.touching)
+        Events.emit('canvas_touch', {click_pos: click_pos} );
+      else
+        Events.emit('canvas_click', {click_pos: click_pos} );
     }
     //remember that the mouse is done dragging
     this.is_dragging = false;
+    this.touching = false;
     
 }   
 
@@ -87,8 +98,10 @@ CanvasInput.prototype.mouseWheel = function(event) {
   var e = window.event || event; // old IE support
   var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
 
+  this.mouse_pos = this.getCursorPosition(event);
+
   //HERE a message should be sent to the rest of the engine
-  emitEvent('canvas_zoom', {amount: 1-delta*0.2} );
+  Events.emit('canvas_zoom', {amount: 1-delta*0.2, mouse_pos: this.mouse_pos} );
 
   return false;   
 }
@@ -103,7 +116,7 @@ CanvasInput.prototype.mouseMove = function(event) {
   this.mouse_pos[0] = this.getCursorPosition(event);
 
   //detect mouse hovering for animations
-  emitEvent('canvas_hover', {mousepos: this.mouse_pos[0]} )
+  Events.emit('canvas_hover', {mousepos: this.mouse_pos[0]} )
 
   //check if the mouse button is down, triggering a drag
   if (this.mouse_down[1]) {
@@ -115,7 +128,7 @@ CanvasInput.prototype.mouseMove = function(event) {
           this.is_dragging = true; //prevents clicksat the end of a drag
       }
       //call the drag function
-      emitEvent('canvas_drag', { mousepos: this.mouse_pos[0],
+      Events.emit('canvas_drag', { mousepos: this.mouse_pos[0],
                                  mouseposprevious: this.mouse_pos_previous[0] });
       
   }
@@ -150,7 +163,7 @@ CanvasInput.prototype.touchMove = function(ev) {
             this.is_dragging = true; //prevents clicks at the end of a drag
             var drag = { mousepos: this.mouse_pos[id[0]],
 	                 mouseposprevious: this.mouse_pos_previous[id[0]]};
-	      emitEvent('canvas_drag', drag);
+	      Events.emit('canvas_drag', drag);
         }
     }
 
@@ -170,7 +183,7 @@ CanvasInput.prototype.touchMove = function(ev) {
             this.is_dragging = true; //prevents clicks at the end of a drag
             var drag = { mousepos: average_pos,
                    mouseposprevious: average_pos_previous};
-        emitEvent('canvas_drag', drag);
+        Events.emit('canvas_drag', drag);
         }
 
         //zoom screen with two fingers      
@@ -180,7 +193,7 @@ CanvasInput.prototype.touchMove = function(ev) {
             var current_distance =  distance(this.mouse_pos[id[0]],           this.mouse_pos[id[1]] );
             var difference = current_distance-previous_distance;
 
-            emitEvent('canvas_zoom', {amount: 1-difference/200} );
+            Events.emit('canvas_zoom', {amount: 1-difference/200} );
         }
     }
 
@@ -193,6 +206,7 @@ CanvasInput.prototype.touchMove = function(ev) {
 
 //React to finger starting to touch screen
 CanvasInput.prototype.touchStart = function(ev) {
+
     //ev.preventDefault();
     for(var i=0;i<ev.changedTouches.length;i++) {
         var id = ev.changedTouches[i].identifier;
@@ -202,6 +216,9 @@ CanvasInput.prototype.touchStart = function(ev) {
 
 //React to finger removed from screen
 CanvasInput.prototype.touchEnd = function(ev) {
+
+    this.touching = true;
+
     //ev.preventDefault();
     for(var i=0;i<ev.changedTouches.length;i++) {
         var id = ev.changedTouches[i].identifier;
@@ -221,7 +238,7 @@ CanvasInput.prototype.windowResize = function()  {
     var height = window.innerHeight;
 
     //Send the resize event here
-    emitEvent('canvas_resize', {width:width, height:height} );
+    Events.emit('canvas_resize', {width:width, height:height} );
 
     //size canvas to fit resized window
     this.canvas.width = width;

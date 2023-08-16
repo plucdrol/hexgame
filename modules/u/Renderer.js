@@ -11,11 +11,11 @@
 /////////////////////////////////////////////////////////
 
 //Dependencies:
-//  CanvasDraw.js
-//  View.js
+import CanvasDraw from './CanvasDraw.js'
+import View from './View.js'
 
 //this is a style for renderer
-function RenderStyle() {
+export function RenderStyle() {
   this.line_color = 'black';
   this.line_width = 0;
   this.fill_color = 'transparent';
@@ -24,8 +24,14 @@ function RenderStyle() {
 }
 
 //this is a basic Renderer, it doesn't know about hexes!
-function Renderer(canvas_draw, view) {
-    this.canvas_draw = canvas_draw;
+
+export default function Renderer(canvas_element_id, view) {
+
+    var canvas = document.getElementById(canvas_element_id);
+    this.canvas = canvas;
+
+    this.canvas_draw  = new CanvasDraw(canvas);
+
     this.view = view;
 
     this.ready_to_render = true;
@@ -45,11 +51,21 @@ Renderer.prototype.worldToScreen1D = function(scalar) {
 Renderer.prototype.drawDot = function (point,size,style) {
 
     var coord = this.worldToScreen(point);
-    newsize = this.worldToScreen1D(size);
+    let newsize = this.worldToScreen1D(size);
     var color = style.fill_color;
 
     this.canvas_draw.drawDot(coord, newsize, color);
 };
+
+Renderer.prototype.drawImage = function (image, point, size) {
+
+  let coord = this.worldToScreen(point);
+  let w = this.worldToScreen1D(size);
+  let context = this.canvas_draw.canvas.getContext('2d');
+  context.drawImage(image, coord.x-w/2, coord.y-w/2, w, w);
+
+}
+
 
 //Transform coordinates and draw a line using CanvasDraw
 Renderer.prototype.drawLine=function(point1,point2,style) {
@@ -58,8 +74,10 @@ Renderer.prototype.drawLine=function(point1,point2,style) {
   var p2 = this.worldToScreen(point2);
   var newwidth = this.worldToScreen1D(style.line_width);
   var color = style.line_color;
+  if (style.line_caps)
+    var linecaps = style.line_caps
 
-  this.canvas_draw.drawLine(p1, p2, newwidth, color);
+  this.canvas_draw.drawLine(p1, p2, newwidth, color, linecaps);
 };
 
 //Transform coordinates and draw a polyon using CanvasDraw
@@ -96,37 +114,28 @@ Renderer.prototype.drawLines = function(points,style, width) {
   }
 };
 
-Renderer.prototype.drawRedRenderingRectangle = function() {
-    var object = this.view.getCorners();
-    
-    var corners = [];
-    corners.push(object.topleft);
-    corners.push(object.topright);
-    corners.push(object.bottomright);
-    corners.push(object.bottomleft);
+//uses the view to render a section of the source canvas to the canvas
+//but this section is wrong
+Renderer.prototype.blitCanvas = function(source_canvas) {
 
-    var rect_style = new RenderStyle();
-    rect_style.fill_color = 'transparent';
-    rect_style.line_color = 'red';
-    rect_style.line_width = 20;
+  let context = this.canvas.getContext('2d');
 
-    this.drawPolygon(corners,rect_style);
-}
+  let input_position = this.view.getInputRect().position;
+  let input_size = this.view.getInputRect().size; //input is a section of the temp_canvas
 
-Renderer.prototype.getViewCorners = function() {
+  let x = input_position.x; 
+  let y = input_position.y; 
+  let w = input_size.x;
+  let h = input_size.y;
 
-    return this.view.getCorners();
-
-}
-
-Renderer.prototype.getScale = function() {
-
-    return this.view.getScale();
-
+  context.drawImage(source_canvas, x, y, w, h, 0, 0, this.canvas.width, this.canvas.height );
 }
 
 
+Renderer.prototype.clear = function() {
 
+  this.canvas_draw.clear();
+}
 
 
 

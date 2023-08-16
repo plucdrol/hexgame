@@ -10,12 +10,16 @@
 
 // Sole responsibility: drawing hexagons on a regular grid using the Renderer 
 
-// CanvasDraw
-// Hex
 
-function HexRenderer(renderer, hexlayout) {
+import CanvasDraw from './u/CanvasDraw.js'
+import Hex from './u/Hex.js'
+import {Point} from './u/Hex.js'
+import {RenderStyle} from './u/Renderer.js'
+
+export default function HexRenderer(renderer, hexlayout) {
   this.renderer = renderer; 
   this.hexlayout = hexlayout;
+
 }
 
 HexRenderer.p = HexRenderer.prototype;
@@ -36,17 +40,57 @@ HexRenderer.p.pointToHex = function(point) {
 }
 
 // RENDERING FUNCTIONS
-HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, half_only) {
+HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
   var style = new RenderStyle();
   style.line_width = width;
   style.line_color = line_color; 
-  var point1 = this.hexToPoint(hex1);
-  var point2 = this.hexToPoint(hex2);
-  if (half_only) {
-    point2 = new Point( (point2.x+point1.x)/2 , (point2.y+point1.y)/2 );
+  style.line_caps = 'round';
+  
+  var p1 = this.hexToPoint(hex1);
+  var p2 = this.hexToPoint(hex2);
+
+  if (option=='half only') {
+    p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
+
   }
-  this.renderer.drawLine(point1, point2, style);
+
+  if (option=='moving dots') {
+    p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
+    p1 = this.fractionalRandomPoint1(p1,p2);
+    p2 = p1;
+  }
+
+  if (option=='moving dots backwards') {
+    p2 = new Point( (p2.x+p1.x)/2 , (p2.y+p1.y)/2 );
+    p1 = this.fractionalRandomPoint1(p2,p1);
+    p2 = p1;
+  }
+
+  this.renderer.drawLine(p1,p2, style);
+
 }
+
+HexRenderer.p.drawImage = function(hex) {
+
+  let world_point = this.hexToPoint(hex);
+
+  
+  //this.renderer.drawImage(this.wheat, world_point, 60);
+
+
+
+}
+
+HexRenderer.p.fractionalRandomPoint1 = function(p1, p2, first_half) {
+  let f = (new Date().getTime()%3000)/3000;
+  return new Point( ((1-f)*p2.x+f*p1.x) , ((1-f)*p2.y+f*p1.y) );
+
+}
+
+HexRenderer.p.fractionalRandomPoint2 = function(p1, p2) {
+  
+}
+
 HexRenderer.p.drawLongLine = function(hex_array, width) {
   var style = new RenderStyle();
   style.line_width = width;
@@ -61,8 +105,24 @@ HexRenderer.p.drawLongLine = function(hex_array, width) {
 }
 HexRenderer.p.drawHex = function(hex, style) {
   
+
+  //draw hex the normal way
+
+  //get the corners, then draww a polygon
   var corners = this.hexesToPoints(Hex.corners(hex));
   this.renderer.drawPolygon(corners,style);
+
+  return;
+
+  //draw a rectangle instead
+  var left = this.hexToPoint(hex); left.x -= 31;
+  var right = this.hexToPoint(hex); right.x += 30;
+
+  style.line_caps = 'butt'
+  style.line_width = 53;
+  style.line_color = style.fill_color;
+  this.renderer.drawLine(left, right, style);
+
 };
 
 //Draw a series of short lines
@@ -115,37 +175,10 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
   this.drawHexOutline( outline,range_style);
 }
 
-// CALCULATING RECTANGLE FUNCTIONS!?
-HexRenderer.p.getHexRectangleBoundaries = function() {
 
-    var corners = this.renderer.getViewCorners();
-   
-    //find the corner hexes
-    var toplefthex = Hex.round(this.pointToHex(corners.topleft));
-    var toprighthex = Hex.round(this.pointToHex(corners.topright));
-    var bottomlefthex = Hex.round(this.pointToHex(corners.bottomleft));
-    var bottomrighthex = Hex.round(this.pointToHex(corners.bottomright));
-
-    //define the limits of the iteration
-    var qmin = Math.min( toplefthex.getQ(),    bottomrighthex.getQ(),
-                         toprighthex.getQ(),   bottomlefthex.getQ());
-    var qmax = Math.max( toplefthex.getQ(),    bottomrighthex.getQ(),
-                         bottomlefthex.getQ(), toprighthex.getQ());
-    var rmin = Math.min( toplefthex.getR(),    bottomrighthex.getR(),
-                           toprighthex.getR(),   bottomlefthex.getR());
-    var rmax = Math.max( toplefthex.getR(),    bottomrighthex.getR(),
-                         toprighthex.getR(),   bottomlefthex.getR());
-  
-    var hex_rect = {
-      qmin:qmin,
-      qmax:qmax,
-      rmin:rmin, 
-      rmax:rmax
-    };
-    
-    return hex_rect;
+HexRenderer.prototype.clear = function() {
+  this.renderer.clear();
 }
-
 
 
 
