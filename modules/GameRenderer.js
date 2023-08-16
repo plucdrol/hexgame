@@ -2,7 +2,7 @@
 import View from './u/View.js'
 import Renderer from './u/Renderer.js';
 import WorldRenderer from './WorldRenderer.js';
-import HUDRenderer from './HUDRenderer.js';
+import HUDRenderer from './HudRenderer.js';
 import Events from './u/Events.js';
 
 
