@@ -27,15 +27,18 @@ export default function GameRenderer(worlds, world_input, view) {
 
   function updateLayers() {
     for (let layer of layers) {
+
       layer.drawGround();
       layer.drawThings();
     }
   }
 
+
   function draw() {
 
     //clear the real canvas
     renderer.clear();
+
 
     //blit the temporary canvases to the final canvas
     for (let layer of layers) {
@@ -44,8 +47,11 @@ export default function GameRenderer(worlds, world_input, view) {
 
 
     //draw the HUD on top
+
     hud_renderer.drawHUD();
     //mars_hud_renderer.drawHUD();
+    //console.trace();
+
 
     /* This used to decide which HUD to render 
     //draw the HUD on top
@@ -166,7 +172,9 @@ LayerRenderer.prototype.blit = function(canvas_name, view) {
 
 //draw onto the temp canvas
 LayerRenderer.prototype.drawGround = function() {
-  this.world_renderer.drawSomeLands();
+  //console.time('drawSomeLands')
+  this.world_renderer.drawSomeLands(500);
+  //console.timeEnd('drawSomeLands')
   this.world_renderer.drawRivers();
 }
 

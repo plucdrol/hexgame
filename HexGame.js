@@ -56,7 +56,7 @@ var view_input = new ViewInput(view);
 
 //Has functions for drawing to the screen
 //renders the worlds in the order they are listed
-let worlds = [system, earth/*, mars*/];
+let worlds = [system, earth, mars];
 var game_renderer = new GameRenderer(worlds, earth_input, view);
 
 
