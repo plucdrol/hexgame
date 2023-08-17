@@ -128,9 +128,7 @@ export default function UnitInput(world) {
     let actor = getActorSelected();
     let action = button_menu.getActionSelected(actor);
 
-    console.log(world.type);
-
-    if (action && action.infinite_range) 
+    if (action && action.sky_action && action.infinite_range) 
       clickInsideRange(target);   //when clicking another world with an infinite_range action, this will be triggered (but the hex is wrong)
     else if (action.canTarget(world, actor, hex_selected, target)) 
       clickInsideRange(target);

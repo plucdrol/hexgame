@@ -107,7 +107,12 @@ World.prototype.getZoom = function() {
 World.prototype.getLayout = function() {
   return this.layout;
 }
-
+World.prototype.containsHex = function(hex) {
+  return this.hasHex(hex);
+}
+World.prototype.hasHex = function(hex) {
+  return this.world_map.containsHex(hex);
+}
 World.prototype.getHex = function(world_position) {
   var hex = Hex.round(this.layout.pointToHex(world_position));
   return hex;
@@ -300,6 +305,9 @@ World.prototype.destroyResource = function(hex) {
     this.total_resources -= 1;
 }
 
+World.prototype.tileExists = function(hex) {
+  return (this.world_map.containsHex(hex))
+}
 World.prototype.tileIsRevealed = function(hex) {
   return (this.world_map.containsHex(hex) && !this.getTile(hex).hidden);
 }
@@ -328,7 +336,7 @@ World.prototype.getRectangleSubMap = function(qmin, qmax,rmin, rmax) {
 ///////////////////////////////////////////////////
 
 World.prototype.unitAtLocation = function(hex) {
-  return (this.getUnit(hex) instanceof Unit);
+  return (this.containsHex(hex) && this.getUnit(hex) instanceof Unit);
 }
 
 World.prototype.countUnits = function(hexarray, unit_type, minimum_count) {
@@ -718,6 +726,8 @@ World.prototype.clearClouds = function(position, radius) {
         let hex = range[counter];
           
         if (counter >= range.length)
+          return;
+        if (!world.containsHex(hex))
           return;
 
         let tile = world.getTile(hex);

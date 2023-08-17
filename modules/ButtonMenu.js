@@ -81,7 +81,7 @@ export default function ButtonMenu(menu_id, world) {
     let first_action = radio_elements[0];
     if (first_action && !first_action.disabled) {
       first_action.checked = true;
-      updateActionTargets(actor, position);
+      //updateActionTargets(actor, position);
     }
   }
 
@@ -95,14 +95,7 @@ export default function ButtonMenu(menu_id, world) {
     return document.getElementById(menu_name).getElementsByClassName('button-input')
   }
 
-  function updateActionTargets(actor, position) {
-    let action = getActionSelected(actor);
 
-    if (action)
-      action.updateTargets( world, actor, position);
-
-
-  }
 
 
 
@@ -197,7 +190,7 @@ export default function ButtonMenu(menu_id, world) {
       html_menu.appendChild( html_button );
 
       //Add click listeners to each button (DOESNT)
-      html_button.addEventListener('click', () => {updateActionTargets(actor, position)} );
+      //html_button.addEventListener('click', () => {updateActionTargets(actor, position)} );
       
       //Show action in grey if its requirement is not met
       if (!action.requirement(world, actor, position))

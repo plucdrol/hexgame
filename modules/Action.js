@@ -94,11 +94,14 @@ export default function Action() {
     //this part is messy, I don't need pathfinding on long-distance actions, for example
     let pathfinder = new ActionPathfinder(this);
     let tree = pathfinder.getTree( world, position, this.max_distance);
-    this.updateTargets(world, actor, position);
 
     let targets = this.getTargets(world, actor, position); //make a new range array because I'm going to sort it
     let action = this;
       
+    
+    if (targets.length <= 0 && !this.infinite_range)
+      return;
+
     //Either do a single action or do the action on all targets
     if (this.multi_target) {
 
@@ -118,7 +121,6 @@ export default function Action() {
           step_time = 20;
         }
         counter++;
-        action.updateTargets(world, actor, position);
         if (counter < targets.length)
           setTimeout(stepByStep, step_time);
         step_time = 500;
@@ -128,7 +130,6 @@ export default function Action() {
 
     } else { //single target
       action.doSingleAction(world, actor, position, target);
-      action.updateTargets(world, actor, position);
     }
     
 
@@ -145,13 +146,7 @@ export default function Action() {
       return false;
   }
 
-  this.doMultiAction = function( world, actor, position) {
 
-    this.updateTargets(world, actor, position);
-    if (this.targets.length > 0)
-      this.doAction(world, actor, position );
-
-  }
 
   this.doSingleAction = function(world, actor, position, target) {
 
@@ -189,7 +184,7 @@ export default function Action() {
     this.effect(world, actor, position, target);
 
     if (this.after_action && this.after_action.multi_target)
-      this.after_action.doMultiAction(world, actor, target);
+      this.after_action.doAction(world, actor, target);
 
     //this appears twice
     if (this.collect_resource ) 
@@ -216,11 +211,6 @@ export default function Action() {
   }
 
 
-
-  this.updateTargets = function(world, actor, position) {
-    //range shows only targets not the land in between
-    this.targets = this.getTargets(world, actor, position );
-  };
 
   this.getRange = function(world, actor, position) {
 

@@ -63,7 +63,7 @@ export default function actionExpand(distance) {
 
       let target_pop = world.getUnit(target).pop;
       let after_action = new actionGrowRoots( target_pop );
-      after_action.doMultiAction( world, actor, target) 
+      after_action.doAction( world, actor, target) 
     }
 
     //grow road and build a city if clicking somewhere else
@@ -72,7 +72,7 @@ export default function actionExpand(distance) {
       world.addUnit(target, 'city', actor);
 
       let after_action = new actionGrowRoots( 1 );
-      after_action.doMultiAction( world, actor, target)  
+      after_action.doAction( world, actor, target)  
     }
 
     //add a village if clicling directly on a resource
