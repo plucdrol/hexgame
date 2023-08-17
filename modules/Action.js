@@ -94,9 +94,9 @@ export default function Action() {
     //this part is messy, I don't need pathfinding on long-distance actions, for example
     let pathfinder = new ActionPathfinder(this);
     let tree = pathfinder.getTree( world, position, this.max_distance);
-    if (!this.targets) 
-      this.updateTargets(world, actor, position);
-    let targets = this.targets.concat(); //make a new range array because I'm going to sort it
+    this.updateTargets(world, actor, position);
+
+    let targets = this.getTargets(world, actor, position); //make a new range array because I'm going to sort it
     let action = this;
       
     //Either do a single action or do the action on all targets
@@ -135,13 +135,14 @@ export default function Action() {
 
   };
 
-  this.possibleTargets = function() {
-    return this.targets;
-  }
 
-  this.canTarget = function(target) {
-    if (this.targets && listContainsHex(target, this.targets))
-      return true;
+  this.canTarget = function(world, actor, position, target) {
+    let targets = this.getTargets(world, actor, position);
+
+    if (Array.isArray(targets))
+      return listContainsHex(target, targets);
+    else 
+      return false;
   }
 
   this.doMultiAction = function( world, actor, position) {
@@ -219,10 +220,6 @@ export default function Action() {
   this.updateTargets = function(world, actor, position) {
     //range shows only targets not the land in between
     this.targets = this.getTargets(world, actor, position );
-    
-    //brown highlights on everything in between
-    let brownrange = this.getRange(world, actor, position);
-    world.highlightRange(brownrange, 'brown');
   };
 
   this.getRange = function(world, actor, position) {
@@ -245,8 +242,9 @@ export default function Action() {
   this.getTargets = function(world, actor, position) {
 
     let action_range = this.getRange(world, actor, position);
+    world.highlightRange(action_range, 'brown');
 
-    let suitable_targets = action_range.filter(target => this.targetFilterFunction(world, actor, target));
+    let suitable_targets = action_range.filter((target) => this.targetFilterFunction(world, actor, target));
 
     return suitable_targets;
   };
@@ -269,12 +267,9 @@ export default function Action() {
 
 
 
-  this.createRoad = function(world, origin, target, road_level) {
+  this.createRoad = function(world, origin, target, road_level = 1) {
 
     var actionPath = this.getPath(world,origin,target,20);
-
-    if (!road_level)
-      road_level = 1;
 
     if (actionPath instanceof Array)
       world.buildRoad(actionPath, road_level);
