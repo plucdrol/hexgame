@@ -1,23 +1,23 @@
 
 import View from './View.js'
-import ViewRenderer from './ViewRenderer.js';
-import WorldRenderer from './WorldRenderer.js';
-import HUDRenderer from './HudRenderer.js';
+import ViewRender from './ViewRender.js';
+import WorldRender from './WorldRender.js';
+import HUDRender from './HudRender.js';
 import Events from './u/Events.js';
 
 
 
-export default function GameRenderer(worlds, world_input, view) {
+export default function GameRender(worlds, world_input, view) {
 
-  let renderer = new ViewRenderer('canvas', view);
+  let render = new ViewRender('canvas', view);
   let layers = [];
 
   for (let world of worlds) {
-    layers.push(new LayerRenderer(world))
+    layers.push(new LayerRender(world))
   }
 
-  let hud_renderer = new HUDRenderer(worlds[1], world_input, renderer);
-  //let mars_hud_renderer = new HUDRenderer(worlds[2], mars_input, renderer);
+  let hud_render = new HUDRender(worlds[1], world_input, render);
+  //let mars_hud_render = new HUDRender(worlds[2], mars_input, render);
 
 
   function clear() {
@@ -37,7 +37,7 @@ export default function GameRenderer(worlds, world_input, view) {
   function draw() {
 
     //clear the real canvas
-    renderer.clear();
+    render.clear();
 
 
     //blit the temporary canvases to the final canvas
@@ -48,17 +48,17 @@ export default function GameRenderer(worlds, world_input, view) {
 
     //draw the HUD on top
 
-    hud_renderer.drawHUD();
-    //mars_hud_renderer.drawHUD();
+    hud_render.drawHUD();
+    //mars_hud_render.drawHUD();
     //console.trace();
 
 
     /* This used to decide which HUD to render 
     //draw the HUD on top
     if (view.getZoom() <= 0.08)
-      space_hud_renderer.drawHUD();
+      space_hud_render.drawHUD();
     else
-      hud_renderer.drawHUD();
+      hud_render.drawHUD();
      */
 
   }
@@ -113,7 +113,7 @@ export default function GameRenderer(worlds, world_input, view) {
 
 var layer_ids = 1;
 
-function LayerRenderer(world) {
+function LayerRender(world) {
 
   let canvas_name = 'canvas_'+layer_ids;
   layer_ids++;
@@ -138,13 +138,13 @@ function LayerRenderer(world) {
     ); //world coordinates
   this.full_view.setOutput(0, 0, canvaswidth, canvaswidth);  //canvas coordinates
 
-  //this temp world renderer draws the entire layer into a full-sized canvas
+  //this temp world render draws the entire layer into a full-sized canvas
   //later on, it must blit a section of this canvas to the final canvas
-  var renderer = new ViewRenderer(canvas_name, this.full_view);
-  this.world_renderer = new WorldRenderer(world, renderer); 
+  var render = new ViewRender(canvas_name, this.full_view);
+  this.world_render = new WorldRender(world, render); 
 }
 
-LayerRenderer.prototype.createCanvas = function(canvas_name) {
+LayerRender.prototype.createCanvas = function(canvas_name) {
   let canvas = document.createElement('canvas');
   canvas.id = canvas_name;
   canvas.style.display = 'none';
@@ -152,7 +152,7 @@ LayerRenderer.prototype.createCanvas = function(canvas_name) {
   return canvas;
 }
 
-LayerRenderer.prototype.RendererFromTempCanvasToScreen = function(canvas_name, view) {
+LayerRender.prototype.RenderFromTempCanvasToScreen = function(canvas_name, view) {
   let blitview = new View(canvas_name);
 
   blitview.setInput(
@@ -162,31 +162,31 @@ LayerRenderer.prototype.RendererFromTempCanvasToScreen = function(canvas_name, v
     this.full_view.worldToScreen1D( view.getInputSize().y ),
   );
 
-  return new ViewRenderer(canvas_name, blitview);
+  return new ViewRender(canvas_name, blitview);
 }
 
-LayerRenderer.prototype.blit = function(canvas_name, view) {
-  let renderer = this.RendererFromTempCanvasToScreen(canvas_name, view);
-  renderer.blitCanvas(this.temp_canvas);
+LayerRender.prototype.blit = function(canvas_name, view) {
+  let render = this.RenderFromTempCanvasToScreen(canvas_name, view);
+  render.blitCanvas(this.temp_canvas);
 }
 
 //draw onto the temp canvas
-LayerRenderer.prototype.drawGround = function() {
+LayerRender.prototype.drawGround = function() {
   //console.time('drawSomeLands')
-  this.world_renderer.drawSomeLands(500);
+  this.world_render.drawSomeLands(500);
   //console.timeEnd('drawSomeLands')
-  this.world_renderer.drawRivers();
+  this.world_render.drawRivers();
 }
 
 //draw onto the temp canvas
-LayerRenderer.prototype.drawThings = function() {
-  this.world_renderer.drawRoads();
-  this.world_renderer.drawUnits();
-  this.world_renderer.drawResources();
+LayerRender.prototype.drawThings = function() {
+  this.world_render.drawRoads();
+  this.world_render.drawUnits();
+  this.world_render.drawResources();
 }
 
 
-LayerRenderer.prototype.clear = function () {
-  this.world_renderer.clear();
+LayerRender.prototype.clear = function () {
+  this.world_render.clear();
 }
 

@@ -8,39 +8,39 @@
 
 
 
-// Sole responsibility: drawing hexagons on a regular grid using the Renderer 
+// Sole responsibility: drawing hexagons on a regular grid using the Render 
 
 
 import CanvasDraw from './u/CanvasDraw.js'
 import Hex from './u/Hex.js'
 import {Point} from './u/Hex.js'
-import {RenderStyle} from './ViewRenderer.js'
+import {RenderStyle} from './ViewRender.js'
 
-export default function HexRenderer(renderer, hexlayout) {
-  this.renderer = renderer; 
+export default function HexRender(render, hexlayout) {
+  this.render = render; 
   this.hexlayout = hexlayout;
 
 }
 
-HexRenderer.p = HexRenderer.prototype;
+HexRender.p = HexRender.prototype;
 
 // HEX AND POINT CONVERSION
-HexRenderer.p.hexToPoint = function(hex) {
+HexRender.p.hexToPoint = function(hex) {
   return this.hexlayout.hexToPoint(hex);
 }
-HexRenderer.p.hexesToPoints = function(hexes) {
+HexRender.p.hexesToPoints = function(hexes) {
   var points = [];
   for (let hex of hexes) {                            
       points.push(this.hexToPoint(hex));
   }
   return points;
 }
-HexRenderer.p.pointToHex = function(point) {
+HexRender.p.pointToHex = function(point) {
   return this.hexlayout.pointToHex(point);
 }
 
 // RENDERING FUNCTIONS
-HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
+HexRender.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
   var style = new RenderStyle();
   style.line_width = width;
   style.line_color = line_color; 
@@ -66,32 +66,32 @@ HexRenderer.p.drawCenterLine = function(hex1, hex2, width, line_color, option) {
     p2 = p1;
   }
 
-  this.renderer.drawLine(p1,p2, style);
+  this.render.drawLine(p1,p2, style);
 
 }
 
-HexRenderer.p.drawImage = function(hex) {
+HexRender.p.drawImage = function(hex) {
 
   let world_point = this.hexToPoint(hex);
 
   
-  //this.renderer.drawImage(this.wheat, world_point, 60);
+  //this.render.drawImage(this.wheat, world_point, 60);
 
 
 
 }
 
-HexRenderer.p.fractionalRandomPoint1 = function(p1, p2, first_half) {
+HexRender.p.fractionalRandomPoint1 = function(p1, p2, first_half) {
   let f = (new Date().getTime()%3000)/3000;
   return new Point( ((1-f)*p2.x+f*p1.x) , ((1-f)*p2.y+f*p1.y) );
 
 }
 
-HexRenderer.p.fractionalRandomPoint2 = function(p1, p2) {
+HexRender.p.fractionalRandomPoint2 = function(p1, p2) {
   
 }
 
-HexRenderer.p.drawLongLine = function(hex_array, width) {
+HexRender.p.drawLongLine = function(hex_array, width) {
   var style = new RenderStyle();
   style.line_width = width;
   style.line_color = 'white';
@@ -101,16 +101,16 @@ HexRenderer.p.drawLongLine = function(hex_array, width) {
   for (let i=0;i<hex_array.length;i++){
     points.push(this.hexToPoint(hex_array[i]));
   }
-  this.renderer.drawLines(points, style, width);
+  this.render.drawLines(points, style, width);
 }
-HexRenderer.p.drawHex = function(hex, style) {
+HexRender.p.drawHex = function(hex, style) {
   
 
   //draw hex the normal way
 
   //get the corners, then draww a polygon
   var corners = this.hexesToPoints(Hex.corners(hex));
-  this.renderer.drawPolygon(corners,style);
+  this.render.drawPolygon(corners,style);
 
   return;
 
@@ -121,12 +121,12 @@ HexRenderer.p.drawHex = function(hex, style) {
   style.line_caps = 'butt'
   style.line_width = 53;
   style.line_color = style.fill_color;
-  this.renderer.drawLine(left, right, style);
+  this.render.drawLine(left, right, style);
 
 };
 
 //Draw a series of short lines
-HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
+HexRender.p.drawHexOutline = function(edge_arrays,style) {
     
   var number_of_loops = edge_arrays.length;
   var corners = [];
@@ -143,10 +143,10 @@ HexRenderer.p.drawHexOutline = function(edge_arrays,style) {
     corner.breakLine = true; //used in complex polygons to know when to break the drawing loops
     corners.push( corner ); //add the first point again to close the loop
   }
-  this.renderer.drawPolygon(corners,style);
+  this.render.drawPolygon(corners,style);
 };
 
-HexRenderer.p.drawRange = function(range) {
+HexRender.p.drawRange = function(range) {
 
   let hex_array = [];
   for (let hex of range.values().map(
@@ -159,7 +159,7 @@ HexRenderer.p.drawRange = function(range) {
 }
 
 //Render an array of hexes on the screen
-HexRenderer.p.drawHexes = function(hex_array, range_style) {
+HexRender.p.drawHexes = function(hex_array, range_style) {
   
   var outline = Hex.outline(hex_array);
 
@@ -176,8 +176,8 @@ HexRenderer.p.drawHexes = function(hex_array, range_style) {
 }
 
 
-HexRenderer.prototype.clear = function() {
-  this.renderer.clear();
+HexRender.prototype.clear = function() {
+  this.render.clear();
 }
 
 

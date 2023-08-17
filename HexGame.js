@@ -8,7 +8,7 @@ import View from './modules/View.js';
 import {Point} from './modules/u/Hex.js'
 
 
-import GameRenderer from './modules/GameRenderer.js'
+import GameRender from './modules/GameRender.js'
 import WorldInput from './modules/WorldInput.js';
 import World from './modules/World.js';
 import Unit from './modules/Unit.js'
@@ -57,7 +57,7 @@ var earth_input = new WorldInput(earth, view);
 //Has functions for drawing to the screen
 //renders the worlds in the order they are listed
 let worlds = [system, earth, mars];
-var game_renderer = new GameRenderer(worlds, earth_input, view);
+var game_render = new GameRender(worlds, earth_input, view);
 
 
 
@@ -91,7 +91,7 @@ mars.clearClouds(new Hex(0,0), 100)
 //-----------Start animation loop----------
 
 
-game_renderer.startDrawing();
+game_render.startDrawing();
 
 
 

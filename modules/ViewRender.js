@@ -14,7 +14,7 @@
 import CanvasDraw from './u/CanvasDraw.js'
 import View from './View.js'
 
-//this is a style for renderer
+//this is a style for render
 export function RenderStyle() {
   this.line_color = 'black';
   this.line_width = 0;
@@ -23,9 +23,9 @@ export function RenderStyle() {
   this.text_size = '12';
 }
 
-//this is a basic Renderer, it doesn't know about hexes!
+//this is a basic Render, it doesn't know about hexes!
 
-export default function Renderer(canvas_element_id, view) {
+export default function Render(canvas_element_id, view) {
 
     var canvas = document.getElementById(canvas_element_id);
     this.canvas = canvas;
@@ -39,16 +39,16 @@ export default function Renderer(canvas_element_id, view) {
 }
 
 //Coordinate transformation
-Renderer.prototype.worldToScreen = function(point) {
+Render.prototype.worldToScreen = function(point) {
   return this.view.worldToScreen(point);
 }
-Renderer.prototype.worldToScreen1D = function(scalar) {
+Render.prototype.worldToScreen1D = function(scalar) {
   return this.view.worldToScreen1D(scalar);
 }
 
 
 //PURE functions, directly draw on the screen
-Renderer.prototype.drawDot = function (point,size,style) {
+Render.prototype.drawDot = function (point,size,style) {
 
     var coord = this.worldToScreen(point);
     let newsize = this.worldToScreen1D(size);
@@ -57,7 +57,7 @@ Renderer.prototype.drawDot = function (point,size,style) {
     this.canvas_draw.drawDot(coord, newsize, color);
 };
 
-Renderer.prototype.drawImage = function (image, point, size) {
+Render.prototype.drawImage = function (image, point, size) {
 
   let coord = this.worldToScreen(point);
   let w = this.worldToScreen1D(size);
@@ -68,7 +68,7 @@ Renderer.prototype.drawImage = function (image, point, size) {
 
 
 //Transform coordinates and draw a line using CanvasDraw
-Renderer.prototype.drawLine=function(point1,point2,style) {
+Render.prototype.drawLine=function(point1,point2,style) {
 
   var p1 = this.worldToScreen(point1);
   var p2 = this.worldToScreen(point2);
@@ -81,7 +81,7 @@ Renderer.prototype.drawLine=function(point1,point2,style) {
 };
 
 //Transform coordinates and draw a polyon using CanvasDraw
-Renderer.prototype.drawPolygon = function(points,style) {
+Render.prototype.drawPolygon = function(points,style) {
   var coords = []; //creates an array 
   
   //otherwise actually draw a polygon
@@ -98,7 +98,7 @@ Renderer.prototype.drawPolygon = function(points,style) {
 };
 
 //Transform coordinatess and draw text using CanvasDraw
-Renderer.prototype.drawText = function(text,position,style,center) {
+Render.prototype.drawText = function(text,position,style,center) {
   var coord = this.worldToScreen(position);
   var newfontsize = this.worldToScreen1D(style.text_size);
   var color = style.text_color;
@@ -108,7 +108,7 @@ Renderer.prototype.drawText = function(text,position,style,center) {
 };
 
 //Draw multiple lines using the drawLine function
-Renderer.prototype.drawLines = function(points,style, width) {
+Render.prototype.drawLines = function(points,style, width) {
   for (var i=0;i<points.length-1;i++) {
       this.drawLine(points[i], points[i+1], style);
   }
@@ -116,7 +116,7 @@ Renderer.prototype.drawLines = function(points,style, width) {
 
 //uses the view to render a section of the source canvas to the canvas
 //but this section is wrong
-Renderer.prototype.blitCanvas = function(source_canvas) {
+Render.prototype.blitCanvas = function(source_canvas) {
 
   let context = this.canvas.getContext('2d');
 
@@ -132,7 +132,7 @@ Renderer.prototype.blitCanvas = function(source_canvas) {
 }
 
 
-Renderer.prototype.clear = function() {
+Render.prototype.clear = function() {
 
   this.canvas_draw.clear();
 }

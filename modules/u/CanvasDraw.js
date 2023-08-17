@@ -17,7 +17,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 //The CanvasDraw object ONLY draws directly on the canvas.  It doesn't know about what game you're using
-//All Renderer objects should use this class to draw on the screen
+//All Render objects should use this class to draw on the screen
 //This draws directly on the Canvas using the canvas coordinates given
 //this should have no notions of hexagons or even tile-based game
 

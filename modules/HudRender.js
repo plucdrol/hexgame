@@ -1,13 +1,13 @@
 import Events from './u/Events.js'
 import Hex from './u/Hex.js'
-import HexRenderer from './HexRenderer.js'
-import RenderStyle from './ViewRenderer.js'
+import HexRender from './HexRender.js'
+import RenderStyle from './ViewRender.js'
 import updateTooltip from './Tooltip.js'
 
-export default function HUDRenderer(world, world_input, renderer) {
+export default function HUDRender(world, world_input, render) {
 
   var unit_input = world_input.getUnitInput();
-  var hex_renderer = new HexRenderer(renderer, world.getLayout() );
+  var hex_render = new HexRender(render, world.getLayout() );
   var action_path = [];
   var action_targets = [];
   var hover_timeout;
@@ -146,7 +146,7 @@ export default function HUDRenderer(world, world_input, renderer) {
 
     for (let target of action_targets) {
       if (!world.getTile(target).hidden)
-        hex_renderer.drawHex( target, hover_style );
+        hex_render.drawHex( target, hover_style );
     }
   }
 
@@ -157,7 +157,7 @@ export default function HUDRenderer(world, world_input, renderer) {
 
     for (let i = 0; i < hexarray.length-1; i++) {
       if (!world.areRoadConnected(hexarray[i], hexarray[i+1]))  //don't draw path through roads
-        hex_renderer.drawCenterLine(hexarray[i], hexarray[i+1], 6, color );
+        hex_render.drawCenterLine(hexarray[i], hexarray[i+1], 6, color );
     }
   }
 
@@ -172,7 +172,7 @@ export default function HUDRenderer(world, world_input, renderer) {
       color = '#5C0'; //green
     if (Hex.distance(hex1,hex2) > action.max_distance)
       color = '#C50'; //red
-    hex_renderer.drawCenterLine(hex1, hex2, 6, color );
+    hex_render.drawCenterLine(hex1, hex2, 6, color );
   }
 
   function drawHoveredHex(hex_hovered) {
@@ -181,7 +181,7 @@ export default function HUDRenderer(world, world_input, renderer) {
     hover_style.fill_color = "rgba(200,200,200,0.4)";
     hover_style.line_width = 0;
 
-    hex_renderer.drawHex( hex_hovered, hover_style );
+    hex_render.drawHex( hex_hovered, hover_style );
   }
 
   function drawSelectionHex(hex_selected) {
@@ -190,8 +190,8 @@ export default function HUDRenderer(world, world_input, renderer) {
 
     select_style.fill_color = "rgba(200,200,0,"+ocillate(500)+")";
     select_style.line_width = 2;
-    //hex_renderer.drawHex(hex_selected, select_style);
-    hex_renderer.drawCenterLine(
+    //hex_render.drawHex(hex_selected, select_style);
+    hex_render.drawCenterLine(
           hex_selected,
           hex_selected.add(new Hex(20,-40)),
           16*unit_input.getActorSelected().size, 
