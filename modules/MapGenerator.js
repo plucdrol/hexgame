@@ -36,7 +36,6 @@ export default function MapGenerator(map_type) {
     radius = new_radius;
     map = new HexMap();
 
-    var hex = new Hex(0,0);
     //contains the position and content of each tile
     var value = {}; 
     var tile_gen = makeTileGenerator(type);
@@ -50,10 +49,9 @@ export default function MapGenerator(map_type) {
       var rmax = Math.min(+radius, -q + radius);
 
       for (var r = rmin; r <= rmax; r++) {
-        
-                
+          
         //put in map
-        hex = new Hex(q,r);
+        let hex = new Hex(q,r);
         setElevation(hex, tile_gen.generateTile(q,r));
         setWind(hex, tile_gen.generateWind(q,r));
       }
@@ -73,7 +71,7 @@ export default function MapGenerator(map_type) {
 
     //map = new RiverGenerator(map).getMap();
     
-    for (hex of map.getHexes()) {
+    for (let hex of map.getHexes()) {
       //turn big rivers into coast tiles (fjords)
       if (map.get(hex).river && map.get(hex).river.water_level > 150)
         setElevation(hex, 1);
