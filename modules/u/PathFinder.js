@@ -141,9 +141,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
   //Return the cells worth revisiting for pathfinding
   function getCellsToRevisit(cells) {
 
-    return cells.filter(function(cell) {
-        return considerNewCell(cell); 
-      });
+    return cells.filter( (cell) => considerNewCell(cell) );
   };
 
   //higher order function
@@ -202,20 +200,18 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     return hasCell( cell.coord );
   };
 
-  //While pathfinding, returns true if new cell is better
   function newCellIsBetter(cell, new_cell) {
     return (new_cell.path_cost < cell.path_cost);
-
   };
 
   function getGoodNeighbors(map, coord, max_cost) {
 
-    var current_cell = currentCell( coord );
-    var neighbor_coords = getNeighborFunction( map, current_cell.coord );
-    var neighbor_cells = neighbor_coords.map( makeNeighborCell(map, current_cell) );
-    var passable_cells = neighbor_cells.filter( cellIsPassable(map) );
-    var cells_in_range = passable_cells.filter( cellIsWithinCost(max_cost));
-    var new_cells_to_add = getCellsToRevisit(cells_in_range); 
+    let current_cell = currentCell( coord );
+    let neighbor_coords = getNeighborFunction( map, current_cell.coord );
+    let neighbor_cells = neighbor_coords.map( makeNeighborCell(map, current_cell) );
+    let passable_cells = neighbor_cells.filter( cellIsPassable(map) );
+    let cells_in_range = passable_cells.filter( cellIsWithinCost(max_cost));
+    let new_cells_to_add = getCellsToRevisit(cells_in_range); 
     return new_cells_to_add;
   };
 
@@ -223,7 +219,21 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
 
 
-     //recursive step of exploring the map
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //recursive step of exploring the map
   function rangeFind(map, max_cost, target = null) {
 
     let new_cells_to_add = [];
@@ -240,7 +250,6 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
       
     do {
 
-      //coord = all_coords_to_visit.shift();
       let coord = all_coords_to_visit.pop();
 
       //do not look further if stop function triggers (except at origin)
@@ -293,15 +302,12 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
   //Returns an array of coordinates of each cell that was visited, and the cell that leads to them 
   function getRangeTree(max_cost) {
-
     return visited;
   };
  
-  //returns a map containing only the coordinates on the path
-  //to the target
+  //returns an array containing only the coordinates on the path to the target
   function targetPathfind(map, origin, target) {
      
-    //doesnt work
     let path_array = [];
 
     if (!hasCell(target)) 
