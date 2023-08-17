@@ -10,28 +10,16 @@ import PathFinder from './u/PathFinder.js'
 
 export default function ActionPathfinder(action) {
 
-    this.action = action;
+  //create a pathfinder to explore the area around the unit
+  PathFinder.call(this, stepCostFunction, getNeighborsFunction, stopFunction);
 
-    //get the movement functions
-    let self = this;
-    var stepCostFunction = self.stepCostFunction.bind(self); 
-    var neighborFunction = self.getNeighborsFunction.bind(self);
-    var stopFunction = self.stopFunction.bind(self); 
-
-    //create a pathfinder to explore the area around the unit
-    PathFinder.call(this, stepCostFunction, neighborFunction, stopFunction);
- }
-
-
-
-
- ActionPathfinder.prototype.getPathfinder = function() {
-  return this.pathfinder;
- }
+  function getPathfinder() {
+    return this.pathfinder;
+  }
 
   //The StopFunction determines which steps makes the pathfinding end, for example embarking into water
   //It does not determine which steps are IMPOSSIBLE, those are determined in the step cost function
-  ActionPathfinder.prototype.stopFunction = function(world, hex, next_hex, origins = null) {
+  function stopFunction(world, hex, next_hex, origins = null) {
     
     //make origins into an array if it is only a single hex
     if (origins && !Array.isArray(origins))
@@ -43,7 +31,7 @@ export default function ActionPathfinder(action) {
     //climbing from water to land
     if (world.onWater(hex) && world.onLand(next_hex)) {
 
-      if (this.action.stop_on_coast && (world.noUnitTypeInArea(next_hex, 0, 'city') || !this.action.disembark_at_cities)  )
+      if (action.stop_on_coast && (world.noUnitTypeInArea(next_hex, 0, 'city') || !action.disembark_at_cities)  )
         return true;
     }
 
@@ -53,7 +41,7 @@ export default function ActionPathfinder(action) {
     if (!world.onRiver(hex) && world.onRiver(next_hex) && world.onLand(hex) 
       && world.onLand(next_hex) && world.noUnitTypeInArea(next_hex, 0, 'city')) {
       
-      if (this.action.stop_on_rivers)
+      if (action.stop_on_rivers)
         return true;
     }
 
@@ -62,7 +50,7 @@ export default function ActionPathfinder(action) {
     if (world.onLand(hex) && world.onWater(next_hex) && !world.leavingRiver(hex, next_hex) && !world.enteringRiver(hex,next_hex)) { 
 
       //stop if you must stop_on_water
-      if (this.action.stop_on_water)
+      if (action.stop_on_water)
         return true;
     }
 
@@ -80,7 +68,7 @@ export default function ActionPathfinder(action) {
 
 
   //NEIGHBORS FUNCTION (for pathfinder)
-  ActionPathfinder.prototype.getNeighborsFunction = function(world, hex) {
+  function getNeighborsFunction(world, hex) {
     return world.getNeighbors(hex);
   }
 
@@ -92,12 +80,10 @@ export default function ActionPathfinder(action) {
 
 
   //STEP COST FUNCTION (for pathfinder)
-  ActionPathfinder.prototype.stepCostFunction = function(world, hex, next_hex, origins) {
+  function stepCostFunction(world, hex, next_hex, origins) {
     var next_tile = world.getTile(next_hex);
     var this_tile = world.getTile(hex);
 
-
-    let action = this.action;
     let cost = 1;
 
     if (action.sky_action) {
@@ -188,9 +174,6 @@ export default function ActionPathfinder(action) {
 
 
     // IF ACTION IS POSSIBLE, DETERMINING THE COST:
-
-
-
     if (world.onWater(hex) && world.onWater(next_hex))
       cost= 1;
 
@@ -220,5 +203,5 @@ export default function ActionPathfinder(action) {
   }
 
 
-
+}
 
