@@ -248,16 +248,19 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     for (let origin of origins)
       all_coords_to_visit.push(origin);
       
-    do {
+    checkCells()
+    function checkCells() {
 
       let coord = all_coords_to_visit.pop();
 
       //do not look further if stop function triggers (except at origin)
       let previous_coord = currentCell(coord).previous_coord;
-      if ( !previous_coord || (previous_coord && !stopFunction(map, previous_coord, coord, origins))  )
-        new_cells_to_add = getGoodNeighbors(map, coord, max_cost);
-      else
-        continue;
+      if ( previous_coord && (stopFunction(map, previous_coord, coord, origins))  ) {
+        checkCells()
+        return
+      }
+
+      new_cells_to_add = getGoodNeighbors(map, coord, max_cost);
     
       for (let cell of new_cells_to_add) {
         //mutability of data in these steps!
@@ -272,9 +275,11 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
       
       //Stop if target is reached
       if (target && target.equals(coord))
-          break;
-      
-    } while (!all_coords_to_visit.isEmpty()) 
+          return
+
+      if (!all_coords_to_visit.isEmpty()) 
+        checkCells()
+    } 
 
   };
 
