@@ -189,7 +189,7 @@ export default function Action() {
     if (this.after_action && this.after_action.multi_target)
       this.after_action.doMultiAction(world, actor, target);
 
-
+    //this appears twice
     if (this.collect_resource ) 
       if (world.hasResource(target)) 
         world.getUnit(position).addPop(1);

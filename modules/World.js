@@ -283,9 +283,9 @@ World.prototype.getResource = function(hex) {
   return this.resources.get(hex);
 }
 
-World.prototype.hasResource = function(hex) {
+World.prototype.hasResource = function(hex, resource_type = 'food') {
   if (this.getResource(hex))
-    return this.getResource(hex).resources['food'] > 0;
+    return (this.getResource(hex).resources[resource_type] > 0);
   else
     return false;
 }
@@ -341,7 +341,7 @@ World.prototype.countUnits = function(hexarray, unit_type, minimum_count) {
 
 }
 
-World.prototype.countResources = function(hexarray, resource_type, minimum_count) {
+World.prototype.countResources = function(hexarray, resource_type) {
   let count = 0;
 
 
@@ -352,7 +352,7 @@ World.prototype.countResources = function(hexarray, resource_type, minimum_count
       count++;
   }
 
-  return (count >= minimum_count) 
+  return count;
 }
 
 

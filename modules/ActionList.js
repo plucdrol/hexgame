@@ -124,7 +124,7 @@ export function actionGrowRoots(max_distance) {
     if (world.unitAtLocation(target)) 
       return false;
 
-    if (!world.countResources(Hex.circle(target, 0), 'food', 1))
+    if (!world.hasResource(target, 'food') )
       return false;
 
     return true;
@@ -208,7 +208,7 @@ export function actionMove(max_distance) {
   this.targetFilterFunction = function(world, actor, target) {
     return world.onLand(target) &&  
     (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
-    ( world.hasResource(target)  ) ;
+    ( world.hasResource(target, 'food')  ) ;
   }
 
   //If ACTIVATION returns true, and the selected unit has this action, the action will appear in its menu, greyed out
@@ -742,13 +742,13 @@ function actionGetResource(max_distance, multi_target) {
 
     return (
            //dry land food tiles within 3 tiles of the city or...
-           (world.onLand(target) && !world.onRiver(target) && world.countResources(Hex.circle(target, 0), 'food', 1)) 
+           (world.onLand(target) && !world.onRiver(target) && world.hasResource(target, 'food') ) 
            ||
            //...or shallow water fish besides the city tile
-           (world.getTile(target).elevation == 1 && world.countResources(Hex.circle(target, 0), 'food', 1))
+           (world.getTile(target).elevation == 1 && world.hasResource(target, 'food') )
            ||
            //...or river fish besides the city tile
-           (world.onRiver(target) && world.countResources(Hex.circle(target, 0), 'food', 1))
+           (world.onRiver(target) && world.hasResource(target, 'food') )
            );
   }
 
@@ -801,7 +801,7 @@ function actionCollectRiverFish(max_distance) {
 
   this.targetFilterFunction = function(world, actor, position, target) {
     return !world.unitAtLocation(target) && world.sameRiver(position, target)
-         && world.countResources(Hex.circle(target, 0), 'food', 1);
+         && world.hasResource(target, 'food') ;
   }
 
   this.activation = function(world, actor, position) {
@@ -843,7 +843,7 @@ export function actionGoFishing(max_distance) {
   this.extra_description = "Get all the sea resources up to "+this.max_distance+" tiles away";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.countResources(Hex.circle(target, 0), 'food', 1);
+    return !world.unitAtLocation(target) && world.hasResource(target, 'food') ;
   }
 
   this.requirement = function(world, actor, position) {
