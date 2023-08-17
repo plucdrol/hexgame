@@ -56,12 +56,9 @@ Hex.prototype.toDist = function() {
 //unique number, increasing away from the origin
 
 export function listContainsHex(hex, list) {
-    var i;
-    for (i = 0; i < list.length; i++) {
-        if (hex.equals(list[i])) {
+    for (let otherhex of list) 
+        if (hex.equals(otherhex)) 
             return true;
-        }
-    }
 
     return false;
 }
@@ -150,13 +147,13 @@ Hex.corners = function (hex) {
   return corners;
 }              
 
+//takes a direction (from 0 to 6), and returns a neighboring hex
 Hex.prototype.getNeighbor = function(direction_number) {
-  //takes a hex and a direction (from 0 to 6), and 
-  //returns a neighboring hex
+  
   return this.add(hex_direction[direction_number%6] );
 }
 
-//takes a hex and returns all 6 neighbors
+//returns all 6 neighbors
 Hex.prototype.getNeighbors = function() {
   var neighbors = [];
   var i;
@@ -206,24 +203,23 @@ Hex.linearInterpolate = function(hex_a,hex_b,t) {
 
 Hex.line = function(hex_a,hex_b) {
   var distance = Hex.distance(hex_a,hex_b);
-  var results = [];
+  var hex_array = [];
   var step = 1.0 / Math.max(distance,1);
   for (var i=0;i<=distance;i++) {
-    results.push(Hex.round(Hex.linearInterpolate(hex_a,hex_b,step*i)));
+    hex_array.push(Hex.round(Hex.linearInterpolate(hex_a,hex_b,step*i)));
 
   }
-  return results;
+  return hex_array;
 }
 
 Hex.circle = function(center, N) {
-  var hexarray = [];
-  hexarray.push(center)
+  var hex_array = [center];
 
   for (let r=1; r<N; r++) {
     for (let hex of Hex.ring(center,r))
-      hexarray.push(hex);
+      hex_array.push(hex);
   }
-  return hexarray;
+  return hex_array;
 }
 
 Hex.ring = function(center, radius) {
@@ -264,9 +260,9 @@ export function Vertex(hex,direction_number) {
   this.direction_number = direction_number;
 }
   Vertex.prototype.equals = function(other_vertex) {
-    if (listContainsHex(this.getInnerHex(),other_vertex.getHexes()) &&
-      listContainsHex(this.getOuterHex(),other_vertex.getHexes()) &&
-      listContainsHex(this.getClockwiseHex(),other_vertex.getHexes()) ) {
+    if (listContainsHex(this.getInnerHex(),    other_vertex.getHexes()) &&
+        listContainsHex(this.getOuterHex(),    other_vertex.getHexes()) &&
+        listContainsHex(this.getClockwiseHex(),other_vertex.getHexes()) ) {
       return true;
     }
   }
@@ -411,22 +407,15 @@ Hex.outline = function(hexes) {
   var unsorted_edges = []; //array of edges for all hexes
 
   //for each hex in HEXES
-  for (var i = 0; i<hexes.length; i++) {
+  for (let hex of hexes) {
 
-
-    var edges = []; //array of edges for 1 hex
+    let edges = []; //array of edges for 1 hex
     
     //for each edge of that hex
-    for (var d = 0; d < 6; d++) {
-      //get the edge
-      var edge = new Edge( hexes[i], d);
+    for (let d=0; d<6; d++) {
 
-      //get the neighbor across that edge
-      var neighbor = hexes[i].getNeighbor( d );
-
-      if ( !( Hex.equals(edge.getOuterHex(), neighbor) )) {
-        console.log ('hex_equal doesnt work');
-      }
+      let edge = new Edge( hex, d );
+      let neighbor = hex.getNeighbor( d );
 
       //if the hex across it is part of HEXES
       if (listContainsHex(neighbor, hexes)) {
@@ -439,11 +428,8 @@ Hex.outline = function(hexes) {
       }
     }
 
-    //for each accepted edge in this hex
-    for (var e = 0; e<edges.length; e++) {
-      //add the edges into the UNSORTED_EDGES array
-      unsorted_edges.push( edges[e] );
-    }
+    //add the edges to the list
+    unsorted_edges.push(...edges);
   }
   //sort the edges
   var sorted_edges = Edge.sort(unsorted_edges);
@@ -454,64 +440,45 @@ Hex.outline = function(hexes) {
 Edge.sort = function(unsorted_edges) {
   
   //create a new ARRAY OF EDGE ARRAYS
-  var edge_arrays = [];
-  var sorted_edges = [];
+  var edge_loops = [];
 
   var max_attempts = 30;
-  var attempts = 0;
-  
-  var current_edge = {};
-  var maybe_edge = {};
-  
 
-  var i = 0;
-
-  //while UNSORTED_EDGES is not empty
+  //Look through all the edges, trying to make loops
   while (unsorted_edges.length > 0) {
     
-    //create a new SORTED EDGES array
-    sorted_edges = [];
-    
-    //pop and push the first UNSSORTE_edge 
-    //to this SORTED_EDGES array
-    current_edge = unsorted_edges.pop();
+    let attempts = max_attempts;
+
+    let sorted_edges = [];
+    let current_edge = unsorted_edges.pop();
     sorted_edges.push( current_edge );
     
     //while the edges in sorted_edges do not make a loop
-    attempts = max_attempts;
-    while ( ! current_edge.getVertex2().equals(
-              sorted_edges[0].getVertex1())  ) {
-
-      //check all the unsorted edges for the matching one
+    while ( ! current_edge.getVertex2().equals(sorted_edges[0].getVertex1())  ) {
+  
       attempts -= 1;
-      //for each edge in UNSORTED_EDGES as MAYBE_EDGE
-      for (i=0; i<unsorted_edges.length; i++) {
-        maybe_edge = unsorted_edges[i];
-        //if the 1st point of MAYBE_EDGE is equal to the 
-	       //CURRENT_EDGE's 2nd point
 
-	       let vertexC = maybe_edge.getVertex1();
-	       let vertexD = current_edge.getVertex2();
-        if ( vertexC.equals(vertexD)   ) {
+      //check the other unsorted edges for the matching one
+      for (let [i, maybe_edge] of unsorted_edges) {
+      
+        //if MAYBE_EDGE connects with CURRENT_EDGE
+	      let vertexC = maybe_edge.getVertex1();
+	      let vertexD = current_edge.getVertex2();
+        if ( vertexC.equals(vertexD) ) {
 
-          //push MAYBE_EDGE to the SORTED EDGES array
+          //Add the new edge to the list
           sorted_edges.push ( maybe_edge );
-          attempts = 30;
-
-          //make CURRENT_EDGE now be MAYBE_EDGE
           current_edge = maybe_edge;
-          //remove MAYBE_EDGE from th UNSORTED_EDGES array
           unsorted_edges.splice(i,1);
+
           //start over at the top of the unsorted list
+          attempts = max_attempts;
           break;
-        } else {
-          //continue down the list
-          continue;
-        }
+        } 
       }
 
       if (attempts <= 0) {
-        console.log('too many attempts in sorted_edge');
+        console.error('too many attempts in sorted_edge');
         break;
       }
     }
@@ -521,17 +488,13 @@ Edge.sort = function(unsorted_edges) {
     let vertexE = sorted_edges[0].getVertex1()
     let vertexF = sorted_edges[sorted_edges.length-1].getVertex2();
     if (!(vertexE.equals(vertexF) ) ) {
-      console.log('hex boundaries do not match');
+      console.error('hex boundaries do not match');
     }
-    //popp that SORTED_EDGES array in ARRAY OF EDGE ARRAYS
-    if (edge_arrays.length & 1) {
-      //sorted_edges = sorted_edges.reverse(); //reverse every other array so they will render correctly
-    } 
-    edge_arrays.push(sorted_edges);
+
+    edge_loops.push(sorted_edges);
   }
   
-  //return the ARRAY OF EDGE ARRAYS
-  return edge_arrays;
+  return edge_loops;
 }
 
 
@@ -581,7 +544,7 @@ HexMap.prototype.delete = function(hex) {
     this.values.delete(key);
   }
 }
-HexMap.prototype.removeAll = function() {
+HexMap.prototype.deleteAll = function() {
   this.values = new Map();
   this.hexes = new Map();
 }
@@ -650,11 +613,7 @@ HexMap.prototype.containsHex = function(hex) {
 //HexMap containsKey: finds if the key is defined by 
 //checking for the key directly 
 HexMap.prototype.containsKey = function(key) {
-  if (this.values.has(key)) {
-    return true;
-  } else {
-    return false;
-  }
+  return this.values.has(key)
 }
 
 
@@ -669,17 +628,15 @@ HexMap.prototype[Symbol.iterator] = function() {
 
 HexMap.prototype.addSubmap = function(submap) {
 
-  for (let key in submap.values) {
-    let hex = this.getHex(key);
-    if (submap.containsHex(hex)) {
+  for (let hex of submap.getHexes()) {
       let value = submap.getValue(hex);
       this.set(hex, value);
-    }
   }
 }
+
 HexMap.prototype.getHexagonSubMap = function(origin,radius){
   var submap = new HexMap();
-    
+  //this doesn't do anything
   return submap;
 }
 
@@ -792,15 +749,14 @@ function Orientation(_f0,_f1,_f2,_f3,
 }
 
 //Pointy orientation has hexes with neighbors directly to the left and right
-const orientation_pointy = new Orientation(Math.sqrt(3.0),
-                                           Math.sqrt(3.0)/2.0, 0.0, 3.0/2.0, 
-          Math.sqrt(3.0)/3.0, -1.0/3.0, 0.0, 2.0/3.0,
-          0.5 );
+const orientation_pointy = new Orientation(Math.sqrt(3.0), Math.sqrt(3.0)/2.0, 0.0, 
+                                           3.0/2.0,  Math.sqrt(3.0)/3.0, -1.0/3.0, 
+                                           0.0, 2.0/3.0, 0.5 );
 
 //Flat orientation has hexes with neighbors directly above and below
-const orientation_flat = new Orientation(  3.0/2.0, 0.0, Math.sqrt(3.0)/2.0, Math.sqrt(3.0),
-          2.0/3.0, 0.0, -1.0/3.0, Math.sqrt(3.0)/3.0,
-          0.0 );
+const orientation_flat = new Orientation(  3.0/2.0, 0.0, Math.sqrt(3.0)/2.0, 
+                                            Math.sqrt(3.0), 2.0/3.0, 0.0, 
+                                            -1.0/3.0, Math.sqrt(3.0)/3.0, 0.0 );
 
 function getOrientation(string) {
   if (string == 'orientation_flat') {
@@ -821,33 +777,31 @@ export function HexLayout (orientation_string, size, origin) {
 
 }
 
+//   HEX AND PIXEL RELATIONS
+HexLayout.prototype.hexToPoint = function(hex) {
+  var ori = this.orientation;
+  var x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
+  var y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
+  return new Point(this.origin.x + x, this.origin.y + y);
+}
 
-
-  //   HEX AND PIXEL RELATIONS
-  HexLayout.prototype.hexToPoint = function(hex) {
-    var ori = this.orientation;
-    var x = (ori.f0 * hex.getQ() + ori.f1 * hex.getR()) * this.size.x;
-    var y = (ori.f2 * hex.getQ() + ori.f3 * hex.getR()) * this.size.y;
-    return new Point(this.origin.x + x, this.origin.y + y);
+HexLayout.prototype.pointToHex = function(point) {
+  var ori = this.orientation;
+  var pt = new Point((point.x - this.origin.x)/this.size.x,
+          (point.y - this.origin.y)/this.size.y);
+  var q = ori.b0 * pt.x + ori.b1 * pt.y;
+  var r = ori.b2 * pt.x + ori.b3 * pt.y;
+  return new Hex(q,r);
+}
+HexLayout.prototype.pointsToHexes = function(points) {
+  var hexes = [];
+  var i=0;
+  for ( let point of points) {
+    hexes[i] = this.pointToHex(point);
+    i++;
   }
-
-  HexLayout.prototype.pointToHex = function(point) {
-    var ori = this.orientation;
-    var pt = new Point((point.x - this.origin.x)/this.size.x,
-            (point.y - this.origin.y)/this.size.y);
-    var q = ori.b0 * pt.x + ori.b1 * pt.y;
-    var r = ori.b2 * pt.x + ori.b3 * pt.y;
-    return new Hex(q,r);
-  }
-  HexLayout.prototype.pointsToHexes = function(points) {
-    var hexes = [];
-    var i=0;
-    for ( let point of points) {
-      hexes[i] = this.pointToHex(point);
-      i++;
-    }
-    return hexes;
-  }
+  return hexes;
+}
 
 
 
