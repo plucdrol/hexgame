@@ -170,19 +170,18 @@ LayerRender.prototype.blit = function(canvas_name, view) {
   render.blitCanvas(this.temp_canvas);
 }
 
+let draw_count = 500;
 //draw onto the temp canvas
 LayerRender.prototype.drawGround = function() {
-  //console.time('drawSomeLands')
-  this.world_render.drawSomeLands(500);
-  //console.timeEnd('drawSomeLands')
-  this.world_render.drawRivers();
+  this.world_render.drawSome('lands',draw_count);
+  this.world_render.drawSome('rivers',draw_count);
 }
 
 //draw onto the temp canvas
 LayerRender.prototype.drawThings = function() {
-  this.world_render.drawRoads();
-  this.world_render.drawUnits();
-  this.world_render.drawResources();
+  this.world_render.drawSome('roads',draw_count);
+  this.world_render.drawSome('units',draw_count);
+  this.world_render.drawSome('resources',draw_count);
 }
 
 

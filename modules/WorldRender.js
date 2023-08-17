@@ -38,11 +38,11 @@ WorldRender.p.clear = function() {
 
 WorldRender.p.drawWorld = function() {
   
-  this.drawLands();
-  this.drawRivers();
-  this.drawRoads();
-  this.drawUnits();
-  this.drawResources();
+  this.drawSome('lands')
+  this.drawSome('rivers');
+  this.drawSome('roads');
+  this.drawSome('units');
+  this.drawSome('resources');
 }
 
 
@@ -80,81 +80,54 @@ WorldRender.p.drawBigHex = function(radius) {
 
 
 
-WorldRender.p.drawSomeLands = function(count) {
+WorldRender.p.drawSome = function(tile_layer, count) {
   
   if (!this.landHexes)
-    this.landHexes = this.world.getHexes();
+    this.landHexes = [];
+  
+  if (!this.landHexes[tile_layer])
+    this.landHexes[tile_layer] = this.world.getHexes();
 
   if (!count)
     var count = this.world.tileCount();
 
   while (count) {
-    let next = this.landHexes.next()
+    let next = this.landHexes[tile_layer].next()
 
     if (next.done) {
-      this.landHexes = this.world.getHexes();
+      this.landHexes[tile_layer] = this.world.getHexes();
       break;
     }
 
-    this.drawLand(next.value)
+    this.drawTile(tile_layer, next.value)
     count--;
 
   }
 }
 
-WorldRender.p.drawLands = function() {
-
-  let hexes = this.world.getHexes();  
-
-  for (let hex of hexes) {
-    this.drawLand(hex)
-  }
-}
-
-
-
-WorldRender.p.drawRivers = function() {
-
-  let hexes = this.world.getHexes();  
-
-  for (let hex of hexes) {
-    this.drawRiver(hex);
-  }
-}
-
-
-
-
-WorldRender.p.drawRoads = function() {
-
-  let hexes = this.world.getHexes();  
-
-  for (let hex of hexes) {
-    this.drawRoad(hex);
+WorldRender.p.drawTile = function(tile_layer, hex) {
+  switch (tile_layer) {
+    case 'lands':
+      this.drawLand(hex);
+      break;
+    case 'rivers':
+      this.drawRiver(hex);
+      break;
+    case 'roads':
+      this.drawRoad(hex);
+      break;
+    case 'units':
+      this.drawUnit(hex);
+      break;
+    case 'resources':
+      this.drawResource(hex);
+      break;
   }
 }
 
 
 
 
-WorldRender.p.drawUnits = function() {
-
-  let hexes = this.world.getHexes();   
-
-  for (let hex of hexes) {
-    this.drawUnit(hex);
-  }
-}
-
-
-WorldRender.p.drawResources = function() {
-
-  let hexes = this.world.getHexes();  
-
-  for (let hex of hexes) {
-    this.drawResource(hex);
-  }
-}
 
 
 
