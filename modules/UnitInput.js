@@ -26,6 +26,7 @@ export default function UnitInput(world) {
   var button_menu = new ButtonMenu('action-buttons', world);
   let unit_input = this;
 
+  this.clickHex = clickHex;
   this.selectNothing = selectNothing;
   this.getHexSelected = getHexSelected
   this.getActorSelected = getActorSelected
