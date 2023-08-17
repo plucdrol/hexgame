@@ -246,36 +246,29 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     for (let origin of origins)
       coords_to_check.push(origin);
       
-    checkCellsRecursive(coords_to_check, map, max_cost, target)
+    while (!coords_to_check.isEmpty())
+      checkNextCell(coords_to_check, map, max_cost, target)
   };
 
-  function checkCellsRecursive(coords_to_check, map, max_cost, target = null) {
-
-
+  function checkNextCell(coords_to_check, map, max_cost, target = null) {
 
     let coord = coords_to_check.pop();
 
     //do not look further if stop function triggers
     let previous_coord = currentCell(coord).previous_coord;
-    if ( previous_coord && (stopFunction(map, previous_coord, coord, origins))  ) {
-      checkCellsRecursive(coords_to_check, map, max_cost, target)
-      return
-    }
+    if ( previous_coord && (stopFunction(map, previous_coord, coord, origins))  )
+      return;
 
+    //Do not look at paths that pass through the target
+    if (target && target.equals(coord))
+      return;
+
+    //Add the neighbors of this cell
     let neighbors = getGoodNeighbors(map, coord, max_cost);
     for (let cell of neighbors){
       setVisited(cell.coord, cell); 
       coords_to_check.push(cell.coord)
     }
-
-    //NOTE: cost of the final step is not being counted!
-    // This stops the search as soon as one path to the target is found
-    // the path found is rarely the optimal path, so you get weird paths
-    //if (target && target.equals(coord))
-        //return;
-
-    if (!coords_to_check.isEmpty()) 
-      checkCellsRecursive(coords_to_check, map, max_cost, target)
   } 
 
 
