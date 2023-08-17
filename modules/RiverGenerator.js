@@ -13,7 +13,7 @@ import {HexMap} from './u/Hex.js'
 
 export default function RiverGenerator (map) {
   var visited = new HexMap();
-  var next = new HexMap();
+  var hexes_to_visit = new HexMap();
 
   addRivers();
 
@@ -27,13 +27,14 @@ export default function RiverGenerator (map) {
   }
 
   function isCoastal(hex) {
+
     for (let neighbor of hex.getNeighbors() ) {
       if (!map.get(neighbor))
         continue;
-      if (map.get(neighbor).elevation < 2) {
+      if (isWater(neighbor))
         return true;
-      }
     }
+
     return false;
   }
 
@@ -73,30 +74,31 @@ export default function RiverGenerator (map) {
   }
 
   function addNeighbors(hex) {
-    if (!hex instanceof Hex) return;
+    if (!hex instanceof Hex) 
+      return;
 
     for (let neighbor of hex.getNeighbors() ) {
-      //skip hexes outside the map
+
       if (!map.containsHex(neighbor))
        continue;
-      //skip already waiting hexes
-      if (next.containsHex(neighbor))
+
+      if (hexes_to_visit.containsHex(neighbor))
        continue;
-      //skip the water
+
       if (isWater(neighbor))
         continue;
+
       if (isCoastal(neighbor) && !isWater(hex))
         continue;
-      //skip those with rivers already
+
       if (map.get(neighbor).river)
         continue;
 
-      //add the new hexes to examine, with a pointer to their downstream hex
-      next.set(neighbor,hex);
+      hexes_to_visit.set(neighbor,hex);
     }
 
     //remove the previous hex from the list
-    next.delete(hex);
+    hexes_to_visit.delete(hex);
   }
 
   function getRandomInt(max) {
@@ -104,22 +106,23 @@ export default function RiverGenerator (map) {
   }
 
   function getRandomNext() {
-    return next.getRandomHex();
+    return hexes_to_visit.getRandomHex();
   }
 
   function growRiver(hex) {
 
     //get current water hex
-    var downstream_hex = next.get(hex);
+    var downstream_hex = hexes_to_visit.get(hex);
     var downstream_tile = map.get(downstream_hex);
 
-    //create new tile
     var tile = map.get(hex);
     tile.river = {};
+
     if (tile.elevation >= 3 && tile.elevation < 9) 
       tile.river.water_level = 1;
     else
       tile.river.water_level = 0;
+
     tile.river.name = map.get(downstream_hex).river.name;
     tile.river.downstream_hex = downstream_hex;
 
@@ -150,19 +153,16 @@ export default function RiverGenerator (map) {
       next_river_tile.river.water_level++;
 
       //turn sand to grass once enough water is reached
-      for (let neighbor of downstream_hex.getNeighbors() ) {
-        if (map.get(neighbor) && map.get(neighbor).elevation == 2 && map.get(neighbor).river && map.get(neighbor).river.water_level > 5) {
+      for (let neighbor of downstream_hex.getNeighbors() )
+        if (map.get(neighbor) && map.get(neighbor).elevation == 2 && map.get(neighbor).river && map.get(neighbor).river.water_level > 5)
           map.get(neighbor).elevation = 3;
-        }
-      }
 
       //move down the river
       current_hex = downstream_hex;
       river_tile = map.get(current_hex);
       downstream_hex = river_tile.river.downstream_hex;
-      if (!(downstream_hex instanceof Hex)) {
+      if (!(downstream_hex instanceof Hex))
         break;
-      }
 
     }
   } 
@@ -176,52 +176,40 @@ export default function RiverGenerator (map) {
 
 
   function addRivers() {
+
     //1. Finding coastal tiles
-    //check all tiles in the world
     for (let hex of map.getHexes() ) {
-      //find their coastal neighbor
+
       let water_neighbor = oceanNeighbor(hex);
-      //skip if water tile
+
       if (isOcean(hex)) 
         continue;
-      //skip if no coastal neighbor
+
       if (!water_neighbor) 
         continue;
-      //make them tiny rivers with 1 water level
+
       startRiver(hex, water_neighbor);
-      //put their land neighbors into a bag, no duplicates
       addNeighbors(hex);
     }
 
     //2. Growing rivers inland
-    //as long as there are tiles in the bag
-    while (next.size() > 0) {
+    while (hexes_to_visit.size() > 0) {
 
-      //pick a tile randomly from the bag
       let nextHex = getRandomNext();
-      //make it into a river, with 1 water level
-      //connect it to the river that made it
-      
       growRiver(nextHex);
-      //add its neighbors to the bag
       addNeighbors(nextHex);
-      //console.log(next.size());
     }
 
     //3. Simulate terrain erosion
     for (let hex of map.getHexes() ) {
       var tile = map.get(hex);
       if (tile.river) {
-        if (tile.river.water_level <= 2 && tile.elevation >= 3) {
+        if (tile.river.water_level <= 2 && tile.elevation >= 3 && tile.elevation <= 20) 
           tile.elevation += 3;
-        }
-
-        if (tile.river.water_level >= 10 && tile.elevation >= 6) {
+        if (tile.river.water_level >= 10 && tile.elevation >= 6 && tile.elevation <= 20)
           tile.elevation -= 2;
-        }
-        if (tile.river.water_level >= 25 && tile.elevation >= 8) {
+        if (tile.river.water_level >= 25 && tile.elevation >= 8 && tile.elevation <= 20) 
           tile.elevation -= 2;
-        }
       }
     }
   }

@@ -19,7 +19,7 @@ import {Point, HexLayout, HexMap} from './u/Hex.js'
 import MapGenerator from './MapGenerator.js'
 import BonusList from './BonusList.js'
 import Unit from './Unit.js'
-
+import RiverGenerator from './RiverGenerator.js'
 
 
 var land_tiles = [
@@ -86,6 +86,9 @@ export default function World(radius, type, origin) {
 
     if (type=='dust')
       this.generateResources();
+
+    if (type=='earth')
+      this.world_map = new RiverGenerator(this.world_map).getMap();
 
   }
 
