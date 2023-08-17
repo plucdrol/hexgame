@@ -31,13 +31,21 @@ export default function UnitInput(world) {
   this.getActorSelected = getActorSelected
   this.getActionSelected = getActionSelected
 
-  Events.on('hex_clicked', (event) => clickHex(event.detail) );
+  //Events.on('hex_clicked', (event) => clickHex(event.detail) );
 
 
 
   //-------1---------2---------3---------4---------5---------6--------7---------8--------
   
  
+  //The hex clicked might be outside the world
+  //for local actions, this will do nothing
+  //for sky_actions that have a long range, this
+  //When clicking, the Actor and Target should be able to be in different worlds.
+  //To do this, 
+
+  //Is it possible to bridge the gap between worlds with events?
+  //Actor triggers an action, sends an event, the other worldInput receives the event, and initiates the action?
 
   function clickHex(hex) {
 
@@ -113,13 +121,14 @@ export default function UnitInput(world) {
   };
 
 
+  //clickWithSelection EVENT (world, actor, action, target)
   function clickWithSelection(target) {
     
     let actor = getActorSelected();
     let action = button_menu.getActionSelected(actor);
 
     if (action && action.infinite_range) 
-      clickInsideRange(target);
+      clickInsideRange(target);   //when clicking another world with an infinite_range action, this will be triggered (but the hex is wrong)
     else if (action.canTarget(target)) 
       clickInsideRange(target);
     else
@@ -127,12 +136,13 @@ export default function UnitInput(world) {
 
   };
 
-  function clickInsideRange(target) {
+  //clickInsideRange(world, actor, origin, target, targetworld = world )
+  function clickInsideRange(target) {  
 
     let origin = hex_selected;
     let actor = getActorSelected();
     let action = button_menu.getActionSelected(actor);
-      console.log('click inside range')
+
     if (action.requirement(world, actor, origin)) {
 
       action.doAction(world, actor, origin, target);

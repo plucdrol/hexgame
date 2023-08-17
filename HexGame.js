@@ -51,7 +51,7 @@ var view_input = new ViewInput(view);
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
 var earth_input = new WorldInput(earth, view);
-//var mars_input = new WorldInput(mars, view);
+var mars_input = new WorldInput(mars, view);
 
 
 //Has functions for drawing to the screen

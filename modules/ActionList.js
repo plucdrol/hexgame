@@ -147,7 +147,7 @@ export function actionExpandByAir(max_distance) {
 
   this.name = 'city-by-air';
   this.minimum_elevation = 0;
-  this.maximum_elevation = 30;
+  this.maximum_elevation = 20;
   this.min_distance = 0;
   this.also_build_road = false;
   this.can_use_roads = false;

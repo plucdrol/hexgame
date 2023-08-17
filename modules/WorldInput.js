@@ -15,8 +15,10 @@ import UnitInput from './UnitInput.js';
 import Events from './u/Events.js'
 
 
-
+//Ideally, events triggered by a WorldInput would only affect a single World
+//Multiple WorldInputs can be created side-by-side, one for each world, and they will get along
 export default function WorldInput(world, view) {
+
 
 
 
@@ -89,7 +91,9 @@ export default function WorldInput(world, view) {
       let didnt_move = hex_hovered.equals(hex_hovered_previous)
 
       if (device_type == "mouse" || didnt_move) {
-        Events.emit('hex_clicked', hex_clicked);
+
+        unit_input.clickHex(hex_clicked) 
+        //Events.emit('hex_clicked', hex_clicked);  //This is emitted once for every world, with hex_clicked in different coordinate systems
       }
 
       Events.emit('hex_hovered_changed', hex_hovered);

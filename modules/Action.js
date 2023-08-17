@@ -91,6 +91,7 @@ export default function Action() {
 
   this.doAction = function(world, actor, position, target) {
 
+    //this part is messy, I don't need pathfinding on long-distance actions, for example
     let pathfinder = new ActionPathfinder(this);
     let tree = pathfinder.getTree( world, position, this.max_distance);
     if (!this.targets) 

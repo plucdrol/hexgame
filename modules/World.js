@@ -17,9 +17,10 @@
 import Hex from './u/Hex.js'
 import {Point, HexLayout, HexMap} from './u/Hex.js'
 import MapGenerator from './MapGenerator.js'
+import RiverGenerator from './RiverGenerator.js'
 import BonusList from './BonusList.js'
 import Unit from './Unit.js'
-import RiverGenerator from './RiverGenerator.js'
+
 
 
 var land_tiles = [
@@ -30,7 +31,7 @@ var land_tiles = [
 'forest','forest','forest','forest',
 'hills','hills','hills','hills','hills',
 'mountains','mountains','mountains','mountains','mountains','mountains',
-'ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','ice',
+'ice','ice','ice','ice','ice','ice','ice','ice','ice','ice','atmosphere','ice',
 'clouds'
 ];
 
