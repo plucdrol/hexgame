@@ -71,11 +71,11 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     if (Array.isArray(origin)) {
 
       for (let position of origin) {
-        setCell( position, makeOriginCell(position) );
+        setVisited( position, makeOriginCell(position) );
         origins.push(position);
       }
     } else {
-      setCell( origin, makeOriginCell(origin) );
+      setVisited( origin, makeOriginCell(origin) );
       origins.push(origin);
     }
   };
@@ -93,7 +93,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     return visited.get(JSON.stringify(coord));
   } ;
 
-  function setCell(coord, value) {
+  function setVisited(coord, value) {
    visited.set(JSON.stringify(coord), value); 
   };
  
@@ -165,18 +165,19 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
   
   //Returns true if there is the movement is not exceeded
   function movementCostExceeded(cost, max_cost) {
-    if (cost === undefined ) {
+    
+    if (cost === undefined )
       return true;
-    }
-    if (cost == 'NaN') {
+
+    if (cost == 'NaN')
       return true;
-    }
-    if (max_cost < 0 ) {
+
+    if (max_cost < 0 )
       return false;
-    }
-    if (cost <= max_cost) {
+
+    if (cost <= max_cost)
       return false;
-    }
+
     return true;
   };
 
@@ -236,54 +237,46 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
   //recursive step of exploring the map
   function rangeFind(map, max_cost, target = null) {
 
-    let new_cells_to_add = [];
-
-    let all_coords_to_visit;
     if (target)
-      all_coords_to_visit = new PriorityQueue(   (coord1, coord2) => (currentCell(coord1).path_cost+Hex.distance(coord1,target) < currentCell(coord2).path_cost+Hex.distance(coord2,target)) );  
+      var coords_to_check = new PriorityQueue(   (coord1, coord2) => (currentCell(coord1).path_cost+Hex.distance(coord1,target) < 
+                                                                      currentCell(coord2).path_cost+Hex.distance(coord2,target)) );  
     else
-      all_coords_to_visit = new PriorityQueue(   (coord1, coord2) => (currentCell(coord1).path_cost < currentCell(coord2).path_cost) );  
-
+      var coords_to_check = new PriorityQueue(   (coord1, coord2) => (currentCell(coord1).path_cost < currentCell(coord2).path_cost) );  
 
     for (let origin of origins)
-      all_coords_to_visit.push(origin);
+      coords_to_check.push(origin);
       
-    checkCells()
-    function checkCells() {
-
-      let coord = all_coords_to_visit.pop();
-
-      //do not look further if stop function triggers (except at origin)
-      let previous_coord = currentCell(coord).previous_coord;
-      if ( previous_coord && (stopFunction(map, previous_coord, coord, origins))  ) {
-        checkCells()
-        return
-      }
-
-      new_cells_to_add = getGoodNeighbors(map, coord, max_cost);
-    
-      for (let cell of new_cells_to_add) {
-        //mutability of data in these steps!
-        setCell(cell.coord, cell); 
-      }
-
-      let new_coords = new_cells_to_add.map( cell => cell.coord );
-
-      for (let new_coord of new_coords) {
-        all_coords_to_visit.push(new_coord);
-      }
-      
-      //Stop if target is reached
-      if (target && target.equals(coord))
-          return
-
-      if (!all_coords_to_visit.isEmpty()) 
-        checkCells()
-    } 
-
+    checkCellsRecursive(coords_to_check, map, max_cost, target)
   };
 
+  function checkCellsRecursive(coords_to_check, map, max_cost, target = null) {
 
+
+
+    let coord = coords_to_check.pop();
+
+    //do not look further if stop function triggers
+    let previous_coord = currentCell(coord).previous_coord;
+    if ( previous_coord && (stopFunction(map, previous_coord, coord, origins))  ) {
+      checkCellsRecursive(coords_to_check, map, max_cost, target)
+      return
+    }
+
+    let neighbors = getGoodNeighbors(map, coord, max_cost);
+    for (let cell of neighbors){
+      setVisited(cell.coord, cell); 
+      coords_to_check.push(cell.coord)
+    }
+
+    //NOTE: cost of the final step is not being counted!
+    // This stops the search as soon as one path to the target is found
+    // the path found is rarely the optimal path, so you get weird paths
+    //if (target && target.equals(coord))
+        //return;
+
+    if (!coords_to_check.isEmpty()) 
+      checkCellsRecursive(coords_to_check, map, max_cost, target)
+  } 
 
 
 
