@@ -1,6 +1,6 @@
 
-import View from './u/View.js'
-import Renderer from './u/Renderer.js';
+import View from './View.js'
+import ViewRenderer from './ViewRenderer.js';
 import WorldRenderer from './WorldRenderer.js';
 import HUDRenderer from './HudRenderer.js';
 import Events from './u/Events.js';
@@ -9,7 +9,7 @@ import Events from './u/Events.js';
 
 export default function GameRenderer(worlds, world_input, view) {
 
-  let renderer = new Renderer('canvas', view);
+  let renderer = new ViewRenderer('canvas', view);
   let layers = [];
 
   for (let world of worlds) {
@@ -140,7 +140,7 @@ function LayerRenderer(world) {
 
   //this temp world renderer draws the entire layer into a full-sized canvas
   //later on, it must blit a section of this canvas to the final canvas
-  var renderer = new Renderer(canvas_name, this.full_view);
+  var renderer = new ViewRenderer(canvas_name, this.full_view);
   this.world_renderer = new WorldRenderer(world, renderer); 
 }
 
@@ -162,7 +162,7 @@ LayerRenderer.prototype.RendererFromTempCanvasToScreen = function(canvas_name, v
     this.full_view.worldToScreen1D( view.getInputSize().y ),
   );
 
-  return new Renderer(canvas_name, blitview);
+  return new ViewRenderer(canvas_name, blitview);
 }
 
 LayerRenderer.prototype.blit = function(canvas_name, view) {

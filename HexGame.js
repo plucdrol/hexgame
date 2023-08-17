@@ -4,8 +4,7 @@ import CanvasDraw from './modules/u/CanvasDraw.js';
 import CanvasInput from './modules/u/CanvasInput.js';
 import Events from './modules/u/Events.js'
 import Hex from './modules/u/Hex.js'
-import Renderer from './modules/u/Renderer.js';
-import View from './modules/u/View.js';
+import View from './modules/View.js';
 import {Point} from './modules/u/Hex.js'
 
 
@@ -46,13 +45,14 @@ var system = new World(system_radius, 'system');
 //-----------Game Engine elements-------------
 //A moveable point of view into the game world
 var view = new View('canvas');
+var view_input = new ViewInput(view); 
 
 
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
 var earth_input = new WorldInput(earth, view);
 //var mars_input = new WorldInput(mars, view);
-var view_input = new ViewInput(view); 
+
 
 //Has functions for drawing to the screen
 //renders the worlds in the order they are listed

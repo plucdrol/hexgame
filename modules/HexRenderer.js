@@ -14,7 +14,7 @@
 import CanvasDraw from './u/CanvasDraw.js'
 import Hex from './u/Hex.js'
 import {Point} from './u/Hex.js'
-import {RenderStyle} from './u/Renderer.js'
+import {RenderStyle} from './ViewRenderer.js'
 
 export default function HexRenderer(renderer, hexlayout) {
   this.renderer = renderer; 

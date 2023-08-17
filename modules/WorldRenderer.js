@@ -16,7 +16,7 @@ import World from './World.js'
 import Unit from './Unit.js'
 import Hex from './u/Hex.js'
 import HexRenderer from './HexRenderer.js'
-import {RenderStyle} from './u/Renderer.js'
+import {RenderStyle} from './ViewRenderer.js'
 
 
 export default function WorldRenderer (world, renderer) {

@@ -1,7 +1,7 @@
 import Events from './u/Events.js'
 import Hex from './u/Hex.js'
 import HexRenderer from './HexRenderer.js'
-import RenderStyle from './u/Renderer.js'
+import RenderStyle from './ViewRenderer.js'
 import updateTooltip from './Tooltip.js'
 
 export default function HUDRenderer(world, world_input, renderer) {
