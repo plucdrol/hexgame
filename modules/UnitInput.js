@@ -13,7 +13,7 @@
 
 //Dependencies
 import Hex from './u/Hex.js'
-import ButtonMenu from './ButtonMenu.js'
+import ActionInput from './ActionInput.js'
 import Events from './u/Events.js'
 
 import {listContainsHex} from './u/Hex.js'
@@ -23,7 +23,7 @@ import {listContainsHex} from './u/Hex.js'
 export default function UnitInput(world) {
   
   var hex_selected;
-  var button_menu = new ButtonMenu('action-buttons', world);
+  var action_input = new ActionInput('action-buttons', world);
   let unit_input = this;
 
   this.clickHex = clickHex;
@@ -55,17 +55,20 @@ export default function UnitInput(world) {
     else
       clickWithNoSelection(hex);
 
-    button_menu.update(unit_input);
+    //action_input.showButtonsFor(world, getActorSelected(), getHexSelected());
   };
 
 
 
   function selectHex(hex) {
 
-    button_menu.unselectActions();
+    action_input.unselectActions();
+    let actor = world.getActor(hex);
 
-    if (hex && world.getActor(hex))
+    if (hex && actor) {
       hex_selected = hex;
+      action_input.showButtonsFor( world, actor, hex );
+    }
     else
       selectNothing();
   };
@@ -73,7 +76,7 @@ export default function UnitInput(world) {
 
   function selectNothing() {
     hex_selected = null;
-    button_menu.update(unit_input);
+    //action_input.showButtonsFor(world, getActorSelected(), getHexSelected());
   };
 
   function aHexIsSelected() {
@@ -111,7 +114,7 @@ export default function UnitInput(world) {
   function getActionSelected() {
     if (anActorIsSelected()) {
       let actor = getActorSelected();
-      return button_menu.getActionSelected(actor);
+      return action_input.getActionSelected(actor);
     } else {
       return false;
     }
@@ -126,7 +129,7 @@ export default function UnitInput(world) {
   function clickWithSelection(target) {
     
     let actor = getActorSelected();
-    let action = button_menu.getActionSelected(actor);
+    let action = action_input.getActionSelected(actor);
 
     if (action && action.sky_action && action.infinite_range) 
       clickInsideRange(target);   //when clicking another world with an infinite_range action, this will be triggered (but the hex is wrong)
@@ -142,16 +145,19 @@ export default function UnitInput(world) {
 
     let origin = hex_selected;
     let actor = getActorSelected();
-    let action = button_menu.getActionSelected(actor);
+    let action = action_input.getActionSelected(actor);
 
     if (action.requirement(world, actor, origin)) {
 
       action.doAction(world, actor, origin, target);
 
+      if (action.nextSelection == 'self')
+        action_input.showButtonsFor(world, actor, origin);
+
       if (action.nextSelection == 'target') 
         selectHex(target); 
 
-      if (action.nextSelection == 'new_unit' && world.unitAtLocation(target) ) 
+      if (action.nextSelection == 'new_unit' && world.unitAtLocation(target) )
         selectHex(target); 
 
     }

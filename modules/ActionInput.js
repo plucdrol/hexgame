@@ -1,19 +1,15 @@
 
 import Events from './u/Events.js'
 
-export default function ButtonMenu(menu_name, world) {
+export default function ActionInput(menu_name) {
 
   this.getActionSelected = getActionSelected
   this.unselectActions = unselectActions
-  this.update = update
+  this.showButtonsFor = showButtonsFor
 
 
-  function update(unit_input) { 
+  function showButtonsFor(world, actor, position) { 
 
-    let actor = unit_input.getActorSelected();
-    let position = unit_input.getHexSelected();
-
-    //updateBonusButtons(world.bonus_list, world);
 
     if (actor && actor.selectable) {
       updateActionButtons(world, actor, position);
@@ -175,6 +171,11 @@ export default function ButtonMenu(menu_name, world) {
       selectFirstAction(actor, position);
   }
 
+  //TODO 
+  // action.activation and action.requirement require a WORLD, for good reason
+  // but this makes interplanetary actions difficult
+  // the WORLD is always the location of the ACTOR, not of any TARGET
+  // is there any way to pass it in from the UNIT-INPUT, who knows it?
   function generateButtons(world, actor, position) {
 
     var html_menu = document.getElementById(menu_name);
