@@ -100,6 +100,9 @@ export default function World(radius, type, origin) {
 
 }
 
+World.prototype.sameAs = function(other_world) {
+  return this.id == other_world.id;
+}
 World.prototype.getTileName = function(elevation) {
   return land_tiles[elevation]
 }

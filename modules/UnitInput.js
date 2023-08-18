@@ -138,9 +138,9 @@ export default function UnitInput(origin_world) {
 
     if (action && action.sky_action && action.infinite_range) 
       clickInsideRange(world_clicked, target);   //when clicking another world with an infinite_range action, this will be triggered (but the hex is wrong)
-    else if (origin_world.id == world_clicked.id && action.canTarget(origin_world, actor, hex_selected, target)) 
+    else if (origin_world.sameAs(world_clicked) && action.canTarget(origin_world, actor, hex_selected, target)) 
       clickInsideRange(origin_world, target);
-    else if (origin_world.id == world_clicked.id)
+    else if (origin_world.sameAs(world_clicked))
       clickOutsideRange(origin_world, target);
 
   };

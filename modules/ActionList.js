@@ -56,7 +56,7 @@ export default function actionExpand(distance) {
 
 
     //grow city if clicking on it
-    if (world.unitAtLocation(target) && world.getUnit(target).pop && world.getUnit(target).pop < 5) {
+    if (world.unitAtLocation(target) && world.getUnit(target).pop && world.getUnit(target).pop < 11) {
 
       actor.pop -= 2;
       world.getUnit(target).pop++;
@@ -202,7 +202,7 @@ export function actionMove(max_distance) {
 
   this.cost = 4;
 
-  this.description = "Move";
+  this.description = "Rebase";
   this.extra_description = "Move your central node somewhere else";
 
   this.targetFilterFunction = function(world, actor, target) {

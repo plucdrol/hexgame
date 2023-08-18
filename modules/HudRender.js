@@ -28,7 +28,7 @@ export default function HUDRender(world, world_input, render) {
     var hex_hovered = world_input.getHexHovered();
     var hex_selected = unit_input.getHexSelected();
 
-    if (hex_hovered) 
+    if (hex_hovered && world.containsHex(hex_hovered)) 
       drawHoveredHex(hex_hovered);
 
     if (!hex_selected) 
@@ -87,7 +87,7 @@ export default function HUDRender(world, world_input, render) {
 
   function updateActionPath (world_hovered, hex_hovered) {
     
-    if (world_hovered.id != world.id) 
+    if (world.sameAs(world_hovered)) 
       return
 
     let actor = unit_input.getActorSelected();
@@ -187,6 +187,7 @@ export default function HUDRender(world, world_input, render) {
   }
 
   function drawHoveredHex(hex_hovered) {
+
     //draw hovered hex
     var hover_style = new RenderStyle();
     hover_style.fill_color = "rgba(200,200,200,0.4)";

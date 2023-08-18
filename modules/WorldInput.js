@@ -68,7 +68,7 @@ export default function WorldInput(world, view) {
     var world_position = view.screenToWorld(screen_position);
     hex_hovered = world.getHex(world_position);
 
-    //if the mouse moved to a new hex, redraw the screen
+    //if the mouse moved to a new hex in this world, emit an event
     if ( !hex_hovered.equals(hex_hovered_previous) )
       if (world.containsHex(hex_hovered))
         Events.emit('hex_hovered_changed', {world, hex_hovered});
