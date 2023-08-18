@@ -8,22 +8,19 @@ import Events from './u/Events.js';
 
 
 
-export default function GameRender(worlds, inputs, view) {
+export default function GameRender(system, worlds, world_inputs, view) {
 
   let render = new ViewRender('canvas', view);
   let layers = [];
   let hud_renders = [];
 
-  for (let world of worlds) {
+  layers.push(new LayerRender(system))
+  for (let world of worlds) 
     layers.push(new LayerRender(world))
-  }
-
-  for (let input of inputs) {
-      let hud = new HUDRender(input.getWorld(), input, render);
-      hud_renders.push(hud);
-  }
 
 
+  for (let world_input of world_inputs) 
+    hud_renders.push( new HUDRender(world_input.getWorld(), world_input, render) );
 
 
   function clear() {

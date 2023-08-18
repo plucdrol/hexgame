@@ -50,15 +50,30 @@ var view_input = new ViewInput(view);
 
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
-var earth_input = new WorldInput(earth, view);
-var mars_input = new WorldInput(mars, view);
 
 
 //Has functions for drawing to the screen
 //renders the worlds in the order they are listed
-let worlds = [system, earth, mars];
-let inputs = [earth_input, mars_input];
-var game_render = new GameRender(worlds, inputs, view);
+let worlds = [earth, mars];
+
+//Create a bunch more worlds!
+for (let i=0; i<5; i++) {
+  let new_world_location = system.getPoint(system.getRandomHex());
+  let radius = 25;
+  let new_world = new World(radius, 'earth', new_world_location);
+  new_world.clearClouds()
+  worlds.push(new_world);
+}
+
+
+var world_inputs = [];
+for (let world of worlds) {
+  let world_input = new WorldInput(world, view);
+  world_inputs.push(world_input)
+}
+
+
+var game_render = new GameRender(system, worlds, world_inputs, view);
 
 
 

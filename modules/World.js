@@ -183,8 +183,7 @@ World.prototype.getActor = function(hex) {
 
 World.prototype.getRandomHex = function() {
 
-  let hex_array = this.world_map.getHexes();
-  let random_hex = hex_array[Math.floor(Math.random()*hex_array.length)];
+  let random_hex = this.world_map.getRandomHex();
   return random_hex;
 }
 
