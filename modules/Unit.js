@@ -13,16 +13,17 @@ import {actionGrowRoots,actionMove,
         actionExpandAll,actionCreateCity,actionCreateHarbor,actionExpandByAir} from './ActionList.js'
 
 
-export default function Unit(unit_type) {
+export default function Unit(unit_type, world) {
   
   this.selectable = true;
-  this.position = null;
+  this.world = world;
 
   this.id = unit_id_incrementer++;
   this.actions = [];
 
   this.setType(unit_type);
 };
+
 
 
 
@@ -67,6 +68,9 @@ Unit.prototype.setResource = function(type, value) {
   this.resources[type] = value;
 }
 
+Unit.prototype.setWorld = function(world) {
+  this.world = world;
+}
 
 
 

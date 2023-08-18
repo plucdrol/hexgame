@@ -72,7 +72,7 @@ for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 ))
       start_hex = hex;
 
 let first_city =  new Unit('city');
-earth.units.set(start_hex, first_city);
+earth.addUnit(start_hex, first_city);
 earth.destroyResource(start_hex);
 first_city.pop = 5;
 

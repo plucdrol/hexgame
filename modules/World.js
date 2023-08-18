@@ -67,7 +67,7 @@ export default function World(radius, type, origin) {
     this.units = new HexMap();
     //for (let hex of Hex.circle(new Hex(0,0), 3))
     let hex = new Hex(0,0)
-      this.units.set(hex, new Unit('star'));
+    this.createUnit(hex, 'star');
     //create resources map
     this.resources = new HexMap();
     this.generateSystemResources();
@@ -188,9 +188,14 @@ World.prototype.getUnit = function(hex) {
 }
 
 
-World.prototype.addUnit = function(hex, unit_type) {
-    let new_unit = new Unit(unit_type);
+World.prototype.createUnit = function(hex, unit_type) {
+    let new_unit = new Unit(unit_type, this);
     this.units.set(hex, new_unit);
+}
+
+World.prototype.addUnit = function(hex, unit) {
+  unit.setWorld(this)
+  this.units.set(hex, unit);
 }
 
 World.prototype.destroyUnit = function(hex) {

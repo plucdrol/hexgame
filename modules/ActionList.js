@@ -69,7 +69,7 @@ export default function actionExpand(distance) {
     //grow road and build a city if clicking somewhere else
     if (!world.unitAtLocation(target)) {
       actor.pop -= 2;
-      world.addUnit(target, 'city', actor);
+      world.createUnit(target, 'city');
 
       let after_action = new actionGrowRoots( 1 );
       after_action.doAction( world, actor, target)  
@@ -77,7 +77,7 @@ export default function actionExpand(distance) {
 
     //add a village if clicling directly on a resource
     if (world.getResource(target) && !world.getResource(target).resources['unknown']) {
-      world.addUnit(target, 'village', actor);
+      world.createUnit(target, 'village');
       world.highlightRange(Hex.circle(target, 1), 'green'); //green is the color around captured resources
     }
   }
@@ -133,7 +133,7 @@ export function actionGrowRoots(max_distance) {
 
   this.effect = function(world,actor,position,target) {
     actor.addPop(1);
-    world.addUnit(target, 'village', actor);
+    world.createUnit(target, 'village');
     world.highlightRange(Hex.circle(target, 2), 'green');
   }
 }
@@ -224,10 +224,10 @@ export function actionMove(max_distance) {
   this.effect = function(world, actor, position, target) {
 
     actor.moveActionToTop(this);
-    world.units.set(target, actor);
+    world.addUnit(target, actor);
 
     world.destroyUnit(position);
-    world.addUnit(position, 'city', actor);
+    world.createUnit(position, 'city');
     
   }
 
@@ -309,7 +309,7 @@ export function actionExpandAll() {
     for (let hex of world.getHexes()) {
       if (world.countRoads(hex) >= 3)
         if (world.onLand(hex) && !world.unitAtLocation(hex))
-          world.addUnit(hex, 'village', actor);
+          world.createUnit(hex, 'village');
     }
 
     for (let hex of Hex.circle(target,2))

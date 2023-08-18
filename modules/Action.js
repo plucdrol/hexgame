@@ -165,7 +165,7 @@ export default function Action() {
       this.createRoad(world, position, target);
 
     if (this.new_unit_type) {
-      world.addUnit(target, this.new_unit_type, actor);
+      world.createUnit(target, this.new_unit_type, actor);
       let new_unit = world.getUnit(target);
       this.clearAllRangeClouds(world, new_unit, target);
     }
