@@ -16,6 +16,7 @@ export default function actionExpand(distance) {
 
   this.nextSelection = 'self';
 
+  this.new_unit_type = 'city';
   this.hover_action = new actionGrowRoots(1);
 
   this.can_river = true;
@@ -55,21 +56,20 @@ export default function actionExpand(distance) {
 
   this.preEffect = function(world, actor, position, target) {
 
-
     //Clicking a city: GROW IT
     if (world.unitAtLocation(target) && world.getUnit(target).pop && world.getUnit(target).pop < 11) {
       world.getUnit(target).pop++;
     }
+  }
 
-    //Clicking the ground or a resource: BUILD CITY
-    if (!world.unitAtLocation(target)) {
-      world.createUnit(target, 'city');
+
+  this.effect = function(world, actor, position, target) {
+
+    //Collect resources around new node
+    if (world.unitAtLocation(target)) {
+      let target_pop = world.getUnit(target).pop;
+      this.after_action = new actionGrowRoots( target_pop );
     }
-
-    let target_pop = world.getUnit(target).pop;
-    this.after_action = new actionGrowRoots( target_pop );
-    return;
-
   }
 }
 
@@ -142,6 +142,8 @@ export function actionExpandByAir(max_distance) {
   this.also_build_road = false;
   this.can_use_roads = false;
   this.sky_action = true;
+
+  this.collect_resource = false;
 
   this.cost = 0;
 

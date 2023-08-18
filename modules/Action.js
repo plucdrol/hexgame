@@ -33,9 +33,12 @@ export default function Action() {
   this.infinite_range = false;
   this.sky_action = false;
 
+  this.new_unit_type = null; //create a unit on the target
+  this.replace_unit = false; //replace pre-existing units
+
 
   this.can_use_roads = false;
-  this.double_road_speed = false;
+  this.double_road_speed = false; //moves along roads are free
 
   this.slow_in_water = false;
 
@@ -169,9 +172,12 @@ export default function Action() {
       this.createRoad(world, position, target);
 
     if (this.new_unit_type) {
-      world.createUnit(target, this.new_unit_type, actor);
-      let new_unit = world.getUnit(target);
-      this.clearAllRangeClouds(world, new_unit, target);
+      if (this.replace_target || !world.unitAtLocation(target)) {
+        world.destroyUnit(target);
+        world.createUnit(target, this.new_unit_type);
+        let new_unit = world.getUnit(target);
+        //this.clearAllRangeClouds(world, new_unit, target);
+      }
     }
 
     if (this.collect_resource) {
