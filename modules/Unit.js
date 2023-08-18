@@ -42,6 +42,10 @@ Unit.prototype.getPop = function() {
     return this.pop;
 }
 
+Unit.prototype.getActions = function() {
+  return this.actions;
+}
+
 Unit.prototype.addAction = function( action ) {
   this.actions.push( action );
 }

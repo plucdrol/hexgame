@@ -191,6 +191,7 @@ World.prototype.getUnit = function(hex) {
 World.prototype.addUnit = function(hex, unit_type, owner) {
     let new_unit = new Unit(unit_type, owner);
     this.units.set(hex, new_unit);
+    new_unit.setWorld(this);
 }
 
 World.prototype.destroyUnit = function(hex) {

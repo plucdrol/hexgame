@@ -1,7 +1,7 @@
 
 import Events from './u/Events.js'
 
-export default function ActionInput(menu_name) {
+export default function ActionButtons(menu_name) {
 
   this.getActionSelected = getActionSelected
   this.unselectActions = unselectActions
@@ -57,10 +57,10 @@ export default function ActionInput(menu_name) {
 
   function getActionFromId(actor, action_id) {
 
-    if (!actor || !actor.actions || !action_id)
+    if (!actor || !actor.getActions() || !action_id)
       return;
 
-    for (let action of actor.actions)
+    for (let action of actor.getActions())
       if ('action-'.concat(action.name) == action_id)
         return action;
   };
@@ -74,7 +74,7 @@ export default function ActionInput(menu_name) {
 
     let radio_elements = getButtonElements()
     let first_button = radio_elements[0];
-    
+
     if (first_button && !first_button.disabled) {
       first_button.checked = true;
       let action = getActionFromId(actor, first_button.id);
@@ -88,9 +88,7 @@ export default function ActionInput(menu_name) {
       button.checked = false;
   }
 
-  function getButtonElements() {
-    return document.getElementById(menu_name).getElementsByClassName('button-input')
-  }
+
 
 
 
@@ -120,7 +118,9 @@ export default function ActionInput(menu_name) {
   //              Functions about HTML action buttons
   /////////////////////////////////////////////////////
 
-
+  function getButtonElements() {
+    return document.getElementById(menu_name).getElementsByClassName('button-input')
+  }
 
   function makeActionButton(action) {
 
@@ -182,7 +182,7 @@ export default function ActionInput(menu_name) {
     var html_menu = document.getElementById(menu_name);
     html_menu.innerHTML = "<h2 class='action-header'>"+actor.name+"</h2>";
 
-    for (let action of actor.actions) {
+    for (let action of actor.getActions()) {
       
       //don't show action if its activation is not met
       if (!action.activation(world, actor, position)) 

@@ -212,12 +212,12 @@ export function actionMove(max_distance) {
   }
 
   //If ACTIVATION returns true, and the selected unit has this action, the action will appear in its menu, greyed out
-  this.activation = function(world, actor, position, target) {
+  this.activation = function(world, actor, position) {
     return (actor.can_move);
   }
 
   //if REQUIREMENT also returns true, then the button will no longer be grayed out
-  this.requirement = function(world, actor, position, target) {
+  this.requirement = function(world, actor, position) {
     return (actor.can_move);
   }
 
