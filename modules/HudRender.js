@@ -12,7 +12,7 @@ export default function HUDRender(world, world_input, render) {
   var action_targets = [];
   var hover_timeout;
 
-  Events.on('hex_hovered_changed', (e) => updateHover(e.detail) );
+  Events.on('hex_hovered_changed', (e) => updateHover(e.detail.world, e.detail.hex_hovered) );
 
 
 
@@ -67,22 +67,29 @@ export default function HUDRender(world, world_input, render) {
   // UPDATE FUNCTIONS
 
 
-  function updateHover(hex_hovered) {
+  function updateHover(world_hovered, hex_hovered) {
+
+
+    if (!world_hovered.containsHex(hex_hovered))
+      return;
 
     action_targets = [];
 
     //use a timeout to only trigger when the mouse stops moving
     if (hover_timeout)
       clearTimeout(hover_timeout);
-    hover_timeout = setTimeout(function(){ updateActionTargets(hex_hovered);
-                                               updateActionPath(hex_hovered); 
+    hover_timeout = setTimeout(function(){ updateActionTargets(world_hovered, hex_hovered);
+                                               updateActionPath(world_hovered, hex_hovered); 
                                                //updateTooltip(world, hex_hovered) 
                                              }, 100);
 
   }
 
-  function updateActionPath (hex_hovered) {
+  function updateActionPath (world_hovered, hex_hovered) {
     
+    if (world_hovered.id != world.id) 
+      return
+
     let actor = unit_input.getActorSelected();
     let action = unit_input.getActionSelected();
     let hex_selected = unit_input.getHexSelected();
@@ -94,7 +101,7 @@ export default function HUDRender(world, world_input, render) {
     }
   }
 
-  function updateActionTargets (hex_hovered) {
+  function updateActionTargets (world_hovered, hex_hovered) {
     
     let actor = unit_input.getActorSelected();
     let action = unit_input.getActionSelected();
@@ -102,12 +109,16 @@ export default function HUDRender(world, world_input, render) {
     action_targets = [];
 
     if (action && actor && action.hover_action) {
-      if (!action.targetFilterFunction(world, actor, hex_hovered))
+      if (!action.targetFilterFunction(world_hovered, actor, hex_hovered))
         return;
 
-      let hover_action = action.hover_action;
-      action_targets = hover_action.getTargets(world, actor, hex_hovered );
+
+        let hover_action = action.hover_action;
+        action_targets = hover_action.getTargets(world_hovered, actor, hex_hovered );
+
     } 
+
+
   }
 
 

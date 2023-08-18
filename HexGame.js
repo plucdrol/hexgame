@@ -51,13 +51,14 @@ var view_input = new ViewInput(view);
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
 var earth_input = new WorldInput(earth, view);
-//var mars_input = new WorldInput(mars, view);
+var mars_input = new WorldInput(mars, view);
 
 
 //Has functions for drawing to the screen
 //renders the worlds in the order they are listed
 let worlds = [system, earth, mars];
-var game_render = new GameRender(worlds, earth_input, view);
+let inputs = [earth_input, mars_input];
+var game_render = new GameRender(worlds, inputs, view);
 
 
 
@@ -72,8 +73,8 @@ for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 ))
       start_hex = hex;
 
 let first_city =  new Unit('city');
-earth.addUnit(start_hex, first_city);
 earth.destroyResource(start_hex);
+earth.addUnit(start_hex, first_city);
 first_city.pop = 5;
 
 //for some reason I need to invert the starting hex 

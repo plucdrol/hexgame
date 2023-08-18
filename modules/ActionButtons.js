@@ -13,6 +13,7 @@ export default function ActionButtons(menu_name) {
 
     if (actor && actor.selectable) {
       updateActionButtons(world, actor, position);
+
     } else {
       clearButtons();
     }

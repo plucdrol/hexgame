@@ -19,7 +19,7 @@ import Events from './u/Events.js'
 //Multiple WorldInputs can be created side-by-side, one for each world, and they will get along
 export default function WorldInput(world, view) {
 
-
+  this.getWorld = () => world;
 
 
   //this is where the world's unit controller is created
@@ -54,7 +54,7 @@ export default function WorldInput(world, view) {
 
     if (event.keyCode === 187 || event.keyCode === 27) { // escape
         unit_input.selectNothing();
-        Events.emit('hex_hovered_changed', hex_hovered);
+        //Events.emit('hex_hovered_changed', {world, hex_hovered});
     }
     return false;
   }
@@ -69,10 +69,9 @@ export default function WorldInput(world, view) {
     hex_hovered = world.getHex(world_position);
 
     //if the mouse moved to a new hex, redraw the screen
-    if ( !hex_hovered.equals(hex_hovered_previous) ) {
-      Events.emit('hex_hovered_changed', hex_hovered);
-
-    }
+    if ( !hex_hovered.equals(hex_hovered_previous) )
+      if (world.containsHex(hex_hovered))
+        Events.emit('hex_hovered_changed', {world, hex_hovered});
 
     //remember the currently hovered hex
     hex_hovered_previous = hex_hovered;
@@ -92,11 +91,12 @@ export default function WorldInput(world, view) {
 
       if (device_type == "mouse" || didnt_move) {
 
-        unit_input.clickHex(hex_clicked) 
-        //Events.emit('hex_clicked', hex_clicked);  //This is emitted once for every world, with hex_clicked in different coordinate systems
+        if (world.containsHex(hex_clicked))
+          Events.emit('hex_clicked', {world, hex_clicked});  //This is emitted once for every world, with hex_clicked in different coordinate systems
       }
 
-      Events.emit('hex_hovered_changed', hex_hovered);
+      if (world.containsHex(hex_hovered))
+        Events.emit('hex_hovered_changed', {world, hex_hovered});
       
     }
   }

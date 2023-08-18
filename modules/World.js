@@ -35,12 +35,13 @@ var land_tiles = [
 'clouds'
 ];
 
-
+var world_ids = 0;
 
 export default function World(radius, type, origin) {
 
   this.radius = radius;
   this.type = type;
+  this.id = world_ids++;
 
   //configure world dimensions
   if (type == 'system') {
@@ -88,8 +89,11 @@ export default function World(radius, type, origin) {
     if (type=='dust')
       this.generateResources();
 
-    if (type=='earth')
+    if (type=='earth') {
+
       this.world_map = new RiverGenerator(this.world_map).getMap();
+      this.generateResources();
+    }
 
   }
 
@@ -107,6 +111,7 @@ World.prototype.getZoom = function() {
 World.prototype.getLayout = function() {
   return this.layout;
 }
+
 World.prototype.containsHex = function(hex) {
   return this.hasHex(hex);
 }

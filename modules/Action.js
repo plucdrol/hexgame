@@ -91,19 +91,23 @@ export default function Action() {
 
   this.doAction = function(world, actor, position, target) {
 
-    //this part is messy, I don't need pathfinding on long-distance actions, for example
-    let pathfinder = new ActionPathfinder(this);
-    let tree = pathfinder.getTree( world, position, this.max_distance);
+    if (this.infinite_range) {
+      this.doSingleAction(world, actor, position, target);
+      return;
+    }
 
-    let targets = this.getTargets(world, actor, position); //make a new range array because I'm going to sort it
+    //this part is messy, I don't need pathfinding on long-distance actions, for example
+    var pathfinder = new ActionPathfinder(this);
+    var tree = pathfinder.getTree( world, position, this.max_distance);
+    var targets = this.getTargets(world, actor, position); //make a new range array because I'm going to sort it
+
     let action = this;
       
-
-    if (targets.length <= 0 && !this.infinite_range)
+    if (targets.length <= 0 && !action.infinite_range)
       return;
 
     //Either do a single action or do the action on all targets
-    if (this.multi_target) {
+    if (action.multi_target) {
 
       //do actions in order from closest to furthest, with a preference for land tiles
       targets.sort((a, b) => (world.onWater(a) && world.onLand(b)) ? 1 : -1);
