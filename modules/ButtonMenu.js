@@ -1,7 +1,7 @@
 
 import Events from './u/Events.js'
 
-export default function ButtonMenu(menu_id, world) {
+export default function ButtonMenu(menu_name, world) {
 
   this.getActionSelected = getActionSelected
   this.unselectActions = unselectActions
@@ -48,7 +48,7 @@ export default function ButtonMenu(menu_id, world) {
   //Returns the currently selected action_id of the selected unit
   function getActionSelectedId() {
 
-    var action_buttons = getButtonElements('action-buttons');
+    var action_buttons = getButtonElements();
     
     for (let button of action_buttons)
       if (button.checked) {
@@ -76,7 +76,7 @@ export default function ButtonMenu(menu_id, world) {
 
   function selectFirstAction(actor, position) {
 
-    let radio_elements = getButtonElements('action-buttons')
+    let radio_elements = getButtonElements()
 
     let first_action = radio_elements[0];
     if (first_action && !first_action.disabled) {
@@ -86,12 +86,12 @@ export default function ButtonMenu(menu_id, world) {
   }
 
   function unselectActions() {
-    let buttons = getButtonElements('action-buttons');
+    let buttons = getButtonElements();
     for (let button of buttons)
       button.checked = false;
   }
 
-  function getButtonElements(menu_name) {
+  function getButtonElements() {
     return document.getElementById(menu_name).getElementsByClassName('button-input')
   }
 
@@ -177,7 +177,7 @@ export default function ButtonMenu(menu_id, world) {
 
   function generateButtons(world, actor, position) {
 
-    var html_menu = document.getElementById('action-buttons');
+    var html_menu = document.getElementById(menu_name);
     html_menu.innerHTML = "<h2 class='action-header'>"+actor.name+"</h2>";
 
     for (let action of actor.actions) {
@@ -209,7 +209,7 @@ export default function ButtonMenu(menu_id, world) {
 
 
   function clearButtons() {
-    document.getElementById('action-buttons').innerHTML = "<h2 class='action-header'>Click a town</h2>";
+    document.getElementById(menu_name).innerHTML = "<h2 class='action-header'>Click a town</h2>";
   }
 
 
