@@ -20,41 +20,6 @@ export default function HUDRender(world, world_input, render) {
 
 
 
-  /////////////////////////////////////////////////////
-  //          Functions about map overlay information
-  /////////////////////////////////////////////////////
-  this.drawHUD = function() {
-
-    var hex_hovered = world_input.getHexHovered();
-    var hex_selected = unit_input.getHexSelected();
-
-    if (hex_hovered && world.containsHex(hex_hovered)) 
-      drawHoveredHex(hex_hovered);
-
-    if (!hex_selected) 
-      return
-
-    let actor = unit_input.getActorSelected();
-    if (!actor) 
-      return
-
-    let action = unit_input.getActionSelected();
-    if (!action) 
-      return;
-
-    if (action.sky_action && hex_selected && hex_hovered)
-      drawStraightLine(hex_selected, hex_hovered);
-
-    if (action_path && action_path.length > 0) 
-      drawActionPath(hex_hovered);
-
-    if ((action.sky_action || action_path) && action_targets && action_targets.length > 0)
-      drawActionTargets(hex_hovered);
-
-
-}
-
-
 
 
 
@@ -131,23 +96,58 @@ export default function HUDRender(world, world_input, render) {
 
   //DRAW FUNCTIONS
 
-  function drawActionPath (hex_hovered) {
+  this.drawHUD = function() {
+
+    var hex_hovered = world_input.getHexHovered();
+    var hex_selected = unit_input.getHexSelected();
+
+    if (hex_hovered && world.containsHex(hex_hovered)) 
+      drawHoveredHex(hex_hovered);
+
+    if (!hex_selected) 
+      return
 
     let actor = unit_input.getActorSelected();
+    if (!actor) 
+      return
+
     let action = unit_input.getActionSelected();
+    if (!action) 
+      return;
+
+    if (action.sky_action && hex_selected && hex_hovered)
+      drawStraightLine(actor, action, hex_selected, hex_hovered);
+
+    if (action_path && action_path.length > 0) 
+      drawActionPath(actor, action, hex_hovered);
+
+    if ((action.sky_action || action_path) && action_targets && action_targets.length > 0)
+      drawActionTargets(actor, action, hex_hovered);
+
+  }
+
+  function drawStraightLine(actor, action, hex1, hex2) {
+
+    let color = '#C50'; //red
+    if ( action.targetFilterFunction(world, actor, hex2) )
+      color = '#5C0'; //green
+    if (!action.infinite_range && Hex.distance(hex1,hex2) > action.max_distance )
+      color = '#C50'; //red
+
+    hex_render.drawCenterLine(hex1, hex2, 12, color );
+  }
+
+  function drawActionPath (actor, action, hex) {
 
     //draw a line from actor to target
     let color = '#C50';
-    if ( action.targetFilterFunction(world, actor, hex_hovered) )
+    if ( action.targetFilterFunction(world, actor, hex) )
       color = '#5C0';
 
     drawPath(action_path, color);
   }
 
-  function drawActionTargets (hex_hovered) {
-
-    let actor = unit_input.getActorSelected();
-    let action = unit_input.getActionSelected();
+  function drawActionTargets (actor, action, hex) {
     
     //Style for Action targets
     var hover_style = new RenderStyle();
@@ -172,19 +172,7 @@ export default function HUDRender(world, world_input, render) {
     }
   }
 
-  function drawStraightLine(hex1, hex2) {
-    let actor = unit_input.getActorSelected();
-    let action = unit_input.getActionSelected();
 
-
-
-    let color = '#C50'; //red
-    if ( action.targetFilterFunction(world, actor, hex2) )
-      color = '#5C0'; //green
-    if (Hex.distance(hex1,hex2) > action.max_distance)
-      color = '#C50'; //red
-    hex_render.drawCenterLine(hex1, hex2, 6, color );
-  }
 
   function drawHoveredHex(hex_hovered) {
 
