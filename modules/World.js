@@ -198,6 +198,7 @@ World.prototype.getUnit = function(hex) {
 World.prototype.createUnit = function(hex, unit_type) {
     let new_unit = new Unit(unit_type, this);
     this.units.set(hex, new_unit);
+    return new_unit;
 }
 
 World.prototype.addUnit = function(hex, unit) {

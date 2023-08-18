@@ -177,6 +177,7 @@ export default function Action() {
     if (this.collect_resource) {
       if (world.hasResource(target)) {
         actor.addPop(1);
+        world.highlightRange([target], 'green');
       }
     }
 

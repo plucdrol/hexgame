@@ -12,6 +12,7 @@ export default function actionExpand(distance) {
 
   this.name = "city-by-land-2";
   this.cost = 2;
+  this.takes_city_pop = true;
 
   this.nextSelection = 'self';
 
@@ -55,31 +56,20 @@ export default function actionExpand(distance) {
   this.preEffect = function(world, actor, position, target) {
 
 
-    //grow city if clicking on it
+    //Clicking a city: GROW IT
     if (world.unitAtLocation(target) && world.getUnit(target).pop && world.getUnit(target).pop < 11) {
-
-      actor.pop -= 2;
       world.getUnit(target).pop++;
-
-      let target_pop = world.getUnit(target).pop;
-      let after_action = new actionGrowRoots( target_pop );
-      after_action.doAction( world, actor, target) 
     }
 
-    //grow road and build a city if clicking somewhere else
+    //Clicking the ground or a resource: BUILD CITY
     if (!world.unitAtLocation(target)) {
-      actor.pop -= 2;
       world.createUnit(target, 'city');
-
-      let after_action = new actionGrowRoots( 1 );
-      after_action.doAction( world, actor, target)  
     }
 
-    //add a village if clicling directly on a resource
-    if (world.getResource(target) && !world.getResource(target).resources['unknown']) {
-      world.createUnit(target, 'village');
-      world.highlightRange(Hex.circle(target, 1), 'green'); //green is the color around captured resources
-    }
+    let target_pop = world.getUnit(target).pop;
+    this.after_action = new actionGrowRoots( target_pop );
+    return;
+
   }
 }
 
@@ -110,7 +100,7 @@ export function actionGrowRoots(max_distance) {
   this.can_use_roads = false;
   this.double_road_speed = false;
 
-  this.collect_resource = false; //should be true but 'takes city pop' relies on cost
+  this.collect_resource = true; //should be true but 'takes city pop' relies on cost
   this.destroy_resource = true;
 
   this.multi_target = true;
@@ -132,7 +122,7 @@ export function actionGrowRoots(max_distance) {
 
 
   this.effect = function(world,actor,position,target) {
-    actor.addPop(1);
+    //actor.addPop(1);
     world.createUnit(target, 'village');
     world.highlightRange(Hex.circle(target, 2), 'green');
   }
@@ -153,7 +143,7 @@ export function actionExpandByAir(max_distance) {
   this.can_use_roads = false;
   this.sky_action = true;
 
-  this.cost = 3;
+  this.cost = 0;
 
   this.cloud_clear = 5;
 

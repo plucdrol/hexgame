@@ -87,7 +87,7 @@ export default function HUDRender(world, world_input, render) {
 
   function updateActionPath (world_hovered, hex_hovered) {
     
-    if (world.sameAs(world_hovered)) 
+    if (!world.sameAs(world_hovered)) 
       return
 
     let actor = unit_input.getActorSelected();
