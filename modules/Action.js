@@ -159,10 +159,7 @@ export default function Action() {
 
     //generic effects applied to all actions depending on their qualities listed below
     if (this.takes_city_pop)       
-      if (this.transfer_resources)
-        actor.owner.addPop(-this.cost);
-      else
-        actor.addPop(-this.cost);
+      actor.addPop(-this.cost);
 
     if (this.also_build_road)
       this.createRoad(world, position, target);
