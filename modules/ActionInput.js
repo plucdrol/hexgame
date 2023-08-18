@@ -70,14 +70,15 @@ export default function ActionInput(menu_name) {
       document.getElementById(action_id).checked = true;
   };
 
-  function selectFirstAction(actor, position) {
+  function selectFirstAction(world, actor, position) {
 
     let radio_elements = getButtonElements()
-
-    let first_action = radio_elements[0];
-    if (first_action && !first_action.disabled) {
-      first_action.checked = true;
-      //updateActionTargets(actor, position);
+    let first_button = radio_elements[0];
+    
+    if (first_button && !first_button.disabled) {
+      first_button.checked = true;
+      let action = getActionFromId(actor, first_button.id);
+      action.highlightRange(world, actor, position);
     }
   }
 
@@ -168,7 +169,7 @@ export default function ActionInput(menu_name) {
     if (current_action_id) 
       selectActionById(current_action_id);
     else 
-      selectFirstAction(actor, position);
+      selectFirstAction(world, actor, position);
   }
 
   //TODO 
@@ -191,7 +192,7 @@ export default function ActionInput(menu_name) {
       html_menu.appendChild( html_button );
 
       //Add click listeners to each button (DOESNT)
-      //html_button.addEventListener('click', () => {updateActionTargets(actor, position)} );
+      html_button.addEventListener('click', () => {action.highlightRange(world,actor, position)} );
       
       //Show action in grey if its requirement is not met
       if (!action.requirement(world, actor, position))

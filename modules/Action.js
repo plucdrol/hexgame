@@ -98,7 +98,7 @@ export default function Action() {
     let targets = this.getTargets(world, actor, position); //make a new range array because I'm going to sort it
     let action = this;
       
-    
+
     if (targets.length <= 0 && !this.infinite_range)
       return;
 
@@ -132,6 +132,8 @@ export default function Action() {
       action.doSingleAction(world, actor, position, target);
     }
     
+    //just to highlight the range again
+    this.highlightRange(world, actor, position);
 
 
   };
@@ -229,10 +231,14 @@ export default function Action() {
     return action_range;
   };
 
+  this.highlightRange = function(world, actor, position) {
+    let action_range = this.getRange(world, actor, position);
+    world.highlightRange(action_range, 'brown');
+  }
+
   this.getTargets = function(world, actor, position) {
 
     let action_range = this.getRange(world, actor, position);
-    world.highlightRange(action_range, 'brown');
 
     let suitable_targets = action_range.filter((target) => this.targetFilterFunction(world, actor, target));
 
