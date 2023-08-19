@@ -97,16 +97,16 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
   //Modifies the pathfinder array result to be returned
   function currentCell(coord) {
-    return visited.get(JSON.stringify(coord));
+    return visited.get(coord.getKey()) || false;
   } ;
 
   function setVisited(coord, value) {
-   visited.set(JSON.stringify(coord), value); 
+   visited.set(coord.getKey(), value); 
   };
  
 
   function hasCell(coord) {
-    return visited.has(JSON.stringify(coord)); 
+    return visited.has(coord.getKey()); 
   };
 
   function calculateCost(map, cost_so_far, coord, previous_coord) {
@@ -194,11 +194,13 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
   function considerNewCell(new_cell) {
 
     //new cells are always added
-    if (!hasBeenVisited(new_cell)) {
-      return true;
-    }   
+    //if (!hasBeenVisited(new_cell)) {
+      //return true;
+    //}   
     //revisited cells are added if better than before
     let current_cell = currentCell(new_cell.coord);
+    if (!current_cell)
+      return true;
 
     return newCellIsBetter(current_cell, new_cell);
   };
@@ -257,16 +259,16 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     console.time('all')
 
 
-
+    //RUN THIS IN THE BACKGROUND, ASYNCHRONOUSLY, AND THEN CALLBACK
     while (!coords_to_check.isEmpty())
       checkNextCell(coords_to_check, map, max_cost, target)
-
-    callback();
+    //callback();
 
     console.timeEnd('all')
 
     if (coords_checked > 20){
       console.log("checked: "+coords_checked)
+      console.log("visited: "+visited.size)
 
 
     }
