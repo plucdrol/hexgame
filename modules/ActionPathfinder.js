@@ -31,7 +31,7 @@ export default function ActionPathfinder(action) {
     //climbing from water to land
     if (this_tile.onWater() && next_tile.onLand()) {
 
-      if (action.stop_on_coast && (world.noUnitTypeInArea(next_hex, 0, 'city') || !action.disembark_at_cities)  )
+      if (action.stop_on_coast && (world.noCitiesInArea(next_hex, 0) || !action.disembark_at_cities)  )
         return true;
     }
 
@@ -39,7 +39,7 @@ export default function ActionPathfinder(action) {
 
     //entering a river from land (except the river tip tile)
     if (!this_tile.onRiver() && next_tile.onRiver() && this_tile.onLand() 
-      && next_tile.onLand() && world.noUnitTypeInArea(next_hex, 0, 'city')) {
+      && next_tile.onLand() && world.noCitiesInArea(next_hex, 0)) {
       
       if (action.stop_on_rivers)
         return true;

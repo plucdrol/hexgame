@@ -158,7 +158,10 @@ export function actionExpandByAir(max_distance) {
     this.infinite_range = true;
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && !world.onIce(target) && !world.onMountains(target);
+    let tile = world.getTile(target);
+    if (!tile) return false;
+
+    return tile.onLand() && !tile.onIce() && !tile.onMountains();
   }
 
 }
@@ -198,7 +201,8 @@ export function actionMove(max_distance) {
   this.extra_description = "Move your central node somewhere else";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return target.onLand() &&  
+    let tile = world.getTile(target);
+    return tile.onLand() &&  
     (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
     ( world.hasResource(target, 'food')  ) ;
   }
