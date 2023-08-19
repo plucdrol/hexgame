@@ -80,6 +80,8 @@ WorldRender.p.drawBigHex = function(radius) {
 
 
 //TODO: What if instead of rendering in random waves, we only updates tiles that have changed!
+//Still look at all hexes, but there is a flag when they have been modified.
+//We only re-render if the flag has changed
 
 WorldRender.p.drawSome = function(tile_layer, count) {
   
@@ -100,8 +102,10 @@ WorldRender.p.drawSome = function(tile_layer, count) {
       break;
     }
 
-    this.drawTile(tile_layer, next.value)
-    count--;
+    //if (world.getTile().hasChanged()) {
+      this.drawTile(tile_layer, next.value)
+      count--;
+    //}
 
   }
 }
@@ -165,23 +169,23 @@ WorldRender.p.drawLand = function(hex) {
   if (tile.elevation < 0)
     return;
 
-  if (!tile.highlighted) {
+  if (!tile.highlighted()) {
     this.drawHex(hex, tile.elevation);
     return;
   }
 
-  if (tile.highlighted['brown'] && tile.elevation < 2) {
+  if (tile.hasHighlight('brown') && tile.elevation < 2) {
     this.drawHex(hex, tile.elevation);
     //this.drawHex(hex, tile.elevation, blue[tile.elevation%7] );
     return;
   }
 
-  if (tile.highlighted['green'] && tile.elevation >= 2) {
+  if (tile.hasHighlight('green') && tile.elevation >= 2) {
     this.drawHex(hex, tile.elevation, green[tile.elevation%7] );
     return;
   }
 
-  if (tile.highlighted['brown']) {
+  if (tile.hasHighlight('brown')) {
     this.drawHex(hex, tile.elevation, brown[tile.elevation%7] );
     return;
   }

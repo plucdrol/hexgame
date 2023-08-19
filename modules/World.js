@@ -600,15 +600,20 @@ World.prototype.generateSystemResources = function() {
 
 World.prototype.makeCloudsEverywhere = function() {
   for (let hex of this.world_map.getHexes()) {
-      this.world_map.get(hex).hidden = true;
+      let tile = this.getTile(hex);
+      tile.hidden = true;
+      tile.changed = true;
   }
 }
 
 World.prototype.clearClouds = function(position, radius) {
 
   if (!position) {
-    for (var hex of this.world_map.getHexes())
-      this.world_map.get(hex).hidden = false;
+    for (var hex of this.world_map.getHexes()) {
+      let tile = this.getTile(hex);
+      tile.hidden = false;
+      tile.changed = true;
+    }
     return;
   }
 
@@ -619,8 +624,11 @@ World.prototype.clearClouds = function(position, radius) {
 
 
   for (var hex of Hex.circle(position, radius)) {
-    if (this.world_map.containsHex(hex))
-      this.world_map.get(hex).hidden = false;
+    if (this.world_map.containsHex(hex)) {
+      let tile = this.getTile(hex);
+      tile.hidden = false;
+      tile.changed = true;
+    }
   }
   return;
 }
@@ -662,22 +670,19 @@ World.prototype.clearClouds = function(position, radius) {
           return;
 
         let tile = world.getTile(hex);
-        
-        if (!tile.highlighted)
-          tile.highlighted = [];
 
         //skip tiles if already the right color
-        if (tile.highlighted[color]) {
+        if (tile.hasHighlight(color)) {
           counter++;
           stepByStepHighlight();
         } else {
 
           //color the tile with the new color
           if (color) {
-            tile.highlighted[color] = true;
+            tile.addHighlight(color);
             world.clearClouds(hex,3);
           } else {
-            tile.highlighted['neutral'] = true;
+            tile.addHighlight('neutral');
           }
 
           //go to the next tile in 100ms

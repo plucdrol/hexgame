@@ -4,11 +4,26 @@
   this.hex = hex;
   this.elevation = elevation;
   this.wind = 0;
+  this.highlights = [];
+  this.changed = true;
+  this.hidden = false; //should be a highlight
 
-  this.setElevation = (elevation) => this.elevation=elevation;
+  this.addHighlight = function(color) {
+    this.highlights[color] = true;
+    this.changed = true;
+  }
+  this.hasHighlight = function(color) {
+    return (this.highlights[color] == true);
+  }
+  this.highlighted = function() {
+    return Object.keys(this.highlights).length > 0
+  }
+  this.setElevation = function(elevation) { 
+    this.elevation=elevation;
+    this.changed = true;
+  }
 
   this.sameAs = (tile2) => this.hex.equals(tile2.hex);
-
   this.riverStart = () => this.river_stars_here
   this.onRiver = () => this.river && this.river.water_level > 7;
   this.onOcean = () => this.elevation == 0;

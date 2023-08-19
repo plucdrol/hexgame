@@ -256,7 +256,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     for (let origin of origins)
       coords_to_check.push(origin);
       
-    console.time('all')
+    //console.time('all')
 
 
     //RUN THIS IN THE BACKGROUND, ASYNCHRONOUSLY, AND THEN CALLBACK
@@ -264,7 +264,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
       checkNextCell(coords_to_check, map, max_cost, target)
     //callback();
 
-    console.timeEnd('all')
+    //console.timeEnd('all')
 
     if (coords_checked > 20){
       console.log("checked: "+coords_checked)
