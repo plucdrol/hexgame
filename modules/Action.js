@@ -115,8 +115,8 @@ export default function Action() {
     if (action.multi_target) {
 
       //do actions in order from closest to furthest, with a preference for land tiles
-      targets.sort((a, b) => (world.onWater(a) && world.onLand(b)) ? 1 : -1);
-      targets.sort((a, b) => (tree.currentCell(a).path_cost > tree.currentCell(b).path_cost) ? 1 : -1);
+      targets.sort((a, b) => (world.getTile(a).onWater() && world.getTile(b).onLand()) ? 1 : -1);
+      //targets.sort((a, b) => (tree.currentCell(a).path_cost > tree.currentCell(b).path_cost) ? 1 : -1);
       
 
       let counter = 0;
@@ -288,7 +288,7 @@ export default function Action() {
 
 
 
-    //this.pathfinder_cache = pathfinder;
+    this.pathfinder_cache = pathfinder;
 
   }
 
