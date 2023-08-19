@@ -21,6 +21,7 @@ import SimplexNoise from './u/Noise.js'
 import PerlinTileGenerator from './TileGenerator.js'
 import {RandomTileGenerator} from './TileGenerator.js'
 import RiverGenerator from './RiverGenerator.js'
+import Tile from './Tile.js'
 
 export default function MapGenerator(map_type) {
   
@@ -52,7 +53,7 @@ export default function MapGenerator(map_type) {
           
         //put in map
         let hex = new Hex(q,r);
-        setElevation(hex, tile_gen.generateTile(q,r));
+        setElevation(hex, tile_gen.generateElevation(q,r));
         setWind(hex, tile_gen.generateWind(q,r));
       }
     }
@@ -120,7 +121,18 @@ export default function MapGenerator(map_type) {
 
 
 
+  function setElevation(hex, new_value) {
 
+    var current_tile = map.getValue(hex);
+
+    if (current_tile instanceof Tile) {
+      current_tile.elevation = new_value;  
+    } else {
+      var new_tile = new Tile(hex, new_value);
+      map.set(hex, new_tile)
+    }
+  }
+    
 
   function getElevation(hex) {
     if (map.containsHex(hex)) {
@@ -132,39 +144,26 @@ export default function MapGenerator(map_type) {
 
   function setWind(hex,new_value) {
     var current_tile = map.getValue(hex);
-    if (current_tile instanceof Object) {
+    if (current_tile instanceof Tile) {
       current_tile.wind = new_value;  
     } else {
       //get value
-      var new_tile = new Object();
+      var new_tile = new Tile(hex);
       new_tile.wind = new_value;
       map.set(hex,new_tile)
     }
   }
 
 
-  function setElevation(hex,new_value) {
-    var current_tile = map.getValue(hex);
-    if (current_tile instanceof Object) {
-      //urrent_tile.hex = hex;
-      current_tile.elevation = new_value;  
-    } else {
-      //get value
-      var new_tile = new Object();
-      new_tile.hex = hex;
-      new_tile.elevation = new_value;
-      map.set(hex,new_tile)
-    }
-  }
-    
+
 
   function setVariable(hex,variable,new_value) {
     var current_tile = map.getValue(hex);
-    if (current_tile instanceof Object) {
+    if (current_tile instanceof Tile) {
       current_tile[variable] = new_value;  
     } else {
       //get value
-      var new_tile = new Object();
+      var new_tile = new Tile(hex);
       new_tile[variable] = new_value;
       map.set(hex,new_tile)
     }

@@ -82,10 +82,12 @@ var game_render = new GameRender(system, worlds, world_inputs, view);
 
 //Put the first city in a random position on the "equator" ring
 var start_hex = new Hex(0,0);
-for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) 
-  if (earth.onLand(hex) && !earth.onRiver(hex)) 
+for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) {
+  let tile = earth.getTile(hex)
+  if (tile.onLand() && !tile.onRiver()) 
     if (earth.countLand(hex, 1,3))
       start_hex = hex;
+}
 
 let first_city =  new Unit('city');
 earth.destroyResource(start_hex);

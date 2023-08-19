@@ -152,7 +152,7 @@ export function PerlinConfiguration (config_name) {
 export function TileGenerator() {
 }
 
-TileGenerator.prototype.generateTile = function(x,y) {
+TileGenerator.prototype.generateElevation = function(x,y) {
 }
 
 
@@ -162,7 +162,7 @@ export function RandomTileGenerator() {
   TileGenerator.call(this);
   var range = 10;
 
-  this.generateTile = function(x,y) {
+  this.generateElevation = function(x,y) {
     var value = 1+1*Math.floor((range+2)*Math.random());
     if (value >= range) 
       {value = range;}
@@ -190,7 +190,7 @@ export default function PerlinTileGenerator() {
   var tile_weight;
 
   
-  this.generateTile = function(x,y) {
+  this.generateElevation = function(x,y) {
 
     //add up all the perlin values
     var total = config.base;

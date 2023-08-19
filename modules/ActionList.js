@@ -158,7 +158,7 @@ export function actionExpandByAir(max_distance) {
     this.infinite_range = true;
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && !world.onIce(target) && !world.onMountain(target);
+    return world.onLand(target) && !world.onIce(target) && !world.onMountains(target);
   }
 
 }
@@ -198,7 +198,7 @@ export function actionMove(max_distance) {
   this.extra_description = "Move your central node somewhere else";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) &&  
+    return target.onLand() &&  
     (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
     ( world.hasResource(target, 'food')  ) ;
   }
@@ -299,14 +299,18 @@ export function actionExpandAll() {
   }
   this.effect = function(world, actor, position, target) {
     for (let hex of world.getHexes()) {
+      let tile = world.getTile(hex);
+
       if (world.countRoads(hex) >= 3)
-        if (world.onLand(hex) && !world.unitAtLocation(hex))
+        if (tile.onLand() && !world.unitAtLocation(hex))
           world.createUnit(hex, 'village');
     }
 
-    for (let hex of Hex.circle(target,2))
-      if (world.onLand(hex))
-        world.getTile(hex).elevation = 3+Math.floor(Math.random()*4);
+    for (let hex of Hex.circle(target,2)){
+      let tile = world.getTile(hex);
+      if (tile.onLand())
+        tile.elevation = 3+Math.floor(Math.random()*4);
+    }
 
   }
   
@@ -369,7 +373,7 @@ function cutRiver(world, position) {
   let tile = world.getTile(position);
   let step_time = 300;
 
-  if (world.onRiver(position)) {
+  if (tile.onRiver()) {
     var water_level = tile.river.water_level;
     stepByStepCutRiver();
   }
@@ -492,7 +496,8 @@ function actionCreateX(distance) {
   this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5);
+
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,5);
   }
 }
 
@@ -514,7 +519,7 @@ export function actionCreateCity(distance) {
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5);
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,5);
   }
 
 }
@@ -531,7 +536,7 @@ function actionCreateCityBySea(distance) {
   this.can_use_roads = false;
 
   this.targetFilterFunction = function(world, actor, target) {
-    return !world.unitAtLocation(target) && world.onLand(target) 
+    return !world.unitAtLocation(target) && world.getTile(target).onLand() 
            && world.noCitiesInArea(target,5) && world.nearCoast(target);
   }
   this.effect = function(world, actor, position, target) {
@@ -559,7 +564,7 @@ function actionCreateAirport(distance) {
   this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,1);
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,1);
   }
 }
 
@@ -579,7 +584,7 @@ function actionCreateVillage(distance) {
   this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
   }
 }
 
@@ -604,7 +609,7 @@ function actionCreateRiverDock(distance) {
   this.extra_description = "Can gather all resources on a river";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onRiver(target) && !world.unitAtLocation(target);
+    return world.getTile(target).onRiver() && !world.unitAtLocation(target);
   }
   this.activation = function(world, actor, position) {
     return world.nearRiver(position, 2);
@@ -686,7 +691,7 @@ export function actionCreateLighthouse(distance) {
   this.extra_description = "Gather resources in coastal waters";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.onLand(target))
+    return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.getTile(target).onLand())
   }
 }
 
@@ -732,15 +737,17 @@ function actionGetResource(max_distance, multi_target) {
 
   this.targetFilterFunction = function(world, actor, target) {
 
+    let tile = world.getTile(target);
+
     return (
            //dry land food tiles within 3 tiles of the city or...
-           (world.onLand(target) && !world.onRiver(target) && world.hasResource(target, 'food') ) 
+           (tile.onLand() && !tile.onRiver() && world.hasResource(target, 'food') ) 
            ||
            //...or shallow water fish besides the city tile
-           (world.getTile(target).elevation == 1 && world.hasResource(target, 'food') )
+           (tile.elevation == 1 && world.hasResource(target, 'food') )
            ||
            //...or river fish besides the city tile
-           (world.onRiver(target) && world.hasResource(target, 'food') )
+           (tile.onRiver() && world.hasResource(target, 'food') )
            );
   }
 
@@ -792,12 +799,15 @@ function actionCollectRiverFish(max_distance) {
   this.extra_description = "Get all the fish resources in this river";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.sameRiver(position, target)
+    let tile1 = world.getTile(target);
+    let tile2 = world.getTile(position)
+    return !world.unitAtLocation(target) && tile1.sameRiver(tile2)
          && world.hasResource(target, 'food') ;
   }
 
   this.activation = function(world, actor, position) {
-    return world.onRiver(position);
+    let tile1 = world.getTile(target);
+    return tile1.onRiver();
   }
 
 
