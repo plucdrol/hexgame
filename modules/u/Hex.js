@@ -551,12 +551,8 @@ HexMap.prototype.deleteAll = function() {
 
 HexMap.prototype.getValue = function(hex) {
   var key = hex.getKey();
+  return this.values.get(key) || false;
 
-  if (this.containsHex(hex)) {
-    return this.values.get(key);
-  } else {
-    return false;
-  }
 }
 HexMap.prototype.get = HexMap.prototype.getValue;
 

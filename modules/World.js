@@ -116,7 +116,7 @@ World.prototype.getLayout = function() {
 }
 
 World.prototype.containsHex = function(hex) {
-  return this.hasHex(hex);
+  return this.world_map.containsHex(hex);
 }
 World.prototype.hasHex = function(hex) {
   return this.world_map.containsHex(hex);
@@ -220,7 +220,8 @@ World.prototype.buildRoad = function(hexarray, road_level) {
       road_level = 1;
 
   for (let hex of hexarray) {
-    if (previous_hex && this.getTile(hex)) {
+    let tile = this.getTile(hex)
+    if (previous_hex && tile) {
       this.addRoadTile(previous_hex, hex, road_level);
       this.clearClouds(hex,1);
 
@@ -277,11 +278,14 @@ World.prototype.countRoads = function(hex) {
 
 World.prototype.getRoadLevel = function(hex1,hex2) {
 
-  if (!this.areRoadConnected(hex1,hex2))
+  let tile1 = this.getTile(hex1);
+  let tile2 = this.getTile(hex2)
+
+  if (!this.areRoadConnected(tile1,tile2))
     return 0;
 
-  if (this.getTile(hex1).road_to)
-    return this.getTile(hex1).road_to.getValue(hex2);
+  if (tile1.road_to)
+    return tile1.road_to.getValue(hex2);
   else 
     return 0;
 }
@@ -381,19 +385,17 @@ World.prototype.countResources = function(hexarray, resource_type) {
 }
 
 
-World.prototype.areRoadConnected = function(hex1, hex2) {
+World.prototype.areRoadConnected = function(tile1, tile2) {
 
-  let tile1 = this.getTile(hex1);
-  let tile2 = this.getTile(hex2);
 
   if (tile1.road_to)
     for (let to1 of tile1.road_to.getHexes())
-      if (hex2.equals(to1))
+      if (tile2.hex.equals(to1))
         return true;
 
   if (tile2.road_to)
     for (let to2 of tile2.road_to.getHexes())
-      if (hex1.equals(to2))
+      if (tile1.hex.equals(to2))
         return true;
 
   //else
@@ -401,100 +403,96 @@ World.prototype.areRoadConnected = function(hex1, hex2) {
 
 }
 
-World.prototype.riverStart = function(position) {
-  return this.getTile(position).river_starts_here;
+World.prototype.riverStart = function(tile) {
+  return tile.river_starts_here;
 }
 
-World.prototype.nearRiver = function(position, max_distance) {
-  for (let hex of Hex.circle(position, max_distance)) {
+World.prototype.nearRiver = function(tile, max_distance) {
+  for (let hex of Hex.circle(tile.hex, max_distance)) {
     if (this.getTile(hex))
       if (this.onRiver(hex))
         return true;
   }
 }
 
-World.prototype.alongRiver = function(position1, position2) {
-  return (this.sameRiver(position1, position2) && 
-        (position2.equals(this.getTile(position1).river.downstream_hex) ||
-        position1.equals(this.getTile(position2).river.downstream_hex))
+World.prototype.alongRiver = function(tile1, tile2) {
+  return (this.sameRiver(tile1, tile2) && 
+        (tile2.hex.equals(tile1.river.downstream_hex) ||
+        tile1.hex.equals(tile2.river.downstream_hex))
         );
 }
 
-World.prototype.onRiver = function(position) {
-  let tile = this.getTile(position);
+World.prototype.onRiver = function(tile) {
   return tile && tile.river && tile.river.water_level > 7;
 }
 
-World.prototype.onClouds = function(position) {
-  let tile = this.getTile(position);
-  return tile.hidden;
+
+World.prototype.sameRiver = function(tile1, tile2) {
+  return this.onRiver(tile1) && this.onRiver(tile2) 
+          && tile1.river.name == tile2.river.name;
 }
 
-World.prototype.onMountains = function(position) {
-  let tile = this.getTile(position);
-  return tile.elevation > 13;
-}
-
-World.prototype.sameRiver = function(position1, position2) {
-  return this.onRiver(position1) && this.onRiver(position2) 
-          && this.getTile(position1).river.name == this.getTile(position2).river.name;
-}
-
-World.prototype.isUpstreamOf = function(upstream_position, position) {
-  if (!world.sameRiver(position, upstream_position))
+World.prototype.isUpstreamOf = function(upstream_tile, tile) {
+  if (!world.sameRiver(tile, upstream_tile))
     return false;
 
-  let upstream_tile = this.getTile(upstream_position);
   if (upstream_tile.river.river_starts_here)
     return false;
 
-  if (position.equals(upstream_tile.river.downstream_hex) )
+  if (tile.getHex().equals(upstream_tile.river.downstream_hex) )
     return true;
 
-  return this.isUpstreamOf(upstream_tile.river.downstream_hex, position);
+  return this.isUpstreamOf(this.getTile(upstream_tile.river.downstream_hex), this.getTile(position));
 
 
 }
 
-World.prototype.leavingRiver = function(position1, position2) {
-  return (this.onRiver(position1) && this.onWater(position2) && 
-          this.getTile(position2).river && this.getTile(position2).river.river_starts_here && 
-          this.getTile(position2).river.name == this.getTile(position1).river.name);
+World.prototype.leavingRiver = function(tile1, tile2) {
+  return (this.onRiver(tile1) && this.onWater(tile2) && 
+          tile2.river && tile2.river.river_starts_here && 
+          tile2.river.name == tile1.river.name);
 }
 
-World.prototype.enteringRiver = function(position1, position2) {
-  return this.leavingRiver(position2, position1);
+World.prototype.enteringRiver = function(tile1, tile2) {
+  return this.leavingRiver(tile2, tile1);
 }
 
-World.prototype.onLand = function(position) {
-  return (this.getTile(position).elevation >= 2);
+World.prototype.onLand = function(tile) {
+  return (tile.elevation >= 2);
 }
 
-World.prototype.onSand = function(position) {
-  return (this.getTile(position).elevation == 2);
+World.prototype.onSand = function(tile) {
+  return (tile.elevation == 2);
+}
+World.prototype.onClouds = function(tile) {
+  return tile.hidden;
 }
 
-World.prototype.onWater = function(position) {
-  return !this.onLand(position);
+//TODO: all these functions should really refer only to the tile
+World.prototype.onMountains = function(tile) {
+  return tile.elevation > 13;
+}
+World.prototype.onWater = function(tile) {
+  return !this.onLand(tile);
 }
 
-World.prototype.onOcean = function(position) {
-  return this.getTile(position).elevation == 0;
+World.prototype.onOcean = function(tile) {
+  return tile.elevation == 0;
 }
 
-World.prototype.onMountain = function(position) {
-  return this.getTileName( this.getTile(position).elevation ) == 'mountains';
+World.prototype.onMountain = function(tile) {
+  return this.getTileName( tile.elevation ) == 'mountains';
 }
 
-World.prototype.onIce = function(position) {
-  return this.getTileName(  this.getTile(position).elevation ) == 'ice';
+World.prototype.onIce = function(tile) {
+  return this.getTileName(  tile.elevation ) == 'ice';
 }
 
 World.prototype.countLand = function(position, radius, minimum) {
   let count = 0;
 
   for (let neighbor of Hex.circle(position,radius)) {
-    if (this.onLand(neighbor))
+    if (this.onLand(this.getTile(neighbor)))
       count++;
 
     if (count > minimum)

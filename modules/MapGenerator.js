@@ -146,10 +146,12 @@ export default function MapGenerator(map_type) {
   function setElevation(hex,new_value) {
     var current_tile = map.getValue(hex);
     if (current_tile instanceof Object) {
+      //urrent_tile.hex = hex;
       current_tile.elevation = new_value;  
     } else {
       //get value
       var new_tile = new Object();
+      new_tile.hex = hex;
       new_tile.elevation = new_value;
       map.set(hex,new_tile)
     }

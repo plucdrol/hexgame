@@ -29,7 +29,7 @@ export default function ActionPathfinder(action) {
     let next_tile = world.getTile(next_hex);
 
     //climbing from water to land
-    if (world.onWater(hex) && world.onLand(next_hex)) {
+    if (world.onWater(this_tile) && world.onLand(next_tile)) {
 
       if (action.stop_on_coast && (world.noUnitTypeInArea(next_hex, 0, 'city') || !action.disembark_at_cities)  )
         return true;
@@ -38,8 +38,8 @@ export default function ActionPathfinder(action) {
     //leaving a river
 
     //entering a river from land (except the river tip tile)
-    if (!world.onRiver(hex) && world.onRiver(next_hex) && world.onLand(hex) 
-      && world.onLand(next_hex) && world.noUnitTypeInArea(next_hex, 0, 'city')) {
+    if (!world.onRiver(this_tile) && world.onRiver(next_tile) && world.onLand(this_tile) 
+      && world.onLand(next_tile) && world.noUnitTypeInArea(next_hex, 0, 'city')) {
       
       if (action.stop_on_rivers)
         return true;
@@ -47,7 +47,7 @@ export default function ActionPathfinder(action) {
 
     
     //stepping from land to water, without a river      
-    if (world.onLand(hex) && world.onWater(next_hex) && !world.leavingRiver(hex, next_hex) && !world.enteringRiver(hex,next_hex)) { 
+    if (world.onLand(this_tile) && world.onWater(next_tile) && !world.leavingRiver(this_tile, next_tile) && !world.enteringRiver(this_tile,next_tile)) { 
 
       //stop if you must stop_on_water
       if (action.stop_on_water)
@@ -92,44 +92,44 @@ export default function ActionPathfinder(action) {
 
     // COST IS UNDEFINED FOR THE FOLLOWING IMPOSSIBLE ACTIONS:
 
-    if (world.onClouds(next_hex))
+    if (world.onClouds(next_tile))
       if (!action.can_explore)
         return undefined;
 
-    if (world.onMountains(next_hex))
+    if (world.onMountains(next_tile))
       return undefined;
 
-    if (world.onWater(next_hex)) 
+    if (world.onWater(next_tile)) 
       if (!action.can_water)
         return undefined;
 
-    if (world.onSand(next_hex))
+    if (world.onSand(next_tile))
       if (!action.can_desert)
         return undefined;
 
     //walking on land, no river
-    if (world.onLand(hex) && world.onLand(next_hex) && !world.alongRiver(hex, next_hex)) 
+    if (world.onLand(this_tile) && world.onLand(next_tile) && !world.alongRiver(this_tile, next_tile)) 
       if (!action.can_land) 
         return undefined;
 
 
     //stepping out of a river
-    if (world.onRiver(hex) && !world.onRiver(next_hex)) 
+    if (world.onRiver(this_tile) && !world.onRiver(next_tile)) 
       if (action.stay_on_rivers)
         return undefined;
 
     //stepping onto a river from dry land
-    if( !world.onRiver(hex) && world.onRiver(next_hex)) 
+    if( !world.onRiver(this_tile) && world.onRiver(next_tile)) 
       if (!action.river_only && !action.can_river)
         return undefined;
 
     //entering a deep sea tile
-    if (world.onOcean(next_hex)) 
+    if (world.onOcean(next_tile)) 
       if (!action.can_ocean)
         return undefined;
     
     //climbing into water, but not from a river
-    if (world.onLand(hex) && world.onWater(next_hex) && !world.enteringRiver(hex, next_hex) && !world.leavingRiver(hex, next_hex)) {
+    if (world.onLand(this_tile) && world.onWater(next_tile) && !world.enteringRiver(this_tile, next_tile) && !world.leavingRiver(this_tile, next_tile)) {
 
       //cannot water
       if (!action.can_water)
@@ -154,19 +154,19 @@ export default function ActionPathfinder(action) {
     }
 
     //climbing from water to land without a river
-    if (world.onWater(hex) && world.onLand(next_hex) && !world.enteringRiver(hex, next_hex) && !world.leavingRiver(hex, next_hex)) {
+    if (world.onWater(this_tile) && world.onLand(next_tile) && !world.enteringRiver(this_tile, next_tile) && !world.leavingRiver(this_tile, next_tile)) {
       if (action.no_climbing_ashore)
         return undefined;
     }
 
     //if not along a river
-    if (!world.alongRiver(hex, next_hex) ) {
+    if (!world.alongRiver(this_tile, next_tile) ) {
       if (action.river_only)
         return undefined;
     }
 
     //if along a river
-    if (world.alongRiver(hex, next_hex) ) {
+    if (world.alongRiver(this_tile, next_tile) ) {
       if (!action.can_river || (action.stop_on_rivers && !action.stay_on_rivers ))
         return undefined;
     }
@@ -174,22 +174,22 @@ export default function ActionPathfinder(action) {
 
 
     // IF ACTION IS POSSIBLE, DETERMINING THE COST:
-    if (world.onWater(hex) && world.onWater(next_hex))
+    if (world.onWater(this_tile) && world.onWater(next_tile))
       cost= 1;
 
-    if (world.onWater(hex) && world.onWater(next_hex) && action.slow_in_water)
+    if (world.onWater(this_tile) && world.onWater(next_tile) && action.slow_in_water)
       cost = 2;
 
-    if (world.onWater(hex) && world.onLand(next_hex) && action.slow_in_water)
+    if (world.onWater(this_tile) && world.onLand(next_tile) && action.slow_in_water)
       cost = 2;
 
-    if (world.onLand(hex) && world.onWater(next_hex) && action.slow_in_water)
+    if (world.onLand(this_tile) && world.onWater(next_tile) && action.slow_in_water)
       if (world.noCitiesInArea(hex,0))
         cost = 10;
       else
         cost = 1;
 
-    if ((world.areRoadConnected(hex,next_hex) && (action.can_use_roads) ))
+    if ((world.areRoadConnected(this_tile,next_tile) && (action.can_use_roads) ))
       if (action.double_road_speed )
         cost = 0.01;
 
