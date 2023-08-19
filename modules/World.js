@@ -196,17 +196,21 @@ World.prototype.getUnit = function(hex) {
 
 
 World.prototype.createUnit = function(hex, unit_type) {
+
+  this.getTile(hex).changed = true;
     let new_unit = new Unit(unit_type, this);
     this.units.set(hex, new_unit);
     return new_unit;
 }
 
 World.prototype.addUnit = function(hex, unit) {
+  this.getTile(hex).changed = true;
   unit.setWorld(this)
   this.units.set(hex, unit);
 }
 
 World.prototype.destroyUnit = function(hex) {
+  this.getTile(hex).changed = true;
     this.units.delete(hex);
 }
 
@@ -232,6 +236,9 @@ World.prototype.buildRoad = function(hexarray, road_level) {
 
 
 World.prototype.addRoadTile = function(hex1, hex2, road_level) {
+
+  this.getTile(hex1).changed = true;
+  this.getTile(hex2).changed = true;
 
   if (!road_level)
     road_level = 1;
@@ -301,6 +308,7 @@ World.prototype.biggestRoad = function(hex) {
 
 
 World.prototype.removeRoads = function(hex) {
+  this.getTile(hex).changed = true;
   this.getTile(hex).road_to = null;
 
 }
@@ -317,6 +325,7 @@ World.prototype.hasResource = function(hex, resource_type = 'food') {
 }
 
 World.prototype.destroyResource = function(hex) {
+  this.getTile(hex).changed = true;
   this.resources.delete(hex);
   if (this.getResource(hex))
     this.total_resources -= 1;
@@ -510,11 +519,13 @@ World.prototype.generateUnknown = function() {
 }
 
 World.prototype.addResource = function(hex, type) {
+  this.getTile(hex).changed = true;
   this.resources.set(hex, new Unit(type) );
   this.total_resources += 1;
 }
 
 World.prototype.addLocalResource = function(hex) {
+  this.getTile(hex).changed = true;
   let terrain = this.getTile(hex);
 
   if (terrain.river && terrain.river.water_level >= 7) {
@@ -548,6 +559,7 @@ World.prototype.addLocalResource = function(hex) {
 
 World.prototype.generateResources = function() {
   for (let hex of this.world_map.getHexes() )  {
+    this.getTile(hex).changed = true;
     
     //only 20% of the land gets resources
     if (Math.random() < 0.8) 
@@ -561,6 +573,7 @@ World.prototype.generateSystemResources = function() {
 
 
   for (let hex of this.world_map.getHexes() )  {
+    this.getTile(hex).changed = true;
     let terrain = this.getTile(hex);
     
     //only 20% of the land gets these resources

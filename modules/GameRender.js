@@ -28,12 +28,9 @@ export default function GameRender(system, worlds, world_inputs, view) {
       layer.clear();
   }
 
-  var times = 20;
   function updateLayers() {
     for (let layer of layers) {
-      if (times--)
-        layer.drawGround();
-      layer.drawThings();
+      layer.drawTiles();
     }
   }
 
@@ -175,19 +172,9 @@ LayerRender.prototype.blit = function(canvas_name, view) {
 }
 
 let draw_count = 500;
-//draw onto the temp canvas
-LayerRender.prototype.drawGround = function() {
-  this.world_render.drawSome('lands',draw_count);
-  this.world_render.drawSome('rivers',draw_count);
+LayerRender.prototype.drawTiles = function() {
+  this.world_render.drawSome('tiles', draw_count);
 }
-
-//draw onto the temp canvas
-LayerRender.prototype.drawThings = function() {
-  this.world_render.drawSome('roads',draw_count);
-  this.world_render.drawSome('units',draw_count);
-  this.world_render.drawSome('resources',draw_count);
-}
-
 
 LayerRender.prototype.clear = function () {
   this.world_render.clear();

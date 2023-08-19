@@ -111,20 +111,22 @@ WorldRender.p.drawSome = function(tile_layer, count) {
 }
 
 WorldRender.p.drawTile = function(tile_layer, hex) {
+
+
+  //Only draw changed tiles
+  let tile = this.world.getTile(hex);
+  if (tile.changed)
+    tile.changed = false;
+  else {
+    return;
+  }
+
   switch (tile_layer) {
-    case 'lands':
+    case 'tiles':
       this.drawLand(hex);
-      break;
-    case 'rivers':
       this.drawRiver(hex);
-      break;
-    case 'roads':
       this.drawRoad(hex);
-      break;
-    case 'units':
       this.drawUnit(hex);
-      break;
-    case 'resources':
       this.drawResource(hex);
       break;
   }
@@ -160,11 +162,6 @@ WorldRender.p.drawLand = function(hex) {
   let brown = ['#421','#412','#431','#421','#412','#431','#421','#412','#431'];
   let blue = ['#216','#126','#114'];
 
-  if (tile.changed)
-    tile.changed = false;
-  else {
-    return;
-  }
 
   //draw clouds if not explored
   if (tile.hidden) {
