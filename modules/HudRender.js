@@ -34,6 +34,11 @@ export default function HUDRender(world, world_input, render) {
 
   function updateHover(world_hovered, hex_hovered) {
 
+    //TODO this triggers two pathfinding events with each hover of the mouth
+    // In order for hovering not to retrace the pathways, the pathways need to be remembered
+    // The action can remember them
+    //find a way to pathfind once only
+
 
     if (!world_hovered.containsHex(hex_hovered))
       return;
@@ -50,6 +55,7 @@ export default function HUDRender(world, world_input, render) {
 
   }
 
+
   function updateActionPath (world_hovered, hex_hovered) {
     
     if (!world.sameAs(world_hovered)) 
@@ -60,6 +66,7 @@ export default function HUDRender(world, world_input, render) {
     let hex_selected = unit_input.getHexSelected();
 
     if (action && actor && hex_selected) {
+      //action.updatePathfinding(world,hex_selected, hex_hovered, action.max_distance);
       action_path = action.getPath(world, hex_selected, hex_hovered, action.max_distance);
     } else {
       action_path = [];
@@ -79,6 +86,7 @@ export default function HUDRender(world, world_input, render) {
 
 
         let hover_action = action.hover_action;
+        //hover_action.updatePathfinding(world_hovered, hex_hovered, null, action.max_distance);
         action_targets = hover_action.getTargets(world_hovered, actor, hex_hovered );
 
     } 

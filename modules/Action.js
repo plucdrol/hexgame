@@ -100,8 +100,10 @@ export default function Action() {
     }
 
     //this part is messy, I don't need pathfinding on long-distance actions, for example
-    var pathfinder = new ActionPathfinder(this);
-    var tree = pathfinder.getTree( world, position, this.max_distance);
+    //if (!this.pathfinder_cache)
+         this.updatePathfinding(world, position, null, this.max_distance);
+
+    var tree = this.pathfinder_cache.getTree(this.max_distance);
     var targets = this.getTargets(world, actor, position); //make a new range array because I'm going to sort it
 
     let action = this;
@@ -232,8 +234,11 @@ export default function Action() {
     if (this.sky_action) {
       var action_range = Hex.circle(position, this.max_distance);
     } else {
-      let pathfinder = new ActionPathfinder(this);
-      var action_range = pathfinder.getRange( world, position, this.max_distance, this.min_distance );
+
+      //if (!this.pathfinder_cache)
+      this.updatePathfinding(world, position, null, this.max_distance);
+      var action_range = this.pathfinder_cache.getRange( this.max_distance );
+
     }
 
     return action_range;
@@ -243,6 +248,8 @@ export default function Action() {
     let action_range = this.getRange(world, actor, position);
     world.highlightRange(action_range, 'brown');
   }
+
+
 
   this.getTargets = function(world, actor, position) {
 
@@ -263,13 +270,27 @@ export default function Action() {
     let max_distance = extra_max_distance || this.max_distance;
     let min_distance = this.min_distance;
 
-    let pathfinder = new ActionPathfinder(this);
-    var actionPath = pathfinder.getPath( world, origin, target, max_distance );
+    //if (!this.pathfinder_cache)
+         this.updatePathfinding(world, origin, null, this.max_distance);
+
+    var actionPath = this.pathfinder_cache.getPath( target );
 
     return actionPath;
   };
 
 
+  //store an explored pathfinding map, can be reused as needed
+  this.updatePathfinding = function(world, origin, target, extra_max_distance) {
+
+    let max_distance = extra_max_distance || this.max_distance;
+    let min_distance = this.min_distance;
+
+    let pathfinder = new ActionPathfinder(this);
+    pathfinder.exploreMap(world, origin, target, extra_max_distance);
+
+    this.pathfinder_cache = pathfinder;
+
+  }
 
   this.createRoad = function(world, origin, target, road_level = 1) {
 

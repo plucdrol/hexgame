@@ -243,7 +243,6 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
   //recursive step of exploring the map
   function rangeFind(map, max_cost, target = null) {
-    console.trace()
     console.time('rangeFind')
     if (target)
       var coords_to_check = new PriorityQueue(   (coord1, coord2) => (currentCell(coord1).path_cost+Hex.distance(coord1,target) < 
@@ -308,7 +307,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
  
   //returns an array containing only the coordinates on the path to the target
   function targetPathfind(target) {
-    console.time('targetPathfind')
+    //console.time('targetPathfind')
     let path_array = [];
 
     if (!hasCell(target)) 
@@ -322,7 +321,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     }
 
     path_array.push(coord);
-    console.timeEnd('targetPathfind')
+    //console.timeEnd('targetPathfind')
     return path_array;
   };
 
