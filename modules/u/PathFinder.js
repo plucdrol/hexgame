@@ -15,36 +15,43 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
   var visited = new Map();
   var origins = [];
+  var map_explored = false;
 
   //setup 3 functions
   if (!stopFunction)
     var stopFunction = function(map, coordinate1, coordinate2, origin) {return false;};
 
-  //Return a function which can be used many times
-  this.getCost = function(map, origin, target, max_cost = 10) {
+  //call exploreMap first before calling the other four
+  this.exploreMap = function(map, origin, target=null, max_cost=10) {
     initVisited(origin);
     rangeFind(map, max_cost, target);
+    map_explored = true;
+  }
+  //Return a function which can be used many times
+  this.getCost = function(target) {
+    if (!map_explored)
+      console.error('Pathfinder must call "exploreMap" at least once')
     return currentCell(target).path_cost;
   };
 
   //Return a function which can be reused to find the path
-  this.getPath = function(map, origin, target, max_cost = 10) {
-    initVisited(origin);
-    rangeFind(map, max_cost, target);
-    return targetPathfind(map, origin, target);
+  this.getPath = function(target) {
+    if (!map_explored)
+      console.error('Pathfinder must call "exploreMap" at least once')
+    return targetPathfind(target);
   };
 
   //Returns a function which can be used many times to find range 
-  this.getRange = function(map, origin, max_cost) {
-    initVisited(origin);
-    rangeFind(map, max_cost);
+  this.getRange = function(max_cost) {
+    if (!map_explored)
+      console.error('Pathfinder must call "exploreMap" at least once')
     return getRangeArray(max_cost);
   };
 
     //Returns a function which can be used many times to find range 
-  this.getTree = function(map, origin, max_cost) {
-    initVisited(origin);
-    rangeFind(map, max_cost);
+  this.getTree = function(max_cost) {
+    if (!map_explored)
+      console.error('Pathfinder must call "exploreMap" at least once')
     return getRangeTree(max_cost);
   };
 
@@ -236,6 +243,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
   //recursive step of exploring the map
   function rangeFind(map, max_cost, target = null) {
+    console.trace()
     console.time('rangeFind')
     if (target)
       var coords_to_check = new PriorityQueue(   (coord1, coord2) => (currentCell(coord1).path_cost+Hex.distance(coord1,target) < 
@@ -299,7 +307,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
   };
  
   //returns an array containing only the coordinates on the path to the target
-  function targetPathfind(map, origin, target) {
+  function targetPathfind(target) {
     console.time('targetPathfind')
     let path_array = [];
 
