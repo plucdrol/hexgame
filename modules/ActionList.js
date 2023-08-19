@@ -12,9 +12,11 @@ export default function actionExpand(distance) {
 
   this.name = "city-by-land-2";
   this.cost = 2;
+  this.takes_city_pop = true;
 
   this.nextSelection = 'self';
 
+  this.new_unit_type = 'city';
   this.hover_action = new actionGrowRoots(1);
 
   this.can_river = true;
@@ -54,31 +56,19 @@ export default function actionExpand(distance) {
 
   this.preEffect = function(world, actor, position, target) {
 
-
-    //grow city if clicking on it
-    if (world.unitAtLocation(target) && world.getUnit(target).pop && world.getUnit(target).pop < 5) {
-
-      actor.pop -= 2;
+    //Clicking a city: GROW IT
+    if (world.unitAtLocation(target) && world.getUnit(target).pop && world.getUnit(target).pop < 11) {
       world.getUnit(target).pop++;
+    }
+  }
 
+
+  this.effect = function(world, actor, position, target) {
+
+    //Collect resources around new node
+    if (world.unitAtLocation(target)) {
       let target_pop = world.getUnit(target).pop;
-      let after_action = new actionGrowRoots( target_pop );
-      after_action.doMultiAction( world, actor, target) 
-    }
-
-    //grow road and build a city if clicking somewhere else
-    if (!world.unitAtLocation(target)) {
-      actor.pop -= 2;
-      world.addUnit(target, 'city', actor);
-
-      let after_action = new actionGrowRoots( 1 );
-      after_action.doMultiAction( world, actor, target)  
-    }
-
-    //add a village if clicling directly on a resource
-    if (world.getResource(target) && !world.getResource(target).resources['unknown']) {
-      world.addUnit(target, 'village', actor);
-      world.highlightRange(Hex.circle(target, 1), 'green'); //green is the color around captured resources
+      this.after_action = new actionGrowRoots( target_pop );
     }
   }
 }
@@ -110,7 +100,7 @@ export function actionGrowRoots(max_distance) {
   this.can_use_roads = false;
   this.double_road_speed = false;
 
-  this.collect_resource = false; //should be true but 'takes city pop' relies on cost
+  this.collect_resource = true; //should be true but 'takes city pop' relies on cost
   this.destroy_resource = true;
 
   this.multi_target = true;
@@ -132,8 +122,8 @@ export function actionGrowRoots(max_distance) {
 
 
   this.effect = function(world,actor,position,target) {
-    actor.addPop(1);
-    world.addUnit(target, 'village', actor);
+    //actor.addPop(1);
+    world.createUnit(target, 'village');
     world.highlightRange(Hex.circle(target, 2), 'green');
   }
 }
@@ -147,13 +137,15 @@ export function actionExpandByAir(max_distance) {
 
   this.name = 'city-by-air';
   this.minimum_elevation = 0;
-  this.maximum_elevation = 30;
+  this.maximum_elevation = 20;
   this.min_distance = 0;
   this.also_build_road = false;
   this.can_use_roads = false;
   this.sky_action = true;
 
-  this.cost = 3;
+  this.collect_resource = false;
+
+  this.cost = 0;
 
   this.cloud_clear = 5;
 
@@ -166,7 +158,10 @@ export function actionExpandByAir(max_distance) {
     this.infinite_range = true;
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && !world.onIce(target) && !world.onMountain(target);
+    let tile = world.getTile(target);
+    if (!tile) return false;
+
+    return tile.onLand() && !tile.onIce() && !tile.onMountains();
   }
 
 }
@@ -202,32 +197,33 @@ export function actionMove(max_distance) {
 
   this.cost = 4;
 
-  this.description = "Move";
+  this.description = "Rebase";
   this.extra_description = "Move your central node somewhere else";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) &&  
+    let tile = world.getTile(target);
+    return tile.onLand() &&  
     (!world.unitAtLocation(target) || !world.noUnitTypeInArea(target, 0, 'colony') ) && 
     ( world.hasResource(target, 'food')  ) ;
   }
 
   //If ACTIVATION returns true, and the selected unit has this action, the action will appear in its menu, greyed out
-  this.activation = function(world, actor, position, target) {
+  this.activation = function(world, actor, position) {
     return (actor.can_move);
   }
 
   //if REQUIREMENT also returns true, then the button will no longer be grayed out
-  this.requirement = function(world, actor, position, target) {
+  this.requirement = function(world, actor, position) {
     return (actor.can_move);
   }
 
   this.effect = function(world, actor, position, target) {
 
     actor.moveActionToTop(this);
-    world.units.set(target, actor);
+    world.addUnit(target, actor);
 
     world.destroyUnit(position);
-    world.addUnit(position, 'city', actor);
+    world.createUnit(position, 'city');
     
   }
 
@@ -307,14 +303,18 @@ export function actionExpandAll() {
   }
   this.effect = function(world, actor, position, target) {
     for (let hex of world.getHexes()) {
+      let tile = world.getTile(hex);
+
       if (world.countRoads(hex) >= 3)
-        if (world.onLand(hex) && !world.unitAtLocation(hex))
-          world.addUnit(hex, 'village', actor);
+        if (tile.onLand() && !world.unitAtLocation(hex))
+          world.createUnit(hex, 'village');
     }
 
-    for (let hex of Hex.circle(target,2))
-      if (world.onLand(hex))
-        world.getTile(hex).elevation = 3+Math.floor(Math.random()*4);
+    for (let hex of Hex.circle(target,2)){
+      let tile = world.getTile(hex);
+      if (tile.onLand())
+        tile.elevation = 3+Math.floor(Math.random()*4);
+    }
 
   }
   
@@ -377,7 +377,7 @@ function cutRiver(world, position) {
   let tile = world.getTile(position);
   let step_time = 300;
 
-  if (world.onRiver(position)) {
+  if (tile.onRiver()) {
     var water_level = tile.river.water_level;
     stepByStepCutRiver();
   }
@@ -500,7 +500,8 @@ function actionCreateX(distance) {
   this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5);
+
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,5);
   }
 }
 
@@ -522,7 +523,7 @@ export function actionCreateCity(distance) {
   this.extra_description = "Click somewhere to create a new city";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,5);
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,5);
   }
 
 }
@@ -539,7 +540,7 @@ function actionCreateCityBySea(distance) {
   this.can_use_roads = false;
 
   this.targetFilterFunction = function(world, actor, target) {
-    return !world.unitAtLocation(target) && world.onLand(target) 
+    return !world.unitAtLocation(target) && world.getTile(target).onLand() 
            && world.noCitiesInArea(target,5) && world.nearCoast(target);
   }
   this.effect = function(world, actor, position, target) {
@@ -567,7 +568,7 @@ function actionCreateAirport(distance) {
   this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,1);
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,1);
   }
 }
 
@@ -587,7 +588,7 @@ function actionCreateVillage(distance) {
   this.extra_description = "";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onLand(target) && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
+    return world.getTile(target).onLand() && world.noCitiesInArea(target,1) && world.noUnitTypeInArea(target, 1, 'village');
   }
 }
 
@@ -612,7 +613,7 @@ function actionCreateRiverDock(distance) {
   this.extra_description = "Can gather all resources on a river";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return world.onRiver(target) && !world.unitAtLocation(target);
+    return world.getTile(target).onRiver() && !world.unitAtLocation(target);
   }
   this.activation = function(world, actor, position) {
     return world.nearRiver(position, 2);
@@ -694,7 +695,7 @@ export function actionCreateLighthouse(distance) {
   this.extra_description = "Gather resources in coastal waters";
 
   this.targetFilterFunction = function(world, actor, target) {
-    return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.onLand(target))
+    return (!world.unitAtLocation(target) && world.nearCoast(target,1,6) && world.getTile(target).onLand())
   }
 }
 
@@ -740,15 +741,17 @@ function actionGetResource(max_distance, multi_target) {
 
   this.targetFilterFunction = function(world, actor, target) {
 
+    let tile = world.getTile(target);
+
     return (
            //dry land food tiles within 3 tiles of the city or...
-           (world.onLand(target) && !world.onRiver(target) && world.hasResource(target, 'food') ) 
+           (tile.onLand() && !tile.onRiver() && world.hasResource(target, 'food') ) 
            ||
            //...or shallow water fish besides the city tile
-           (world.getTile(target).elevation == 1 && world.hasResource(target, 'food') )
+           (tile.elevation == 1 && world.hasResource(target, 'food') )
            ||
            //...or river fish besides the city tile
-           (world.onRiver(target) && world.hasResource(target, 'food') )
+           (tile.onRiver() && world.hasResource(target, 'food') )
            );
   }
 
@@ -800,12 +803,15 @@ function actionCollectRiverFish(max_distance) {
   this.extra_description = "Get all the fish resources in this river";
 
   this.targetFilterFunction = function(world, actor, position, target) {
-    return !world.unitAtLocation(target) && world.sameRiver(position, target)
+    let tile1 = world.getTile(target);
+    let tile2 = world.getTile(position)
+    return !world.unitAtLocation(target) && tile1.sameRiver(tile2)
          && world.hasResource(target, 'food') ;
   }
 
   this.activation = function(world, actor, position) {
-    return world.onRiver(position);
+    let tile1 = world.getTile(target);
+    return tile1.onRiver();
   }
 
 

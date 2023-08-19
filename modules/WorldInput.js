@@ -15,9 +15,11 @@ import UnitInput from './UnitInput.js';
 import Events from './u/Events.js'
 
 
-
+//Ideally, events triggered by a WorldInput would only affect a single World
+//Multiple WorldInputs can be created side-by-side, one for each world, and they will get along
 export default function WorldInput(world, view) {
 
+  this.getWorld = () => world;
 
 
   //this is where the world's unit controller is created
@@ -52,7 +54,7 @@ export default function WorldInput(world, view) {
 
     if (event.keyCode === 187 || event.keyCode === 27) { // escape
         unit_input.selectNothing();
-        Events.emit('hex_hovered_changed', hex_hovered);
+        //Events.emit('hex_hovered_changed', {world, hex_hovered});
     }
     return false;
   }
@@ -66,11 +68,10 @@ export default function WorldInput(world, view) {
     var world_position = view.screenToWorld(screen_position);
     hex_hovered = world.getHex(world_position);
 
-    //if the mouse moved to a new hex, redraw the screen
-    if ( !hex_hovered.equals(hex_hovered_previous) ) {
-      Events.emit('hex_hovered_changed', hex_hovered);
-
-    }
+    //if the mouse moved to a new hex in this world, emit an event
+    if ( !hex_hovered.equals(hex_hovered_previous) )
+      if (world.containsHex(hex_hovered))
+        Events.emit('hex_hovered_changed', {world, hex_hovered});
 
     //remember the currently hovered hex
     hex_hovered_previous = hex_hovered;
@@ -89,10 +90,13 @@ export default function WorldInput(world, view) {
       let didnt_move = hex_hovered.equals(hex_hovered_previous)
 
       if (device_type == "mouse" || didnt_move) {
-        Events.emit('hex_clicked', hex_clicked);
+
+        if (world.containsHex(hex_clicked))
+          Events.emit('hex_clicked', {world, hex_clicked});  //This is emitted once for every world, with hex_clicked in different coordinate systems
       }
 
-      Events.emit('hex_hovered_changed', hex_hovered);
+      if (world.containsHex(hex_hovered))
+        Events.emit('hex_hovered_changed', {world, hex_hovered});
       
     }
   }

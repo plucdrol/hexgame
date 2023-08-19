@@ -2,22 +2,25 @@
 import View from './View.js'
 import ViewRender from './ViewRender.js';
 import WorldRender from './WorldRender.js';
+import WorldInput from './WorldInput.js';
 import HUDRender from './HudRender.js';
 import Events from './u/Events.js';
 
 
 
-export default function GameRender(worlds, world_input, view) {
+export default function GameRender(system, worlds, world_inputs, view) {
 
   let render = new ViewRender('canvas', view);
   let layers = [];
+  let hud_renders = [];
 
-  for (let world of worlds) {
+  layers.push(new LayerRender(system))
+  for (let world of worlds) 
     layers.push(new LayerRender(world))
-  }
 
-  let hud_render = new HUDRender(worlds[1], world_input, render);
-  //let mars_hud_render = new HUDRender(worlds[2], mars_input, render);
+
+  for (let world_input of world_inputs) 
+    hud_renders.push( new HUDRender(world_input.getWorld(), world_input, render) );
 
 
   function clear() {
@@ -48,9 +51,9 @@ export default function GameRender(worlds, world_input, view) {
 
 
     //draw the HUD on top
+    for (let hud of hud_renders)
+      hud.drawHUD();
 
-    hud_render.drawHUD();
-    //mars_hud_render.drawHUD();
     //console.trace();
 
 

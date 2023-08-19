@@ -12,47 +12,12 @@ export default function HUDRender(world, world_input, render) {
   var action_targets = [];
   var hover_timeout;
 
-  Events.on('hex_hovered_changed', (e) => updateHover(e.detail) );
+  Events.on('hex_hovered_changed', (e) => updateHover(e.detail.world, e.detail.hex_hovered) );
 
 
 
 
 
-
-
-  /////////////////////////////////////////////////////
-  //          Functions about map overlay information
-  /////////////////////////////////////////////////////
-  this.drawHUD = function() {
-
-    var hex_hovered = world_input.getHexHovered();
-    var hex_selected = unit_input.getHexSelected();
-
-    if (hex_hovered) 
-      drawHoveredHex(hex_hovered);
-
-    if (!hex_selected) 
-      return
-
-    let actor = unit_input.getActorSelected();
-    if (!actor) 
-      return
-
-    let action = unit_input.getActionSelected();
-    if (!action) 
-      return;
-
-    if (action.sky_action && hex_selected && hex_hovered)
-      drawStraightLine(hex_selected, hex_hovered);
-
-    if (action_path && action_path.length > 0) 
-      drawActionPath(hex_hovered);
-
-    if ((action.sky_action || action_path) && action_targets && action_targets.length > 0)
-      drawActionTargets(hex_hovered);
-
-
-}
 
 
 
@@ -67,34 +32,48 @@ export default function HUDRender(world, world_input, render) {
   // UPDATE FUNCTIONS
 
 
-  function updateHover(hex_hovered) {
+  function updateHover(world_hovered, hex_hovered) {
+
+    //TODO this triggers two pathfinding events with each hover of the mouth
+    // In order for hovering not to retrace the pathways, the pathways need to be remembered
+    // The action can remember them
+    //find a way to pathfind once only
+
+
+    if (!world_hovered.containsHex(hex_hovered))
+      return;
 
     action_targets = [];
 
     //use a timeout to only trigger when the mouse stops moving
     if (hover_timeout)
       clearTimeout(hover_timeout);
-    hover_timeout = setTimeout(function(){ updateActionTargets(hex_hovered);
-                                               updateActionPath(hex_hovered); 
+    hover_timeout = setTimeout(function(){ updateActionTargets(world_hovered, hex_hovered);
+                                               updateActionPath(world_hovered, hex_hovered); 
                                                //updateTooltip(world, hex_hovered) 
                                              }, 100);
 
   }
 
-  function updateActionPath (hex_hovered) {
+
+  function updateActionPath (world_hovered, hex_hovered) {
     
+    if (!world.sameAs(world_hovered)) 
+      return
+
     let actor = unit_input.getActorSelected();
     let action = unit_input.getActionSelected();
     let hex_selected = unit_input.getHexSelected();
 
     if (action && actor && hex_selected) {
+      //action.updatePathfinding(world,hex_selected, hex_hovered, action.max_distance);
       action_path = action.getPath(world, hex_selected, hex_hovered, action.max_distance);
     } else {
       action_path = [];
     }
   }
 
-  function updateActionTargets (hex_hovered) {
+  function updateActionTargets (world_hovered, hex_hovered) {
     
     let actor = unit_input.getActorSelected();
     let action = unit_input.getActionSelected();
@@ -102,12 +81,17 @@ export default function HUDRender(world, world_input, render) {
     action_targets = [];
 
     if (action && actor && action.hover_action) {
-      if (!action.targetFilterFunction(world, actor, hex_hovered))
+      if (!action.targetFilterFunction(world_hovered, actor, hex_hovered))
         return;
 
-      let hover_action = action.hover_action;
-      action_targets = hover_action.getTargets(world, actor, hex_hovered );
+
+        let hover_action = action.hover_action;
+        //hover_action.updatePathfinding(world_hovered, hex_hovered);
+        action_targets = hover_action.getTargets(world_hovered, actor, hex_hovered );
+
     } 
+
+
   }
 
 
@@ -120,23 +104,58 @@ export default function HUDRender(world, world_input, render) {
 
   //DRAW FUNCTIONS
 
-  function drawActionPath (hex_hovered) {
+  this.drawHUD = function() {
+
+    var hex_hovered = world_input.getHexHovered();
+    var hex_selected = unit_input.getHexSelected();
+
+    if (hex_hovered && world.containsHex(hex_hovered)) 
+      drawHoveredHex(hex_hovered);
+
+    if (!hex_selected) 
+      return
 
     let actor = unit_input.getActorSelected();
+    if (!actor) 
+      return
+
     let action = unit_input.getActionSelected();
+    if (!action) 
+      return;
+
+    if (action.sky_action && hex_selected && hex_hovered)
+      drawStraightLine(actor, action, hex_selected, hex_hovered);
+
+    if (action_path && action_path.length > 0) 
+      drawActionPath(actor, action, hex_hovered);
+
+    if ((action.sky_action || action_path) && action_targets && action_targets.length > 0)
+      drawActionTargets(actor, action, hex_hovered);
+
+  }
+
+  function drawStraightLine(actor, action, hex1, hex2) {
+
+    let color = '#C50'; //red
+    if ( action.targetFilterFunction(world, actor, hex2) )
+      color = '#5C0'; //green
+    if (!action.infinite_range && Hex.distance(hex1,hex2) > action.max_distance )
+      color = '#C50'; //red
+
+    hex_render.drawCenterLine(hex1, hex2, 12, color );
+  }
+
+  function drawActionPath (actor, action, hex) {
 
     //draw a line from actor to target
     let color = '#C50';
-    if ( action.targetFilterFunction(world, actor, hex_hovered) )
+    if ( action.targetFilterFunction(world, actor, hex) )
       color = '#5C0';
 
     drawPath(action_path, color);
   }
 
-  function drawActionTargets (hex_hovered) {
-
-    let actor = unit_input.getActorSelected();
-    let action = unit_input.getActionSelected();
+  function drawActionTargets (actor, action, hex) {
     
     //Style for Action targets
     var hover_style = new RenderStyle();
@@ -156,26 +175,18 @@ export default function HUDRender(world, world_input, render) {
       return;
 
     for (let i = 0; i < hexarray.length-1; i++) {
-      if (!world.areRoadConnected(hexarray[i], hexarray[i+1]))  //don't draw path through roads
+      //TODO FIX THIS MESS OF A FUNCTION
+      let tile1 = world.getTile(hexarray[i]);
+      let tile2 = world.getTile(hexarray[i+1])
+      if (!tile1.roadConnected(tile2))  //don't draw path through roads
         hex_render.drawCenterLine(hexarray[i], hexarray[i+1], 6, color );
     }
   }
 
-  function drawStraightLine(hex1, hex2) {
-    let actor = unit_input.getActorSelected();
-    let action = unit_input.getActionSelected();
 
-
-
-    let color = '#C50'; //red
-    if ( action.targetFilterFunction(world, actor, hex2) )
-      color = '#5C0'; //green
-    if (Hex.distance(hex1,hex2) > action.max_distance)
-      color = '#C50'; //red
-    hex_render.drawCenterLine(hex1, hex2, 6, color );
-  }
 
   function drawHoveredHex(hex_hovered) {
+
     //draw hovered hex
     var hover_style = new RenderStyle();
     hover_style.fill_color = "rgba(200,200,200,0.4)";

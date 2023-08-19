@@ -13,33 +13,30 @@ import {actionGrowRoots,actionMove,
         actionExpandAll,actionCreateCity,actionCreateHarbor,actionExpandByAir} from './ActionList.js'
 
 
-export default function Unit(unit_type, owner) {
+export default function Unit(unit_type, world) {
   
   this.selectable = true;
-  this.position = null;
+  this.world = world;
 
   this.id = unit_id_incrementer++;
   this.actions = [];
-  
-  this.owner = owner || null;
 
   this.setType(unit_type);
 };
 
 
 
+
 Unit.prototype.addPop = function(pop_amount) {
-  if (this.owner && this.type != 'city') 
-    this.owner.addPop(pop_amount);
-  else
-    this.pop += pop_amount;
+  this.pop += pop_amount;
 }
 
 Unit.prototype.getPop = function() {
-  if (this.owner && this.type != 'city') 
-    return this.owner.getPop();
-  else
-    return this.pop;
+  return this.pop;
+}
+
+Unit.prototype.getActions = function() {
+  return this.actions;
 }
 
 Unit.prototype.addAction = function( action ) {
@@ -71,6 +68,9 @@ Unit.prototype.setResource = function(type, value) {
   this.resources[type] = value;
 }
 
+Unit.prototype.setWorld = function(world) {
+  this.world = world;
+}
 
 
 

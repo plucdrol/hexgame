@@ -50,14 +50,30 @@ var view_input = new ViewInput(view);
 
 //Receives input for the game
 //var space_game_input = new GameInput(system, view);
-var earth_input = new WorldInput(earth, view);
-//var mars_input = new WorldInput(mars, view);
 
 
 //Has functions for drawing to the screen
 //renders the worlds in the order they are listed
-let worlds = [system, earth, mars];
-var game_render = new GameRender(worlds, earth_input, view);
+let worlds = [earth, mars];
+
+//Create a bunch more worlds!
+for (let i=0; i<5; i++) {
+  let new_world_location = system.getPoint(system.getRandomHex());
+  let radius = 25;
+  let new_world = new World(radius, 'earth', new_world_location);
+  new_world.clearClouds()
+  worlds.push(new_world);
+}
+
+
+var world_inputs = [];
+for (let world of worlds) {
+  let world_input = new WorldInput(world, view);
+  world_inputs.push(world_input)
+}
+
+
+var game_render = new GameRender(system, worlds, world_inputs, view);
 
 
 
@@ -66,14 +82,16 @@ var game_render = new GameRender(worlds, earth_input, view);
 
 //Put the first city in a random position on the "equator" ring
 var start_hex = new Hex(0,0);
-for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) 
-  if (earth.onLand(hex) && !earth.onRiver(hex)) 
+for (var hex of Hex.ring(new Hex(0,0), earth_radius/2 )) {
+  let tile = earth.getTile(hex)
+  if (tile.onLand() && !tile.onRiver()) 
     if (earth.countLand(hex, 1,3))
       start_hex = hex;
+}
 
 let first_city =  new Unit('city');
-earth.units.set(start_hex, first_city);
 earth.destroyResource(start_hex);
+earth.addUnit(start_hex, first_city);
 first_city.pop = 5;
 
 //for some reason I need to invert the starting hex 

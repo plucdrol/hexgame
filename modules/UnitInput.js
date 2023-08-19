@@ -13,50 +13,63 @@
 
 //Dependencies
 import Hex from './u/Hex.js'
-import ButtonMenu from './ButtonMenu.js'
+import ActionButtons from './ActionButtons.js'
 import Events from './u/Events.js'
 
 import {listContainsHex} from './u/Hex.js'
 
 
 
-export default function UnitInput(world) {
+export default function UnitInput(origin_world) {
   
   var hex_selected;
-  var button_menu = new ButtonMenu('action-buttons', world);
-  let unit_input = this;
+  var action_buttons = new ActionButtons('action-buttons');
 
+
+  this.clickHex = clickHex;
   this.selectNothing = selectNothing;
   this.getHexSelected = getHexSelected
   this.getActorSelected = getActorSelected
   this.getActionSelected = getActionSelected
 
-  Events.on('hex_clicked', (event) => clickHex(event.detail) );
+  Events.on('hex_clicked', (event) => {clickHex(event.detail.world, event.detail.hex_clicked)} );
 
 
 
   //-------1---------2---------3---------4---------5---------6--------7---------8--------
   
  
+  //The hex clicked might be outside the world
+  //for local actions, this will do nothing
+  //for sky_actions that have a long range, this
+  //When clicking, the Actor and Target should be able to be in different worlds.
 
-  function clickHex(hex) {
+  //Is it possible to bridge the gap between worlds with events?
+  //Actor triggers an action, sends an event, the other worldInput receives the event, and initiates the action?
+
+  //each world has 1 actor represented by the HEX SELECTED
+
+  function clickHex(world_clicked, hex_clicked) {
+
+    if (!world_clicked.containsHex(hex_clicked))
+      return;
 
     if (anActorIsSelected() ) 
-      clickWithSelection(hex);
+      clickWithSelection(world_clicked, hex_clicked);
     else
-      clickWithNoSelection(hex);
-
-    button_menu.update(unit_input);
+      clickWithNoSelection(world_clicked, hex_clicked);
   };
 
 
 
   function selectHex(hex) {
 
-    button_menu.unselectActions();
+    let actor = origin_world.getActor(hex);
 
-    if (hex && world.getActor(hex))
+    if (hex && actor && origin_world.containsHex(hex)) {
       hex_selected = hex;
+      action_buttons.showButtonsFor( origin_world, actor, hex );
+    }
     else
       selectNothing();
   };
@@ -64,7 +77,6 @@ export default function UnitInput(world) {
 
   function selectNothing() {
     hex_selected = null;
-    button_menu.update(unit_input);
   };
 
   function aHexIsSelected() {
@@ -83,7 +95,7 @@ export default function UnitInput(world) {
     if (!hex_selected) 
       return false;
 
-    var maybe_actor = world.getActor(getHexSelected());
+    var maybe_actor = origin_world.getActor(getHexSelected());
     if (maybe_actor) {
       return (maybe_actor.selectable);
     } else {
@@ -93,7 +105,7 @@ export default function UnitInput(world) {
 
   function getActorSelected() {
     if (anActorIsSelected()) {
-      return world.getActor(getHexSelected());
+      return origin_world.getActor(getHexSelected());
     } else {
       return false;
     }
@@ -102,56 +114,68 @@ export default function UnitInput(world) {
   function getActionSelected() {
     if (anActorIsSelected()) {
       let actor = getActorSelected();
-      return button_menu.getActionSelected(actor);
+      let action = action_buttons.getActionSelected(actor);
+      return action;
     } else {
       return false;
     }
   };
 
-  function clickWithNoSelection(target) {
+  function clickWithNoSelection(world_clicked, target) {
     selectHex(target);
   };
 
 
-  function clickWithSelection(target) {
+  //clickWithSelection EVENT (world, actor, action, target)
+  //for interplanetary actions, the WORLD and ACTOR and POSITION are together, but the TARGET is in another world
+  // the first UnitInput will have coordinates that correspond to no world
+  //the second UnitInput will have no HEX or ACTOR selected, and therefore trigger no action
+
+  function clickWithSelection(world_clicked, target) {
     
     let actor = getActorSelected();
-    let action = button_menu.getActionSelected(actor);
+    let action = action_buttons.getActionSelected(actor);
 
-    if (action && action.infinite_range) 
-      clickInsideRange(target);
-    else if (action.canTarget(target)) 
-      clickInsideRange(target);
-    else
-      clickOutsideRange(target);
+    if (action && action.sky_action && action.infinite_range) 
+      clickInsideRange(world_clicked, target);   //when clicking another world with an infinite_range action, this will be triggered (but the hex is wrong)
+    else if (origin_world.sameAs(world_clicked) && action.canTarget(origin_world, actor, hex_selected, target)) 
+      clickInsideRange(origin_world, target);
+    else if (origin_world.sameAs(world_clicked))
+      clickOutsideRange(origin_world, target);
 
   };
 
-  function clickInsideRange(target) {
+  //clickInsideRange(world, actor, origin, target, targetworld = world )
+  function clickInsideRange(world_clicked, target) {  
 
     let origin = hex_selected;
     let actor = getActorSelected();
-    let action = button_menu.getActionSelected(actor);
-      console.log('click inside range')
-    if (action.requirement(world, actor, origin)) {
+    let action = action_buttons.getActionSelected(actor);
 
-      action.doAction(world, actor, origin, target);
+    if (action.requirement(origin_world, actor, origin)) {
+
+      action.doAction(world_clicked, actor, origin, target);
+
+      if (action.nextSelection == 'self')
+        action_buttons.showButtonsFor(origin_world, actor, origin);
 
       if (action.nextSelection == 'target') 
         selectHex(target); 
 
-      if (action.nextSelection == 'new_unit' && world.unitAtLocation(target) ) 
+      if (action.nextSelection == 'new_unit' && world.unitAtLocation(target) )
         selectHex(target); 
 
     }
+
+    
   };
 
 
-  function clickOutsideRange(target) {
+  function clickOutsideRange(world, target) {
 
     if (world.unitAtLocation(target)) {
       selectNothing();
-      clickHex(target);
+      clickHex(world,target);
     }
   };
 }
