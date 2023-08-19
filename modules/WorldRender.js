@@ -160,6 +160,12 @@ WorldRender.p.drawLand = function(hex) {
   let brown = ['#421','#412','#431','#421','#412','#431','#421','#412','#431'];
   let blue = ['#216','#126','#114'];
 
+  if (tile.changed)
+    tile.changed = false;
+  else {
+    return;
+  }
+
   //draw clouds if not explored
   if (tile.hidden) {
     this.drawHex(hex, 32);

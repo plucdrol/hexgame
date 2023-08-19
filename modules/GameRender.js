@@ -174,7 +174,7 @@ LayerRender.prototype.blit = function(canvas_name, view) {
   render.blitCanvas(this.temp_canvas);
 }
 
-let draw_count = 200;
+let draw_count = 500;
 //draw onto the temp canvas
 LayerRender.prototype.drawGround = function() {
   this.world_render.drawSome('lands',draw_count);
