@@ -280,10 +280,15 @@ export default function Action() {
   //store an explored pathfinding map, can be reused as needed
   this.updatePathfinding = function(world, origin) {
 
-    let pathfinder = new ActionPathfinder(this);
-    pathfinder.exploreMap(world, origin, this.max_distance);
+    let action = this;
+    var callback = function() {action.pathfinder_cache = pathfinder}
 
-    this.pathfinder_cache = pathfinder;
+    let pathfinder = new ActionPathfinder(this);
+    pathfinder.exploreMap(world, origin, this.max_distance, callback);
+
+
+
+    //this.pathfinder_cache = pathfinder;
 
   }
 

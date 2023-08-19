@@ -191,7 +191,7 @@ export default function ActionPathfinder(action) {
 
     if ((world.areRoadConnected(hex,next_hex) && (action.can_use_roads) ))
       if (action.double_road_speed )
-        cost = 0;
+        cost = 0.01;
 
 
 

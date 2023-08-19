@@ -22,9 +22,9 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     var stopFunction = function(map, coordinate1, coordinate2, origin) {return false;};
 
   //call exploreMap first before calling the other four
-  this.exploreMap = function(map, origin, max_cost=10) {
+  this.exploreMap = function(map, origin, max_cost=10, callback) {
     initVisited(origin);
-    rangeFind(map, max_cost, null);
+    rangeFind(map, max_cost, null, callback);
     map_explored = true;
   }
   //Return a function which can be used many times
@@ -242,7 +242,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
 
   //recursive step of exploring the map
-  function rangeFind(map, max_cost, target = null) {
+  function rangeFind(map, max_cost, target = null, callback) {
     //console.trace();
     //console.time('rangeFind')
     if (target)
@@ -254,27 +254,46 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     for (let origin of origins)
       coords_to_check.push(origin);
       
+    console.time('all')
+
+
+
     while (!coords_to_check.isEmpty())
       checkNextCell(coords_to_check, map, max_cost, target)
 
+    callback();
+
+    console.timeEnd('all')
+
+    if (coords_checked > 20){
+      console.log("checked: "+coords_checked)
+
+
+    }
     //console.timeEnd('rangeFind')
   };
 
+  var coords_checked = 0;
   function checkNextCell(coords_to_check, map, max_cost, target = null) {
+
+    coords_checked++;
 
     let coord = coords_to_check.pop();
 
     //do not look further if stop function triggers
     let previous_coord = currentCell(coord).previous_coord;
+
     if ( previous_coord && (stopFunction(map, previous_coord, coord, origins))  )
       return;
 
     //Do not look at paths that pass through the target
     if (target && target.equals(coord))
       return;
+    
 
     //Add the neighbors of this cell
     let neighbors = getGoodNeighbors(map, coord, max_cost);
+
     for (let cell of neighbors){
       setVisited(cell.coord, cell); 
       coords_to_check.push(cell.coord)
