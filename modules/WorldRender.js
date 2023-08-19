@@ -79,6 +79,7 @@ WorldRender.p.drawBigHex = function(radius) {
 
 
 
+//TODO: What if instead of rendering in random waves, we only updates tiles that have changed!
 
 WorldRender.p.drawSome = function(tile_layer, count) {
   

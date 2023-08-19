@@ -25,10 +25,11 @@ export default function GameRender(worlds, world_input, view) {
       layer.clear();
   }
 
+  var times = 20;
   function updateLayers() {
     for (let layer of layers) {
-
-      layer.drawGround();
+      if (times--)
+        layer.drawGround();
       layer.drawThings();
     }
   }
@@ -86,7 +87,7 @@ export default function GameRender(worlds, world_input, view) {
 
   this.startDrawing = function() {
     loop(draw, 30);
-    loop(updateLayers, 30); //this makes a bit of lag every 300. This process should be done in little bits instead
+    loop(updateLayers, 30); 
   }
 
 
@@ -170,7 +171,7 @@ LayerRender.prototype.blit = function(canvas_name, view) {
   render.blitCanvas(this.temp_canvas);
 }
 
-let draw_count = 500;
+let draw_count = 200;
 //draw onto the temp canvas
 LayerRender.prototype.drawGround = function() {
   this.world_render.drawSome('lands',draw_count);
