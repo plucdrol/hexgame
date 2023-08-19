@@ -86,7 +86,7 @@ export default function HUDRender(world, world_input, render) {
 
 
         let hover_action = action.hover_action;
-        //hover_action.updatePathfinding(world_hovered, hex_hovered, null, action.max_distance);
+        hover_action.updatePathfinding(world_hovered, hex_hovered);
         action_targets = hover_action.getTargets(world_hovered, actor, hex_hovered );
 
     } 

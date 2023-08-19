@@ -22,9 +22,9 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     var stopFunction = function(map, coordinate1, coordinate2, origin) {return false;};
 
   //call exploreMap first before calling the other four
-  this.exploreMap = function(map, origin, target=null, max_cost=10) {
+  this.exploreMap = function(map, origin, max_cost=10) {
     initVisited(origin);
-    rangeFind(map, max_cost, target);
+    rangeFind(map, max_cost, null);
     map_explored = true;
   }
   //Return a function which can be used many times
@@ -243,7 +243,8 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
 
   //recursive step of exploring the map
   function rangeFind(map, max_cost, target = null) {
-    console.time('rangeFind')
+    //console.trace();
+    //console.time('rangeFind')
     if (target)
       var coords_to_check = new PriorityQueue(   (coord1, coord2) => (currentCell(coord1).path_cost+Hex.distance(coord1,target) < 
                                                                       currentCell(coord2).path_cost+Hex.distance(coord2,target)) );  
@@ -256,7 +257,7 @@ export default function PathFinder(stepCostFunction, getNeighborFunction, stopFu
     while (!coords_to_check.isEmpty())
       checkNextCell(coords_to_check, map, max_cost, target)
 
-    console.timeEnd('rangeFind')
+    //console.timeEnd('rangeFind')
   };
 
   function checkNextCell(coords_to_check, map, max_cost, target = null) {

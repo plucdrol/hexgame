@@ -100,7 +100,7 @@ export default function Action() {
     }
 
     //this part is messy, I don't need pathfinding on long-distance actions, for example
-    //if (!this.pathfinder_cache)
+    if (!this.pathfinder_cache)
          this.updatePathfinding(world, position, null, this.max_distance);
 
     var tree = this.pathfinder_cache.getTree(this.max_distance);
@@ -209,6 +209,7 @@ export default function Action() {
         world.getUnit(target).pop = 0;
       }
 
+    this.updatePathfinding(world, position);
 
   }
 
@@ -235,8 +236,8 @@ export default function Action() {
       var action_range = Hex.circle(position, this.max_distance);
     } else {
 
-      //if (!this.pathfinder_cache)
-      this.updatePathfinding(world, position, null, this.max_distance);
+      if (!this.pathfinder_cache)
+        this.updatePathfinding(world, position);
       var action_range = this.pathfinder_cache.getRange( this.max_distance );
 
     }
@@ -262,16 +263,13 @@ export default function Action() {
 
 
 
-  this.getPath = function(world, origin, target, extra_max_distance) {
+  this.getPath = function(world, origin, target) {
 
     if (this.sky_action)
       return undefined;
 
-    let max_distance = extra_max_distance || this.max_distance;
-    let min_distance = this.min_distance;
-
-    //if (!this.pathfinder_cache)
-         this.updatePathfinding(world, origin, null, this.max_distance);
+    if (!this.pathfinder_cache)
+      this.updatePathfinding(world, origin);
 
     var actionPath = this.pathfinder_cache.getPath( target );
 
@@ -280,13 +278,10 @@ export default function Action() {
 
 
   //store an explored pathfinding map, can be reused as needed
-  this.updatePathfinding = function(world, origin, target, extra_max_distance) {
-
-    let max_distance = extra_max_distance || this.max_distance;
-    let min_distance = this.min_distance;
+  this.updatePathfinding = function(world, origin) {
 
     let pathfinder = new ActionPathfinder(this);
-    pathfinder.exploreMap(world, origin, target, extra_max_distance);
+    pathfinder.exploreMap(world, origin, this.max_distance);
 
     this.pathfinder_cache = pathfinder;
 
